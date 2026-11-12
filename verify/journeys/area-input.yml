@@ -1,0 +1,128 @@
+summary: >-
+  The 15 keyboard, trackpad and mouse settings are written from the profile as 27 keys with no restart, a second run
+  changes nothing, and the harness restores each key.
+level: fast
+saves:
+  - {domain: NSGlobalDomain, key: NSAutomaticCapitalizationEnabled}
+  - {domain: NSGlobalDomain, key: NSAutomaticPeriodSubstitutionEnabled}
+  - {domain: com.apple.AppleMultitouchMouse, key: MouseTwoFingerDoubleTapGesture}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.mouse, key: MouseTwoFingerDoubleTapGesture}
+  - {domain: com.apple.AppleMultitouchMouse, key: MouseButtonMode}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.mouse, key: MouseButtonMode}
+  - {domain: com.apple.AppleMultitouchMouse, key: MouseOneFingerDoubleTapGesture}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.mouse, key: MouseOneFingerDoubleTapGesture}
+  - {domain: com.apple.AppleMultitouchMouse, key: MouseTwoFingerHorizSwipeGesture}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.mouse, key: MouseTwoFingerHorizSwipeGesture}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadTwoFingerFromRightEdgeSwipeGesture}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.trackpad, key: TrackpadTwoFingerFromRightEdgeSwipeGesture}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadPinch}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.trackpad, key: TrackpadPinch}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadRotate}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.trackpad, key: TrackpadRotate}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadRightClick}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadCornerSecondaryClick}
+  - {domain: com.apple.TextInputMenu, key: visible}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadTwoFingerDoubleTapGesture}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.trackpad, key: TrackpadTwoFingerDoubleTapGesture}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: Clicking}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.trackpad, key: Clicking}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadThreeFingerDrag}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.trackpad, key: TrackpadThreeFingerDrag}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: Dragging}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: DragLock}
+setup:
+  - |-
+    while IFS='|' read -r d n; do
+    if defaults read-type "$d" "$n" >/dev/null 2>&1; then defaults delete "$d" "$n" || exit 1; fi
+    done <<'KEYS'
+    NSGlobalDomain|NSAutomaticCapitalizationEnabled
+    NSGlobalDomain|NSAutomaticPeriodSubstitutionEnabled
+    com.apple.AppleMultitouchMouse|MouseTwoFingerDoubleTapGesture
+    com.apple.driver.AppleBluetoothMultitouch.mouse|MouseTwoFingerDoubleTapGesture
+    com.apple.AppleMultitouchMouse|MouseButtonMode
+    com.apple.driver.AppleBluetoothMultitouch.mouse|MouseButtonMode
+    com.apple.AppleMultitouchMouse|MouseOneFingerDoubleTapGesture
+    com.apple.driver.AppleBluetoothMultitouch.mouse|MouseOneFingerDoubleTapGesture
+    com.apple.AppleMultitouchMouse|MouseTwoFingerHorizSwipeGesture
+    com.apple.driver.AppleBluetoothMultitouch.mouse|MouseTwoFingerHorizSwipeGesture
+    com.apple.AppleMultitouchTrackpad|TrackpadTwoFingerFromRightEdgeSwipeGesture
+    com.apple.driver.AppleBluetoothMultitouch.trackpad|TrackpadTwoFingerFromRightEdgeSwipeGesture
+    com.apple.AppleMultitouchTrackpad|TrackpadPinch
+    com.apple.driver.AppleBluetoothMultitouch.trackpad|TrackpadPinch
+    com.apple.AppleMultitouchTrackpad|TrackpadRotate
+    com.apple.driver.AppleBluetoothMultitouch.trackpad|TrackpadRotate
+    com.apple.AppleMultitouchTrackpad|TrackpadRightClick
+    com.apple.AppleMultitouchTrackpad|TrackpadCornerSecondaryClick
+    com.apple.TextInputMenu|visible
+    com.apple.AppleMultitouchTrackpad|TrackpadTwoFingerDoubleTapGesture
+    com.apple.driver.AppleBluetoothMultitouch.trackpad|TrackpadTwoFingerDoubleTapGesture
+    com.apple.AppleMultitouchTrackpad|Clicking
+    com.apple.driver.AppleBluetoothMultitouch.trackpad|Clicking
+    com.apple.AppleMultitouchTrackpad|TrackpadThreeFingerDrag
+    com.apple.driver.AppleBluetoothMultitouch.trackpad|TrackpadThreeFingerDrag
+    com.apple.AppleMultitouchTrackpad|Dragging
+    com.apple.AppleMultitouchTrackpad|DragLock
+    KEYS
+profile:
+  default_settings:
+    input.auto_capitalize: true
+    input.double_space_period: true
+    input.mouse_mission_control: "on"
+    input.mouse_secondary_click: "off"
+    input.mouse_smart_zoom: "off"
+    input.mouse_swipe_full_screen_apps: "on"
+    input.notification_center_gesture: "on"
+    input.pinch_zoom: "on"
+    input.rotate: "on"
+    input.secondary_click: two_finger
+    input.show_input_menu: false
+    input.smart_zoom: "on"
+    input.tap_to_click: "off"
+    input.three_finger_drag: false
+    input.trackpad_tap_drag: "off"
+runs:
+  - name: check
+    args: [--check]
+    exit: 0
+    recap: {changed: 27, failed: 0}
+  - name: apply
+    exit: 0
+    recap: {changed: 27, failed: 0}
+    output:
+      - {pattern: '^RUNNING HANDLER ', count: 0}
+      - {pattern: '^ +- log out and back in to see 3 settings$', count: 1}
+      - {pattern: '^ +- 12 settings may need a logout or an app restart to show; their timing is not measured$', count: 1}
+  - name: apply-again
+    exit: 0
+    recap: {changed: 0, failed: 0}
+reads:
+  - {domain: NSGlobalDomain, key: NSAutomaticCapitalizationEnabled, type: boolean, value: true}
+  - {domain: NSGlobalDomain, key: NSAutomaticPeriodSubstitutionEnabled, type: boolean, value: true}
+  - {domain: com.apple.AppleMultitouchMouse, key: MouseTwoFingerDoubleTapGesture, type: integer, value: 3}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.mouse, key: MouseTwoFingerDoubleTapGesture, type: integer, value: 3}
+  - {domain: com.apple.AppleMultitouchMouse, key: MouseButtonMode, type: string, value: OneButton}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.mouse, key: MouseButtonMode, type: string, value: OneButton}
+  - {domain: com.apple.AppleMultitouchMouse, key: MouseOneFingerDoubleTapGesture, type: integer, value: 0}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.mouse, key: MouseOneFingerDoubleTapGesture, type: integer, value: 0}
+  - {domain: com.apple.AppleMultitouchMouse, key: MouseTwoFingerHorizSwipeGesture, type: integer, value: 2}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.mouse, key: MouseTwoFingerHorizSwipeGesture, type: integer, value: 2}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadTwoFingerFromRightEdgeSwipeGesture, type: integer, value: 3}
+  - domain: com.apple.driver.AppleBluetoothMultitouch.trackpad
+    key: TrackpadTwoFingerFromRightEdgeSwipeGesture
+    type: integer
+    value: 3
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadPinch, type: integer, value: 1}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.trackpad, key: TrackpadPinch, type: integer, value: 1}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadRotate, type: integer, value: 1}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.trackpad, key: TrackpadRotate, type: integer, value: 1}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadRightClick, type: boolean, value: true}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadCornerSecondaryClick, type: integer, value: 0}
+  - {domain: com.apple.TextInputMenu, key: visible, type: boolean, value: false}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadTwoFingerDoubleTapGesture, type: integer, value: 1}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.trackpad, key: TrackpadTwoFingerDoubleTapGesture, type: integer, value: 1}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: Clicking, type: integer, value: 0}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.trackpad, key: Clicking, type: integer, value: 0}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadThreeFingerDrag, type: boolean, value: false}
+  - {domain: com.apple.driver.AppleBluetoothMultitouch.trackpad, key: TrackpadThreeFingerDrag, type: boolean, value: false}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: Dragging, type: integer, value: 0}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: DragLock, type: integer, value: 0}

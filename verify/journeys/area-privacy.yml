@@ -1,0 +1,30 @@
+summary: >-
+  The Apple personalized ads setting is written from the profile as 1 key with no restart, a second run changes
+  nothing, and the harness restores the key.
+level: fast
+saves:
+  - {domain: com.apple.AdLib, key: allowApplePersonalizedAdvertising}
+setup:
+  - >-
+    if defaults read-type com.apple.AdLib allowApplePersonalizedAdvertising >/dev/null 2>&1;
+    then defaults delete com.apple.AdLib allowApplePersonalizedAdvertising || exit 1; fi
+profile:
+  default_settings:
+    privacy.personalized_ads: false
+runs:
+  - name: check
+    args: [--check]
+    exit: 0
+    recap: {changed: 1, failed: 0}
+  - name: apply
+    exit: 0
+    recap: {changed: 1, failed: 0}
+    output:
+      - {pattern: '^RUNNING HANDLER ', count: 0}
+      - {pattern: '^ +- log out and back in to see ', count: 0}
+      - {pattern: '^ +- 1 setting may need a logout or an app restart to show; its timing is not measured$', count: 1}
+  - name: apply-again
+    exit: 0
+    recap: {changed: 0, failed: 0}
+reads:
+  - {domain: com.apple.AdLib, key: allowApplePersonalizedAdvertising, type: boolean, value: false}

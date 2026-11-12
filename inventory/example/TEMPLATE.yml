@@ -812,7 +812,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: not measured
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: each app after it relaunches; not tested.
 
   # input.auto_correct: false
@@ -841,7 +841,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: not measured
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: each app after it relaunches; not tested.
 
   # input.fn_key_action: change_input_source
@@ -964,7 +964,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: not measured
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # input.mouse_scroll_speed: 0.0
   #   How fast content scrolls with a mouse wheel or Magic Mouse.
@@ -980,7 +980,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: not measured
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: The same key sits in two domains. TwoButtonSwapped is a guess. Research note on when it
   #     takes effect: restart (reported).
 
@@ -990,7 +990,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: not measured
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # input.mouse_speed: 0.0
   #   How fast the pointer moves when using a mouse.
@@ -1015,7 +1015,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: not measured
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # input.natural_scrolling: false
   #   Content moves the same way as your fingers (natural scrolling).
@@ -1033,7 +1033,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: not measured
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # input.pinch_zoom: 'off'
   #   Pinch with two fingers to zoom in or out.
@@ -1041,7 +1041,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: not measured
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # input.pointer_acceleration: 'off'
   #   Speed the pointer up when you move the mouse faster.
@@ -1077,7 +1077,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: not measured
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # input.secondary_click: two_finger
   #   How to right-click on the trackpad.
@@ -1085,7 +1085,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: not measured
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: One menu in System Settings sets two keys, plus the -currentHost copy, in both trackpad
   #     domains.
 
@@ -1105,7 +1105,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: not measured
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: TextInputMenuAgent restart or logout; not tested.
 
   # input.smart_quotes_dashes: false
@@ -1124,7 +1124,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: not measured
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # input.standard_function_keys: false
   #   Use F1, F2 and the other top-row keys as standard function keys.
@@ -1167,7 +1167,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: The same key sits in two domains, built-in and Magic Trackpad. Older guides also write
   #     -currentHost com.apple.mouse.tapBehavior; a test Mac did not have it. Research note on when
   #     it takes effect: logout for a defaults write (reported).
@@ -1178,7 +1178,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: The same key sits in two domains plus a -currentHost copy. Shares the Dragging style
   #     menu with input.trackpad_tap_drag. Research note on when it takes effect: logout for a
   #     defaults write (reported).
@@ -1218,9 +1218,9 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
-  #   Proven on: not yet
-  #   Note: Written in both trackpad domains. Research note on when it takes effect: logout
-  #     (reported).
+  #   Proven on: macOS 27.2.1 (2026-11-12)
+  #   Note: Written in the built-in trackpad domain only; a Bluetooth trackpad keeps its own copy.
+  #     Research note on when it takes effect: logout (reported).
 
   # Area: privacy
 
@@ -1239,7 +1239,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: not measured
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # Area: systemui
 

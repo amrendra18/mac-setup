@@ -99,3 +99,5 @@ A read's `type` is the name macOS reports: `string`, `integer`, `float`, `boolea
 | 12 | [System UI area](./area-systemui.md) | `scripts/verify fast --feature area-systemui` | check run, apply, second run, typed reads of 14 keys for 13 settings, each key restored |
 | 13 | [Remaining stores](./remaining.md) | `scripts/verify fast --feature remaining` | check run, apply with 1 Dock restart, second run, keyboard and Mission Control shortcuts, input sources and 2 trackpad gestures read back, both volumes read again by the command after each set, each restored |
 | 14 | [Machine settings](./machine.md) | `scripts/verify fast --feature machine` | check run, apply, second run, the 4 power settings read back with `pmset`, each saved value restored |
+| 15 | [Input area](./area-input.md) | `scripts/verify fast --feature area-input` | check run, apply, second run, typed reads of 27 keys for 15 settings, each key restored |
+| 16 | [Privacy area](./area-privacy.md) | `scripts/verify fast --feature area-privacy` | check run, apply, second run, the typed read of 1 advertising key, the key restored |

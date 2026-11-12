@@ -43,7 +43,7 @@ input.auto_capitalize:
   needs: []
   lockout_risk: false
   where: System Settings > Keyboard
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'Research note on when it takes effect: each app after
     it relaunches; not tested.'
@@ -107,7 +107,7 @@ input.double_space_period:
   needs: []
   lockout_risk: false
   where: System Settings > Keyboard
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'Research note on when it takes effect: each app after
     it relaunches; not tested.'
@@ -389,7 +389,7 @@ input.mouse_mission_control:
   needs: []
   lockout_risk: false
   where: System Settings > Mouse
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 input.mouse_scroll_speed:
   summary: How fast content scrolls with a mouse wheel or Magic
@@ -426,7 +426,7 @@ input.mouse_secondary_click:
   needs: []
   lockout_risk: false
   where: System Settings > Mouse
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'The same key sits in two domains. TwoButtonSwapped is
     a guess. Research note on when it takes effect: restart (reported).'
@@ -449,7 +449,7 @@ input.mouse_smart_zoom:
   needs: []
   lockout_risk: false
   where: System Settings > Mouse
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 input.mouse_speed:
   summary: How fast the pointer moves when using a mouse.
@@ -502,7 +502,7 @@ input.mouse_swipe_full_screen_apps:
   needs: []
   lockout_risk: false
   where: System Settings > Mouse
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 input.natural_scrolling:
   summary: Content moves the same way as your fingers (natural
@@ -542,7 +542,7 @@ input.notification_center_gesture:
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 input.pinch_zoom:
   summary: Pinch with two fingers to zoom in or out.
@@ -563,7 +563,7 @@ input.pinch_zoom:
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 input.pointer_acceleration:
   summary: Speed the pointer up when you move the mouse faster.
@@ -644,7 +644,7 @@ input.rotate:
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 input.secondary_click:
   summary: How to right-click on the trackpad.
@@ -665,7 +665,7 @@ input.secondary_click:
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: One menu in System Settings sets two keys, plus the -currentHost copy,
     in both trackpad domains.
@@ -698,7 +698,7 @@ input.show_input_menu:
   needs: []
   lockout_risk: false
   where: System Settings > Keyboard
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'Research note on when it takes effect: TextInputMenuAgent
     restart or logout; not tested.'
@@ -746,7 +746,7 @@ input.smart_zoom:
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 input.standard_function_keys:
   summary: Use F1, F2 and the other top-row keys as standard function
@@ -836,7 +836,7 @@ input.tap_to_click:
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'The same key sits in two domains, built-in and Magic
     Trackpad. Older guides also write -currentHost com.apple.mouse.tapBehavior;
@@ -874,7 +874,7 @@ input.three_finger_drag:
   needs: []
   lockout_risk: false
   where: System Settings > Accessibility
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'The same key sits in two domains plus a -currentHost
     copy. Shares the Dragging style menu with input.trackpad_tap_drag.
@@ -954,7 +954,8 @@ input.trackpad_tap_drag:
   needs: []
   lockout_risk: false
   where: System Settings > Accessibility
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
-  notes: 'Written in both trackpad domains. Research note on when
-    it takes effect: logout (reported).'
+  notes: 'Written in the built-in trackpad domain only; a Bluetooth
+    trackpad keeps its own copy. Research note on when it takes effect:
+    logout (reported).'
