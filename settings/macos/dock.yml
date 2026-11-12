@@ -1,0 +1,43 @@
+---
+dock.position:
+  summary: Which edge of the screen the Dock sits on.
+  scope: user
+  route: defaults
+  values: [left, bottom, right]
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.dock, key: orientation, type: string}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Position on screen
+  proven_on: {}
+  not_yet_reason: ""
+dock.tile_size:
+  summary: How big the Dock icons are, in points.
+  scope: user
+  route: defaults
+  values: {type: int, min: 16, max: 128}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.dock, key: tilesize, type: float}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Size
+  proven_on: {}
+  not_yet_reason: ""
+dock.show_recents:
+  summary: Whether the Dock shows suggested and recent apps in their own section.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.dock, key: show-recents, type: bool}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Show suggested and recent apps in Dock
+  proven_on: {}
+  not_yet_reason: ""

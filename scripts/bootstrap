@@ -1,0 +1,105 @@
+#!/bin/bash
+set -euo pipefail
+
+uv_version=0.13.4
+uv_sha256=e0b1d4743ce64c55d9f0f4a444afa6b81125680070ee04e853fcd0f6c1ebf8f1
+python_version=3.13.15
+
+root=$(cd "$(dirname "$0")/.." && pwd)
+local_dir=$root/.local
+downloads=$local_dir/downloads
+wheels=$local_dir/wheels
+venv=$local_dir/venv
+collections=$local_dir/collections
+export ANSIBLE_CONFIG=$root/ansible.cfg
+
+if [ "$(uname -s)" != Darwin ] || [ "$(uname -m)" != arm64 ]; then
+  echo "This needs an Apple Silicon Mac. Every pinned download is an arm64 macOS build." >&2
+  exit 1
+fi
+
+fetch() {
+  local url=$1 file=$2 sha256=$3
+  if [ ! -f "$file" ]; then
+    curl --fail --silent --show-error --location --proto '=https' --retry 3 --max-time 300 --output "$file.part" "$url"
+    mv "$file.part" "$file"
+  fi
+  if ! printf '%s  %s\n' "$sha256" "$file" | shasum -a 256 -c --status; then
+    rm -f "$file"
+    echo "$file did not match its pinned SHA-256 and was deleted. Run scripts/bootstrap again to download it again." >&2
+    exit 1
+  fi
+  echo "OK $(basename "$file")"
+}
+
+wheel_pins() {
+  awk '
+    function project(name) { name = tolower(name); gsub(/[._]/, "-", name); return name }
+    FNR == NR { split($1, pin, "=="); sha256[project(pin[1])] = substr($2, 15); next }
+    {
+      file = $1; sub(/.*\//, "", file); split(file, part, "-"); name = project(part[1])
+      if (!(name in sha256)) { print "requirements/ansible-urls.txt: " file " has no hash in requirements/ansible.txt" > "/dev/stderr"; bad = 1; exit }
+      print $1, file, sha256[name]; delete sha256[name]
+    }
+    END {
+      if (!bad) for (name in sha256) { print "requirements/ansible.txt: " name " has no URL in requirements/ansible-urls.txt" > "/dev/stderr"; bad = 1 }
+      exit bad
+    }
+  ' "$root/requirements/ansible.txt" "$root/requirements/ansible-urls.txt"
+}
+
+rebuild_unless_stamped() {
+  local dir=$1 stamp=$2
+  shift 2
+  [ "$(cat "$dir/.bootstrap-stamp" 2>/dev/null)" = "$stamp" ] && return 0
+  rm -rf "$dir"
+  "$@"
+  printf '%s\n' "$stamp" >"$dir/.bootstrap-stamp"
+}
+
+install_venv() {
+  "$python" -I -m venv "$venv"
+  "$venv/bin/python" -I -m pip install --isolated --disable-pip-version-check --no-cache-dir --quiet \
+    --no-index --find-links "$wheels" --require-hashes --no-deps --only-binary :all: -r "$root/requirements/ansible.txt"
+}
+
+install_collections() {
+  "$venv/bin/ansible-galaxy" collection install --offline --no-deps -p "$collections" "${collection_files[@]}"
+}
+
+mkdir -p "$downloads" "$wheels" "$local_dir/uv" "$local_dir/logs"
+
+fetch "https://github.com/astral-sh/uv/releases/download/$uv_version/uv-aarch64-apple-darwin.tar.gz" "$downloads/uv-aarch64-apple-darwin.tar.gz" "$uv_sha256"
+tar -xzf "$downloads/uv-aarch64-apple-darwin.tar.gz" -C "$local_dir/uv" --strip-components 1 uv-aarch64-apple-darwin/uv
+uv=$local_dir/uv/uv
+
+"$uv" python install "$python_version" --no-bin --no-config --no-cache
+python=$("$uv" python find "$python_version" --managed-python --no-config --no-cache)
+
+pins=$(wheel_pins)
+while read -r url file sha256; do
+  fetch "$url" "$wheels/$file" "$sha256"
+done <<<"$pins"
+rebuild_unless_stamped "$venv" "$python $(shasum -a 256 <"$root/requirements/ansible.txt")" install_venv
+
+collection_files=()
+while read -r _ hash url; do
+  file=$downloads/${url##*/}
+  fetch "$url" "$file" "${hash#--hash=sha256:}"
+  collection_files+=("$file")
+done <"$root/requirements/collections.txt"
+rebuild_unless_stamped "$collections" "$(shasum -a 256 <"$root/requirements/collections.txt")" install_collections
+
+echo
+"$venv/bin/ansible-playbook" --version
+cat <<EOF
+
+Ansible is installed in $local_dir. Outside the checkout, the install keeps only Python $python_version, in $(dirname "$(dirname "$python")").
+Next, copy the example profile and edit its account names:
+
+  cd '$root' && cp -R inventory/example .local/inventory
+
+Then run:
+
+  .local/venv/bin/ansible-playbook playbooks/site.yml -K
+EOF

@@ -1,0 +1,26 @@
+summary: The Dock moves to the left at size 32 with recents hidden, and a second run changes nothing.
+level: fast
+setup:
+  - defaults delete com.apple.dock orientation || true
+  - defaults delete com.apple.dock tilesize || true
+  - defaults delete com.apple.dock show-recents || true
+profile:
+  default_settings:
+    dock.position: left
+    dock.tile_size: 32
+    dock.show_recents: false
+runs:
+  - name: check
+    args: [--check]
+    exit: 0
+    recap: {changed: 3, failed: 0}
+  - name: apply
+    exit: 0
+    recap: {changed: 4, failed: 0}
+  - name: apply-again
+    exit: 0
+    recap: {changed: 0, failed: 0}
+reads:
+  - {domain: com.apple.dock, key: orientation, type: string, value: left}
+  - {domain: com.apple.dock, key: tilesize, type: float, value: 32}
+  - {domain: com.apple.dock, key: show-recents, type: boolean, value: false}

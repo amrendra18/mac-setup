@@ -1,0 +1,341 @@
+#!/bin/sh
+''':'
+root=$(cd "$(dirname "$0")/.." && pwd)
+if [ ! -x "$root/.local/venv/bin/python" ]; then
+  echo "doctor: $root/.local/venv is missing. Run scripts/bootstrap first." >&2
+  exit 3
+fi
+exec "$root/.local/venv/bin/python" -I "$0" "$@"
+'''
+
+import argparse
+import datetime
+import getpass
+import json
+import os
+import platform
+import plistlib
+import re
+import shlex
+import subprocess
+import sys
+import time
+from dataclasses import dataclass, field
+from pathlib import Path
+
+import yaml
+
+ROOT = Path(__file__).resolve().parent.parent
+JOURNEYS = ROOT / "verify" / "journeys"
+FEATURES = ROOT / "verify" / "features"
+BIN = ROOT / ".local" / "venv" / "bin"
+HOST = "verify-mac"
+ENV = {
+    **os.environ,
+    "ANSIBLE_CONFIG": str(ROOT / "ansible.cfg"),
+    "ANSIBLE_NOCOLOR": "1",
+    "ANSIBLE_FORCE_COLOR": "0",
+    "ANSIBLE_STDOUT_CALLBACK": "ansible.builtin.default",
+}
+PROVEN, FAILED, USAGE, NOT_READY = 0, 1, 2, 3
+PLIST_TYPES = {bool: "boolean", int: "integer", float: "float", str: "string", list: "array",
+               dict: "dictionary", bytes: "data", datetime.datetime: "date"}
+FIELDS = {
+    "journey": ({"summary", "runs"}, {"level", "playbook", "profile", "setup", "cleanup", "reads"}),
+    "run": ({"name", "exit"}, {"args", "recap"}),
+    "read": ({"domain", "key"}, {"type", "value", "absent", "account", "host"}),
+}
+RECAP = re.compile(r"^(\S+)\s*:\s*((?:\w+=\d+\s*)+)$", re.M)
+
+
+class JourneyError(Exception):
+    pass
+
+
+@dataclass
+class Run:
+    name: str
+    exit: int
+    args: list = field(default_factory=list)
+    recap: dict = field(default_factory=dict)
+
+
+@dataclass
+class Read:
+    domain: str
+    key: str
+    type: str = ""
+    value: object = None
+    absent: bool = False
+    account: str = ""
+    host: str = ""
+
+
+@dataclass
+class Journey:
+    name: str
+    summary: str
+    runs: list
+    level: str = "fast"
+    playbook: str = "playbooks/site.yml"
+    profile: dict = field(default_factory=dict)
+    setup: list = field(default_factory=list)
+    cleanup: list = field(default_factory=list)
+    reads: list = field(default_factory=list)
+
+
+def checked(kind, data, where):
+    if not isinstance(data, dict):
+        raise JourneyError(f"{where}: expected a mapping")
+    required, optional = FIELDS[kind]
+    missing = required - data.keys()
+    unknown = data.keys() - required - optional
+    if missing or unknown:
+        raise JourneyError(f"{where}: missing {sorted(missing)}, unknown {sorted(unknown)}")
+    return data
+
+
+def load_journey(path):
+    where = str(path.relative_to(ROOT))
+    data = checked("journey", yaml.safe_load(path.read_text()), where)
+    journey = Journey(name=path.stem, **{**data, "runs": [], "reads": []})
+    journey.runs = [Run(**checked("run", r, f"{where} run {i + 1}")) for i, r in enumerate(data["runs"])]
+    journey.reads = [Read(**checked("read", r, f"{where} read {i + 1}")) for i, r in enumerate(data.get("reads", []))]
+    if journey.level not in ("fast", "full"):
+        raise JourneyError(f"{where}: level must be fast or full")
+    if not journey.runs or not all(isinstance(r.exit, int) and isinstance(r.args, list) for r in journey.runs):
+        raise JourneyError(f"{where}: needs at least one run, each with an integer exit and a list of args")
+    if not isinstance(journey.profile, dict) or not all(isinstance(c, str) for c in journey.setup + journey.cleanup):
+        raise JourneyError(f"{where}: profile must be a mapping, and setup and cleanup lists of shell commands")
+    for read in journey.reads:
+        if read.absent == bool(read.type) or (read.type and read.value is None):
+            raise JourneyError(f"{where}: read {read.domain} {read.key} needs either type and value, or absent: true")
+    if not (FEATURES / f"{journey.name}.md").is_file():
+        raise JourneyError(f"{where}: verify/features/{journey.name}.md is missing")
+    return journey
+
+
+def sh(argv, **kwargs):
+    return subprocess.run(argv, cwd=ROOT, env=ENV, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, **kwargs)
+
+
+def pinned(path, pattern):
+    file = ROOT / path
+    return re.findall(pattern, file.read_text(), re.M) if file.is_file() else []
+
+
+def doctor(journeys):
+    checks = []
+
+    def check(name, ok, detail):
+        checks.append({"check": name, "ok": bool(ok), "detail": detail})
+
+    check("macOS", platform.system() == "Darwin", f"{platform.system()} {platform.mac_ver()[0]} {platform.machine()}")
+    check("ansible.cfg", (ROOT / "ansible.cfg").is_file(), "keeps Ansible's files in .local/, so nothing writes ~/.ansible")
+    check("Ansible", (BIN / "ansible-playbook").is_file(), str(BIN / "ansible-playbook"))
+    if not all(c["ok"] for c in checks):
+        return checks
+    core = pinned("requirements/ansible.txt", r"^ansible-core==(\S+)")
+    got = sh([BIN / "ansible-playbook", "--version"]).stdout
+    check("ansible-core", core and f"[core {core[0]}]" in got, f"pinned {core}, installed {got.splitlines()[:1]}")
+    collections = pinned("requirements/collections.txt", r"^([a-z0-9_]+)\.([a-z0-9_]+)==(\S+)")
+    check("collection pins", collections, "requirements/collections.txt holds NAMESPACE.NAME==VERSION lines")
+    listed = subprocess.run([BIN / "ansible-galaxy", "collection", "list", "--format", "json"], cwd=ROOT, env=ENV,
+                            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True).stdout
+    installed = {name: info["version"] for path in json.loads(listed or "{}").values() for name, info in path.items()}
+    for ns, name, version in collections:
+        check(f"{ns}.{name}", installed.get(f"{ns}.{name}") == version, f"pinned {version}, installed {installed.get(f'{ns}.{name}')}")
+    for journey in journeys:
+        check(f"{journey.name} playbook", (ROOT / journey.playbook).is_file(), journey.playbook)
+    if any(read.account and read.account != getpass.getuser() for journey in journeys for read in journey.reads):
+        check("sudo", sh(["sudo", "-n", "true"]).returncode == 0, "reads as another account need password-free sudo")
+    return checks
+
+
+def write_inventory(folder, journey, profile_file):
+    host_vars = folder / "host_vars" / HOST
+    host_vars.mkdir(parents=True)
+    hosts = {"macs": {"hosts": {HOST: {"ansible_connection": "local",
+                                       "ansible_python_interpreter": "{{ ansible_playbook_python }}"}}}}
+    (folder / "hosts.yml").write_text(yaml.safe_dump(hosts, sort_keys=False))
+    profile = host_vars / "profile.yml"
+    if profile_file:
+        profile.write_bytes(profile_file.read_bytes())
+    else:
+        profile.write_text(yaml.safe_dump(journey.profile, sort_keys=False))
+    return folder
+
+
+def plain(value):
+    if isinstance(value, bytes):
+        return value.hex()
+    if isinstance(value, datetime.datetime):
+        return value.isoformat()
+    if isinstance(value, list):
+        return [plain(v) for v in value]
+    if isinstance(value, dict):
+        return {k: plain(v) for k, v in value.items()}
+    return value
+
+
+def read_all(reads):
+    exports = {}
+    results = []
+    for read in reads:
+        source = (read.account, read.host, read.domain)
+        if source not in exports:
+            argv = ["defaults"] + (["-currentHost"] if read.host else []) + ["export", read.domain, "-"]
+            if read.account and read.account != getpass.getuser():
+                argv = ["sudo", "-n", "-u", read.account] + argv
+            out = subprocess.run(argv, capture_output=True)
+            exports[source] = plistlib.loads(out.stdout) if out.returncode == 0 else None
+        values = exports[source]
+        row = {"domain": read.domain, "key": read.key, "account": read.account or getpass.getuser(), "host": read.host}
+        if values is None:
+            row["error"] = "defaults export failed"
+        elif read.key not in values:
+            row["absent"] = True
+        else:
+            row.update(type=PLIST_TYPES.get(type(values[read.key]), "unknown"), value=plain(values[read.key]))
+        results.append(row)
+    return results
+
+
+def read_problems(reads, got):
+    problems = []
+    for read, row in zip(reads, got):
+        want = {"absent": True} if read.absent else {"type": read.type, "value": read.value}
+        actual = {k: row[k] for k in ("absent", "type", "value", "error") if k in row}
+        if actual != want:
+            problems.append(f"read {read.domain} {read.key} as {row['account']}: got {actual}, expected {want}")
+    return problems
+
+
+def run_steps(kind, commands, log):
+    with log.open("a") as out:
+        for i, command in enumerate(commands, 1):
+            done = sh(["/bin/sh", "-c", command])
+            out.write(f"$ {command}\n{done.stdout}exit {done.returncode}\n\n")
+            if done.returncode != 0:
+                return f"{kind} step {i} exited {done.returncode}"
+    return ""
+
+
+def run_journey(journey, evidence, profile_file):
+    logs, reads = evidence / "logs", evidence / "reads"
+    inventory = write_inventory(evidence / "inventory" / journey.name, journey, profile_file)
+    result = {"feature": journey.name, "profile": str(profile_file or f"verify/journeys/{journey.name}.yml"), "runs": []}
+    failure = run_steps("setup", journey.setup, logs / f"{journey.name}-setup.txt")
+    before = read_all(journey.reads)
+    (reads / f"{journey.name}-before.json").write_text(json.dumps(before, indent=2))
+    for run in [] if failure else journey.runs:
+        argv = [str(BIN / "ansible-playbook"), "-i", str(inventory), journey.playbook, *run.args]
+        started = time.monotonic()
+        done = sh(argv)
+        seconds = round(time.monotonic() - started, 2)
+        (logs / f"{journey.name}-{run.name}.txt").write_text(f"$ {shlex.join(argv)}\n{done.stdout}exit {done.returncode}\n")
+        recaps = {host: dict(pair.split("=") for pair in counts.split()) for host, counts in RECAP.findall(done.stdout)}
+        recap = {k: int(v) for k, v in recaps.get(HOST, {}).items()}
+        problems = [] if done.returncode == run.exit else [f"exit {done.returncode}, expected {run.exit}"]
+        problems += [f"{k}={recap.get(k, 'missing')}, expected {v}" for k, v in run.recap.items() if recap.get(k) != v]
+        result["runs"].append({"run": run.name, "exit": done.returncode, "recap": recap, "seconds": seconds,
+                               "expected": {"exit": run.exit, "recap": run.recap}, "problems": problems})
+        if problems:
+            failure = f"{run.name} run: {'; '.join(problems)}"
+            break
+    after = read_all(journey.reads)
+    (reads / f"{journey.name}-after.json").write_text(json.dumps(after, indent=2))
+    if not failure:
+        failure = "; ".join(read_problems(journey.reads, after))
+    cleanup_failure = run_steps("cleanup", journey.cleanup, logs / f"{journey.name}-cleanup.txt")
+    failure = failure or cleanup_failure
+    result.update(status="failed" if failure else "proven", reason=failure, reads_unchanged=before == after)
+    return result
+
+
+def git(*args):
+    done = subprocess.run(["git", "-C", str(ROOT), *args], capture_output=True, text=True)
+    return done.stdout.strip() if done.returncode == 0 else None
+
+
+def new_evidence_folder():
+    base = ROOT / ".local" / "verify"
+    stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    folder, n = base / stamp, 1
+    while folder.exists():
+        n += 1
+        folder = base / f"{stamp}-{n}"
+    for sub in ("logs", "reads", "inventory"):
+        (folder / sub).mkdir(parents=True)
+    return folder
+
+
+def write_summary(evidence, summary):
+    (evidence / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    lines = [f"# Verify run {evidence.name}", "",
+             f"Level {summary['level']}, exit {summary['exit']}, macOS {summary['macos']}, commit {summary['commit'] or 'none'}"
+             f"{' with uncommitted changes' if summary['dirty'] else ''}.", "",
+             "| # | Doctor check | Ready | Detail |", "| --- | --- | --- | --- |"]
+    lines += [f"| {i} | {c['check']} | {'yes' if c['ok'] else 'no'} | {c['detail']} |" for i, c in enumerate(summary["doctor"], 1)]
+    lines += ["", "| # | Feature | Result | Reason | Reads before and after |", "| --- | --- | --- | --- | --- |"]
+    lines += [f"| {i} | {r['feature']} | {r['status']} | {r['reason'] or 'none'} | {'equal' if r['reads_unchanged'] else 'different'} |"
+              for i, r in enumerate(summary["features"], 1)]
+    for r in summary["features"]:
+        lines += ["", f"## {r['feature']}", "", f"Profile: `{r['profile']}`.", "",
+                  "| # | Run | Exit | Recap | Seconds | Problems |", "| --- | --- | --- | --- | --- | --- |"]
+        lines += [f"| {i} | {run['run']} | {run['exit']} | {' '.join(f'{k}={v}' for k, v in run['recap'].items())} | "
+                  f"{run['seconds']} | {'; '.join(run['problems']) or 'none'} |" for i, run in enumerate(r["runs"], 1)]
+    (evidence / "summary.md").write_text("\n".join(lines) + "\n")
+
+
+def main():
+    names = sorted(p.stem for p in JOURNEYS.glob("*.yml"))
+    parser = argparse.ArgumentParser(
+        prog="scripts/verify",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="Prove mac-setup's features on the Mac this checkout sits on. It changes this account's real settings.",
+        epilog=f"features: {', '.join(names) or 'none'}\nmap: verify/features/README.md\n"
+               "exit codes: 0 every selected feature proven, 1 a feature failed, 2 usage error, 3 the doctor found the Mac not ready\n"
+               "evidence: .local/verify/UTCTIME/ with summary.json, summary.md, logs/, reads/ and inventory/")
+    parser.add_argument("level", nargs="?", default="fast", choices=["fast", "full"],
+                        help="fast runs the fast journeys, full runs every journey")
+    parser.add_argument("--feature", choices=names, metavar="NAME", help="run only this journey")
+    parser.add_argument("--profile", type=Path, metavar="FILE",
+                        help="replace the journey's profile with FILE, such as a broken test input; needs --feature")
+    args = parser.parse_args()
+    if args.profile and not args.feature:
+        parser.error("--profile needs --feature")
+    if args.profile and not args.profile.is_file():
+        parser.error(f"--profile {args.profile} is not a file")
+    try:
+        journeys = [load_journey(JOURNEYS / f"{name}.yml") for name in names]
+    except (JourneyError, TypeError, yaml.YAMLError) as error:
+        print(f"usage error: {error}", file=sys.stderr)
+        return USAGE
+    if args.feature:
+        selected = [j for j in journeys if j.name == args.feature]
+    else:
+        selected = [j for j in journeys if args.level == "full" or j.level == "fast"]
+
+    evidence = new_evidence_folder()
+    summary = {"level": args.level, "feature": args.feature, "macos": platform.mac_ver()[0],
+               "commit": git("rev-parse", "HEAD"), "dirty": bool(git("status", "--porcelain")),
+               "started": evidence.name, "doctor": doctor(selected), "features": []}
+    if not all(c["ok"] for c in summary["doctor"]):
+        for c in summary["doctor"]:
+            if not c["ok"]:
+                print(f"not ready  {c['check']}: {c['detail']}")
+        summary["exit"] = NOT_READY
+    else:
+        for journey in selected:
+            result = run_journey(journey, evidence, args.profile and args.profile.resolve())
+            summary["features"].append(result)
+            print(f"{result['status']:<7}{journey.name}" + (f": {result['reason']}" if result["reason"] else ""))
+        summary["exit"] = PROVEN if all(r["status"] == "proven" for r in summary["features"]) else FAILED
+    write_summary(evidence, summary)
+    print(evidence)
+    return summary["exit"]
+
+
+if __name__ == "__main__":
+    sys.exit(main())

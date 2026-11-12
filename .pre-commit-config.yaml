@@ -1,0 +1,15 @@
+minimum_pre_commit_version: "3.2.0"
+default_install_hook_types:
+  - pre-commit
+  - commit-msg
+  - pre-push
+repos:
+  - repo: "ssh://git@github.com/amrendra18/first-commit"
+    rev: "5c71eadc2ad761161dbb223831b761dc82ad6fb8"
+    hooks:
+      - id: first-commit-staged
+      - id: first-commit-message
+      - id: first-commit-push
+      - id: first-commit-setup
+      - id: first-commit-doctor
+      - id: first-commit-check

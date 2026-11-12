@@ -1,0 +1,7 @@
+.local/
+PLAN.md
+BLOCKED.md
+.DS_Store
+__pycache__/
+.ansible/
+.claude/settings.local.json

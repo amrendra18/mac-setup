@@ -1,0 +1,8 @@
+---
+- name: "Set {{ macos_defaults_write.id }}"
+  community.general.osx_defaults:
+    domain: "{{ macos_defaults_write.domain }}"
+    key: "{{ macos_defaults_write.key }}"
+    type: "{{ macos_defaults_write.type }}"
+    value: "{{ macos_defaults_write.value }}"
+  notify: "{{ macos_defaults_restarts[macos_defaults_write.takes_effect] | default([]) }}"

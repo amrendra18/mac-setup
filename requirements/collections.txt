@@ -1,0 +1,1 @@
+community.general==13.5.0 --hash=sha256:54598287e0ea0504aee2d32c884208ddf26f3ac41e0b4e773ff514af210787c4 https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/artifacts/community-general-13.5.0.tar.gz

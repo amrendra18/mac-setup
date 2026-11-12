@@ -1,0 +1,6 @@
+---
+# Test input, broken on purpose: macOS offers no "middle" Dock position.
+default_settings:
+  dock.position: middle
+  dock.tile_size: 32
+  dock.show_recents: false

@@ -1,0 +1,232 @@
+#!/bin/bash
+set -uo pipefail
+
+root=$(cd "$(dirname "$0")/.." && pwd)
+cd "$root" || exit 2
+bin=$root/.local/venv/bin
+words=$root/.local/private-words.txt
+export ANSIBLE_CONFIG=$root/ansible.cfg ANSIBLE_NOCOLOR=1 ANSIBLE_FORCE_COLOR=0 ANSIBLE_STDOUT_CALLBACK=ansible.builtin.default
+
+usage() {
+  cat <<'EOF'
+usage: scripts/check [fast|full]
+
+fast  yamllint, playbook syntax, Python unit tests in tests/modules/, every broken
+      test input in tests/inputs/ (each must stop in the profile check with exit 2
+      and changed=0, run with --check), the structure rules, the private-word scan
+      and gitleaks. It changes no settings.
+full  fast, then tests/test_reference.py when it exists, and ansible-lint when
+      requirements/dev.txt pins it.
+
+Needs scripts/bootstrap's .local/venv, the dev tools from requirements/dev.txt in it,
+gitleaks on PATH, and the ignored word list .local/private-words.txt (one word per line).
+Install the dev tools from their pinned direct URLs, without the PyPI index:
+  mkdir -p .local/wheels && (cd .local/wheels && xargs -n 1 curl --fail --silent --show-error --location --remote-name <../../requirements/dev-urls.txt)
+  .local/venv/bin/python -I -m pip install --isolated --no-index --find-links .local/wheels --no-deps --require-hashes --only-binary :all: -r requirements/dev.txt
+
+exit codes: 0 every check held, 1 a check failed, 2 usage error
+EOF
+}
+
+case "$#:${1:-fast}" in
+  0:fast | 1:fast | 1:full) level=${1:-fast} ;;
+  1:-h | 1:--help) usage; exit 0 ;;
+  *) usage >&2; exit 2 ;;
+esac
+
+work=$(mktemp -d "${TMPDIR:-/tmp}/mac-setup-check.XXXXXX") || exit 2
+trap 'rm -rf "$work"' EXIT
+failed=()
+
+step() {
+  local name=$1 out
+  shift
+  if out=$("$@" 2>&1); then
+    printf 'ok    %s\n' "$name"
+    [ -z "$out" ] || printf '%s\n' "$out" | sed 's/^/      /'
+  else
+    printf 'FAIL  %s\n' "$name"
+    printf '%s\n' "$out" | sed 's/^/      /'
+    failed+=("$name")
+  fi
+}
+
+need() {
+  local missing=0 path
+  for path in "$@"; do
+    [ -e "$path" ] || { echo "missing $path"; missing=1; }
+  done
+  return $missing
+}
+
+candidates() {
+  git ls-files -z --cached --others --exclude-standard | while IFS= read -r -d '' f; do
+    [ -f "$f" ] && printf '%s\0' "$f"
+  done
+}
+
+yaml_lint() {
+  need "$bin/yamllint" .yamllint || { echo "install the dev tools, see scripts/check --help"; return 1; }
+  candidates | grep -zE '\.(yml|yaml)$|^\.yamllint$' | xargs -0 "$bin/yamllint" --strict --config-file .yamllint
+}
+
+syntax() {
+  need "$bin/ansible-playbook" ansible.cfg inventory/example || return 1
+  local playbook found=0 bad=0
+  for playbook in playbooks/*.yml; do
+    [ -f "$playbook" ] || continue
+    found=1
+    "$bin/ansible-playbook" -i inventory/example --syntax-check "$playbook" >"$work/syntax.txt" 2>&1 || { cat "$work/syntax.txt"; bad=1; }
+  done
+  [ $found = 1 ] || { echo "no playbooks/*.yml"; return 1; }
+  return $bad
+}
+
+unit_tests() {
+  "$bin/python" -I -m unittest discover -s tests/modules -t tests/modules -p 'test_*.py' 2>&1
+}
+
+write_inventory() {
+  local folder=$1 profile=$2
+  mkdir -p "$folder/host_vars/verify-mac"
+  cat >"$folder/hosts.yml" <<'EOF'
+macs:
+  hosts:
+    verify-mac:
+      ansible_connection: local
+      ansible_python_interpreter: "{{ ansible_playbook_python }}"
+EOF
+  cp "$profile" "$folder/host_vars/verify-mac/profile.yml"
+}
+
+test_inputs() {
+  need "$bin/ansible-playbook" ansible.cfg playbooks/site.yml || return 1
+  local input n=0 bad=0 out code recap stopped problems
+  while IFS= read -r -d '' input; do
+    n=$((n + 1))
+    write_inventory "$work/inputs/$n" "$input"
+    out=$work/inputs/$n/run.txt
+    "$bin/ansible-playbook" -i "$work/inputs/$n" playbooks/site.yml --check >"$out" 2>&1
+    code=$?
+    recap=$(grep -E '^verify-mac +:' "$out" | tail -1)
+    stopped=$(awk '/^TASK \[/ { task = $0 } /^fatal: \[verify-mac\]/ { print task; exit }' "$out")
+    problems=$(sed -n 's/^  \([^ #][^:]*\):.*/\1: /p' "$input" | awk '
+      NR == FNR { id[++ids] = $0; next }
+      /^fatal: \[verify-mac\]/ { f = 1 }
+      f && !NF { exit }
+      f { k = 0; for (i = 1; i <= ids; i++) k += index($0, id[i]) > 0; if (k) { lines++; named += k } }
+      END { print (lines == named ? lines + 0 : "several on one line") }' - "$out")
+    if [ $code = 2 ] && [[ $recap == *" changed=0 "* ]] && [[ $stopped == "TASK [profile : "* ]] && [[ $problems == [1-9]* ]]; then
+      echo "$input stopped at exit 2 in ${stopped%% \**}, one line per problem, $problems in all"
+    else
+      echo "$input: exit $code, expected 2; recap '${recap:-none}'; failed task '${stopped:-none}', expected one in the profile role; problem lines '$problems', expected one per problem"
+      sed 's/^/  /' "$out"
+      bad=1
+    fi
+  done < <(find tests/inputs -type f \( -name '*.yml' -o -name '*.yaml' \) -print0 | sort -z)
+  [ $n -gt 0 ] || { echo "no test inputs in tests/inputs/"; return 1; }
+  return $bad
+}
+
+structure() {
+  local bad=0 hits
+  if [ -d roles ]; then
+    hits=$(grep -rnw sudo roles) && { echo "sudo inside roles/:"; echo "$hits"; bad=1; }
+  fi
+  hits=$(candidates | grep -zvE '\.md$|^scripts/check$' | xargs -0 grep -nIiE 'tccutil +reset|TCC\.db|csrutil +disable') &&
+    { echo "privacy database or System Integrity Protection change:"; echo "$hits"; bad=1; }
+  need "$bin/python" || return 1
+  candidates | grep -zE '^(roles|playbooks|inventory)/.*\.ya?ml$' | "$bin/python" -I -c '
+import sys, yaml
+
+class Loader(yaml.SafeLoader):
+    pass
+
+Loader.add_multi_constructor("!", lambda loader, suffix, node: None)
+
+def keys(node, path):
+    if isinstance(node, dict):
+        for key, value in node.items():
+            yield key, path, value
+            yield from keys(value, path + [key])
+    elif isinstance(node, list):
+        for i, value in enumerate(node):
+            yield from keys(value, path + [i])
+
+bad = 0
+for name in sys.stdin.read().split("\0"):
+    if not name:
+        continue
+    for key, path, value in keys(yaml.load(open(name), Loader), []):
+        in_role = name.startswith("roles/")
+        if (key == "ansible_become" and value is not False) or (
+            key == "become" and (in_role or (value is not False and (name, path) != ("playbooks/site.yml", [1])))
+        ):
+            print(f"{name}: {key}: {value} at {path}; admin rights belong only in play 2 of playbooks/site.yml")
+            bad = 1
+sys.exit(bad)
+' || bad=1
+  return $bad
+}
+
+private_words() {
+  need "$words" || { echo "main writes this ignored file before M0"; return 1; }
+  grep -vE '^[[:space:]]*(#|$)' "$words" >"$work/words.txt"
+  [ -s "$work/words.txt" ] || { echo "$words holds no words"; return 1; }
+  local hits
+  if hits=$(candidates | xargs -0 grep -nIiF -f "$work/words.txt" | cut -d: -f1-2); then
+    echo "private words at these lines (the words are not printed):"
+    echo "$hits"
+    return 1
+  fi
+}
+
+secrets() {
+  command -v gitleaks >/dev/null || { echo "gitleaks is not on PATH"; return 1; }
+  mkdir -p "$work/tree"
+  candidates | rsync -a --from0 --files-from=- . "$work/tree/"
+  gitleaks dir --no-banner --redact --verbose --log-level warn "$work/tree" || return 1
+  if git rev-parse --verify --quiet HEAD >/dev/null; then
+    gitleaks git --no-banner --redact --verbose --log-level warn . || return 1
+  fi
+}
+
+reference_test() {
+  "$bin/python" -I tests/test_reference.py
+}
+
+ansible_lint() {
+  need "$bin/ansible-lint" || { echo "install the dev tools, see scripts/check --help"; return 1; }
+  PATH=$bin:$PATH "$bin/ansible-lint" --offline --strict playbooks roles
+}
+
+step yamllint yaml_lint
+step "playbook syntax" syntax
+if [ -n "$(find tests/modules -name 'test_*.py' 2>/dev/null)" ]; then
+  step "unit tests" unit_tests
+else
+  echo "skip  unit tests: tests/modules/ has none yet"
+fi
+step "broken test inputs" test_inputs
+step "structure rules" structure
+step "private words" private_words
+step "secret scan" secrets
+if [ "$level" = full ]; then
+  if [ -f tests/test_reference.py ]; then
+    step "reference test" reference_test
+  else
+    echo "skip  reference test: tests/test_reference.py arrives in M2"
+  fi
+  if grep -qi '^ansible-lint==' requirements/dev.txt 2>/dev/null; then
+    step ansible-lint ansible_lint
+  else
+    echo "skip  ansible-lint: requirements/dev.txt does not pin it"
+  fi
+fi
+
+if [ ${#failed[@]} -eq 0 ]; then
+  echo "check $level: every check held"
+  exit 0
+fi
+echo "check $level: ${#failed[@]} failed: ${failed[*]}"
+exit 1

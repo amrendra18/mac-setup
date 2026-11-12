@@ -1,0 +1,3 @@
+---
+macos_defaults_restarts:
+  dock: [Restart Dock]

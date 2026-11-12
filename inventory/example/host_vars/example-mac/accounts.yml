@@ -1,0 +1,5 @@
+---
+default_settings:
+  dock.position: left
+  dock.tile_size: 32
+  dock.show_recents: false

@@ -1,0 +1,9 @@
+---
+- name: This account
+  hosts: macs
+  become: false
+  gather_facts: false
+  roles:
+    - role: profile
+      tags: [always]
+    - role: macos_defaults

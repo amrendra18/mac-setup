@@ -1,0 +1,57 @@
+#!/bin/bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+usage: scripts/collection-age [--min-days N] [--server URL] [FILE]
+
+Reads each line that starts with NAMESPACE.NAME==VERSION in FILE, default
+requirements/collections.txt, asks Galaxy's v3 API when that version was
+published (its created_at field), and fails when it is younger than N days (default 21).
+--server defaults to https://galaxy.ansible.com.
+
+exit codes: 0 every pin is old enough, 1 a pin is too new or its date could not be read, 2 usage error
+EOF
+}
+
+root=$(cd "$(dirname "$0")/.." && pwd)
+file=$root/requirements/collections.txt
+server=https://galaxy.ansible.com
+min_days=21
+while [ $# -gt 0 ]; do
+  case $1 in
+    --min-days) [[ ${2:-} =~ ^[0-9]+$ ]] || { usage >&2; exit 2; }; min_days=$2; shift 2 ;;
+    --server) [ -n "${2:-}" ] || { usage >&2; exit 2; }; server=${2%/}; shift 2 ;;
+    -h | --help) usage; exit 0 ;;
+    -*) usage >&2; exit 2 ;;
+    *) file=$1; shift ;;
+  esac
+done
+[ -f "$file" ] || { echo "$file is not a file" >&2; exit 2; }
+
+pins=$(grep -oE '^[a-z0-9_]+\.[a-z0-9_]+==[^[:space:]]+' "$file" | sort -u) || true
+[ -n "$pins" ] || { echo "FAIL  no NAMESPACE.NAME==VERSION line in $file"; exit 1; }
+
+now=$(date -u +%s)
+status=0
+for pin in $pins; do
+  namespace=${pin%%.*}
+  rest=${pin#*.}
+  name=${rest%%==*}
+  version=${rest#*==}
+  url=$server/api/v3/plugin/ansible/content/published/collections/index/$namespace/$name/versions/$version/
+  if ! created=$(curl --fail --silent --show-error --location --max-time 60 "$url" | plutil -extract created_at raw -o - -) ||
+    ! published=$(date -j -u -f '%Y-%m-%dT%H:%M:%S' "${created:0:19}" +%s 2>/dev/null); then
+    echo "FAIL  $namespace.$name $version: no created_at date from $url"
+    status=1
+    continue
+  fi
+  days=$(((now - published) / 86400))
+  if [ "$days" -lt "$min_days" ]; then
+    echo "FAIL  $namespace.$name $version published ${created:0:10}, $days days ago, under $min_days"
+    status=1
+  else
+    echo "ok    $namespace.$name $version published ${created:0:10}, $days days ago"
+  fi
+done
+exit $status

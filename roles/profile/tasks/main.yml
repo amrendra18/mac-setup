@@ -1,0 +1,16 @@
+---
+- name: Load the settings reference
+  ansible.builtin.include_vars:
+    dir: "{{ playbook_dir }}/../settings/macos"
+    name: profile_reference
+
+- name: Check the profile
+  ansible.builtin.fail:
+    msg: "{{ profile_errors | join('\n') }}"
+  vars:
+    profile_errors: "{{ default_settings | default({}) | profile_problems(profile_reference) }}"
+  when: profile_errors | length > 0
+
+- name: Build the work list
+  ansible.builtin.set_fact:
+    profile_defaults_writes: "{{ default_settings | default({}) | profile_defaults_writes(profile_reference) }}"
