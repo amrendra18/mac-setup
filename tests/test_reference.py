@@ -70,6 +70,22 @@ NOT_FOR_USERS = re.compile(
     r"|proposal|proposed kind",
     re.I,
 )
+DOC_COUNTS = {
+    "README.md": (
+        r"mac-setup knows (?P<total>\d+) macOS settings\. A run sets (?P<run>\d+) of them, "
+        r"(?P<by_hand>\d+) need your click, and (?P<not_yet>\d+) it cannot set yet\.",
+        r"lists all (?P<total>\d+) settings in four sections",
+    ),
+    "docs/how-it-works.md": (
+        r"The reference holds (?P<total>\d+) entries",
+        r"Of the (?P<total>\d+) entries, (?P<run>\d+) are set by a run, (?P<by_hand>\d+) "
+        r"are on route `by_hand`, and (?P<not_yet>\d+) are on route `not_yet`",
+    ),
+}
+PROVEN_DOC = "README.md"
+PROVEN_COUNT = re.compile(
+    r"(?P<count>\d+) settings are proven on macOS (?P<version>\d+(\.\d+)*)"
+)
 
 
 def _line(value):
@@ -356,6 +372,48 @@ def reference_problems(entries):
         problems += [
             f"{file_name}: {setting_id}: {problem}" for problem in entry_problems(entry)
         ]
+    return problems
+
+
+def doc_count_problems(entries, docs):
+    routes = Counter(entry["route"] for _, _, entry in entries)
+    counts = {
+        "total": len(entries),
+        "run": len(entries) - routes["by_hand"] - routes["not_yet"],
+        "by_hand": routes["by_hand"],
+        "not_yet": routes["not_yet"],
+    }
+    text = {name: " ".join(docs[name].split()) for name in docs}
+    problems = []
+    for file_name, patterns in DOC_COUNTS.items():
+        for pattern in patterns:
+            found = re.search(pattern, text[file_name])
+            if not found:
+                problems.append(f"{file_name}: no sentence matches {pattern!r}")
+                continue
+            problems += [
+                f'{file_name}: "{found.group()}": {name} is {said}, '
+                f"the reference has {counts[name]}"
+                for name, said in found.groupdict().items()
+                if int(said) != counts[name]
+            ]
+    proven = Counter(
+        version for _, _, entry in entries for version in entry["proven_on"]
+    )
+    said = {
+        found["version"]: found for found in PROVEN_COUNT.finditer(text[PROVEN_DOC])
+    }
+    for version in sorted(proven.keys() | said.keys()):
+        if version not in said:
+            problems.append(
+                f"{PROVEN_DOC}: no sentence says how many settings are proven on "
+                f"macOS {version}; the reference has {proven[version]}"
+            )
+        elif int(said[version]["count"]) != proven[version]:
+            problems.append(
+                f'{PROVEN_DOC}: "{said[version].group()}": proven is '
+                f'{said[version]["count"]}, the reference has {proven[version]}'
+            )
     return problems
 
 
@@ -954,6 +1012,65 @@ class FixtureReference(unittest.TestCase):
         )
 
 
+class DocCounts(unittest.TestCase):
+    ENTRIES = [
+        ("a.yml", "a.one", {"route": "defaults", "proven_on": {"27.1": "2026-11-01"}}),
+        ("a.yml", "a.two", {"route": "command", "proven_on": {}}),
+        ("a.yml", "a.three", {"route": "by_hand", "proven_on": {}}),
+        ("a.yml", "a.four", {"route": "not_yet", "proven_on": {}}),
+    ]
+    README = (
+        "mac-setup knows 4 macOS settings. A run sets 2 of them, 1 need your\n"
+        "click, and 1 it cannot set yet. 1 settings are proven on macOS 27.1:\n\n"
+        "The template lists all 4 settings in four sections."
+    )
+    HOW = (
+        "The reference holds 4 entries. Of the 4 entries, 2 are set by a run,\n"
+        "1 are on route `by_hand`, and 1 are on route `not_yet`."
+    )
+
+    def problems(self, readme=README, how=HOW, entries=ENTRIES):
+        return doc_count_problems(
+            entries, {"README.md": readme, "docs/how-it-works.md": how}
+        )
+
+    def test_matching_counts_have_no_problems(self):
+        self.assertEqual(self.problems(), [])
+
+    def test_a_stale_count_names_the_file_sentence_and_both_numbers(self):
+        readme = self.README.replace("1 need your", "3 need your")
+        self.assertEqual(
+            self.problems(readme=readme),
+            [
+                'README.md: "mac-setup knows 4 macOS settings. A run sets 2 of them, '
+                '3 need your click, and 1 it cannot set yet.": by_hand is 3, '
+                "the reference has 1"
+            ],
+        )
+
+    def test_a_missing_sentence_is_named(self):
+        how = self.HOW.replace("The reference holds 4 entries.", "")
+        problems = self.problems(how=how)
+        self.assertEqual(len(problems), 1, problems)
+        self.assertTrue(
+            problems[0].startswith("docs/how-it-works.md: no sentence matches ")
+        )
+
+    def test_a_stale_or_missing_proven_count_is_named(self):
+        entries = [(name, key, dict(entry)) for name, key, entry in self.ENTRIES]
+        entries[1][2]["proven_on"] = {"27.2": "2026-11-02"}
+        readme = self.README.replace("1 settings are proven", "2 settings are proven")
+        self.assertEqual(
+            self.problems(readme=readme, entries=entries),
+            [
+                'README.md: "2 settings are proven on macOS 27.1": proven is 2, '
+                "the reference has 1",
+                "README.md: no sentence says how many settings are proven on "
+                "macOS 27.2; the reference has 1",
+            ],
+        )
+
+
 class Reference(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -1028,6 +1145,11 @@ class Reference(unittest.TestCase):
             + f"; total {len(self.entries)}"
         )
         self.assertEqual(len(self.entries), ENTRY_COUNT)
+
+    def test_doc_counts_match_the_reference(self):
+        docs = {name: (ROOT / name).read_text() for name in DOC_COUNTS}
+        problems = doc_count_problems(self.entries, docs)
+        self.assertEqual(problems, [], "\n" + "\n".join(problems))
 
     def test_tracked_template_matches_the_reference(self):
         tracked = ROOT / template.TEMPLATE

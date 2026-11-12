@@ -57,7 +57,7 @@ The last line says `every check held` and the script exits 0 when every check he
 ## Change one setting
 
 1. Edit the entry in `settings/macos/AREA.yml`. [The settings reference](docs/how-it-works.md#the-settings-reference) gives its fields.
-2. For a new entry, raise `ENTRY_COUNT` in `tests/test_reference.py`. Then update the counts in README.md ("What you get after one run") and in docs/how-it-works.md ("The settings reference").
+2. For a new entry, raise `ENTRY_COUNT` in `tests/test_reference.py`. Then update the counts in README.md ("What you get after one run") and in docs/how-it-works.md ("The settings reference"). `tests/test_reference.py` fails on a stale count and names the sentence. A reworded count sentence also fails; then update its pattern in `DOC_COUNTS` in that file.
 3. Run `scripts/render-template`.
 4. Run `scripts/check full`.
 5. On a Mac set aside for testing, run `scripts/verify fast --feature NAME`. When it proves the setting, add the macOS version and date to `proven_on`, and update the proven count in README.md.

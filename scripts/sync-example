@@ -102,6 +102,7 @@ def dump(data):
 
 def main():
     parser = argparse.ArgumentParser(
+        prog="scripts/sync-example",
         description="Write inventory/example/ with the same settings as a private profile, without personal values.",
         epilog="exit codes: 0 written, 1 a free-text setting needs a neutral value, 2 usage error, 3 not ready",
     )
