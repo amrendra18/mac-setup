@@ -60,7 +60,7 @@ PLIST_TYPES = {
 WRITE_FLAGS = {
     "boolean": lambda v: ["-bool", "true" if v else "false"],
     "integer": lambda v: ["-int", str(v)],
-    "float": lambda v: ["-float", repr(v)],
+    "float": lambda v: [f"<real>{v!r}</real>"],
     "string": lambda v: ["-string", v],
 }
 RESTARTS = {"com.apple.dock": "Dock", "com.apple.finder": "Finder"}
@@ -531,7 +531,10 @@ def saved_value(values, key):
 def save(saves, path):
     if not saves:
         return ""
-    exports = {(s.host, s.domain): export(s.domain, s.host) for s in saves}
+    exports = {
+        source: export(source[1], source[0])
+        for source in {(s.host, s.domain) for s in saves}
+    }
     entries, problems = [], []
     for s in saves:
         values = exports[(s.host, s.domain)]
@@ -578,7 +581,10 @@ def restore(path, log):
                 flags = WRITE_FLAGS[e["type"]](e["value"])
                 run(defaults_argv(e["host"], "write", e["domain"], e["key"], *flags))
         keys = [e for e in entries if "key" in e]
-        now = {(e["host"], e["domain"]): export(e["domain"], e["host"]) for e in keys}
+        now = {
+            source: export(source[1], source[0])
+            for source in {(e["host"], e["domain"]) for e in keys}
+        }
         for e in keys:
             want = {k: e[k] for k in ("absent", "type", "value") if k in e}
             got = saved_value(now[(e["host"], e["domain"])] or {}, e["key"])

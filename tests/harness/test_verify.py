@@ -56,7 +56,7 @@ sys.exit(plan.get("exit", 0))
 
 
 FAKE_DEFAULTS = """#!{python} -I
-import json, os, plistlib, sys
+import json, os, plistlib, struct, sys
 args = sys.argv[1:]
 host = "currentHost" if args[0] == "-currentHost" else ""
 verb, domain, *rest = args[1:] if host else args
@@ -75,8 +75,11 @@ elif verb == "delete":
     if values.pop(rest[0], None) is None:
         sys.exit("The domain/default pair does not exist")
 elif verb == "write":
-    kinds = {{"-bool": lambda t: t in ("true", "yes", "1"), "-int": int, "-float": float, "-string": str}}
-    values[rest[0]] = kinds[rest[1]](rest[2])
+    kinds = {{"-bool": lambda t: t in ("true", "yes", "1"), "-int": int, "-float": lambda t: struct.unpack("f", struct.pack("f", float(t)))[0], "-string": str}}
+    if rest[1].startswith("<real>"):
+        values[rest[0]] = float(rest[1][len("<real>"):-len("</real>")])
+    else:
+        values[rest[0]] = kinds[rest[1]](rest[2])
 json.dump(store, open(path, "w"))
 """
 FAKE_KILLALL = """#!/bin/sh
@@ -422,7 +425,7 @@ class Harness(unittest.TestCase):
         self.store = self.tmp / "store.json"
         self.store.write_text(json.dumps(store))
         self.killed = self.tmp / "killall.txt"
-        self.fail = self.tmp / "fail.txt"
+        self.fail_file = self.tmp / "fail.txt"
         self.verify.DEFAULTS = str(self.bin / "defaults")
         self.verify.KILLALL = str(self.bin / "killall")
         self.verify.CONSOLE = self.store
@@ -430,7 +433,7 @@ class Harness(unittest.TestCase):
             **self.verify.ENV,
             "PATH": f"{self.bin}:{os.environ['PATH']}",
             "FAKE_DEFAULTS_STORE": str(self.store),
-            "FAKE_DEFAULTS_FAIL": str(self.fail),
+            "FAKE_DEFAULTS_FAIL": str(self.fail_file),
             "FAKE_KILLALL_LOG": str(self.killed),
         }
 
@@ -477,6 +480,21 @@ class Harness(unittest.TestCase):
         )
         self.assertFalse(self.saved.exists())
 
+    def test_a_float_is_restored_exactly(self):
+        self.fake_defaults({"|com.apple.dock": {"size": 0.1}})
+        result = self.journey(
+            {
+                "summary": "s",
+                "saves": [{"domain": "com.apple.dock", "key": "size"}],
+                "setup": ["defaults delete com.apple.dock size"],
+                "runs": [{"name": "a", "exit": 0}],
+            },
+            [{"defaults": []}],
+        )
+        self.assertEqual(result["status"], "proven", result["reason"])
+        self.assertEqual(self.stored()["|com.apple.dock"]["size"], 0.1)
+        self.assertFalse(self.saved.exists())
+
     def test_reads_see_the_run_and_cleanup_runs_before_the_restore(self):
         self.fake_defaults({"|com.apple.dock": {"name": "left"}})
         result = self.journey(
@@ -498,6 +516,26 @@ class Harness(unittest.TestCase):
         )
         self.assertEqual(result["status"], "proven", result["reason"])
         self.assertEqual(self.stored()["|com.apple.dock"], {"name": "left"})
+
+    def test_each_saved_domain_is_read_once(self):
+        calls = []
+        real = self.verify.export
+        self.addCleanup(setattr, self.verify, "export", real)
+        self.verify.export = lambda domain, host="": calls.append((host, domain)) or {}
+        saves = self.verify.parse_saves(
+            [
+                {"domain": "com.apple.dock", "key": "a"},
+                {"domain": "com.apple.dock", "key": "b"},
+                {"domain": "com.apple.finder", "key": "c"},
+            ],
+            "test",
+        )
+        self.assertEqual(
+            self.verify.save(saves, self.tmp / "s-journey" / "saved.plist"), ""
+        )
+        self.assertEqual(
+            sorted(calls), [("", "com.apple.dock"), ("", "com.apple.finder")]
+        )
 
     def test_a_journey_with_no_saves_writes_no_save(self):
         self.fake_defaults({})
@@ -596,7 +634,9 @@ class Harness(unittest.TestCase):
     def test_a_failed_restore_keeps_the_save_and_restores_the_other_keys(self):
         self.fake_defaults({"|com.apple.dock": dict(self.SCALARS)})
         result = self.journey(
-            self.scalar_journey(cleanup=[f"echo com.apple.dock/count > {self.fail}"]),
+            self.scalar_journey(
+                cleanup=[f"echo com.apple.dock/count > {self.fail_file}"]
+            ),
             [{}],
         )
         self.assertEqual(result["status"], "failed")
@@ -617,7 +657,7 @@ class Harness(unittest.TestCase):
                 "summary": "s",
                 "saves": [{"domain": "com.apple.dock", "key": "gone"}],
                 "runs": [{"name": "a", "exit": 0}],
-                "cleanup": [f"echo com.apple.dock/gone > {self.fail}"],
+                "cleanup": [f"echo com.apple.dock/gone > {self.fail_file}"],
             },
             [{"defaults": [["com.apple.dock", "gone", "string", "new"]]}],
         )

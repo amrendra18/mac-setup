@@ -19,7 +19,7 @@ One run of `playbooks/site.yml` keeps only the listed apps in the Dock of the ac
 
 Preconditions:
 
-- The Mac is set aside for testing. The run changes the running account's real Dock: the setup saves the Dock and empties its app tiles, the apply leaves only Terminal and Safari, and the harness puts the saved Dock back.
+- The Mac is set aside for testing. The run changes the running account's real Dock: the harness saves the Dock, the setup empties its app tiles, the apply leaves only Terminal and Safari, and the harness puts the saved Dock back.
 - The running account is an admin with password-free sudo, because the harness passes no `-K`.
 - The running account is signed in at the screen, so the Dock runs and its restart reports `changed`.
 - The module finds each app with `mdfind`, and scans `/Applications`, `/System/Applications` and `/System/Applications/Utilities` when Spotlight has not indexed it yet.
