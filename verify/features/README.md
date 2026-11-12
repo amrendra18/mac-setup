@@ -82,9 +82,9 @@ A read's `type` is the name macOS reports: `string`, `integer`, `float`, `boolea
 | # | Feature | Command | Coverage |
 | --- | --- | --- | --- |
 | 1 | [Accounts](./accounts.md) | `scripts/verify fast --feature accounts` | adopt the running account, create or adopt `setuptest1`, its home folder, no password prompt, 0 test password copies |
-| 2 | [Dock basics](./dock-basics.md) | `scripts/verify fast --feature dock-basics` | check run, apply, second run, typed reads of 3 Dock keys, and the planted broken profile |
+| 2 | [Dock basics](./dock-basics.md) | `scripts/verify fast --feature dock-basics` | check run, apply, second run, typed reads of 3 Dock keys, and the planted broken profile, each key restored |
 | 3 | [Per-account settings](./per-account.md) | `scripts/verify fast --feature per-account` | 3 Dock keys written and read as `setuptest1`, the plist owner and mode, second run, `unset` read as absent |
-| 4 | [Refused settings](./refusals.md) | `scripts/verify fast --feature refusals` | a type mismatch refused with exit 2 and one line, the 2 other keys written, the Dock restarted |
+| 4 | [Refused settings](./refusals.md) | `scripts/verify fast --feature refusals` | a type mismatch refused with exit 2 and one line, the 2 other keys written, the Dock restarted, each key restored |
 | 5 | [Example profile check](./example-check.md) | `scripts/verify fast --feature example-check` | the example profile and every reference entry load, and a check run fails nothing and writes nothing |
 | 6 | [Guided click-through](./by-hand.md) | `scripts/verify fast --feature by-hand` | list mode builds 3 items from click-only settings in the profile, opens no page, and changes no Dock or Finder key |
 | 7 | [Dock apps](./dock-apps.md) | `scripts/verify fast --feature dock-apps` | check run, apply with 1 Dock restart, second run, a missing app refused with exit 2, the bundle ids read back, and the saved Dock restored |
