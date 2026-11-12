@@ -123,7 +123,7 @@ finder.new_window:
   needs: []
   lockout_risk: false
   where: Finder > Settings > General > New Finder windows show
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 finder.no_network_ds_store:
   summary: Stop Finder writing .DS_Store files on network shares.
@@ -214,7 +214,7 @@ finder.show_hidden:
   lockout_risk: false
   where: Command-Shift-period in a Finder window; no Settings
     row
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 finder.show_path_bar:
   summary: Show the path bar at the bottom of Finder windows.
@@ -256,7 +256,7 @@ finder.show_recent_tags:
   needs: []
   lockout_risk: false
   where: Finder > Settings > Sidebar > Recent Tags
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 finder.show_sidebar:
   summary: Show the sidebar in new Finder windows.
@@ -270,7 +270,7 @@ finder.show_sidebar:
   needs: []
   lockout_risk: false
   where: Finder > View > Show Sidebar
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 finder.show_status_bar:
   summary: Show the status bar with item count and free space.
@@ -313,7 +313,7 @@ finder.trash_auto_empty:
   lockout_risk: false
   where: Finder > Settings > Advanced > Remove items from the
     Trash after 30 days
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 finder.view:
   summary: View style for folders that have no saved view of their
@@ -332,7 +332,7 @@ finder.view:
   lockout_risk: false
   where: Finder > View > as Icons, List, Columns, Gallery, then
     View Options > Use as Defaults
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 finder.search_view:
   summary: View style for the results of a Finder search.

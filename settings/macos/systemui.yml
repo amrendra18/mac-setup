@@ -14,7 +14,7 @@ appearance.accent_color:
   needs: []
   lockout_risk: false
   where: System Settings > Appearance
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'The stored numbers are common community values, not
     measured. Research note on when it takes effect: open apps
@@ -34,7 +34,7 @@ appearance.highlight_color:
   needs: []
   lockout_risk: false
   where: System Settings > Appearance
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'Only accent and blue are offered, because only the stored
     string for blue was read on a Mac. Research note on when it takes
@@ -139,7 +139,7 @@ appearance.theme:
   needs: []
   lockout_risk: false
   where: System Settings > Appearance
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: A null in the map deletes the key, so both values turn Auto
     off. auto is not measured, so it is not offered yet.
@@ -392,7 +392,7 @@ menu_bar.clock_24_hour:
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'Research note on when it takes effect: killall ControlCenter
     (guess).'
@@ -454,7 +454,7 @@ menu_bar.clock_flash_separators:
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'Research note on when it takes effect: killall ControlCenter
     (guess).'
@@ -470,7 +470,7 @@ menu_bar.clock_seconds:
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'Research note on when it takes effect: killall ControlCenter
     (guess).'
@@ -713,7 +713,7 @@ menu_bar.sound:
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'A test Mac had -currentHost Sound=18 and NSStatusItem
     Visible Sound=1 (measured), which fits 18 meaning always.
@@ -786,7 +786,7 @@ menu_bar.user_switcher:
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'Jamf (Tahoe thread) says UserSwitcher is an integer
     in com.apple.controlcenter and a configuration profile is
@@ -841,7 +841,7 @@ notifications.iphone_sounds:
   needs: []
   lockout_risk: false
   where: System Settings > Notifications
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'Research note on when it takes effect: killall usernoted
     (guess).'
@@ -874,7 +874,7 @@ notifications.show_previews:
   needs: []
   lockout_risk: false
   where: System Settings > Notifications
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'A test Mac had the top-level key set to 2 (measured),
     which fits 2 meaning when unlocked. The other stored numbers
@@ -892,7 +892,7 @@ notifications.summarize:
   needs: []
   lockout_risk: false
   where: System Settings > Notifications
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'Research note on when it takes effect: killall usernoted
     (guess).'
@@ -991,7 +991,7 @@ siri.enabled:
   needs: [click]
   lockout_risk: false
   where: System Settings > Apple Intelligence & Siri
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'Research note on when it takes effect: killall Siri
     (guess). Turning Siri on needs the pane''s setup and a voice
@@ -1296,7 +1296,7 @@ spotlight.improve_search:
   needs: []
   lockout_risk: false
   where: System Settings > Spotlight
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'The stored values 1 on and 2 off are a guess. Research
     note on when it takes effect: unknown.'

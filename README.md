@@ -9,7 +9,7 @@ Status: milestone M2. `scripts/bootstrap` installs mac-setup. The settings refer
 5. It sets each account's Dock apps, a solid black desktop, and the Finder sidebar's favorites and hidden items.
 6. `playbooks/by-hand.yml` walks you through the click-only settings in the profile.
 
-6 settings are proven on macOS 27.2.1: the 3 Dock settings (position, tile size and recents), the Dock apps, the black desktop and Wi-Fi power. Every other setting on a wired route is built and unit-tested but not yet proven on a Mac. The Plan section names the milestone that proves it.
+39 settings are proven on macOS 27.2.1: 17 Dock, hot corner, Mission Control, Stage Manager, widget and window settings, 6 Finder settings, 13 appearance, menu bar, notification, Siri and Spotlight settings, the Dock apps, the black desktop and Wi-Fi power. Every other setting on a wired route is built and unit-tested but not yet proven on a Mac. The Plan section names the milestone that proves it.
 
 mac-setup sets up a Mac from one profile file. You write down the settings you want once, for the Mac and for each account on it. One command then applies them, and running it again changes nothing.
 
@@ -23,7 +23,7 @@ Today that person clicks through System Settings by hand, once per Mac and once 
 
 ## What a run looks like
 
-This section describes the first release. Today a run applies every kind of setting the Status line lists, and only 6 settings are proven. The Install section below gives the steps that work today.
+This section describes the first release. Today a run applies every kind of setting the Status line lists, and 39 settings are proven. The Install section below gives the steps that work today.
 
 ### First run on a fresh Mac
 

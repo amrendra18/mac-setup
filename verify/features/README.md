@@ -90,3 +90,6 @@ A read's `type` is the name macOS reports: `string`, `integer`, `float`, `boolea
 | 7 | [Dock apps](./dock-apps.md) | `scripts/verify fast --feature dock-apps` | check run, apply with 1 Dock restart, second run, a missing app refused with exit 2, the bundle ids read back, and the saved Dock restored |
 | 8 | [Wallpaper](./wallpaper.md) | `scripts/verify fast --feature wallpaper` | check run, apply, second run, and every screen read back as the black picture |
 | 9 | [Apps](./apps.md) | `scripts/verify full --feature apps` | without a VirusTotal key, a check run and an apply each refuse Sublime Text with one line and exit 2, and the scratch Applications folder stays empty |
+| 10 | [Dock area](./area-dock.md) | `scripts/verify fast --feature area-dock` | check run, apply with 1 Dock restart, second run, typed reads of 17 keys, each key restored |
+| 11 | [Finder area](./area-finder.md) | `scripts/verify fast --feature area-finder` | check run, apply with 1 Finder restart, second run, typed reads of 6 Finder keys, each key restored |
+| 12 | [System UI area](./area-systemui.md) | `scripts/verify fast --feature area-systemui` | check run, apply, second run, typed reads of 14 keys for 13 settings, each key restored |

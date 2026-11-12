@@ -114,7 +114,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the Dock restarts
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: An early test applied this write and undid it exactly on macOS 27.2.1.
 
   # dock.magnification: false
@@ -150,7 +150,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the Dock restarts
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # dock.position: left
   #   Which edge of the screen the Dock sits on.
@@ -166,7 +166,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the Dock restarts
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # dock.show_recents: false
   #   Whether the Dock shows suggested and recent apps in their own section.
@@ -203,7 +203,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the Dock restarts
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Code 14 (Quick Note) was measured on a test Mac. Codes 1 to 13 are community knowledge.
   #     macOS 26 shows Apps instead of Launchpad; whether code 11 now opens Apps is not proven.
   #     Dashboard (7) is gone and left out.
@@ -225,7 +225,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the Dock restarts
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Code 14 (Quick Note) was measured on a test Mac. Codes 1 to 13 are community knowledge.
   #     macOS 26 shows Apps instead of Launchpad; whether code 11 now opens Apps is not proven.
   #     Dashboard (7) is gone and left out.
@@ -247,7 +247,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the Dock restarts
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Code 14 (Quick Note) was measured on a test Mac. Codes 1 to 13 are community knowledge.
   #     macOS 26 shows Apps instead of Launchpad; whether code 11 now opens Apps is not proven.
   #     Dashboard (7) is gone and left out.
@@ -269,7 +269,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the Dock restarts
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Code 14 (Quick Note) was measured on a test Mac. Codes 1 to 13 are community knowledge.
   #     macOS 26 shows Apps instead of Launchpad; whether code 11 now opens Apps is not proven.
   #     Dashboard (7) is gone and left out.
@@ -290,7 +290,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: The stored value is the opposite of the switch in System Settings.
 
   # mission_control.group_by_app: false
@@ -299,7 +299,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the Dock restarts
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # mission_control.rearrange_spaces: false
   #   Reorder Spaces by most recent use.
@@ -353,7 +353,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: Guess: WindowManager may pick the change up live,
   #     or need killall WindowManager. Not tested.
 
@@ -363,7 +363,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: Guess: WindowManager may pick the change up live,
   #     or need killall WindowManager. Not tested.
 
@@ -373,11 +373,11 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: chronod also keeps effectiveRemoteWidgetsEnabled (a boolean) and
-  #     hasMigratedRemoteWidgetsEnabledState, so a direct write may be overwritten. No write has
-  #     been tested. Research note on when it takes effect: Guess: chronod may need a restart, or
-  #     may ignore a direct write. Not tested.
+  #     hasMigratedRemoteWidgetsEnabledState, so a direct write may be overwritten. Research note on
+  #     when it takes effect: Guess: chronod may need a restart, or may ignore a direct write. Not
+  #     tested.
 
   # widgets.on_desktop: show
   #   Show widgets on the desktop.
@@ -385,7 +385,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: Guess: WindowManager may pick the change up live,
   #     or need killall WindowManager. Not tested.
 
@@ -426,7 +426,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the app opens again
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: Running apps read NSGlobalDomain at launch. Quit
   #     and reopen apps, or log out (inferred).
 
@@ -534,7 +534,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when Finder restarts
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # finder.no_network_ds_store: false
   #   Stop Finder writing .DS_Store files on network shares.
@@ -594,7 +594,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when Finder restarts
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # finder.show_path_bar: false
   #   Show the path bar at the bottom of Finder windows.
@@ -618,7 +618,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when Finder restarts
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # finder.show_sidebar: false
   #   Show the sidebar in new Finder windows.
@@ -626,7 +626,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when Finder restarts
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # finder.show_status_bar: false
   #   Show the status bar with item count and free space.
@@ -681,7 +681,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when Finder restarts
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # finder.view: icon
   #   View style for folders that have no saved view of their own.
@@ -689,7 +689,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when Finder restarts
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # finder.warn_empty_trash: false
   #   Warn before emptying the Trash.
@@ -1183,7 +1183,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the app opens again
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: The stored numbers are common community values, not measured. Research note on when it
   #     takes effect: open apps redraw after a relaunch or logout (guess).
 
@@ -1193,7 +1193,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the app opens again
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Only accent and blue are offered, because only the stored string for blue was read on a
   #     Mac. Research note on when it takes effect: apps pick it up after a relaunch (guess).
 
@@ -1227,7 +1227,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: A null in the map deletes the key, so both values turn Auto off. auto is not measured,
   #     so it is not offered yet.
 
@@ -1316,7 +1316,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the app opens again
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: killall ControlCenter (guess).
 
   # menu_bar.clock_am_pm: false
@@ -1343,7 +1343,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the app opens again
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: killall ControlCenter (guess).
 
   # menu_bar.clock_seconds: false
@@ -1352,7 +1352,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the app opens again
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: killall ControlCenter (guess).
 
   # menu_bar.clock_show_date: when_space_allows
@@ -1474,7 +1474,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the app opens again
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: A test Mac had -currentHost Sound=18 and NSStatusItem Visible Sound=1 (measured), which
   #     fits 18 meaning always. An earlier reader used the NSStatusItem key. Research note on when
   #     it takes effect: killall ControlCenter (guess; reported in community posts).
@@ -1496,7 +1496,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the app opens again
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Jamf (Tahoe thread) says UserSwitcher is an integer in com.apple.controlcenter and a
   #     configuration profile is the reliable way to hide it. The style (icon, account name, full
   #     name) is NSGlobalDomain userMenuExtraStyle, which is left out. Research note on when it
@@ -1519,7 +1519,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the app opens again
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: killall usernoted (guess).
 
   # notifications.show_previews: always
@@ -1528,7 +1528,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the app opens again
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: A test Mac had the top-level key set to 2 (measured), which fits 2 meaning when
   #     unlocked. The other stored numbers are guesses. Research note on when it takes effect:
   #     killall usernoted and NotificationCenter (guess).
@@ -1539,7 +1539,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the app opens again
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: killall usernoted (guess).
 
   # screen_saver.show_clock: false
@@ -1557,7 +1557,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the app opens again
   #   Needs: a click at the Mac's screen
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: killall Siri (guess). Turning Siri on needs the
   #     pane's setup and a voice download.
 
@@ -1616,7 +1616,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: The stored values 1 on and 2 off are a guess. Research note on when it takes effect:
   #     unknown.
 

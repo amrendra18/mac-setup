@@ -180,7 +180,7 @@ dock.autohide:
   lockout_risk: false
   where: System Settings > Desktop & Dock > Automatically hide
     and show the Dock
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: An early test applied this write and undid it exactly
     on macOS 27.2.1.
@@ -245,7 +245,7 @@ dock.minimize_to_application:
   lockout_risk: false
   where: System Settings > Desktop & Dock > Dock > Minimize windows
     into application icon
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 dock.show_open_indicators:
   summary: Show a dot under the Dock icon of each open app.
@@ -260,7 +260,7 @@ dock.show_open_indicators:
   lockout_risk: false
   where: System Settings > Desktop & Dock > Dock > Show indicators
     for open applications
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 dock.title_bar_double_click:
   summary: What a double-click on a window title bar does.
@@ -325,7 +325,7 @@ hot_corners.bottom_left:
   lockout_risk: false
   where: System Settings > Desktop & Dock > Hot Corners > bottom
     left menu
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: Code 14 (Quick Note) was measured on a test Mac. Codes
     1 to 13 are community knowledge. macOS 26 shows Apps instead
@@ -390,7 +390,7 @@ hot_corners.bottom_right:
   lockout_risk: false
   where: System Settings > Desktop & Dock > Hot Corners > bottom
     right menu
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: Code 14 (Quick Note) was measured on a test Mac. Codes
     1 to 13 are community knowledge. macOS 26 shows Apps instead
@@ -455,7 +455,7 @@ hot_corners.top_left:
   lockout_risk: false
   where: System Settings > Desktop & Dock > Hot Corners > top
     left menu
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: Code 14 (Quick Note) was measured on a test Mac. Codes
     1 to 13 are community knowledge. macOS 26 shows Apps instead
@@ -520,7 +520,7 @@ hot_corners.top_right:
   lockout_risk: false
   where: System Settings > Desktop & Dock > Hot Corners > top
     right menu
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: Code 14 (Quick Note) was measured on a test Mac. Codes
     1 to 13 are community knowledge. macOS 26 shows Apps instead
@@ -563,7 +563,7 @@ mission_control.display_spaces:
   lockout_risk: false
   where: System Settings > Desktop & Dock > Mission Control >
     Displays have separate Spaces
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: The stored value is the opposite of the switch in System
     Settings.
@@ -580,7 +580,7 @@ mission_control.group_by_app:
   lockout_risk: false
   where: System Settings > Desktop & Dock > Mission Control >
     Group windows by application
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 mission_control.rearrange_spaces:
   summary: Reorder Spaces by most recent use.
@@ -728,7 +728,7 @@ stage_manager.recent_apps:
   lockout_risk: false
   where: System Settings > Desktop & Dock > Desktop & Stage Manager
     > Show recent apps in Stage Manager
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'Research note on when it takes effect: Guess: WindowManager
     may pick the change up live, or need killall WindowManager.
@@ -749,7 +749,7 @@ widgets.in_stage_manager:
   lockout_risk: false
   where: 'System Settings > Desktop & Dock > Widgets > Show Widgets:
     In Stage Manager'
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'Research note on when it takes effect: Guess: WindowManager
     may pick the change up live, or need killall WindowManager.
@@ -766,11 +766,11 @@ widgets.iphone_widgets:
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Widgets > iPhone Widgets
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'chronod also keeps effectiveRemoteWidgetsEnabled (a
     boolean) and hasMigratedRemoteWidgetsEnabledState, so a direct
-    write may be overwritten. No write has been tested. Research
+    write may be overwritten. Research
     note on when it takes effect: Guess: chronod may need a restart,
     or may ignore a direct write. Not tested.'
 widgets.on_desktop:
@@ -789,7 +789,7 @@ widgets.on_desktop:
   lockout_risk: false
   where: 'System Settings > Desktop & Dock > Widgets > Show Widgets:
     On Desktop'
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'Research note on when it takes effect: Guess: WindowManager
     may pick the change up live, or need killall WindowManager.
@@ -870,7 +870,7 @@ windows.on_quit:
   lockout_risk: false
   where: System Settings > Desktop & Dock > Windows > Close windows
     when quitting an application
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: 'Research note on when it takes effect: Running apps
     read NSGlobalDomain at launch. Quit and reopen apps, or log

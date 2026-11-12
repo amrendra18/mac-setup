@@ -1,0 +1,95 @@
+summary: >-
+  The 17 Dock, hot corner, Mission Control, Stage Manager, widget and window settings are written with 1 Dock restart,
+  a second run changes nothing, and the cleanup restores each saved key.
+level: fast
+setup:
+  - >-
+    if [ -e .local/area-dock-journey/saved.txt ]; then
+    echo "an earlier cleanup did not finish; this run's cleanup restores .local/area-dock-journey/saved.txt";
+    exit 1; fi;
+    mkdir -p .local/area-dock-journey
+  - >-
+    for k in
+    com.apple.dock/orientation com.apple.dock/tilesize com.apple.dock/show-recents
+    com.apple.dock/autohide com.apple.dock/minimize-to-application
+    com.apple.dock/show-process-indicators com.apple.dock/wvous-tl-corner
+    com.apple.dock/wvous-tr-corner com.apple.dock/wvous-bl-corner
+    com.apple.dock/wvous-br-corner com.apple.dock/expose-group-apps
+    com.apple.spaces/spans-displays com.apple.WindowManager/AutoHide
+    com.apple.WindowManager/StandardHideWidgets com.apple.WindowManager/StageManagerHideWidgets
+    com.apple.chronod/remoteWidgetsEnabled NSGlobalDomain/NSQuitAlwaysKeepsWindows;
+    do d=${k%%/*}; n=${k#*/};
+    if t=$(defaults read-type "$d" "$n" 2>/dev/null); then t=${t#Type is };
+    case $t in boolean|integer|float|string) ;; *) echo "cannot save $d $n of type $t" >&2; exit 1 ;; esac;
+    printf '%s %s %s %s\n' "$d" "$n" "$t" "$(defaults read "$d" "$n")";
+    else printf '%s %s absent\n' "$d" "$n"; fi;
+    done > .local/area-dock-journey/saved.txt
+  - >-
+    while read -r d n t v; do
+    [ "$t" = absent ] || defaults delete "$d" "$n" || exit 1;
+    done < .local/area-dock-journey/saved.txt
+profile:
+  default_settings:
+    dock.position: left
+    dock.tile_size: 32
+    dock.show_recents: false
+    dock.autohide: false
+    dock.minimize_to_application: true
+    dock.show_open_indicators: true
+    hot_corners.top_left: none
+    hot_corners.top_right: none
+    hot_corners.bottom_left: none
+    hot_corners.bottom_right: quick_note
+    mission_control.display_spaces: separate
+    mission_control.group_by_app: true
+    stage_manager.recent_apps: hide
+    widgets.on_desktop: hide
+    widgets.in_stage_manager: hide
+    widgets.iphone_widgets: false
+    windows.on_quit: keep
+runs:
+  - name: check
+    args: [--check]
+    exit: 0
+    recap: {changed: 17, failed: 0}
+  - name: apply
+    exit: 0
+    recap: {changed: 18, failed: 0}
+    output:
+      - {pattern: '^RUNNING HANDLER \[[a-z_]+ : Restart Dock\].*\nchanged: \[verify-mac\]', count: 1}
+  - name: apply-again
+    exit: 0
+    recap: {changed: 0, failed: 0}
+    output:
+      - {pattern: '^RUNNING HANDLER \[[a-z_]+ : Restart Dock\]', count: 0}
+reads:
+  - {domain: com.apple.dock, key: orientation, type: string, value: left}
+  - {domain: com.apple.dock, key: tilesize, type: float, value: 32}
+  - {domain: com.apple.dock, key: show-recents, type: boolean, value: false}
+  - {domain: com.apple.dock, key: autohide, type: boolean, value: false}
+  - {domain: com.apple.dock, key: minimize-to-application, type: boolean, value: true}
+  - {domain: com.apple.dock, key: show-process-indicators, type: boolean, value: true}
+  - {domain: com.apple.dock, key: wvous-tl-corner, type: integer, value: 1}
+  - {domain: com.apple.dock, key: wvous-tr-corner, type: integer, value: 1}
+  - {domain: com.apple.dock, key: wvous-bl-corner, type: integer, value: 1}
+  - {domain: com.apple.dock, key: wvous-br-corner, type: integer, value: 14}
+  - {domain: com.apple.dock, key: expose-group-apps, type: boolean, value: true}
+  - {domain: com.apple.spaces, key: spans-displays, type: boolean, value: false}
+  - {domain: com.apple.WindowManager, key: AutoHide, type: boolean, value: true}
+  - {domain: com.apple.WindowManager, key: StandardHideWidgets, type: boolean, value: true}
+  - {domain: com.apple.WindowManager, key: StageManagerHideWidgets, type: boolean, value: true}
+  - {domain: com.apple.chronod, key: remoteWidgetsEnabled, type: boolean, value: false}
+  - {domain: NSGlobalDomain, key: NSQuitAlwaysKeepsWindows, type: boolean, value: true}
+cleanup:
+  - >-
+    while read -r d n t v; do
+    case $t in
+    absent) defaults delete "$d" "$n" 2>/dev/null || true ;;
+    boolean) if [ "$v" = 1 ]; then v=true; else v=false; fi; defaults write "$d" "$n" -bool "$v" ;;
+    integer) defaults write "$d" "$n" -int "$v" ;;
+    float) defaults write "$d" "$n" -float "$v" ;;
+    string) defaults write "$d" "$n" -string "$v" ;;
+    esac || { echo "could not restore $d $n"; exit 1; };
+    done < .local/area-dock-journey/saved.txt || exit 1;
+    rm .local/area-dock-journey/saved.txt;
+    killall Dock 2>/dev/null; true
