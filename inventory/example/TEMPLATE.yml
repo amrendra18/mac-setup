@@ -1812,7 +1812,7 @@ machine_settings:
   #   macOS default: not measured
   #   Takes effect: at once
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # power.low_power_mode: false
   #   Use Low Power Mode to save energy.
@@ -1837,7 +1837,7 @@ machine_settings:
   #   macOS default: not measured
   #   Takes effect: at once
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # power.system_sleep_minutes: 0
   #   Minutes idle before the Mac sleeps. 0 means never (Prevent automatic sleeping).
@@ -1845,7 +1845,7 @@ machine_settings:
   #   macOS default: not measured
   #   Takes effect: at once
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # power.wake_for_network: false
   #   Wake the Mac when another device reaches it over the network.
@@ -1853,7 +1853,7 @@ machine_settings:
   #   macOS default: not measured
   #   Takes effect: at once
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
 
   # security.firewall: false
   #   Turn on the macOS firewall for incoming connections.
@@ -1984,8 +1984,10 @@ machine_settings:
   #   Values: text that matches ^[A-Za-z_]+(/[A-Za-z0-9_+-]+){0,2}$
   #   macOS default: not measured
   #   Takes effect: at once
-  #   Needs: nothing extra
+  #   Needs: Full Disk Access for the terminal app
   #   Proven on: not yet
+  #   Note: Over SSH, systemsetup prints Error -99 and leaves the time zone as it was; an SSH
+  #     session has no Full Disk Access (measured on macOS 27.2.1).
 
   # updates.check_automatically: false
   #   Check for software updates automatically.

@@ -17,12 +17,12 @@ The example file that ships with mac-setup makes these main changes, among other
 7. **Apps.** Apps you pick from a short list, such as Firefox or Sublime Text, each checked before it is copied to `/Applications`. The example installs none.
 8. **A guided walk through the clicks.** Apple lets only a person grant privacy permissions, such as camera or screen recording. For those settings, mac-setup opens the right System Settings page and tells you what to choose. The example turns Location Services off this way.
 
-mac-setup knows 288 macOS settings. A run sets 218 of them, 40 need your click, and 30 it cannot set yet. A setting counts as proven on a macOS version once a test applied it on a real Mac and read it back. 46 settings are proven on macOS 27.2.1:
+mac-setup knows 288 macOS settings. A run sets 218 of them, 40 need your click, and 30 it cannot set yet. A setting counts as proven on a macOS version once a test applied it on a real Mac and read it back. 50 settings are proven on macOS 27.2.1:
 
 1. 17 Dock, hot corner, Mission Control, Stage Manager, widget and window settings.
 2. 6 Finder settings.
 3. 13 appearance, menu bar, notification, Siri and Spotlight settings.
-4. The Dock apps, the black desktop and Wi-Fi power.
+4. The Dock apps, the black desktop, Wi-Fi power, and 4 power settings: system sleep, display sleep, wake for network and restart after a power failure.
 5. 7 keyboard, trackpad and sound settings: keyboard and Mission Control shortcuts, input sources, 2 trackpad gestures, and the output and alert volumes.
 
 The code for the other settings has unit tests, but no test has applied them on a real Mac yet.
@@ -55,7 +55,7 @@ You also need a GitHub SSH key that can read this repository. Follow GitHub's gu
    test -d .local/inventory || cp -R inventory/example .local/inventory
    ```
 
-   Then open `.local/inventory/host_vars/example-mac/machine.yml` with `open -e` (TextEdit). Set `time.zone` to your own zone, such as `Europe/Berlin`. The example uses `Etc/UTC`. To see your Mac's current zone, run `readlink /etc/localtime`. The zone is the part after `zoneinfo/`.
+   Then open `.local/inventory/host_vars/example-mac/machine.yml` with `open -e` (TextEdit). Set `time.zone` to your own zone, such as `Europe/Berlin`. The example uses `Etc/UTC`. To see your Mac's current zone, run `readlink /etc/localtime`. The zone is the part after `zoneinfo/`. Over SSH, `systemsetup` cannot change the zone, because an SSH session has no Full Disk Access. If the run refuses `time.zone`, set the zone in System Settings > General > Date & Time.
 
 4. Preview the changes. Your settings stay as they are.
 

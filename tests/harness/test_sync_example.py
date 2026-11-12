@@ -44,7 +44,7 @@ class SyncExample(unittest.TestCase):
     def test_personal_values_stay_out(self):
         result, refused = self.neutral(
             {
-                "time.zone": "America/Whitehorse",
+                "time.zone": "Europe/Lisbon",
                 "network.wifi_power": False,
                 "computer.name": "zzPersonalMac",
                 "login_window.message": "Property of Zz Person",

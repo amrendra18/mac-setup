@@ -24,7 +24,11 @@ options:
   value: {description: The wanted public value., type: raw, required: true}
 """
 
-REFUSALS = ("You need administrator access", "requires Full Disk Access")
+REFUSALS = {
+    "You need administrator access": "",
+    "requires Full Disk Access": "",
+    "### Error:-99": "printed Error -99 and changed nothing; over SSH this means the session has no Full Disk Access",
+}
 
 
 class SettingError(Exception):
@@ -40,8 +44,9 @@ def text(value):
 def run(runner, argv):
     rc, out, err = runner.run(argv)
     for line in (out + err).splitlines():
-        if any(refusal in line for refusal in REFUSALS):
-            raise SettingError(f"{argv[0]} refused: {line.strip()}")
+        for refusal, reason in REFUSALS.items():
+            if refusal in line:
+                raise SettingError(f"{argv[0]} refused: {reason or line.strip()}")
     return rc, out, err
 
 

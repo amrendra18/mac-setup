@@ -255,7 +255,7 @@ power.display_sleep_minutes:
   lockout_risk: false
   where: System Settings > Lock Screen > Turn display off when
     inactive (desktop); Battery > Options on laptops
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 power.low_power_mode:
   summary: Use Low Power Mode to save energy.
@@ -323,7 +323,7 @@ power.restart_after_power_failure:
   lockout_risk: false
   where: System Settings > Energy > Start up automatically after
     a power failure
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 power.system_sleep_minutes:
   summary: Minutes idle before the Mac sleeps. 0 means never (Prevent
@@ -342,7 +342,7 @@ power.system_sleep_minutes:
   lockout_risk: false
   where: System Settings > Energy > Prevent automatic sleeping
     when the display is off (desktop toggle writes 0)
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 power.wake_for_network:
   summary: Wake the Mac when another device reaches it over the
@@ -364,7 +364,7 @@ power.wake_for_network:
   needs: []
   lockout_risk: false
   where: System Settings > Energy > Wake for network access
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 security.admin_password_for_settings:
   summary: Ask for an admin password before changing system-wide
@@ -875,11 +875,13 @@ time.zone:
     set:
       - [/usr/sbin/systemsetup, -settimezone, '{value}']
   takes_effect: live
-  needs: []
+  needs: [full_disk_access]
   lockout_risk: false
   where: System Settings > General > Date & Time > Closest city
   proven_on: {}
   not_yet_reason: ""
+  notes: Over SSH, systemsetup prints Error -99 and leaves the time zone as it
+    was; an SSH session has no Full Disk Access (measured on macOS 27.2.1).
 time.zone_automatic:
   summary: Set the time zone from the Mac's location.
   scope: machine

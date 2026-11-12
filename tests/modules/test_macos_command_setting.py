@@ -237,6 +237,16 @@ class Refusals(unittest.TestCase):
         self.assertIn(DISK_REFUSAL, str(raised.exception))
         self.assertFalse(tool.state)
 
+    def test_error_99_is_refused_in_plain_words(self):
+        tool, entry = remote_login(
+            on=False,
+            refuse_set="systemsetup[1:2] ### Error:-99 File:/x/InternetServices.m Line:395",
+        )
+        with self.assertRaises(SettingError) as raised:
+            ensure(tool, entry, True)
+        self.assertIn("no Full Disk Access", str(raised.exception))
+        self.assertNotIn("InternetServices", str(raised.exception))
+
 
 class ParseFailure(unittest.TestCase):
     def test_no_match_names_the_output(self):

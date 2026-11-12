@@ -1,0 +1,56 @@
+summary: >-
+  Play 2 sets 4 power settings from machine_settings, a second run changes nothing, and the cleanup reads each
+  back with the module's own read command, then restores the saved values.
+level: fast
+setup:
+  - mkdir .local/machine-journey
+  - >-
+    /usr/bin/pmset -g custom > .local/machine-journey/pmset-before.txt || exit 1;
+    cat .local/machine-journey/pmset-before.txt;
+    for key in sleep displaysleep womp autorestart; do
+    grep -Eq "^ $key +[0-9]+\$" .local/machine-journey/pmset-before.txt || { echo "pmset -g custom shows no $key line"; exit 1; };
+    done
+  - sudo -n /usr/bin/pmset -a sleep 30 displaysleep 10 womp 0 autorestart 0
+profile:
+  machine_settings:
+    power.system_sleep_minutes: 0
+    power.display_sleep_minutes: 0
+    power.wake_for_network: true
+    power.restart_after_power_failure: true
+runs:
+  - name: check
+    args: [--check]
+    exit: 0
+    recap: {changed: 4, failed: 0}
+    output:
+      - {pattern: '^TASK \[macos_commands : Set power\.[a-z_]+\] \**\nchanged: \[verify-mac\]$', count: 4}
+  - name: apply
+    exit: 0
+    recap: {changed: 4, failed: 0}
+    output:
+      - {pattern: '^TASK \[macos_commands : Set power\.[a-z_]+\] \**\nchanged: \[verify-mac\]$', count: 4}
+  - name: apply-again
+    exit: 0
+    recap: {changed: 0, failed: 0}
+    output:
+      - {pattern: '^TASK \[macos_commands : Set power\.[a-z_]+\] \**\nok: \[verify-mac\]$', count: 4}
+cleanup:
+  - >-
+    dir=.local/machine-journey;
+    test -d "$dir" || exit 0;
+    pick() { grep -E '^[A-Za-z ]+:$|^ (sleep|displaysleep|womp|autorestart) +[0-9]+$'; };
+    power=$(/usr/bin/pmset -g custom | pick);
+    echo "$power";
+    if test -s "$dir/pmset-before.txt"; then
+    awk '/^Battery Power:/ {f="-b"} /^AC Power:/ {f="-c"} /^UPS Power:/ {f="-u"}
+    f != "" && $1 ~ /^(sleep|displaysleep|womp|autorestart)$/ {print f, $1, $2}'
+    "$dir/pmset-before.txt" |
+    while read -r flag key value; do sudo -n /usr/bin/pmset "$flag" "$key" "$value" || exit 1; done;
+    test "$(/usr/bin/pmset -g custom | pick)" = "$(pick < "$dir/pmset-before.txt")" || { echo "could not restore the saved power settings"; exit 1; };
+    fi;
+    rm -rf "$dir";
+    for key in sleep displaysleep womp autorestart; do
+    echo "$power" | grep -q "^ $key " || { echo "pmset -g custom shows no $key line"; exit 1; };
+    done;
+    want=$(echo "$power" | sed -E 's/^ (sleep|displaysleep)( +)[0-9]+$/ \1\20/; s/^ (womp|autorestart)( +)[0-9]+$/ \1\21/');
+    test "$power" = "$want" || { echo "pmset -g custom does not show sleep 0, displaysleep 0, womp 1 and autorestart 1"; exit 1; }
