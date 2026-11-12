@@ -213,10 +213,20 @@ ansible_lint() {
   PATH=$bin:$PATH "$bin/ansible-lint" --offline --strict playbooks roles
 }
 
+python_files() {
+  local f
+  while IFS= read -r -d '' f; do
+    case $f in
+      *.py) printf '%s\0' "$f" ;;
+      scripts/*) head -3 "$f" | grep -q "^'''" && printf '%s\0' "$f" ;;
+    esac
+  done
+}
+
 python_format() {
   need "$bin/black" || { echo "install the dev tools, see scripts/check --help"; return 1; }
   local out
-  out=$(candidates | grep -zE '\.py$|^scripts/(verify|render-template|sync-example)$' | xargs -0 "$bin/black" --check 2>&1) && return
+  out=$(candidates | python_files | xargs -0 "$bin/black" --check 2>&1) && return
   printf '%s\n' "$out" | grep '^would reformat'
   echo "format them with .local/venv/bin/black"
   return 1

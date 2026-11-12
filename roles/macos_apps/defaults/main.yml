@@ -1,0 +1,6 @@
+---
+macos_apps_items: []
+macos_apps_catalog_file: "{{ playbook_dir | dirname }}/apps/macos.yml"
+macos_apps_downloads: "{{ playbook_dir | dirname }}/.local/downloads"
+macos_apps_applications: /Applications
+macos_apps_virustotal_api_key: ""

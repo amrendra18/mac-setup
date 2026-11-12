@@ -25,7 +25,7 @@ profile = importlib.util.module_from_spec(_rules)
 _rules.loader.exec_module(profile)
 SETTINGS = Path("settings/macos")
 TEMPLATE = Path("inventory/example/TEMPLATE.yml")
-SETTABLE = ("defaults", "command", "dock_apps", "wallpaper", "finder_sidebar")
+SETTABLE = ("defaults", "command", "dock_apps", "wallpaper", "finder_sidebar", "apps")
 TAKES_EFFECT = {
     "live": "at once",
     "dock": "when the Dock restarts",
@@ -93,9 +93,14 @@ def example(values, default):
     kind = values["type"]
     if kind in ("int", "float"):
         return values["min"]
-    return {"bool": False, "text": "unset", "bundle_ids": [], "paths": [], "list": []}[
-        kind
-    ]
+    return {
+        "bool": False,
+        "text": "unset",
+        "bundle_ids": [],
+        "paths": [],
+        "list": [],
+        "catalog_ids": [],
+    }[kind]
 
 
 def _text(value):
@@ -127,6 +132,7 @@ def describe(values):
         "bool": "true or false",
         "bundle_ids": "a list of app bundle ids, in Dock order",
         "paths": 'a list of folder paths that start with / or "~", other than / itself, in order',
+        "catalog_ids": "a list of app ids from apps/macos.yml",
     }[kind]
 
 

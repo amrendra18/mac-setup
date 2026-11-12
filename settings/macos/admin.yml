@@ -1,4 +1,17 @@
 ---
+apps.install:
+  summary: Apps from the catalog in apps/macos.yml to install, each
+    downloaded from its vendor and checked first.
+  scope: machine
+  route: apps
+  values: {type: catalog_ids}
+  macos_default: none
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: Applications folder
+  proven_on: {}
+  not_yet_reason: ""
 computer.local_hostname:
   summary: Local network name, used as NAME.local.
   scope: machine

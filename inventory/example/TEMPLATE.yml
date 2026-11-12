@@ -1625,6 +1625,15 @@ machine_settings:
 
   # Area: admin
 
+  # apps.install: []
+  #   Apps from the catalog in apps/macos.yml to install, each downloaded from its vendor and
+  #     checked first.
+  #   Values: a list of app ids from apps/macos.yml
+  #   macOS default: none
+  #   Takes effect: at once
+  #   Needs: nothing extra
+  #   Proven on: not yet
+
   # computer.local_hostname: unset
   #   Local network name, used as NAME.local.
   #   Values: text that matches ^[A-Za-z0-9-]{1,63}$

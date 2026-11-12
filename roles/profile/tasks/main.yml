@@ -3,7 +3,7 @@
   ansible.builtin.fail:
     msg: "{{ profile_problem_lines | join('\n') }}"
   vars:
-    profile_problem_lines: "{{ hostvars[inventory_hostname] | profile_problems(profile_reference_files) }}"
+    profile_problem_lines: "{{ hostvars[inventory_hostname] | profile_problems(profile_reference_files, profile_app_catalog) }}"
   when: profile_problem_lines | length > 0
 
 - name: Read the running account
@@ -19,6 +19,7 @@
     profile_other_work: "{{ profile_work.others }}"
     profile_machine_writes: "{{ profile_work.machine_writes }}"
     profile_commands: "{{ profile_work.commands }}"
+    profile_apps: "{{ profile_work.apps }}"
     profile_by_hand: "{{ profile_work.by_hand }}"
     profile_accounts: "{{ profile_work.accounts }}"
     profile_counts: "{{ profile_work.counts }}"

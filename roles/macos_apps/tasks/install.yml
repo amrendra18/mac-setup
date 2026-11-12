@@ -1,0 +1,16 @@
+---
+- name: "Install {{ macos_apps_id }}"
+  block:
+    - name: "Verify and install {{ macos_apps_id }}"
+      macos_app:
+        id: "{{ macos_apps_id }}"
+        app: "{{ macos_apps_catalog[macos_apps_id] }}"
+        downloads: "{{ macos_apps_downloads }}"
+        applications: "{{ macos_apps_applications }}"
+        virustotal_api_key: "{{ macos_apps_virustotal_api_key }}"
+  rescue:
+    - name: "Record the refusal of {{ macos_apps_id }}"
+      ansible.builtin.include_tasks: "{{ role_path }}/../macos_defaults/tasks/refused.yml"
+      vars:
+        macos_defaults_refused_account: machine
+        macos_defaults_refused_id: "{{ macos_apps_id }}"

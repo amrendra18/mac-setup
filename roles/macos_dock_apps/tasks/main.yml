@@ -8,9 +8,7 @@
       notify: "{{ ['Restart Dock'] if macos_dock_apps_restart else [] }}"
   rescue:
     - name: Record the refusal of dock.applications
-      ansible.builtin.include_role:
-        name: macos_defaults
-        tasks_from: refused
+      ansible.builtin.include_tasks: "{{ role_path }}/../macos_defaults/tasks/refused.yml"
       vars:
         macos_defaults_refused_account: "{{ macos_dock_apps_account }}"
         macos_defaults_refused_id: dock.applications

@@ -14,8 +14,14 @@ PROFILE_KEYS = [
     "machine_settings",
     "allow_lockout_risk",
     "account_passwords",
+    "virustotal_api_key",
 ]
-RUN_SWITCHES = {"by_hand_list", "by_hand_open"}
+RUN_SWITCHES = {
+    "by_hand_list",
+    "by_hand_open",
+    "macos_apps_downloads",
+    "macos_apps_applications",
+}
 SIDEBAR_PREFIX = "finder.sidebar_"
 NEEDS_SETTING = {"finder.sidebar_favorites_only": "finder.sidebar_favorites"}
 ANSIBLE_NAMES = {
@@ -91,6 +97,12 @@ VALUE_KINDS = {
         lambda spec: "a list of different items from "
         + ", ".join(map(str, spec["choices"])),
     ),
+    "catalog_ids": (
+        lambda spec, value: (
+            isinstance(value, list) and all(isinstance(i, str) for i in value)
+        ),
+        lambda spec: "a list of app ids from apps/macos.yml",
+    ),
 }
 
 
@@ -136,7 +148,20 @@ def _section(mapping, name, empty):
     return empty if value is None else value
 
 
-def _setting_problems(prefix, settings, scope, reference, allow_lockout_risk):
+def _app_id_problems(app_ids, catalog):
+    known = ", ".join(sorted(catalog))
+    return [
+        f"unknown app id {app_id}, use one of {known}"
+        for app_id in dict.fromkeys(app_ids)
+        if app_id not in catalog
+    ] + [
+        f"{app_id} listed {count} times"
+        for app_id, count in Counter(app_ids).items()
+        if count > 1
+    ]
+
+
+def _setting_problems(prefix, settings, scope, reference, allow_lockout_risk, catalog):
     problems = []
     for setting_id, value in settings.items():
         subject = f"{prefix}{setting_id}"
@@ -163,6 +188,10 @@ def _setting_problems(prefix, settings, scope, reference, allow_lockout_risk):
                 f"{subject}: {value!r} is not allowed, "
                 f"use {_describe(entry['values'])}" + (" (quote them)" if quote else "")
             )
+        elif entry["values"] == {"type": "catalog_ids"} and (
+            app_problems := _app_id_problems(value, catalog)
+        ):
+            problems += [f"{subject}: {line}" for line in app_problems]
         elif entry["lockout_risk"] and not allow_lockout_risk:
             problems.append(
                 f"{subject}: can lock you out of this Mac, "
@@ -179,7 +208,7 @@ def _pair_problems(prefix, settings, together):
     ]
 
 
-def _account_problems(accounts, reference, allow_lockout_risk, defaults):
+def _account_problems(accounts, reference, allow_lockout_risk, defaults, catalog):
     problems, names = [], Counter()
     for number, account in enumerate(accounts, 1):
         if not isinstance(account, dict):
@@ -209,7 +238,7 @@ def _account_problems(accounts, reference, allow_lockout_risk, defaults):
         settings = _section(account, "settings", {})
         if isinstance(settings, dict):
             problems += _setting_problems(
-                f"{subject}, ", settings, "user", reference, allow_lockout_risk
+                f"{subject}, ", settings, "user", reference, allow_lockout_risk, catalog
             )
             problems += _pair_problems(
                 f"{subject}, ", settings, {**defaults, **settings}
@@ -224,7 +253,7 @@ def _account_problems(accounts, reference, allow_lockout_risk, defaults):
     return problems
 
 
-def profile_problems(profile, files):
+def profile_problems(profile, files, catalog=()):
     reference, problems = _reference(files)
     problems += [
         f"{key}: unknown profile key, use {', '.join(PROFILE_KEYS)}"
@@ -245,7 +274,7 @@ def profile_problems(profile, files):
         settings = _section(profile, name, {})
         if isinstance(settings, dict):
             problems += _setting_problems(
-                prefix, settings, scope, reference, allow_lockout_risk
+                prefix, settings, scope, reference, allow_lockout_risk, catalog
             )
             if scope == "user":
                 problems += _pair_problems(prefix, settings, settings)
@@ -259,6 +288,7 @@ def profile_problems(profile, files):
             reference,
             allow_lockout_risk,
             defaults if isinstance(defaults, dict) else {},
+            catalog,
         )
     else:
         problems.append("accounts: must be a list of accounts")
@@ -410,6 +440,11 @@ def profile_work(profile, files, running_account):
         "commands": [
             _command(setting_id, value, reference[setting_id]["command"])
             for setting_id, value in _routed(machine, reference, "command").items()
+        ],
+        "apps": [
+            app_id
+            for app_ids in _routed(machine, reference, "apps").values()
+            for app_id in app_ids
         ],
         "by_hand": by_hand,
         "accounts": [

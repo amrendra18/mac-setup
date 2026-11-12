@@ -1,12 +1,17 @@
 import plistlib
+import shutil
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "roles/macos_dock_apps/library"))
 
+import macos_dock_apps
 from macos_dock_apps import DockAppsError, ensure_dock_apps
+
+macos_dock_apps.SCAN_FOLDERS = ()
 
 DOMAIN = "/tmp/scratch/com.example.dock"
 INSTALLED = {
@@ -85,6 +90,27 @@ WANTED = ["com.apple.Safari", "com.apple.systempreferences"]
 
 
 class Apply(unittest.TestCase):
+    def setUp(self):
+        self.scan = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.scan)
+        saved = macos_dock_apps.SCAN_FOLDERS
+        macos_dock_apps.SCAN_FOLDERS = (str(self.scan),)
+        self.addCleanup(setattr, macos_dock_apps, "SCAN_FOLDERS", saved)
+
+    def test_an_app_spotlight_has_not_indexed_is_found_in_the_folders(self):
+        contents = self.scan / "Fresh.app" / "Contents"
+        contents.mkdir(parents=True)
+        (contents / "Info.plist").write_bytes(
+            plistlib.dumps({"CFBundleIdentifier": "com.example.Fresh"})
+        )
+        mac = FakeMac([SAFARI])
+        run(mac, ["com.apple.Safari", "com.example.Fresh"])
+        self.assertEqual(mac.ids(), ["com.apple.Safari", "com.example.Fresh"])
+        self.assertIn(
+            (self.scan / "Fresh.app").as_uri(),
+            mac.prefs["persistent-apps"][1]["tile-data"]["file-data"]["_CFURLString"],
+        )
+
     def test_keeps_only_the_listed_apps_in_order(self):
         mac = FakeMac([NOTES, SPACER, SAFARI])
         result = run(mac, WANTED)

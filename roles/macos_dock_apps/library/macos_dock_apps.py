@@ -11,7 +11,7 @@ module: macos_dock_apps
 short_description: Keep only the listed apps in the Dock, by bundle id and in order
 description:
   - Reads persistent-apps in the domain with defaults export, and writes it with defaults write only when its bundle ids differ from apps.
-  - A listed app already in the Dock keeps its tile. A new one gets a tile for the installed app that mdfind finds for its bundle id.
+  - A listed app already in the Dock keeps its tile. A new one gets a tile for the installed app that mdfind finds for its bundle id, or a scan of the app folders when Spotlight has not indexed it yet.
   - Every other tile in persistent-apps is removed. persistent-others, the folders side of the Dock, stays as it is.
   - A bundle id with no installed app is refused before anything is read or written.
 options:
@@ -24,6 +24,11 @@ MDFIND = "/usr/bin/mdfind"
 KEY = "persistent-apps"
 BUNDLE_ID = re.compile(r"[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+")
 APP_FOLDERS = ("/Applications/", "/System/Applications/")
+SCAN_FOLDERS = (
+    "/Applications",
+    "/System/Applications",
+    "/System/Applications/Utilities",
+)
 
 
 class DockAppsError(Exception):
@@ -38,8 +43,21 @@ def find_app(runner, bundle_id):
         raise DockAppsError(f"{bundle_id}: mdfind failed with exit {rc}: {out}{err}")
     paths = [line for line in out.splitlines() if line.endswith(".app")]
     if not paths:
-        return None
+        return scan_folders(bundle_id)
     return min(paths, key=lambda path: (not path.startswith(APP_FOLDERS), path))
+
+
+def scan_folders(bundle_id):
+    for folder in SCAN_FOLDERS:
+        for app in sorted(Path(folder).glob("*.app")):
+            try:
+                with open(app / "Contents/Info.plist", "rb") as file:
+                    info = plistlib.load(file)
+            except Exception:
+                continue
+            if info.get("CFBundleIdentifier") == bundle_id:
+                return str(app)
+    return None
 
 
 def label(tile):

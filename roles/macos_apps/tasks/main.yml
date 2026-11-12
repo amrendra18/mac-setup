@@ -1,0 +1,11 @@
+---
+- name: Read the app catalog
+  ansible.builtin.include_vars:
+    file: "{{ macos_apps_catalog_file }}"
+    name: macos_apps_catalog
+
+- name: Install each app
+  ansible.builtin.include_tasks: install.yml
+  loop: "{{ macos_apps_items }}"
+  loop_control:
+    loop_var: macos_apps_id

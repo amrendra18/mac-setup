@@ -1,0 +1,46 @@
+google_chrome:
+  name: Google Chrome
+  url: https://dl.google.com/chrome/mac/universal/stable/GGRO/googlechrome.dmg
+  host: dl.google.com
+  sha256: null
+  sha256_reason: Google serves only the latest build
+  team_id: EQHXZ8M8AV
+  bundle_id: com.google.Chrome
+  container: dmg
+  app: Google Chrome.app
+  version: "157.0.8103.79"
+  note: Chrome updates itself after the install.
+
+sublime_text:
+  name: Sublime Text
+  url: https://download.sublimetext.com/sublime_text_build_4215_mac.zip
+  host: download.sublimetext.com
+  sha256: a0263f36660f13981bb25b05e968681429ce5f67134876cd9032ffa82e1904d5
+  published: "2026-09-25"
+  team_id: Z6D26JE4Y4
+  bundle_id: com.sublimetext.4
+  container: zip
+  app: Sublime Text.app
+  version: "4215"
+  latest:
+    page: https://www.sublimetext.com/updates/4/stable_update_check
+    pattern: '"latest_version": *([0-9]+)'
+    url: https://download.sublimetext.com/sublime_text_build_{}_mac.zip
+
+little_snitch:
+  name: Little Snitch
+  url: https://www.obdev.at/downloads/littlesnitch/LittleSnitch-6.5.dmg
+  host: www.obdev.at
+  sha256: a83763bbf416676231bcd9c414b16a36c31cc85c14aa0de43cabaf1ef97fa8ba
+  published: "2026-09-08"
+  team_id: MLZF7K7B5R
+  bundle_id: at.obdev.littlesnitch
+  container: dmg
+  app: Little Snitch.app
+  version: "6.5"
+  needs: [click]
+  note: Needs a license, and a one-time approval of its network filter in System Settings.
+  latest:
+    page: https://www.obdev.at/products/littlesnitch/download.html
+    pattern: 'href="https://www\.obdev\.at/downloads/littlesnitch/LittleSnitch-([0-9.]+)\.dmg"'
+    url: https://www.obdev.at/downloads/littlesnitch/LittleSnitch-{}.dmg

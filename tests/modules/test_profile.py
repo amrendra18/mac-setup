@@ -13,6 +13,8 @@ FILES = {
     path.name: yaml.safe_load(path.read_text())
     for path in sorted((ROOT / "settings/macos").glob("*.yml"))
 }
+CATALOG = yaml.safe_load((ROOT / "apps/macos.yml").read_text())
+TEST_CATALOG = {"alpha_app": {}, "beta_app": {}}
 
 VALID = {"dock.position": "left", "dock.tile_size": 32, "dock.show_recents": False}
 
@@ -108,6 +110,9 @@ TEST_FILES = {
             route="not_yet", not_yet_reason="the value is a list", writes=[]
         ),
         "test.apps": entry(route="dock_apps", values={"type": "bundle_ids"}, writes=[]),
+        "test.software": entry(
+            scope="machine", route="apps", values={"type": "catalog_ids"}, writes=[]
+        ),
         "test.mapped": entry(
             values=["small", "large"],
             writes=[
@@ -343,6 +348,59 @@ class ProfileProblems(unittest.TestCase):
                 )
                 self.assertEqual(problems == [], ok)
 
+    def test_app_ids_come_from_the_catalog(self):
+        unknown = "unknown app id {}, use one of alpha_app, beta_app"
+        for value, expected in [
+            (["alpha_app", "beta_app"], []),
+            ([], []),
+            (["gamma_app"], [unknown.format("gamma_app")]),
+            (
+                ["alpha_app", "gamma_app", "alpha_app", "delta_app", "alpha_app"],
+                [
+                    unknown.format("gamma_app"),
+                    unknown.format("delta_app"),
+                    "alpha_app listed 3 times",
+                ],
+            ),
+            ("alpha_app", ["'alpha_app' is not allowed"]),
+            ([1], ["[1] is not allowed"]),
+            ("unset", ["unset works only for settings stored with defaults"]),
+        ]:
+            with self.subTest(value=value):
+                problems = profile_problems(
+                    {"machine_settings": {"test.software": value}},
+                    TEST_FILES,
+                    TEST_CATALOG,
+                )
+                self.assertEqual(
+                    subjects(problems),
+                    ["machine_settings, test.software"] * len(expected),
+                )
+                for line, start in zip(problems, expected):
+                    self.assertTrue(
+                        line.removeprefix(
+                            "machine_settings, test.software: "
+                        ).startswith(start),
+                        line,
+                    )
+
+    def test_apps_install_takes_the_catalog_ids(self):
+        good = {"machine_settings": {"apps.install": sorted(CATALOG)}}
+        self.assertEqual(profile_problems(good, FILES, CATALOG), [])
+        self.assertEqual(profile_work(good, FILES, "runner")["apps"], sorted(CATALOG))
+        under_account = {"default_settings": {"apps.install": ["sublime_text"]}}
+        self.assertEqual(
+            subjects(profile_problems(under_account, FILES, CATALOG)),
+            ["apps.install"],
+        )
+
+    def test_virustotal_key_is_allowed_and_never_printed(self):
+        secret = "Zq7-not-a-real-key"
+        profile = {"virustotal_api_key": secret, "default_settng": {}}
+        problems = profile_problems(profile, FILES, CATALOG)
+        self.assertEqual(subjects(problems), ["default_settng"])
+        self.assertFalse(any(secret in line for line in problems))
+
     def test_unknown_profile_key(self):
         profile = {
             "default_setting": {"dock.position": "left"},
@@ -450,7 +508,12 @@ class ProfileProblems(unittest.TestCase):
         self.assertNotIn("quote", problems[0])
 
     def test_run_switches_are_allowed(self):
-        profile = {"by_hand_list": True, "by_hand_open": "/usr/bin/true"}
+        profile = {
+            "by_hand_list": True,
+            "by_hand_open": "/usr/bin/true",
+            "macos_apps_downloads": "/tmp/downloads",
+            "macos_apps_applications": "/tmp/Applications",
+        }
         self.assertEqual(profile_problems(profile, FILES), [])
 
     def test_repeated_reference_id_stops_the_run(self):
@@ -591,9 +654,11 @@ class ProfileWork(unittest.TestCase):
                 "test.machine": True,
                 "test.command": False,
                 "test.machine_click": "by_hand",
+                "test.software": ["beta_app", "alpha_app"],
             },
         }
         work = profile_work(profile, TEST_FILES, "runner")
+        self.assertEqual(work["apps"], ["beta_app", "alpha_app"])
         own = work["own"]
         self.assertEqual(own["dock_apps"], {"apps": ["com.apple.Terminal"]})
         self.assertEqual(own["wallpaper"], {"color": "black"})

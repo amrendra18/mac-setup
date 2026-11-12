@@ -1,12 +1,13 @@
 # mac-setup
 
-Status: milestone M2. `scripts/bootstrap` installs mac-setup. The settings reference in `settings/macos/` describes 287 settings. The playbooks wire 6 of its routes: preferences (`defaults`), command tools (`command`), Dock apps (`dock_apps`), the desktop picture (`wallpaper`), the Finder sidebar (`finder_sidebar`) and the click-through (`by_hand`). The 36 settings on route `not_yet` have no way to apply them yet. Today a run does these things:
+Status: milestone M2. `scripts/bootstrap` installs mac-setup. The settings reference in `settings/macos/` describes 288 settings. The playbooks wire 7 of its routes: preferences (`defaults`), command tools (`command`), Dock apps (`dock_apps`), the desktop picture (`wallpaper`), the Finder sidebar (`finder_sidebar`), app installs (`apps`) and the click-through (`by_hand`). The 36 settings on route `not_yet` have no way to apply them yet. Today a run does these things:
 
 1. It creates the accounts the profile lists.
 2. It writes account settings that macOS keeps as preferences, for the account that runs it and for each listed account.
 3. It writes machine preferences as root, and sets machine settings through command tools such as `pmset` and `systemsetup`.
-4. It sets each account's Dock apps, a solid black desktop, and the Finder sidebar's favorites and hidden items.
-5. `playbooks/by-hand.yml` walks you through the click-only settings in the profile.
+4. It installs the apps the profile lists from the catalog in `apps/macos.yml`, after it checks each download.
+5. It sets each account's Dock apps, a solid black desktop, and the Finder sidebar's favorites and hidden items.
+6. `playbooks/by-hand.yml` walks you through the click-only settings in the profile.
 
 6 settings are proven on macOS 27.2.1: the 3 Dock settings (position, tile size and recents), the Dock apps, the black desktop and Wi-Fi power. Every other setting on a wired route is built and unit-tested but not yet proven on a Mac. The Plan section names the milestone that proves it.
 
@@ -78,12 +79,12 @@ Edit the profile and run again. Write the old value, or write `unset` to return 
 
 ### Next, right after the first release
 
-Apps and Homebrew, dotfiles, turning FileVault on (with secure tokens for the accounts mac-setup creates), MDM profiles, an undo command, and running mac-setup from another machine over SSH.
+Homebrew, dotfiles, turning FileVault on (with secure tokens for the accounts mac-setup creates), MDM profiles, an undo command, and running mac-setup from another machine over SSH.
 
 ### Not planned
 
 1. Granting privacy permissions by script, editing the privacy database, or working around a consent prompt.
-2. Deleting accounts or apps.
+2. Deleting accounts or apps. The one exception: an app upgrade replaces the old copy of that app.
 3. macOS updates.
 4. Linux and Windows for now. The layout leaves room for them. Each system gets its own settings folder and roles, with the same profile shape.
 
@@ -107,7 +108,7 @@ Apps and Homebrew, dotfiles, turning FileVault on (with secure tokens for the ac
 2. **Check before writing.** The whole profile is checked before the first change. A bad profile changes nothing.
 3. **Admin work sits in one place.** The playbook has two plays. Only the second one uses admin rights, so a reader can see every admin step in one place.
 4. **Small, data-driven code.** One role writes every simple preference from the reference. A custom module exists only where no existing module can do the job, reads before it writes, and supports `--check`.
-5. **Pinned and checked downloads.** Every download has a fixed version and a SHA-256 hash, and is at least 21 days old when pinned.
+5. **Pinned and checked downloads.** Every download has a fixed version and a SHA-256 hash, and is at least 21 days old when pinned. The one exception is an app whose vendor publishes only a latest download, such as Google Chrome: it has no fixed hash or age, and every other check, the vendor's signature and VirusTotal included, still applies.
 6. **Private data stays local.** Real machine names, account names and profiles live in `.local/`, which git ignores. Passwords are typed at a prompt and never written to a file.
 7. **Proven on the real Mac.** A setting counts as proven on a macOS version only after it was applied and read back on a Mac running that version.
 
@@ -155,7 +156,13 @@ If a download does not match its pinned SHA-256 hash, the bootstrap deletes that
    test -d .local/inventory || cp -R inventory/example .local/inventory
    ```
 
-   The profile is `.local/inventory/host_vars/example-mac/accounts.yml`. Its `default_settings` hold the settings for every account, and `machine.yml` beside it holds the machine settings. Set `time.zone` in `machine.yml` to your own zone first; the example uses `Etc/UTC`. Change a value there if you want another one. For example, `dock.position: bottom` moves the Dock to the bottom. `inventory/example/TEMPLATE.yml` lists every setting with the values it takes. The value `unset` deletes a setting stored as a preference, so macOS uses its own default.
+   You can keep the profile outside the checkout instead, in `~/.dot/mac-setup/inventory/`. Copy the example there, and add `-i ~/.dot/mac-setup/inventory` to every `ansible-playbook` command:
+
+   ```sh
+   test -d ~/.dot/mac-setup/inventory || { mkdir -p ~/.dot/mac-setup && cp -R inventory/example ~/.dot/mac-setup/inventory; }
+   ```
+
+   The profile is `.local/inventory/host_vars/example-mac/accounts.yml`, or the same path under `~/.dot/mac-setup/inventory/`. Its `default_settings` hold the settings for every account, and `machine.yml` beside it holds the machine settings. Set `time.zone` in `machine.yml` to your own zone first; the example uses `Etc/UTC`. Change a value there if you want another one. For example, `dock.position: bottom` moves the Dock to the bottom. `inventory/example/TEMPLATE.yml` lists every setting with the values it takes. The value `unset` deletes a setting stored as a preference, so macOS uses its own default.
 
    Quote a value such as `"on"`, `"off"`, `"yes"` or `"no"`. Without quotes, YAML reads it as true or false, and the profile check refuses it with a line that says to quote it.
 
@@ -171,7 +178,7 @@ If a download does not match its pinned SHA-256 hash, the bootstrap deletes that
    power.display_sleep_minutes: 10
    ```
 
-   `dock.applications` keeps only the listed apps, by bundle id and in order. `desktop.wallpaper` needs the account signed in at the screen. For another account, the summary says its desktop picture is set at its next run while it is signed in. `finder.sidebar_favorites` puts the listed folders first in Finder's sidebar, and `"~"` means each account's home folder. The first run that sets the sidebar compiles a small helper with the Command Line Tools into `.local/finder-sidebar/`. To add Desktop, Documents or Downloads, the helper first lists the folder, so macOS asks once whether Terminal may use it. Click Allow, and the folder is added; later runs do not ask again. If you click Don't Allow, the run names the folder as refused.
+   `dock.applications` keeps only the listed apps, by bundle id and in order. An app that the same run installs joins the Dock on the next run, because the Dock is set before the installs. `desktop.wallpaper` needs the account signed in at the screen. For another account, the summary says its desktop picture is set at its next run while it is signed in. `finder.sidebar_favorites` puts the listed folders first in Finder's sidebar, and `"~"` means each account's home folder. The first run that sets the sidebar compiles a small helper with the Command Line Tools into `.local/finder-sidebar/`. To add Desktop, Documents or Downloads, the helper first lists the folder, so macOS asks once whether Terminal may use it. Click Allow, and the folder is added; later runs do not ask again. If you click Don't Allow, the run names the folder as refused.
 
    Its `accounts` list is empty. To create a standard account, or to give an existing one its own settings, add an entry:
 
@@ -206,6 +213,62 @@ If a download does not match its pinned SHA-256 hash, the bootstrap deletes that
 
    A setting macOS refuses at write time, such as a stored value of another type, does not stop the others. The run's last task then fails with one `refused` line per setting, and the run ends with exit code 2.
 
+### Apps
+
+mac-setup installs apps from a small catalog, `apps/macos.yml`. Each entry names the vendor's download URL and the only host it may come from. It also names the pinned SHA-256 hash, the vendor's release date, the vendor's Apple Team ID (the ID of the developer certificate that signs the app), the bundle id and the lowest version accepted. Today the catalog holds `google_chrome`, `sublime_text` and `little_snitch`. To install some of them, list their ids under `machine_settings`:
+
+```yaml
+machine_settings:
+  apps.install: [sublime_text, google_chrome]
+```
+
+The profile check refuses an id that is not in the catalog, and an id listed twice, with one line each.
+
+An app already in `/Applications` at the catalog's version or newer is left alone, and nothing is downloaded. Otherwise the run checks each app in this order, and the first failed check refuses it:
+
+1. **Catalog entry.** Every field is present and well formed.
+2. **Age.** A pinned build must be at least 21 days old by its release date.
+3. **HTTPS and host.** The URL and every redirect use HTTPS on the entry's host only.
+4. **SHA-256.** The download must match the pinned hash. Downloads are kept in `.local/downloads/` by hash, so a second run downloads nothing.
+5. **VirusTotal.** The run sends only the file's SHA-256 to `www.virustotal.com`, never the file. Any engine that reports the file as malicious or suspicious refuses it. So does a file VirusTotal does not know, a file no engine has scanned, and a missing key.
+6. **Unpack.** A disk image is mounted read-only and hidden from Finder. A zip is unpacked with `ditto`. The app must be inside.
+7. **Signature.** `codesign --verify --deep --strict` must pass.
+8. **Gatekeeper.** `spctl --assess` must pass, which also confirms that Apple notarized the build.
+9. **Team ID.** The signing Team ID must equal the catalog's.
+10. **Bundle id and version.** Both must match the catalog, and the version must be at least the catalog's.
+
+The install fails closed. A refused app is not copied, the other apps still install, and the run ends with one `refused` line per app and exit code 2. A preview with `--check` runs every check, so it also downloads and asks VirusTotal, and it installs nothing.
+
+Google serves only its latest Chrome build, so `google_chrome` has no pinned hash and no age check. The signature, Gatekeeper, Team ID and VirusTotal checks still apply. Chrome updates itself after the install. Little Snitch needs a license, and a one-time approval of its network filter in System Settings, which only a person can give.
+
+VirusTotal's verdict for each file is stored in `.local/downloads/SHA256.virustotal.json`, where SHA256 is the file's hash. A later run reads the stored verdict and asks VirusTotal nothing, so it needs no key. A stored `flagged` verdict keeps refusing that file. The run makes at most 4 lookups per minute, the free API key's limit, and waits when it reaches that rate.
+
+An upgrade replaces the old copy whole. The run copies the new app next to the old one, swaps the two, and then deletes the old copy. mac-setup deletes no other app, and never touches Apple's own apps.
+
+An app install contacts the catalog entry's host (`dl.google.com`, `download.sublimetext.com` or `www.obdev.at`) and `www.virustotal.com`. `scripts/app-catalog ID` prints a vendor's current version, URL and SHA-256 for review; it never edits the catalog.
+
+### Secrets
+
+The VirusTotal API key is the one secret mac-setup reads. Keep it in an encrypted Ansible vault file in your private profile, and never in the repository. A free VirusTotal account gives you a key.
+
+1. Make the vault password file. The first line makes the folder, and the second writes a random password readable only by you. Keep a copy of the password in your password manager; without it, nobody can open the vault file.
+
+   ```sh
+   mkdir -p ~/.dot/mac-setup && chmod 700 ~/.dot/mac-setup
+   (umask 077 && openssl rand -hex 32 > ~/.dot/mac-setup/vault-password)
+   ```
+
+2. Create the vault file in your profile's `group_vars/all/` folder, so every machine in the profile can read it. Use the profile folder you chose in Install step 3, here `.local/inventory/`. Its name ends in `.vault.yml`, which marks it as encrypted. The command opens an editor; add one line, `virustotal_api_key: YOUR_KEY`, then save and close.
+
+   ```sh
+   mkdir -p .local/inventory/group_vars/all
+   .local/venv/bin/ansible-vault create .local/inventory/group_vars/all/secrets.vault.yml
+   ```
+
+3. Run the playbook as before. `ansible.cfg` names `scripts/vault-password`, which prints the password from `~/.dot/mac-setup/vault-password`, so nothing is typed at run time. Set `DOT_HOME` to use another folder than `~/.dot`.
+
+`scripts/vault-password` uses the file only when you own it and its mode is 600. Otherwise it prints a warning, and the vault file cannot be opened. Without the password file, a run that reads no vault file works as before, and a run that needs the key stops with `Decryption failed`. Run `.local/venv/bin/ansible-vault edit` with the same path to change the key.
+
 ### Hosts the install contacts
 
 | # | Host | What comes from it |
@@ -217,14 +280,14 @@ If a download does not match its pinned SHA-256 hash, the bootstrap deletes that
 | 5 | `galaxy.ansible.com` | The community.general 13.5.0 collection pinned in `requirements/collections.txt` |
 | 6 | `ansible-galaxy-ng.s3.dualstack.us-east-1.amazonaws.com` | Galaxy's file host. `galaxy.ansible.com` redirects the collection download here. |
 
-Every download uses HTTPS. The bootstrap never reads the package index at `pypi.org`. Running the playbook contacts no host.
+Every download uses HTTPS. The bootstrap never reads the package index at `pypi.org`. Running the playbook contacts no host, unless the profile lists apps. The Apps section names the hosts an app install contacts.
 
 ### Folders the install writes
 
 | # | Place | What it holds | Size measured |
 | --- | --- | --- | --- |
 | 1 | `.local/uv/` | uv 0.13.4 | 27,232 KiB |
-| 2 | `.local/downloads/` | The uv and collection archives | 16,840 KiB |
+| 2 | `.local/downloads/` | The uv and collection archives. A run that installs apps adds each app's download and its VirusTotal verdict here, owned by root. | 16,840 KiB before any app |
 | 3 | `.local/wheels/` | The 9 Python package files | 6,920 KiB |
 | 4 | `.local/venv/` | The Python virtual environment with Ansible | 49,636 KiB |
 | 5 | `.local/collections/` | The community.general collection | 26,292 KiB |
@@ -239,7 +302,7 @@ Nothing else in your home folder changes. uv adds no link in `~/.local/bin` and 
 
 ### Removing mac-setup
 
-Removing mac-setup leaves your Mac's settings as they are. Deleting the checkout also deletes your profile in `.local/inventory/`, so copy it elsewhere first if you want to keep it.
+Removing mac-setup leaves your Mac's settings and the apps it installed as they are. Deleting the checkout also deletes your profile in `.local/inventory/`, so copy it elsewhere first if you want to keep it.
 
 ```sh
 cd ~/mac-setup

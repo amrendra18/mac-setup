@@ -22,7 +22,7 @@ Preconditions:
 - The Mac is set aside for testing. The run changes the running account's real Dock: the setup saves the Dock and empties its app tiles, the apply leaves only Terminal and Safari, and the cleanup puts the saved Dock back.
 - The running account is an admin with password-free sudo, because the harness passes no `-K`.
 - The running account is signed in at the screen, so the Dock runs and its restart reports `changed`.
-- Spotlight indexing is on for the startup disk, because the module finds each app with `mdfind`.
+- The module finds each app with `mdfind`, and scans `/Applications`, `/System/Applications` and `/System/Applications/Utilities` when Spotlight has not indexed it yet.
 
 - **Setup.** The journey saves the whole `com.apple.dock` domain to `.local/dock-apps-journey/dock-before.plist`, then empties the Dock's app tiles with `defaults write com.apple.dock persistent-apps -array`, so the first run has something to change.
 - **Preview.** Check run: exit 0, `changed=1 failed=0`.
@@ -37,4 +37,4 @@ Preconditions:
 - The setup empties the Dock's app tiles, and the Dock shows the old tiles until it restarts. The cleanup always restores the saved domain, also after a failed run. The restore replaces every Dock key, so a Dock change made by hand during the journey is lost.
 - The apply's `changed=2` needs the account signed in at the screen. With no Dock running, the restart has nothing to do and the apply shows `changed=1`.
 - A listed app already in the Dock keeps its tile. A new one gets a tile with its bundle id, name and file URL, and the Dock may add its own fields, such as `GUID` and `book`, later. The module compares bundle ids only, so such fields never count as a change.
-- The module searches for each app with `mdfind`. When several copies exist, it prefers one in `/Applications/` or `/System/Applications/`. A bundle that is not an `.app`, such as a plug-in, is not found, and neither is an app on a disk Spotlight does not index.
+- The module searches for each app with `mdfind`, then the three app folders above. When several copies exist, it prefers one in `/Applications/` or `/System/Applications/`. A bundle that is not an `.app`, such as a plug-in, is not found, and neither is an app on a disk Spotlight does not index.

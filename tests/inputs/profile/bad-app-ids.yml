@@ -1,0 +1,5 @@
+---
+# expect: machine_settings, apps.install
+# expect: machine_settings, apps.install
+machine_settings:
+  apps.install: [sublime_text, example_editor, sublime_text]

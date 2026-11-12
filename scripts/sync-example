@@ -31,7 +31,9 @@ HEADER = "---\n# Written by scripts/sync-example from the maintainer's profile. 
 def load(folder):
     profile = {}
     for path in sorted(folder.glob("host_vars/*/*.yml")):
-        profile.update(yaml.safe_load(path.read_text()) or {})
+        data = yaml.safe_load(path.read_text())
+        if isinstance(data, dict):
+            profile.update(data)
     return profile
 
 
@@ -47,6 +49,8 @@ def neutral_value(setting_id, value):
         return NEUTRAL[setting_id]
     if setting_id == "finder.sidebar_favorites":
         return [item for item in value if item in SAFE_PATHS]
+    if setting_id == "apps.install":
+        return []
     if setting_id == "dock.applications":
         return [item for item in value if item.startswith("com.apple.")]
     return value

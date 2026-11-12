@@ -13,7 +13,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-ENTRY_COUNT = 287
+ENTRY_COUNT = 288
 SCRIPT = ROOT / "scripts/render-template"
 _loader = importlib.machinery.SourceFileLoader("render_template", str(SCRIPT))
 template = importlib.util.module_from_spec(
@@ -41,6 +41,7 @@ ROUTES = (
     "dock_apps",
     "wallpaper",
     "finder_sidebar",
+    "apps",
     "by_hand",
     "not_yet",
 )
@@ -57,6 +58,7 @@ VALUE_FIELDS = {
     "bundle_ids": {"type"},
     "paths": {"type"},
     "list": {"type", "choices"},
+    "catalog_ids": {"type"},
 }
 SETTING_ID = re.compile(r"[a-z][a-z0-9_]*(\.[a-z0-9_]+)+")
 VERSION = re.compile(r"\d+(\.\d+)*")
@@ -96,7 +98,7 @@ def _values_problems(values):
         return []
     if not isinstance(values, dict) or values.get("type") not in VALUE_FIELDS:
         return [
-            "values: must be a list of choices or {type: bool, int, float, text, bundle_ids, paths or list}"
+            "values: must be a list of choices or {type: bool, int, float, text, bundle_ids, paths, list or catalog_ids}"
         ]
     kind = values["type"]
     if set(values) != VALUE_FIELDS[kind]:
@@ -267,6 +269,8 @@ def entry_problems(entry):
         problems.append(
             "values: {type: bundle_ids} is for route dock_apps, and only there"
         )
+    if (kind == "catalog_ids") != (route == "apps"):
+        problems.append("values: {type: catalog_ids} is for route apps, and only there")
     if kind in ("paths", "list") and route != "finder_sidebar":
         problems.append(f"values: {{type: {kind}}} is only for route finder_sidebar")
     if route == "by_hand":
@@ -402,6 +406,9 @@ FIXTURES = {
             lockout_risk=True,
             notes="takes_effect not measured",
         ),
+        "alpha.software": fixture(
+            scope="machine", route="apps", values={"type": "catalog_ids"}
+        ),
         "alpha.sleep": fixture(
             scope="machine",
             route="command",
@@ -482,6 +489,11 @@ BROKEN = [
         "bundle ids off dock_apps",
         lambda e: e.update(values={"type": "bundle_ids"}),
         "bundle_ids} is for route dock_apps",
+    ),
+    (
+        "catalog ids off apps",
+        lambda e: e.update(values={"type": "catalog_ids"}),
+        "catalog_ids} is for route apps",
     ),
     (
         "paths off finder_sidebar",
@@ -731,6 +743,7 @@ class FixtureReference(unittest.TestCase):
                 ("alpha.message", "unset"),
                 ("alpha.remote", "false"),
                 ("alpha.sleep", "0"),
+                ("alpha.software", "[]"),
             ],
         )
         self.assertEqual(_listed(click_only), [("beta.privacy_page", "")])
@@ -739,6 +752,7 @@ class FixtureReference(unittest.TestCase):
             '  #   Values: left, bottom, "off"',
             '  #   Values: "on", "off"',
             "  #   Values: a list of any of recents, trash",
+            "  #   Values: a list of app ids from apps/macos.yml",
             '  #   Values: a list of folder paths that start with / or "~", other than / itself, in order',
             "  #   macOS default: bottom",
             "  #   Takes effect: when the Dock restarts",
@@ -761,7 +775,7 @@ class FixtureReference(unittest.TestCase):
         self.assertEqual(profile["default_settings"]["beta.edge"], "bottom")
         self.assertIs(profile["machine_settings"]["alpha.remote"], False)
         self.assertEqual(
-            len(profile["default_settings"]) + len(profile["machine_settings"]), 13
+            len(profile["default_settings"]) + len(profile["machine_settings"]), 14
         )
 
 

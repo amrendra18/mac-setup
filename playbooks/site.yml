@@ -59,6 +59,13 @@
       vars:
         macos_commands_items: "{{ profile_commands }}"
 
+    - name: Install the listed apps
+      ansible.builtin.include_role:
+        name: macos_apps
+      vars:
+        macos_apps_items: "{{ profile_apps }}"
+        macos_apps_virustotal_api_key: "{{ virustotal_api_key | default('') }}"
+
     - name: Write each other account's settings as that account
       ansible.builtin.include_role:
         name: macos_defaults

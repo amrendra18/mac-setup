@@ -1,4 +1,6 @@
 import importlib.machinery
+import shutil
+import tempfile
 import importlib.util
 import sys
 import unittest
@@ -59,6 +61,7 @@ class SyncExample(unittest.TestCase):
                 "dock.applications": ["com.google.Chrome", "com.apple.Terminal"],
                 "power.display_sleep_minutes": 3,
                 "power.system_sleep_minutes": 0,
+                "apps.install": ["sublime_text", "google_chrome"],
             }
         )
         self.assertEqual(sorted(refused), ["computer.name", "login_window.message"])
@@ -72,7 +75,19 @@ class SyncExample(unittest.TestCase):
         self.assertEqual(result["dock.applications"], ["com.apple.Terminal"])
         self.assertEqual(result["power.display_sleep_minutes"], 10)
         self.assertEqual(result["power.system_sleep_minutes"], 30)
+        self.assertEqual(result["apps.install"], [])
         self.assertNotIn("zz", yaml.safe_dump(result))
+
+    def test_an_encrypted_vault_file_in_the_profile_is_skipped(self):
+        folder = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, folder)
+        host = folder / "host_vars" / "mac"
+        host.mkdir(parents=True)
+        (host / "accounts.yml").write_text("default_settings:\n  dock.position: left\n")
+        (host / "secrets.vault.yml").write_text("$ANSIBLE_VAULT;1.1;AES256\n6162\n")
+        self.assertEqual(
+            self.script.load(folder), {"default_settings": {"dock.position": "left"}}
+        )
 
     def test_accounts_get_made_up_names(self):
         refused = []

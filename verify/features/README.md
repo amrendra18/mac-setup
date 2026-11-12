@@ -89,3 +89,4 @@ A read's `type` is the name macOS reports: `string`, `integer`, `float`, `boolea
 | 6 | [Guided click-through](./by-hand.md) | `scripts/verify fast --feature by-hand` | list mode builds 3 items from click-only settings in the profile, opens no page, and changes no Dock or Finder key |
 | 7 | [Dock apps](./dock-apps.md) | `scripts/verify fast --feature dock-apps` | check run, apply with 1 Dock restart, second run, a missing app refused with exit 2, the bundle ids read back, and the saved Dock restored |
 | 8 | [Wallpaper](./wallpaper.md) | `scripts/verify fast --feature wallpaper` | check run, apply, second run, and every screen read back as the black picture |
+| 9 | [Apps](./apps.md) | `scripts/verify full --feature apps` | without a VirusTotal key, a check run and an apply each refuse Sublime Text with one line and exit 2, and the scratch Applications folder stays empty |

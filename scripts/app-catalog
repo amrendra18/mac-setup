@@ -1,0 +1,109 @@
+#!/bin/sh
+# fmt: off
+''':'
+root=$(cd "$(dirname "$0")/.." && pwd)
+if [ ! -x "$root/.local/venv/bin/python" ]; then
+  echo "app-catalog: $root/.local/venv is missing. Run scripts/bootstrap first." >&2
+  exit 3
+fi
+exec "$root/.local/venv/bin/python" -I "$0" "$@"
+'''
+# fmt: on
+
+import dataclasses
+import getpass
+import re
+import sys
+from pathlib import Path
+from urllib.parse import urlsplit
+
+import yaml
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "roles/macos_apps/module_utils"))
+
+import verified_download as vd
+
+USAGE = """usage: scripts/app-catalog ID
+
+Prints the vendor's current version, URL and SHA-256 for one app in apps/macos.yml,
+for review. It never edits the catalog. It finds the current download from the
+entry's latest page, or uses the entry's URL when the vendor serves only the
+latest build. The download then passes every check the install runs except the
+pinned hash and the age rule: HTTPS from the entry's host, VirusTotal, codesign,
+spctl, Team ID, bundle id, and at least the catalog's version. It asks for the
+VirusTotal API key with a hidden prompt and never stores it; press Return to
+skip it when the file already has a stored verdict. Downloads and verdicts are cached in .local/downloads/.
+
+exit codes: 0 printed, 1 a check refused the download, 2 usage error
+"""
+
+
+def ask_key():
+    try:
+        return getpass.getpass("VirusTotal API key (not stored): ").strip()
+    except EOFError:
+        return ""
+
+
+def latest_url(item, entry, opener):
+    latest = entry.get("latest")
+    if not latest:
+        return entry["url"]
+    page = latest["page"]
+    with vd.open_https(item, page, urlsplit(page).hostname, opener) as response:
+        text = response.read().decode(errors="replace")
+    found = re.search(latest["pattern"], text)
+    if not found:
+        raise vd.Refused("latest", item, f"{page} has no match for {latest['pattern']}")
+    return latest["url"].replace("{}", found.group(1))
+
+
+def main(argv):
+    if len(argv) != 1 or argv[0].startswith("-"):
+        print(
+            USAGE,
+            end="",
+            file=sys.stdout if argv in (["-h"], ["--help"]) else sys.stderr,
+        )
+        return 0 if argv in (["-h"], ["--help"]) else 2
+    item = argv[0]
+    catalog = yaml.safe_load((ROOT / "apps/macos.yml").read_text())
+    if item not in catalog:
+        print(
+            f"app-catalog: {item} is not in apps/macos.yml; known: {', '.join(catalog)}",
+            file=sys.stderr,
+        )
+        return 2
+    opener = vd.default_opener()
+    try:
+        current = vd.parse_app(item, catalog[item])
+        url = latest_url(item, catalog[item], opener)
+        candidate = dataclasses.replace(current, url=url, sha256=None, published=None)
+        setup = vd.Setup(
+            downloads=ROOT / ".local/downloads",
+            runner=vd.Runner(),
+            opener=opener,
+            clock=vd.Clock(),
+            key=ask_key(),
+        )
+        with vd.verified_app(candidate, setup) as found:
+            version, sha256 = found.version, found.sha256
+    except vd.Refused as error:
+        print(f"app-catalog: {error}", file=sys.stderr)
+        return 1
+    print(f"{item}:")
+    print(f"  url: {url}")
+    print(f"  sha256: {sha256}")
+    print(f'  version: "{version}"')
+    print(
+        f"  catalog now: version {current.version}, sha256 {current.sha256 or 'null'}"
+    )
+    print(
+        "  published: take the date from the vendor's release notes; the install refuses a build younger than 21 days"
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

@@ -10,9 +10,7 @@
         value: "{{ macos_commands_item.value }}"
   rescue:
     - name: "Record the refusal of {{ macos_commands_item.id }}"
-      ansible.builtin.include_role:
-        name: macos_defaults
-        tasks_from: refused
+      ansible.builtin.include_tasks: "{{ role_path }}/../macos_defaults/tasks/refused.yml"
       vars:
         macos_defaults_refused_account: machine
         macos_defaults_refused_id: "{{ macos_commands_item.id }}"
