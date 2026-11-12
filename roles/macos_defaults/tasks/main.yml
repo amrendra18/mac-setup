@@ -1,4 +1,11 @@
 ---
+- name: Read which account owns the screen
+  ansible.builtin.command: stat -f %Su /dev/console
+  register: macos_defaults_screen_owner
+  check_mode: false
+  changed_when: false
+  when: macos_defaults_restart
+
 - name: Write each setting
   ansible.builtin.include_tasks: write.yml
   loop: "{{ macos_defaults_writes }}"

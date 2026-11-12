@@ -1,0 +1,1298 @@
+---
+appearance.accent_color:
+  summary: Accent color for buttons, menus, and controls.
+  scope: user
+  route: not_yet
+  values: [multicolor, blue, purple, pink, red, orange, yellow, green, graphite]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Appearance
+  proven_on: {}
+  not_yet_reason: For multicolor, a write deletes a key or leaves
+    one alone, and a defaults write map cannot express that yet.
+  notes: 'The stored numbers are common community values, not
+    measured. Research note on when it takes effect: open apps
+    redraw after a relaunch or logout (guess).'
+appearance.highlight_color:
+  summary: Color of selected text.
+  scope: user
+  route: not_yet
+  values: [accent, blue, purple, pink, red, orange, yellow, green, graphite]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Appearance
+  proven_on: {}
+  not_yet_reason: For accent, a write deletes a key or leaves
+    one alone, and a defaults write map cannot express that yet.
+  notes: 'The Other color choice is free-form and is left out.
+    The stored strings are guesses. Research note on when it takes
+    effect: apps pick it up after a relaunch (guess).'
+appearance.icon_style:
+  summary: Icon and widget style (macOS 26 and later).
+  scope: user
+  route: by_hand
+  values: [default, dark, clear, tinted]
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Appearance
+  link: x-apple.systempreferences:com.apple.Appearance-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: unknown.'
+appearance.liquid_glass:
+  summary: 'Liquid Glass look: Clear or Tinted (macOS 26.1 and
+    later).'
+  scope: user
+  route: by_hand
+  values: [clear, tinted]
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Appearance
+  link: x-apple.systempreferences:com.apple.Appearance-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: unknown.'
+appearance.scroll_bar_click:
+  summary: Clicking the scroll bar jumps one page or to the spot
+    clicked.
+  scope: user
+  route: defaults
+  values: [next_page, clicked_spot]
+  macos_default: not measured
+  writes:
+    - domain: NSGlobalDomain
+      key: AppleScrollerPagingBehavior
+      type: bool
+      map: {next_page: false, clicked_spot: true}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Appearance
+  proven_on: {}
+  not_yet_reason: ""
+appearance.show_scroll_bars:
+  summary: When window scroll bars show.
+  scope: user
+  route: defaults
+  values: [automatic, when_scrolling, always]
+  macos_default: not measured
+  writes:
+    - domain: NSGlobalDomain
+      key: AppleShowScrollBars
+      type: string
+      map: {automatic: Automatic, when_scrolling: WhenScrolling, always: Always}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Appearance
+  proven_on: {}
+  not_yet_reason: ""
+appearance.sidebar_icon_size:
+  summary: Size of icons in window sidebars.
+  scope: user
+  route: defaults
+  values: [small, medium, large]
+  macos_default: not measured
+  writes:
+    - domain: NSGlobalDomain
+      key: NSTableViewDefaultSizeMode
+      type: int
+      map: {small: 1, medium: 2, large: 3}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Appearance
+  proven_on: {}
+  not_yet_reason: ""
+appearance.theme:
+  summary: Light, Dark, or Auto (follows the time of day).
+  scope: user
+  route: not_yet
+  values: [light, dark, auto]
+  macos_default: not measured
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Appearance
+  proven_on: {}
+  not_yet_reason: For light and dark and auto, a write deletes
+    a key or leaves one alone, and a defaults write map cannot
+    express that yet.
+appearance.wallpaper_tinting:
+  summary: Tint window backgrounds with the wallpaper color.
+  scope: user
+  route: defaults
+  values: ['on', 'off']
+  macos_default: not measured
+  writes:
+    - domain: NSGlobalDomain
+      key: AppleReduceDesktopTinting
+      type: bool
+      map: {'on': false, 'off': true}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Appearance
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: apps relaunch
+    (guess).'
+battery.dim_on_battery:
+  summary: Slightly dim the display on battery power (laptops).
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/usr/bin/pmset, -g, custom]
+    parse: ^ lessbright +(?P<value>\d+)$
+    map: {true: '1', false: '0'}
+    set:
+      true:
+        - [/usr/bin/pmset, -b, lessbright, '1']
+      false:
+        - [/usr/bin/pmset, -b, lessbright, '0']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Battery
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Only Macs with a battery list lessbright. No test Mac
+    had a battery, so the read''s output is not measured on macOS
+    27. Research note on when it takes effect: none (guess).'
+battery.optimized_charging:
+  summary: Optimized battery charging (laptops).
+  scope: machine
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Battery
+  link: x-apple.systempreferences:com.apple.Battery-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+lock_screen.large_clock:
+  summary: Show the large clock on the lock screen and screen
+    saver.
+  scope: user
+  route: by_hand
+  values: [by_hand]
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Lock Screen
+  link: x-apple.systempreferences:com.apple.Lock-Screen-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: unknown.'
+lock_screen.password_after:
+  summary: Ask for the password this many seconds after sleep
+    or screen saver.
+  scope: user
+  route: by_hand
+  values: [0, 5, 60, 300, 900, 3600, 28800, never]
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Lock Screen
+  link: ""
+  proven_on: {}
+  not_yet_reason: ""
+  notes: sysadminctl asks for the account's own password, so a
+    person sets it.
+lock_screen.screen_saver_after:
+  summary: Start the screen saver after this many seconds idle;
+    0 means never.
+  scope: user
+  route: defaults
+  values: [0, 60, 120, 300, 600, 1200, 1800, 3600]
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.screensaver, key: idleTime, type: int, host: currentHost}
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Lock Screen
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: none reported.'
+menu_bar.accessibility_shortcuts:
+  summary: Show Accessibility Shortcuts in the menu bar.
+  scope: user
+  route: defaults
+  values: [show, hide]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.controlcenter
+      key: AccessibilityShortcuts
+      type: int
+      host: currentHost
+      map: {show: 18, hide: 24}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'The stored values are guesses: 18 shows the item, 24
+    hides it (CIS Sonoma, Jamf 2024-01-03); 2 and 8 for the three-way
+    items are guesses. Research note on when it takes effect:
+    killall ControlCenter (guess; reported in community posts).'
+menu_bar.airdrop:
+  summary: Show AirDrop in the menu bar.
+  scope: user
+  route: defaults
+  values: [show, hide]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.controlcenter
+      key: AirDrop
+      type: int
+      host: currentHost
+      map: {show: 18, hide: 24}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'The stored values are guesses: 18 shows the item, 24
+    hides it (CIS Sonoma, Jamf 2024-01-03); 2 and 8 for the three-way
+    items are guesses. Research note on when it takes effect:
+    killall ControlCenter (guess; reported in community posts).'
+menu_bar.autohide:
+  summary: Hide the menu bar on the desktop until the pointer
+    reaches the top.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: NSGlobalDomain, key: _HIHideMenuBar, type: bool}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+menu_bar.background:
+  summary: Show a solid menu bar background (macOS 26 and later).
+  scope: user
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Control Center
+  link: x-apple.systempreferences:com.apple.ControlCenter-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: unknown.'
+menu_bar.battery:
+  summary: Show Battery in the menu bar (laptops).
+  scope: user
+  route: defaults
+  values: [show, hide]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.controlcenter
+      key: Battery
+      type: int
+      host: currentHost
+      map: {show: 18, hide: 24}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'No test Mac had a battery, so none could show this row.
+    Research note on when it takes effect: killall ControlCenter
+    (guess; reported in community posts).'
+menu_bar.battery_percentage:
+  summary: Show the battery percentage next to the battery icon.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.controlcenter, key: BatteryShowPercentage, type: bool}
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'No test Mac had a battery. Which domain (plain or ByHost)
+    is the live one is not known. Research note on when it takes
+    effect: none reported.'
+menu_bar.bluetooth:
+  summary: Show Bluetooth in the menu bar.
+  scope: user
+  route: defaults
+  values: [show, hide]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.controlcenter
+      key: Bluetooth
+      type: int
+      host: currentHost
+      map: {show: 18, hide: 24}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'An earlier reader used the key NSStatusItem Visible
+    Bluetooth in the plain domain. The stored values 18 show and
+    24 hide come from CIS Sonoma and Jamf (2024-01-03). Research
+    note on when it takes effect: killall ControlCenter (guess;
+    reported in community posts).'
+menu_bar.clock_24_hour:
+  summary: Use a 24-hour menu bar clock.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.menuextra.clock, key: Show24Hour, type: bool}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: killall ControlCenter
+    (guess).'
+menu_bar.clock_am_pm:
+  summary: Show AM or PM in the menu bar clock.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.menuextra.clock, key: ShowAMPM, type: bool}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: killall ControlCenter
+    (guess).'
+menu_bar.clock_announce:
+  summary: Say the time out loud on the hour.
+  scope: user
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Control Center
+  link: x-apple.systempreferences:com.apple.ControlCenter-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: unknown.'
+menu_bar.clock_day_of_week:
+  summary: Show the day of the week in the menu bar clock.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.menuextra.clock, key: ShowDayOfWeek, type: bool}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: killall ControlCenter
+    (guess).'
+menu_bar.clock_flash_separators:
+  summary: Flash the time separators every second.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.menuextra.clock, key: FlashDateSeparators, type: bool}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: killall ControlCenter
+    (guess).'
+menu_bar.clock_seconds:
+  summary: Show seconds in the menu bar clock.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.menuextra.clock, key: ShowSeconds, type: bool}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: killall ControlCenter
+    (guess).'
+menu_bar.clock_show_date:
+  summary: Show the date in the menu bar clock.
+  scope: user
+  route: defaults
+  values: [when_space_allows, always, never]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.menuextra.clock
+      key: ShowDate
+      type: int
+      map: {when_space_allows: 0, always: 1, never: 2}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'The stored order is a community value; a test Mac had
+    0 (measured). Research note on when it takes effect: killall
+    ControlCenter (guess).'
+menu_bar.clock_style:
+  summary: Show the menu bar clock as digital or analog.
+  scope: user
+  route: defaults
+  values: [digital, analog]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.menuextra.clock
+      key: IsAnalog
+      type: bool
+      map: {digital: false, analog: true}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: killall ControlCenter
+    (guess).'
+menu_bar.display:
+  summary: Show Display in the menu bar.
+  scope: user
+  route: defaults
+  values: [always, when_active, never]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.controlcenter
+      key: Display
+      type: int
+      host: currentHost
+      map: {always: 18, when_active: 2, never: 8}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'The stored values are guesses: 18 shows the item, 24
+    hides it (CIS Sonoma, Jamf 2024-01-03); 2 and 8 for the three-way
+    items are guesses. Research note on when it takes effect:
+    killall ControlCenter (guess; reported in community posts).'
+menu_bar.focus:
+  summary: Show Focus in the menu bar.
+  scope: user
+  route: defaults
+  values: [always, when_active, never]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.controlcenter
+      key: FocusModes
+      type: int
+      host: currentHost
+      map: {always: 18, when_active: 2, never: 8}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'The stored values are guesses: 18 shows the item, 24
+    hides it (CIS Sonoma, Jamf 2024-01-03); 2 and 8 for the three-way
+    items are guesses. Research note on when it takes effect:
+    killall ControlCenter (guess; reported in community posts).'
+menu_bar.full_screen_visible:
+  summary: Keep the menu bar visible in full-screen apps.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: NSGlobalDomain, key: AppleMenuBarVisibleInFullscreen, type: bool}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+menu_bar.hearing:
+  summary: Show Hearing in the menu bar.
+  scope: user
+  route: defaults
+  values: [show, hide]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.controlcenter
+      key: Hearing
+      type: int
+      host: currentHost
+      map: {show: 18, hide: 24}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'The stored values are guesses: 18 shows the item, 24
+    hides it (CIS Sonoma, Jamf 2024-01-03); 2 and 8 for the three-way
+    items are guesses. Research note on when it takes effect:
+    killall ControlCenter (guess; reported in community posts).'
+menu_bar.keyboard_brightness:
+  summary: Show Keyboard Brightness in the menu bar.
+  scope: user
+  route: defaults
+  values: [show, hide]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.controlcenter
+      key: KeyboardBrightness
+      type: int
+      host: currentHost
+      map: {show: 18, hide: 24}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'The stored values are guesses: 18 shows the item, 24
+    hides it (CIS Sonoma, Jamf 2024-01-03); 2 and 8 for the three-way
+    items are guesses. Research note on when it takes effect:
+    killall ControlCenter (guess; reported in community posts).'
+menu_bar.music_recognition:
+  summary: Show Music Recognition in the menu bar.
+  scope: user
+  route: defaults
+  values: [show, hide]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.controlcenter
+      key: MusicRecognition
+      type: int
+      host: currentHost
+      map: {show: 18, hide: 24}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'The stored values are guesses: 18 shows the item, 24
+    hides it (CIS Sonoma, Jamf 2024-01-03); 2 and 8 for the three-way
+    items are guesses. Research note on when it takes effect:
+    killall ControlCenter (guess; reported in community posts).'
+menu_bar.now_playing:
+  summary: Show Now Playing in the menu bar.
+  scope: user
+  route: defaults
+  values: [always, when_active, never]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.controlcenter
+      key: NowPlaying
+      type: int
+      host: currentHost
+      map: {always: 18, when_active: 2, never: 8}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'The stored values are guesses: 18 shows the item, 24
+    hides it (CIS Sonoma, Jamf 2024-01-03); 2 and 8 for the three-way
+    items are guesses. Research note on when it takes effect:
+    killall ControlCenter (guess; reported in community posts).'
+menu_bar.screen_mirroring:
+  summary: Show Screen Mirroring in the menu bar.
+  scope: user
+  route: defaults
+  values: [always, when_active, never]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.controlcenter
+      key: ScreenMirroring
+      type: int
+      host: currentHost
+      map: {always: 18, when_active: 2, never: 8}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'The stored values are guesses: 18 shows the item, 24
+    hides it (CIS Sonoma, Jamf 2024-01-03); 2 and 8 for the three-way
+    items are guesses. Research note on when it takes effect:
+    killall ControlCenter (guess; reported in community posts).'
+menu_bar.siri:
+  summary: Show Siri in the menu bar.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.Siri, key: StatusMenuVisible, type: bool}
+  takes_effect: systemuiserver
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: killall SystemUIServer
+    (guess).'
+menu_bar.sound:
+  summary: Show Sound in the menu bar.
+  scope: user
+  route: defaults
+  values: [always, when_active, never]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.controlcenter
+      key: Sound
+      type: int
+      host: currentHost
+      map: {always: 18, when_active: 2, never: 8}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'A test Mac had -currentHost Sound=18 and NSStatusItem
+    Visible Sound=1 (measured), which fits 18 meaning always.
+    An earlier reader used the NSStatusItem key. Research note
+    on when it takes effect: killall ControlCenter (guess; reported
+    in community posts).'
+menu_bar.spotlight:
+  summary: Show the Spotlight icon in the menu bar.
+  scope: user
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Control Center
+  link: x-apple.systempreferences:com.apple.ControlCenter-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: unknown.'
+menu_bar.stage_manager:
+  summary: Show Stage Manager in the menu bar.
+  scope: user
+  route: defaults
+  values: [show, hide]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.controlcenter
+      key: StageManager
+      type: int
+      host: currentHost
+      map: {show: 18, hide: 24}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'The stored values are guesses: 18 shows the item, 24
+    hides it (CIS Sonoma, Jamf 2024-01-03); 2 and 8 for the three-way
+    items are guesses. Research note on when it takes effect:
+    killall ControlCenter (guess; reported in community posts).'
+menu_bar.time_machine:
+  summary: Show Time Machine in the menu bar.
+  scope: user
+  route: by_hand
+  values: [show, hide]
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Control Center
+  link: x-apple.systempreferences:com.apple.ControlCenter-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: unknown.'
+menu_bar.user_switcher:
+  summary: Show Fast User Switching in the menu bar.
+  scope: user
+  route: defaults
+  values: [show, hide]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.controlcenter
+      key: UserSwitcher
+      type: int
+      host: currentHost
+      map: {show: 18, hide: 24}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Jamf (Tahoe thread) says UserSwitcher is an integer
+    in com.apple.controlcenter and a configuration profile is
+    the reliable way to hide it. The style (icon, account name,
+    full name) is NSGlobalDomain userMenuExtraStyle, which is
+    left out. Research note on when it takes effect: killall ControlCenter
+    (guess; reported in community posts).'
+menu_bar.wifi:
+  summary: Show Wi-Fi in the menu bar.
+  scope: user
+  route: defaults
+  values: [show, hide]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.controlcenter
+      key: WiFi
+      type: int
+      host: currentHost
+      map: {show: 18, hide: 24}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'The stored values are guesses: 18 shows the item, 24
+    hides it (CIS Sonoma, Jamf 2024-01-03); 2 and 8 for the three-way
+    items are guesses. Research note on when it takes effect:
+    killall ControlCenter (guess; reported in community posts).'
+notifications.focus:
+  summary: Focus modes and their schedules.
+  scope: user
+  route: by_hand
+  values: [by_hand]
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Focus
+  link: x-apple.systempreferences:com.apple.Focus-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+notifications.iphone_sounds:
+  summary: Play sounds for notifications forwarded from iPhone.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.ncprefs, key: play_forwarded_notifications_sounds, type: bool}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Notifications
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: killall usernoted
+    (guess).'
+notifications.per_app:
+  summary: Notification style, sounds, and badges for each app.
+  scope: user
+  route: by_hand
+  values: [by_hand]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Notifications
+  link: x-apple.systempreferences:com.apple.Notifications-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+notifications.show_previews:
+  summary: 'When notification previews show: always, when unlocked,
+    or never.'
+  scope: user
+  route: defaults
+  values: [always, when_unlocked, never]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.ncprefs
+      key: content_visibility
+      type: int
+      map: {always: 3, when_unlocked: 2, never: 1}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Notifications
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'A test Mac had the top-level key set to 2 (measured),
+    which fits 2 meaning when unlocked. The other stored numbers
+    are guesses. Research note on when it takes effect: killall
+    usernoted and NotificationCenter (guess).'
+notifications.summarize:
+  summary: Summarize notifications with Apple Intelligence.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.ncprefs, key: summarize_previews, type: bool}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Notifications
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: killall usernoted
+    (guess).'
+notifications.when_display_sleeping:
+  summary: Allow notifications when the display is sleeping.
+  scope: user
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Notifications
+  link: x-apple.systempreferences:com.apple.Notifications-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: unknown.'
+notifications.when_locked:
+  summary: Allow notifications when the screen is locked.
+  scope: user
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Notifications
+  link: x-apple.systempreferences:com.apple.Notifications-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: unknown.'
+notifications.when_mirroring:
+  summary: Allow notifications when mirroring or sharing the display.
+  scope: user
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Notifications
+  link: x-apple.systempreferences:com.apple.Notifications-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: unknown.'
+screen_saver.choice:
+  summary: Which screen saver runs.
+  scope: user
+  route: by_hand
+  values: [by_hand]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Screen Saver
+  link: x-apple.systempreferences:com.apple.ScreenSaver-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+screen_saver.show_clock:
+  summary: Show a clock on the screen saver.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.screensaver, key: showClock, type: bool, host: currentHost}
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Screen Saver
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: none (guess).'
+siri.apple_intelligence:
+  summary: Turn Apple Intelligence on.
+  scope: user
+  route: by_hand
+  values: [by_hand]
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Apple Intelligence & Siri
+  link: x-apple.systempreferences:com.apple.Siri-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+siri.enabled:
+  summary: Turn Siri on.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.assistant.support, key: Assistant Enabled, type: bool}
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Apple Intelligence & Siri
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: killall Siri
+    (guess). Turning Siri on needs the pane''s setup and a voice
+    download.'
+siri.keyboard_shortcut:
+  summary: Keyboard shortcut that starts Siri.
+  scope: user
+  route: by_hand
+  values: [by_hand]
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Apple Intelligence & Siri
+  link: x-apple.systempreferences:com.apple.Siri-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: unknown.'
+siri.language_and_voice:
+  summary: Siri language and voice.
+  scope: user
+  route: by_hand
+  values: [by_hand]
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Apple Intelligence & Siri
+  link: x-apple.systempreferences:com.apple.Siri-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: unknown.'
+siri.listen_for:
+  summary: Listen for 'Siri' or 'Hey Siri'.
+  scope: user
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Apple Intelligence & Siri
+  link: x-apple.systempreferences:com.apple.Siri-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: unknown.'
+siri.voice_feedback:
+  summary: Siri speaks its answers out loud.
+  scope: user
+  route: defaults
+  values: ['on', 'off']
+  macos_default: not measured
+  writes:
+    - domain: com.apple.assistant.backedup
+      key: Use device speaker for TTS
+      type: int
+      map: {'on': 2, 'off': 3}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Apple Intelligence & Siri
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'The stored values 2 on and 3 off are a guess. defaults
+    reports the domain missing on a test Mac although the plist
+    file exists (measured). Research note on when it takes effect:
+    unknown.'
+sound.alert_device:
+  summary: Which device plays alert sounds.
+  scope: user
+  route: by_hand
+  values: [by_hand]
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Sound
+  link: x-apple.systempreferences:com.apple.Sound-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+sound.alert_sound:
+  summary: Sound macOS plays for alerts.
+  scope: user
+  route: defaults
+  values:
+    - boop
+    - breeze
+    - bubble
+    - crystal
+    - funky
+    - heroine
+    - jump
+    - mezzo
+    - pebble
+    - pluck
+    - pong
+    - sonar
+    - sonumi
+    - submerge
+  macos_default: not measured
+  writes:
+    - domain: NSGlobalDomain
+      key: com.apple.sound.beep.sound
+      type: string
+      map:
+        boop: /System/Library/Sounds/Tink.aiff
+        breeze: /System/Library/Sounds/Blow.aiff
+        bubble: /System/Library/Sounds/Pop.aiff
+        crystal: /System/Library/Sounds/Glass.aiff
+        funky: /System/Library/Sounds/Funk.aiff
+        heroine: /System/Library/Sounds/Hero.aiff
+        jump: /System/Library/Sounds/Frog.aiff
+        mezzo: /System/Library/Sounds/Basso.aiff
+        pebble: /System/Library/Sounds/Bottle.aiff
+        pluck: /System/Library/Sounds/Purr.aiff
+        pong: /System/Library/Sounds/Morse.aiff
+        sonar: /System/Library/Sounds/Ping.aiff
+        sonumi: /System/Library/Sounds/Sosumi.aiff
+        submerge: /System/Library/Sounds/Submarine.aiff
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Sound
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Older answers write the key in the ByHost global domain;
+    both are read. Research note on when it takes effect: none
+    reported (guess).'
+sound.alert_volume:
+  summary: Alert volume, in percent.
+  scope: user
+  route: not_yet
+  values: {type: int, min: 0, max: 100}
+  macos_default: not measured
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Sound
+  proven_on: {}
+  not_yet_reason: The command runs in the signed-in account's
+    session, and the command role writes machine settings only.
+sound.flash_screen:
+  summary: Flash the screen when an alert sound plays.
+  scope: user
+  route: defaults
+  values: ['on', 'off']
+  macos_default: not measured
+  writes:
+    - domain: NSGlobalDomain
+      key: com.apple.sound.beep.flash
+      type: int
+      map: {'on': 1, 'off': 0}
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Accessibility
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: none (guess).'
+sound.input_device:
+  summary: Which microphone records sound.
+  scope: user
+  route: by_hand
+  values: [by_hand]
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Sound
+  link: x-apple.systempreferences:com.apple.Sound-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+sound.output_device:
+  summary: Which speaker or headphones play sound.
+  scope: user
+  route: by_hand
+  values: [by_hand]
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Sound
+  link: x-apple.systempreferences:com.apple.Sound-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+sound.output_volume:
+  summary: Speaker volume, in percent.
+  scope: user
+  route: not_yet
+  values: {type: int, min: 0, max: 100}
+  macos_default: not measured
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Sound
+  proven_on: {}
+  not_yet_reason: The command runs in the signed-in account's
+    session, and the command role writes machine settings only.
+  notes: Volume is state people change all day, so a profile may
+    be better without it. A test Mac showed output volume 0, muted
+    (measured).
+sound.startup_sound:
+  summary: Play a sound when the Mac starts up.
+  scope: machine
+  route: command
+  values: ['on', 'off']
+  macos_default: not measured
+  command:
+    read: [/usr/sbin/nvram, StartupMute]
+    parse: ^StartupMute\s+(?P<value>%0[01])$
+    map: {'on': '%00', 'off': '%01'}
+    set:
+      'on':
+        - [/usr/sbin/nvram, StartupMute=%00]
+      'off':
+        - [/usr/sbin/nvram, StartupMute=%01]
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Sound
+  proven_on: {}
+  not_yet_reason: ""
+  notes: When the StartupMute variable is absent, the read finds
+    no value and macOS plays the sound.
+sound.ui_sounds:
+  summary: Play user interface sound effects.
+  scope: user
+  route: defaults
+  values: ['on', 'off']
+  macos_default: not measured
+  writes:
+    - domain: com.apple.systemsound
+      key: com.apple.sound.uiaudio.enabled
+      type: int
+      map: {'on': 1, 'off': 0}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Sound
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: unknown.'
+sound.volume_feedback:
+  summary: Play a sound when the volume changes.
+  scope: user
+  route: defaults
+  values: ['on', 'off']
+  macos_default: not measured
+  writes:
+    - domain: NSGlobalDomain
+      key: com.apple.sound.beep.feedback
+      type: int
+      map: {'on': 1, 'off': 0}
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Sound
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: none (guess).'
+spotlight.categories:
+  summary: Which result categories Spotlight shows.
+  scope: user
+  route: by_hand
+  values: [by_hand]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Spotlight
+  link: x-apple.systempreferences:com.apple.Spotlight-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: killall Spotlight
+    (guess).'
+spotlight.clipboard_history:
+  summary: Keep clipboard history in Spotlight (macOS 26 and later).
+  scope: user
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Spotlight
+  link: x-apple.systempreferences:com.apple.Spotlight-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: unknown.'
+spotlight.improve_search:
+  summary: Share Spotlight and Siri search data with Apple.
+  scope: user
+  route: defaults
+  values: ['on', 'off']
+  macos_default: not measured
+  writes:
+    - domain: com.apple.assistant.support
+      key: Search Queries Data Sharing Status
+      type: int
+      map: {'on': 1, 'off': 2}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Spotlight
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'The stored values 1 on and 2 off are a guess. Research
+    note on when it takes effect: unknown.'
+spotlight.privacy:
+  summary: Folders and disks Spotlight must not search.
+  scope: machine
+  route: by_hand
+  values: [by_hand]
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Spotlight
+  link: x-apple.systempreferences:com.apple.Spotlight-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""

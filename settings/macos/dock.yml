@@ -41,3 +41,913 @@ dock.show_recents:
   where: System Settings > Desktop & Dock > Show suggested and recent apps in Dock
   proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
+desktop.click_wallpaper_reveals:
+  summary: When a click on the wallpaper moves windows aside to
+    show the desktop.
+  scope: user
+  route: defaults
+  values: [always, stage_manager_only]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.WindowManager
+      key: EnableStandardClickToShowDesktop
+      type: bool
+      map: {always: true, stage_manager_only: false}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Desktop & Stage Manager
+    > Click wallpaper to reveal desktop
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'macOS 26 labels the choices ''Always on Wallpaper Click''
+    and ''Only in Stage Manager on Click''. Research note on when
+    it takes effect: Guess: WindowManager may pick the change
+    up live, or need killall WindowManager. Not tested.'
+desktop.default_browser:
+  summary: App that opens web links.
+  scope: user
+  route: by_hand
+  values: {type: text, pattern: '^[A-Za-z0-9.-]+$'}
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Widgets > Default
+    web browser
+  link: x-apple.systempreferences:com.apple.Desktop-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: macOS shows a confirmation dialog for any change, so
+    a script cannot change it silently. Apple's guide places it
+    under Widgets in Desktop & Dock. The setting is the LaunchServices
+    handler for http and https.
+desktop.items_in_stage_manager:
+  summary: Show desktop files and folders while Stage Manager
+    is on.
+  scope: user
+  route: defaults
+  values: [show, hide]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.WindowManager
+      key: HideDesktop
+      type: bool
+      map: {show: false, hide: true}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: 'System Settings > Desktop & Dock > Desktop & Stage Manager
+    > Show Items: In Stage Manager'
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: Guess: WindowManager
+    may pick the change up live, or need killall WindowManager.
+    Not tested.'
+desktop.items_on_desktop:
+  summary: Show files and folders on the desktop.
+  scope: user
+  route: defaults
+  values: [show, hide]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.WindowManager
+      key: StandardHideDesktopIcons
+      type: bool
+      map: {show: false, hide: true}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: 'System Settings > Desktop & Dock > Desktop & Stage Manager
+    > Show Items: On Desktop'
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: Guess: Finder
+    or WindowManager may need a restart. Not tested.'
+desktop.wallpaper:
+  summary: The solid color every desktop shows.
+  scope: user
+  route: wallpaper
+  values: [black]
+  macos_default: not measured
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Wallpaper > Colors
+  proven_on: {"27.2.1": "2026-11-12"}
+  not_yet_reason: ""
+dock.animate_opening:
+  summary: Bounce app icons in the Dock while apps open.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.dock, key: launchanim, type: bool}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Dock > Animate opening
+    applications
+  proven_on: {}
+  not_yet_reason: ""
+dock.applications:
+  summary: Apps kept in the Dock, by bundle ID.
+  scope: user
+  route: dock_apps
+  values: {type: bundle_ids}
+  macos_default: not measured
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: Dock app tiles (drag in or out of the Dock)
+  proven_on: {}
+  not_yet_reason: ""
+  notes: The stored value is an array of tile dictionaries, not
+    a single value. No stock Ansible module sets the Dock apps
+    by bundle id.
+dock.autohide:
+  summary: Hide the Dock until the pointer reaches the screen
+    edge.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.dock, key: autohide, type: bool}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Automatically hide
+    and show the Dock
+  proven_on: {}
+  not_yet_reason: ""
+  notes: An early test applied this write and undid it exactly
+    on macOS 27.2.1.
+dock.magnification:
+  summary: Enlarge Dock icons under the pointer.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.dock, key: magnification, type: bool}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Dock > Magnification
+    (switch)
+  proven_on: {}
+  not_yet_reason: ""
+dock.magnified_size:
+  summary: Size of a magnified Dock icon, in points.
+  scope: user
+  route: defaults
+  values: {type: int, min: 16, max: 128}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.dock, key: largesize, type: float}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Dock > Magnification
+    (slider)
+  proven_on: {}
+  not_yet_reason: ""
+  notes: The range 16 to 128 is a guess from the tile size slider.
+dock.minimize_effect:
+  summary: Animation used when a window is minimized.
+  scope: user
+  route: defaults
+  values: [genie, scale]
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.dock, key: mineffect, type: string}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Dock > Minimize windows
+    using
+  proven_on: {}
+  not_yet_reason: ""
+  notes: The hidden value suck also exists (macos-defaults.com).
+    It is not in the UI, so it is left out.
+dock.minimize_to_application:
+  summary: Minimize windows into their app's Dock icon.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.dock, key: minimize-to-application, type: bool}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Dock > Minimize windows
+    into application icon
+  proven_on: {}
+  not_yet_reason: ""
+dock.show_open_indicators:
+  summary: Show a dot under the Dock icon of each open app.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.dock, key: show-process-indicators, type: bool}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Dock > Show indicators
+    for open applications
+  proven_on: {}
+  not_yet_reason: ""
+dock.title_bar_double_click:
+  summary: What a double-click on a window title bar does.
+  scope: user
+  route: defaults
+  values: [fill, zoom, minimize, none]
+  macos_default: not measured
+  writes:
+    - domain: NSGlobalDomain
+      key: AppleActionOnDoubleClick
+      type: string
+      map: {fill: Fill, zoom: Maximize, minimize: Minimize, none: None}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Dock > Double-click
+    a window's title bar to
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'The stored words Fill, Maximize, Minimize and None were
+    found in DesktopSettings.appex on macOS 15.6.1. The map from
+    label to word is inferred. System Settings may also write
+    the older key AppleMiniaturizeOnDoubleClick. Research note
+    on when it takes effect: running apps read NSGlobalDomain
+    at launch, so quit and reopen apps, or log out (inferred).'
+hot_corners.bottom_left:
+  summary: Action when the pointer reaches the bottom left screen
+    corner.
+  scope: user
+  route: defaults
+  values:
+    - none
+    - mission_control
+    - app_windows
+    - desktop
+    - start_screen_saver
+    - disable_screen_saver
+    - display_sleep
+    - launchpad
+    - notification_center
+    - lock_screen
+    - quick_note
+  macos_default: not measured
+  writes:
+    - domain: com.apple.dock
+      key: wvous-bl-corner
+      type: int
+      map:
+        none: 1
+        mission_control: 2
+        app_windows: 3
+        desktop: 4
+        start_screen_saver: 5
+        disable_screen_saver: 6
+        display_sleep: 10
+        launchpad: 11
+        notification_center: 12
+        lock_screen: 13
+        quick_note: 14
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Hot Corners > bottom
+    left menu
+  proven_on: {}
+  not_yet_reason: ""
+  notes: Code 14 (Quick Note) was measured on a test Mac. Codes
+    1 to 13 are community knowledge. macOS 26 shows Apps instead
+    of Launchpad; whether code 11 now opens Apps is not proven.
+    Dashboard (7) is gone and left out.
+hot_corners.bottom_left_modifier:
+  summary: Key that must be held for the bottom left hot corner.
+  scope: user
+  route: defaults
+  values: [none, shift, control, option, command]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.dock
+      key: wvous-bl-modifier
+      type: int
+      map: {none: 0, shift: 131072, control: 262144, option: 524288, command: 1048576}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Hot Corners > bottom
+    left menu, hold a modifier key while choosing
+  proven_on: {}
+  not_yet_reason: ""
+  notes: The value is a bit mask, so keys can be combined (Apple's
+    guide says so). The choices list single keys only.
+hot_corners.bottom_right:
+  summary: Action when the pointer reaches the bottom right screen
+    corner.
+  scope: user
+  route: defaults
+  values:
+    - none
+    - mission_control
+    - app_windows
+    - desktop
+    - start_screen_saver
+    - disable_screen_saver
+    - display_sleep
+    - launchpad
+    - notification_center
+    - lock_screen
+    - quick_note
+  macos_default: not measured
+  writes:
+    - domain: com.apple.dock
+      key: wvous-br-corner
+      type: int
+      map:
+        none: 1
+        mission_control: 2
+        app_windows: 3
+        desktop: 4
+        start_screen_saver: 5
+        disable_screen_saver: 6
+        display_sleep: 10
+        launchpad: 11
+        notification_center: 12
+        lock_screen: 13
+        quick_note: 14
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Hot Corners > bottom
+    right menu
+  proven_on: {}
+  not_yet_reason: ""
+  notes: Code 14 (Quick Note) was measured on a test Mac. Codes
+    1 to 13 are community knowledge. macOS 26 shows Apps instead
+    of Launchpad; whether code 11 now opens Apps is not proven.
+    Dashboard (7) is gone and left out.
+hot_corners.bottom_right_modifier:
+  summary: Key that must be held for the bottom right hot corner.
+  scope: user
+  route: defaults
+  values: [none, shift, control, option, command]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.dock
+      key: wvous-br-modifier
+      type: int
+      map: {none: 0, shift: 131072, control: 262144, option: 524288, command: 1048576}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Hot Corners > bottom
+    right menu, hold a modifier key while choosing
+  proven_on: {}
+  not_yet_reason: ""
+  notes: The value is a bit mask, so keys can be combined (Apple's
+    guide says so). The choices list single keys only.
+hot_corners.top_left:
+  summary: Action when the pointer reaches the top left screen
+    corner.
+  scope: user
+  route: defaults
+  values:
+    - none
+    - mission_control
+    - app_windows
+    - desktop
+    - start_screen_saver
+    - disable_screen_saver
+    - display_sleep
+    - launchpad
+    - notification_center
+    - lock_screen
+    - quick_note
+  macos_default: not measured
+  writes:
+    - domain: com.apple.dock
+      key: wvous-tl-corner
+      type: int
+      map:
+        none: 1
+        mission_control: 2
+        app_windows: 3
+        desktop: 4
+        start_screen_saver: 5
+        disable_screen_saver: 6
+        display_sleep: 10
+        launchpad: 11
+        notification_center: 12
+        lock_screen: 13
+        quick_note: 14
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Hot Corners > top
+    left menu
+  proven_on: {}
+  not_yet_reason: ""
+  notes: Code 14 (Quick Note) was measured on a test Mac. Codes
+    1 to 13 are community knowledge. macOS 26 shows Apps instead
+    of Launchpad; whether code 11 now opens Apps is not proven.
+    Dashboard (7) is gone and left out.
+hot_corners.top_left_modifier:
+  summary: Key that must be held for the top left hot corner.
+  scope: user
+  route: defaults
+  values: [none, shift, control, option, command]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.dock
+      key: wvous-tl-modifier
+      type: int
+      map: {none: 0, shift: 131072, control: 262144, option: 524288, command: 1048576}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Hot Corners > top
+    left menu, hold a modifier key while choosing
+  proven_on: {}
+  not_yet_reason: ""
+  notes: The value is a bit mask, so keys can be combined (Apple's
+    guide says so). The choices list single keys only.
+hot_corners.top_right:
+  summary: Action when the pointer reaches the top right screen
+    corner.
+  scope: user
+  route: defaults
+  values:
+    - none
+    - mission_control
+    - app_windows
+    - desktop
+    - start_screen_saver
+    - disable_screen_saver
+    - display_sleep
+    - launchpad
+    - notification_center
+    - lock_screen
+    - quick_note
+  macos_default: not measured
+  writes:
+    - domain: com.apple.dock
+      key: wvous-tr-corner
+      type: int
+      map:
+        none: 1
+        mission_control: 2
+        app_windows: 3
+        desktop: 4
+        start_screen_saver: 5
+        disable_screen_saver: 6
+        display_sleep: 10
+        launchpad: 11
+        notification_center: 12
+        lock_screen: 13
+        quick_note: 14
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Hot Corners > top
+    right menu
+  proven_on: {}
+  not_yet_reason: ""
+  notes: Code 14 (Quick Note) was measured on a test Mac. Codes
+    1 to 13 are community knowledge. macOS 26 shows Apps instead
+    of Launchpad; whether code 11 now opens Apps is not proven.
+    Dashboard (7) is gone and left out.
+hot_corners.top_right_modifier:
+  summary: Key that must be held for the top right hot corner.
+  scope: user
+  route: defaults
+  values: [none, shift, control, option, command]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.dock
+      key: wvous-tr-modifier
+      type: int
+      map: {none: 0, shift: 131072, control: 262144, option: 524288, command: 1048576}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Hot Corners > top
+    right menu, hold a modifier key while choosing
+  proven_on: {}
+  not_yet_reason: ""
+  notes: The value is a bit mask, so keys can be combined (Apple's
+    guide says so). The choices list single keys only.
+mission_control.display_spaces:
+  summary: Give each display its own Spaces, or share Spaces across
+    displays.
+  scope: user
+  route: defaults
+  values: [separate, shared]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.spaces
+      key: spans-displays
+      type: bool
+      map: {separate: false, shared: true}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Mission Control >
+    Displays have separate Spaces
+  proven_on: {}
+  not_yet_reason: ""
+  notes: The stored value is the opposite of the switch in System
+    Settings.
+mission_control.group_by_app:
+  summary: Group windows by app in Mission Control.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.dock, key: expose-group-apps, type: bool}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Mission Control >
+    Group windows by application
+  proven_on: {}
+  not_yet_reason: ""
+mission_control.rearrange_spaces:
+  summary: Reorder Spaces by most recent use.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.dock, key: mru-spaces, type: bool}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Mission Control >
+    Automatically rearrange Spaces based on most recent use
+  proven_on: {}
+  not_yet_reason: ""
+mission_control.shortcuts:
+  summary: Keys for Mission Control, app windows, Show Desktop
+    and Space switching.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Mission Control >
+    Shortcuts (also Keyboard > Keyboard Shortcuts > Mission Control)
+  proven_on: {}
+  not_yet_reason: The value is a list of hotkeys, and the profile
+    check cannot validate a list yet.
+  notes: 'AppleSymbolicHotKeys in com.apple.symbolichotkeys is
+    a dictionary of numbered entries (32 Mission Control, 33 Application
+    windows, 36 Show Desktop, 79 and 81 move one Space, 118 and
+    up switch to Desktop N). The numbers are community knowledge,
+    not measured. Research note on when it takes effect: log out,
+    or run the private activateSettings -u tool (guess, not tested).
+    Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension'
+mission_control.switch_to_app_space:
+  summary: Switching to an app moves to a Space with its windows.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: NSGlobalDomain, key: AppleSpacesSwitchOnActivate, type: bool}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Mission Control >
+    When switching to an application, switch to a Space with open
+    windows
+  proven_on: {}
+  not_yet_reason: ""
+mission_control.top_drag_opens:
+  summary: Open Mission Control by dragging a window to the top
+    of the screen.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.dock, key: enterMissionControlByTopWindowDrag, type: bool}
+  takes_effect: dock
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Mission Control >
+    Drag windows to top of screen to enter Mission Control
+  proven_on: {}
+  not_yet_reason: ""
+spaces.count:
+  summary: Number of Spaces (desktops) on each display.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: Mission Control (F3) > + button on the Spaces bar
+  proven_on: {}
+  not_yet_reason: The research gives no largest value, so the
+    profile check cannot validate one. There is no System Settings
+    page; you add or remove Spaces in Mission Control.
+  notes: Monitors.0 is the first display only; a Mac with more
+    displays has more Monitors entries. No safe write is known,
+    because the Dock owns SpacesDisplayConfiguration in com.apple.spaces
+    and rewrites it, and writing it while the Dock runs is unsupported
+    (inferred).
+stage_manager.app_windows:
+  summary: Bring forward all of an app's windows, or one at a
+    time.
+  scope: user
+  route: defaults
+  values: [all_at_once, one_at_a_time]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.WindowManager
+      key: AppWindowGroupingBehavior
+      type: int
+      map: {all_at_once: 0, one_at_a_time: 1}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Desktop & Stage Manager
+    > Show windows from an application
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'The map from 0 and 1 to the two labels is a guess. Research
+    note on when it takes effect: Guess: WindowManager may pick
+    the change up live, or need killall WindowManager. Not tested.'
+stage_manager.enabled:
+  summary: Turn on Stage Manager.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.WindowManager, key: GloballyEnabled, type: bool}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Desktop & Stage Manager
+    > Stage Manager
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Apple''s macOS 26 guide says Stage Manager is dimmed
+    unless ''Displays have separate Spaces'' is on. Research note
+    on when it takes effect: Guess: WindowManager may pick the
+    change up live, or need killall WindowManager. Not tested.'
+stage_manager.recent_apps:
+  summary: Show the strip of recent apps at the screen side in
+    Stage Manager.
+  scope: user
+  route: defaults
+  values: [show, hide]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.WindowManager
+      key: AutoHide
+      type: bool
+      map: {show: false, hide: true}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Desktop & Stage Manager
+    > Show recent apps in Stage Manager
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: Guess: WindowManager
+    may pick the change up live, or need killall WindowManager.
+    Not tested.'
+widgets.in_stage_manager:
+  summary: Show widgets while Stage Manager is on.
+  scope: user
+  route: defaults
+  values: [show, hide]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.WindowManager
+      key: StageManagerHideWidgets
+      type: bool
+      map: {show: false, hide: true}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: 'System Settings > Desktop & Dock > Widgets > Show Widgets:
+    In Stage Manager'
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: Guess: WindowManager
+    may pick the change up live, or need killall WindowManager.
+    Not tested.'
+widgets.iphone_widgets:
+  summary: Offer the iPhone's widgets in the Mac widget gallery.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.chronod, key: remoteWidgetsEnabled, type: bool}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Widgets > iPhone Widgets
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'chronod also keeps effectiveRemoteWidgetsEnabled (a
+    boolean) and hasMigratedRemoteWidgetsEnabledState, so a direct
+    write may be overwritten. No write has been tested. Research
+    note on when it takes effect: Guess: chronod may need a restart,
+    or may ignore a direct write. Not tested.'
+widgets.on_desktop:
+  summary: Show widgets on the desktop.
+  scope: user
+  route: defaults
+  values: [show, hide]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.WindowManager
+      key: StandardHideWidgets
+      type: bool
+      map: {show: false, hide: true}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: 'System Settings > Desktop & Dock > Widgets > Show Widgets:
+    On Desktop'
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: Guess: WindowManager
+    may pick the change up live, or need killall WindowManager.
+    Not tested.'
+widgets.style:
+  summary: How desktop widgets are tinted or dimmed.
+  scope: user
+  route: defaults
+  values: [automatic, monochrome, full_color]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.widgets
+      key: widgetAppearance
+      type: int
+      map: {automatic: 0, monochrome: 1, full_color: 2}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Widgets > Widget style
+    (15) / Dim widgets on desktop (26)
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Key name not yet read back on macOS 27. macOS 26 renamed
+    the setting to ''Dim widgets on desktop'' with Automatically,
+    Always, Never, so the choices likely differ on 27. Research
+    note on when it takes effect: Guess: the widget host may need
+    a restart. Not tested.'
+windows.ask_to_keep_changes:
+  summary: Ask before closing a document with unsaved changes.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: NSGlobalDomain, key: NSCloseAlwaysConfirmsChanges, type: bool}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Windows > Ask to keep
+    changes when closing documents
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: Running apps
+    read NSGlobalDomain at launch. Quit and reopen apps, or log
+    out (inferred).'
+windows.fill_by_menu_bar_drag:
+  summary: Fill the screen by dragging a window to the menu bar.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.WindowManager, key: EnableTopTilingByEdgeDrag, type: bool}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Windows > Drag windows
+    to menu bar to fill screen
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: Guess: WindowManager
+    may pick the change up live, or need killall WindowManager.
+    Not tested.'
+windows.on_quit:
+  summary: Close an app's windows on quit, or keep them to reopen
+    next time.
+  scope: user
+  route: defaults
+  values: [close, keep]
+  macos_default: not measured
+  writes:
+    - domain: NSGlobalDomain
+      key: NSQuitAlwaysKeepsWindows
+      type: bool
+      map: {close: false, keep: true}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Windows > Close windows
+    when quitting an application
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: Running apps
+    read NSGlobalDomain at launch. Quit and reopen apps, or log
+    out (inferred).'
+windows.prefer_tabs:
+  summary: When apps open new documents as tabs instead of windows.
+  scope: user
+  route: defaults
+  values: [never, always, full_screen]
+  macos_default: not measured
+  writes:
+    - domain: NSGlobalDomain
+      key: AppleWindowTabbingMode
+      type: string
+      map: {never: manual, always: always, full_screen: fullscreen}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Windows > Prefer tabs
+    when opening documents
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: Running apps
+    read NSGlobalDomain at launch. Quit and reopen apps, or log
+    out (inferred).'
+windows.tile_by_edge_drag:
+  summary: Tile a window by dragging it to the left or right screen
+    edge.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.WindowManager, key: EnableTilingByEdgeDrag, type: bool}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Windows > Drag windows
+    to left or right edge of screen to tile
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: Guess: WindowManager
+    may pick the change up live, or need killall WindowManager.
+    Not tested.'
+windows.tile_margins:
+  summary: Leave a gap between tiled windows.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.WindowManager, key: EnableTiledWindowMargins, type: bool}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Windows > Tiled windows
+    have margins
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: Guess: WindowManager
+    may pick the change up live, or need killall WindowManager.
+    Not tested.'
+windows.tile_with_option:
+  summary: Tile a window by holding Option while dragging it.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.WindowManager, key: EnableTilingOptionAccelerator, type: bool}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Windows > Hold Option
+    key while dragging windows to tile
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: Guess: WindowManager
+    may pick the change up live, or need killall WindowManager.
+    Not tested.'

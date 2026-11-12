@@ -1,0 +1,531 @@
+---
+privacy.accessibility:
+  summary: Apps allowed to control the Mac through Accessibility.
+  scope: machine
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Accessibility
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_Accessibility'
+privacy.app_management:
+  summary: Apps allowed to update or delete other apps.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > App Management
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_AppBundles'
+privacy.automation:
+  summary: Apps allowed to control other named apps with Apple
+    Events.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Automation
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_Automation'
+privacy.bluetooth:
+  summary: Apps allowed to use Bluetooth.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Bluetooth
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_Bluetooth'
+privacy.calendars:
+  summary: Apps allowed to read Calendar events.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Calendars
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_Calendars'
+privacy.camera:
+  summary: Apps allowed to use the camera.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Camera
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_Camera'
+privacy.contacts:
+  summary: Apps allowed to read Contacts.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Contacts
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_Contacts'
+privacy.developer_tools:
+  summary: Apps allowed to run software that skips Gatekeeper
+    checks.
+  scope: machine
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Developer Tools
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_DevTools'
+privacy.files_desktop:
+  summary: Apps allowed to open files in the Desktop folder.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Files & Folders
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_FilesAndFolders'
+privacy.files_documents:
+  summary: Apps allowed to open files in the Documents folder.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Files & Folders
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_FilesAndFolders'
+privacy.files_downloads:
+  summary: Apps allowed to open files in the Downloads folder.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Files & Folders
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_FilesAndFolders'
+privacy.files_network_volumes:
+  summary: Apps allowed to open files on network drives.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Files & Folders
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_FilesAndFolders'
+privacy.files_removable_volumes:
+  summary: Apps allowed to open files on USB and other removable
+    drives.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Files & Folders
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_FilesAndFolders'
+privacy.focus:
+  summary: Apps allowed to see whether a Focus mode is on.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Focus
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_Focus'
+privacy.full_disk_access:
+  summary: Apps allowed to read every file, including other apps'
+    data.
+  scope: machine
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Full Disk Access
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_AllFiles'
+privacy.home:
+  summary: Apps allowed to read Home accessories and data.
+  scope: machine
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Home
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_HomeKit'
+privacy.improve_assistive_voice:
+  summary: Share Voice Control and Vocal Shortcuts audio with
+    Apple.
+  scope: user
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Analytics & Improvements
+  link: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_Analytics
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: not checked.'
+privacy.improve_siri_dictation:
+  summary: Share Siri and Dictation audio with Apple to improve
+    them.
+  scope: user
+  route: defaults
+  values: [not_asked, 'on', 'off']
+  macos_default: not measured
+  writes:
+    - domain: com.apple.assistant.support
+      key: Siri Data Sharing Opt-In Status
+      type: int
+      map: {not_asked: 0, 'on': 1, 'off': 2}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Analytics & Improvements
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: not checked;
+    assistantd may cache it (guess).'
+privacy.input_monitoring:
+  summary: Apps allowed to watch keyboard and mouse input.
+  scope: machine
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Input Monitoring
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_ListenEvent'
+privacy.location_apps:
+  summary: Apps allowed to use Location Services.
+  scope: machine
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Location Services
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'takes_effect not measured. Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_LocationServices'
+privacy.location_menu_icon:
+  summary: Show the location icon when system services use location.
+  scope: machine
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - domain: /Library/Preferences/com.apple.locationmenu
+      key: ShowSystemServices
+      type: bool
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: Not recorded in the research
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: not checked;
+    Control Center may need a restart (guess).'
+privacy.location_services:
+  summary: Let apps and system services find where this Mac is.
+  scope: machine
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - domain: /var/db/locationd/Library/Preferences/ByHost/com.apple.locationd
+      key: LocationServicesEnabled
+      type: bool
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Location Services
+  proven_on: {}
+  not_yet_reason: ""
+privacy.location_system_services:
+  summary: System services allowed to use location, such as time
+    zone and Find My.
+  scope: machine
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Location Services
+    > System Services
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'takes_effect not measured. Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_SystemServices'
+privacy.media_library:
+  summary: Apps allowed to read the Music and Apple TV libraries.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Media & Apple
+    Music
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_Media'
+privacy.microphone:
+  summary: Apps allowed to use the microphone.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Microphone
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_Microphone'
+privacy.personalized_ads:
+  summary: Let Apple use account data to choose ads in the App
+    Store, News and Stocks.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.AdLib, key: allowApplePersonalizedAdvertising, type: bool}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Apple Advertising
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: not checked.'
+privacy.photos:
+  summary: Apps allowed to read the Photos library.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Photos
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_Photos'
+privacy.reminders:
+  summary: Apps allowed to read Reminders.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Reminders
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_Reminders'
+privacy.screen_recording:
+  summary: Apps allowed to record the screen and system audio.
+  scope: machine
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Screen & System
+    Audio Recording
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_ScreenCapture'
+privacy.share_icloud_analytics:
+  summary: Share iCloud usage data with Apple.
+  scope: user
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Analytics & Improvements
+  link: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_Analytics
+  proven_on: {}
+  not_yet_reason: ""
+privacy.share_mac_analytics:
+  summary: Send Mac crash and usage data to Apple.
+  scope: machine
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - domain: /Library/Application Support/CrashReporter/DiagnosticMessagesHistory.plist
+      key: AutoSubmit
+      type: bool
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Analytics & Improvements
+  proven_on: {}
+  not_yet_reason: ""
+  notes: takes_effect not measured.
+privacy.share_with_app_developers:
+  summary: Send crash data to the developers of the apps that
+    crashed.
+  scope: machine
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - domain: /Library/Application Support/CrashReporter/DiagnosticMessagesHistory.plist
+      key: ThirdPartyDataSubmit
+      type: bool
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Analytics & Improvements
+  proven_on: {}
+  not_yet_reason: ""
+  notes: takes_effect not measured.
+privacy.speech_recognition:
+  summary: Apps allowed to send speech to Apple for recognition.
+  scope: user
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Speech Recognition
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_SpeechRecognition'
+privacy.system_audio_recording:
+  summary: Apps allowed to record system audio only.
+  scope: machine
+  route: not_yet
+  values: [not_yet]
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Screen & System
+    Audio Recording
+  proven_on: {}
+  not_yet_reason: macOS lets only a person grant this permission
+    in System Settings; mac-setup cannot set it.
+  notes: 'Research note on when it takes effect: The app usually
+    needs a relaunch after a change (inferred). Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_AudioCapture'

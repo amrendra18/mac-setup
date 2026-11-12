@@ -19,7 +19,7 @@ Preconditions:
 
 - The Mac is set aside for testing. The run changes the running account's real Dock.
 - The running account is an admin with password-free sudo, because the harness passes no `-K`.
-- The running account is signed in at the screen, so the Dock runs and its restart reports `changed`.
+- The running account owns the screen, so the run restarts its Dock and the restart reports `changed`.
 
 - **Setup.** The journey deletes `orientation` and `show-recents` and writes `tilesize` as the integer 48 with `defaults write com.apple.dock tilesize -int 48`. `dock.tile_size` writes a float, so `osx_defaults` refuses it with a type mismatch.
 - **Preview.** Check run: exit 2, `changed=2 failed=1`, one refused line naming `dock.tile_size`.

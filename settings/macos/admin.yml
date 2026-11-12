@@ -1,0 +1,986 @@
+---
+computer.local_hostname:
+  summary: Local network name, used as NAME.local.
+  scope: machine
+  route: command
+  values: {type: text, pattern: '^[A-Za-z0-9-]{1,63}$'}
+  macos_default: not measured
+  command:
+    read: [/usr/sbin/scutil, --get, LocalHostName]
+    parse: \A(?P<value>[A-Za-z0-9-]{1,63})$
+    set:
+      - [/usr/sbin/scutil, --set, LocalHostName, '{value}']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > General > Sharing > Local hostname
+    > Edit
+  proven_on: {}
+  not_yet_reason: ""
+computer.name:
+  summary: Name other people see for this Mac on the network.
+  scope: machine
+  route: command
+  values: {type: text, pattern: '^.{1,63}$'}
+  macos_default: not measured
+  command:
+    read: [/usr/sbin/scutil, --get, ComputerName]
+    parse: '\A(?!exit: )(?P<value>.{1,63})$'
+    set:
+      - [/usr/sbin/scutil, --set, ComputerName, '{value}']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > General > Sharing > Computer name (also
+    General > About > Name)
+  proven_on: {}
+  not_yet_reason: ""
+login_window.automatic_login_user:
+  summary: Account that logs in by itself at startup. Empty means
+    nobody.
+  scope: machine
+  route: by_hand
+  values: {type: text, pattern: '^[a-z_][a-z0-9_.-]{0,31}$'}
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Users & Groups > Automatically log
+    in as
+  link: x-apple.systempreferences:com.apple.Users-Groups-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+login_window.fast_user_switching:
+  summary: Allow more than one account to stay logged in (fast
+    user switching).
+  scope: machine
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - domain: /Library/Preferences/.GlobalPreferences
+      key: MultipleSessionEnabled
+      type: bool
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Control Center > Fast User Switching
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: Logout likely
+    needed. Guess.'
+login_window.message:
+  summary: Message shown on the login window and lock screen.
+  scope: machine
+  route: defaults
+  values: {type: text, pattern: '^.{0,200}$'}
+  macos_default: not measured
+  writes:
+    - domain: /Library/Preferences/com.apple.loginwindow
+      key: LoginwindowText
+      type: string
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Lock Screen > Show message when locked
+    > Set
+  proven_on: {}
+  not_yet_reason: ""
+login_window.password_hint_after_tries:
+  summary: Wrong passwords before the login window shows the hint.
+    0 means never.
+  scope: machine
+  route: defaults
+  values: {type: int, min: 0, max: 10}
+  macos_default: not measured
+  writes:
+    - {domain: /Library/Preferences/com.apple.loginwindow, key: RetriesUntilHint, type: int}
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Lock Screen > Show password hints (toggle
+    writes 3 or 0)
+  proven_on: {}
+  not_yet_reason: ""
+login_window.power_buttons:
+  summary: Show the Sleep, Restart and Shut Down buttons on the
+    login window.
+  scope: machine
+  route: defaults
+  values: [shown, hidden]
+  macos_default: not measured
+  writes:
+    - domain: /Library/Preferences/com.apple.loginwindow
+      key: PowerOffDisabled
+      type: bool
+      map: {shown: false, hidden: true}
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Lock Screen > Show the Sleep, Restart,
+    and Shut Down buttons
+  proven_on: {}
+  not_yet_reason: ""
+login_window.show_input_menu:
+  summary: Show the keyboard Input menu on the login window.
+  scope: machine
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: /Library/Preferences/com.apple.loginwindow, key: showInputMenu, type: bool}
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Lock Screen (or Users & Groups) > Show
+    Input menu in login window
+  proven_on: {}
+  not_yet_reason: ""
+login_window.show_name_and_password:
+  summary: Login window asks for a name and password instead of
+    listing users.
+  scope: machine
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: /Library/Preferences/com.apple.loginwindow, key: SHOWFULLNAME, type: bool}
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: 'System Settings > Lock Screen > Login window shows:
+    Name and password'
+  proven_on: {}
+  not_yet_reason: ""
+network.bluetooth_power:
+  summary: Turn Bluetooth on or off.
+  scope: machine
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Bluetooth
+  link: ""
+  proven_on: {}
+  not_yet_reason: ""
+  notes: macOS has no supported command to turn Bluetooth on or
+    off.
+network.wifi_power:
+  summary: Turn Wi-Fi on or off.
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/usr/sbin/networksetup, -getairportpower, en1]
+    parse: '^Wi-Fi Power \(en1\): (?P<value>On|Off)$'
+    map: {true: 'On', false: 'Off'}
+    set:
+      true:
+        - [/usr/sbin/networksetup, -setairportpower, en1, 'on']
+      false:
+        - [/usr/sbin/networksetup, -setairportpower, en1, 'off']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Wi-Fi
+  proven_on: {"27.2.1": "2026-11-12"}
+  not_yet_reason: ""
+  notes: The device name en1 is the Wi-Fi port on many Macs; check
+    yours with networksetup -listallhardwareports. On a Mac that
+    reaches the network only over Wi-Fi, turning Wi-Fi off cuts
+    remote connections.
+password.minimum_length:
+  summary: Shortest password the Mac accepts for local accounts.
+  scope: machine
+  route: not_yet
+  values: {type: int, min: 0, max: 64}
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > No System Settings row. Set by a policy
+    file or MDM.
+  proven_on: {}
+  not_yet_reason: Read-only check. Setting it needs pwpolicy with
+    a policy file or a configuration profile.
+power.disk_sleep_minutes:
+  summary: Minutes idle before hard disks sleep. 0 means never.
+  scope: machine
+  route: command
+  values: {type: int, min: 0, max: 180}
+  macos_default: not measured
+  command:
+    read: [/usr/bin/pmset, -g, custom]
+    parse: ^ disksleep +(?P<value>\d+)$
+    set:
+      - [/usr/bin/pmset, -a, disksleep, '{value}']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: 'System Settings > Energy > Put hard disks to sleep when
+    possible (toggle: 10 or 0)'
+  proven_on: {}
+  not_yet_reason: ""
+power.display_sleep_minutes:
+  summary: Minutes without input before the display turns off.
+    0 means never.
+  scope: machine
+  route: command
+  values: {type: int, min: 0, max: 180}
+  macos_default: not measured
+  command:
+    read: [/usr/bin/pmset, -g, custom]
+    parse: ^ displaysleep +(?P<value>\d+)$
+    set:
+      - [/usr/bin/pmset, -a, displaysleep, '{value}']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Lock Screen > Turn display off when
+    inactive (desktop); Battery > Options on laptops
+  proven_on: {}
+  not_yet_reason: ""
+power.low_power_mode:
+  summary: Use Low Power Mode to save energy.
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/usr/bin/pmset, -g, custom]
+    parse: ^ lowpowermode +(?P<value>\d+)$
+    map: {true: '1', false: '0'}
+    set:
+      true:
+        - [/usr/bin/pmset, -a, lowpowermode, '1']
+      false:
+        - [/usr/bin/pmset, -a, lowpowermode, '0']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Energy > Low Power Mode (only on models
+    that offer it)
+  proven_on: {}
+  not_yet_reason: ""
+  notes: The read's output is not measured on macOS 27.
+power.power_nap:
+  summary: Let the Mac fetch mail and updates while it sleeps
+    (Power Nap).
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/usr/bin/pmset, -g, custom]
+    parse: ^ powernap +(?P<value>\d+)$
+    map: {true: '1', false: '0'}
+    set:
+      true:
+        - [/usr/bin/pmset, -a, powernap, '1']
+      false:
+        - [/usr/bin/pmset, -a, powernap, '0']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Energy > Enable Power Nap (shown only
+    on some models)
+  proven_on: {}
+  not_yet_reason: ""
+power.restart_after_power_failure:
+  summary: Start the Mac again on its own after a power failure.
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/usr/bin/pmset, -g, custom]
+    parse: ^ autorestart +(?P<value>\d+)$
+    map: {true: '1', false: '0'}
+    set:
+      true:
+        - [/usr/bin/pmset, -a, autorestart, '1']
+      false:
+        - [/usr/bin/pmset, -a, autorestart, '0']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Energy > Start up automatically after
+    a power failure
+  proven_on: {}
+  not_yet_reason: ""
+power.system_sleep_minutes:
+  summary: Minutes idle before the Mac sleeps. 0 means never (Prevent
+    automatic sleeping).
+  scope: machine
+  route: command
+  values: {type: int, min: 0, max: 180}
+  macos_default: not measured
+  command:
+    read: [/usr/bin/pmset, -g, custom]
+    parse: ^ sleep +(?P<value>\d+)$
+    set:
+      - [/usr/bin/pmset, -a, sleep, '{value}']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Energy > Prevent automatic sleeping
+    when the display is off (desktop toggle writes 0)
+  proven_on: {}
+  not_yet_reason: ""
+power.wake_for_network:
+  summary: Wake the Mac when another device reaches it over the
+    network.
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/usr/bin/pmset, -g, custom]
+    parse: ^ womp +(?P<value>\d+)$
+    map: {true: '1', false: '0'}
+    set:
+      true:
+        - [/usr/bin/pmset, -a, womp, '1']
+      false:
+        - [/usr/bin/pmset, -a, womp, '0']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Energy > Wake for network access
+  proven_on: {}
+  not_yet_reason: ""
+security.admin_password_for_settings:
+  summary: Ask for an admin password before changing system-wide
+    settings.
+  scope: machine
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Advanced > Require
+    an administrator password to access system-wide settings
+  link: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension
+  proven_on: {}
+  not_yet_reason: ""
+security.filevault:
+  summary: Encrypt the startup disk with FileVault.
+  scope: machine
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > FileVault
+  link: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: takes_effect not measured.
+security.firewall:
+  summary: Turn on the macOS firewall for incoming connections.
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/usr/libexec/ApplicationFirewall/socketfilterfw, --getglobalstate]
+    parse: ^Firewall is \w+\. \(State = (?P<value>\d)\)$
+    map: {true: '1', false: '0'}
+    set:
+      true:
+        - [/usr/libexec/ApplicationFirewall/socketfilterfw, --setglobalstate, 'on']
+      false:
+        - [/usr/libexec/ApplicationFirewall/socketfilterfw, --setglobalstate, 'off']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Network > Firewall
+  proven_on: {}
+  not_yet_reason: ""
+security.firewall_allow_builtin_signed:
+  summary: Let built-in Apple software receive incoming connections.
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/usr/libexec/ApplicationFirewall/socketfilterfw, --getallowsigned]
+    parse: ^Automatically allow built-in signed software (?P<value>ENABLED|DISABLED)\.$
+    map: {true: ENABLED, false: DISABLED}
+    set:
+      true:
+        - [/usr/libexec/ApplicationFirewall/socketfilterfw, --setallowsigned, 'on']
+      false:
+        - [/usr/libexec/ApplicationFirewall/socketfilterfw, --setallowsigned, 'off']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Network > Firewall > Options > Automatically
+    allow built-in software
+  proven_on: {}
+  not_yet_reason: ""
+security.firewall_allow_downloaded_signed:
+  summary: Let downloaded signed software receive incoming connections.
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/usr/libexec/ApplicationFirewall/socketfilterfw, --getallowsigned]
+    parse: ^Automatically allow downloaded signed software (?P<value>ENABLED|DISABLED)\.$
+    map: {true: ENABLED, false: DISABLED}
+    set:
+      true:
+        - [/usr/libexec/ApplicationFirewall/socketfilterfw, --setallowsignedapp, 'on']
+      false:
+        - [/usr/libexec/ApplicationFirewall/socketfilterfw, --setallowsignedapp, 'off']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Network > Firewall > Options > Automatically
+    allow downloaded signed software
+  proven_on: {}
+  not_yet_reason: ""
+security.firewall_block_all:
+  summary: Block all incoming connections except basic network
+    services.
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/usr/libexec/ApplicationFirewall/socketfilterfw, --getblockall]
+    parse: ^Firewall has block all state set to (?P<value>enabled|disabled)\.$
+    map: {true: enabled, false: disabled}
+    set:
+      true:
+        - [/usr/libexec/ApplicationFirewall/socketfilterfw, --setblockall, 'on']
+      false:
+        - [/usr/libexec/ApplicationFirewall/socketfilterfw, --setblockall, 'off']
+  takes_effect: live
+  needs: []
+  lockout_risk: true
+  where: System Settings > Network > Firewall > Options > Block
+    all incoming connections
+  proven_on: {}
+  not_yet_reason: ""
+security.gatekeeper:
+  summary: Check apps before they open (Gatekeeper).
+  scope: machine
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Security > Allow
+    applications from
+  link: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: Turning Gatekeeper off needs a click on macOS 15 and
+    later. A command sets on, but off needs a click, so the whole
+    setting is by hand.
+security.gatekeeper_allow_identified_developers:
+  summary: Allow apps from identified developers, not only the
+    App Store.
+  scope: machine
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: 'System Settings > Privacy & Security > Allow applications
+    from: App Store and identified developers'
+  link: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension
+  proven_on: {}
+  not_yet_reason: ""
+security.guest_enabled:
+  summary: Allow the Guest User to log in to this Mac.
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/usr/bin/defaults, read, /Library/Preferences/com.apple.loginwindow, GuestEnabled]
+    parse: \A(?P<value>[01])$
+    map: {true: '1', false: '0'}
+    set:
+      true:
+        - [/usr/sbin/sysadminctl, -guestAccount, 'on']
+      false:
+        - [/usr/sbin/sysadminctl, -guestAccount, 'off']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Users & Groups > Guest User > Allow
+    guests to log in to this computer
+  proven_on: {}
+  not_yet_reason: ""
+  notes: A defaults write does not create the Guest account record.
+security.guest_shared_folders:
+  summary: Let guests connect to shared folders without an account.
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/usr/sbin/sysadminctl, -smbGuestAccess, status]
+    parse: SMB guest access (?P<value>enabled|disabled)\.$
+    map: {true: enabled, false: disabled}
+    set:
+      true:
+        - [/usr/sbin/sysadminctl, -smbGuestAccess, 'on']
+      false:
+        - [/usr/sbin/sysadminctl, -smbGuestAccess, 'off']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Users & Groups > Guest User > Allow
+    guest users to connect to shared folders
+  proven_on: {}
+  not_yet_reason: ""
+  notes: sysadminctl prints its state on stderr.
+security.stealth:
+  summary: Do not answer pings or probes from the network (stealth
+    mode).
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/usr/libexec/ApplicationFirewall/socketfilterfw, --getstealthmode]
+    parse: ^Firewall stealth mode is (?P<value>on|off)$
+    map: {true: 'on', false: 'off'}
+    set:
+      true:
+        - [/usr/libexec/ApplicationFirewall/socketfilterfw, --setstealthmode, 'on']
+      false:
+        - [/usr/libexec/ApplicationFirewall/socketfilterfw, --setstealthmode, 'off']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Network > Firewall > Options > Enable
+    stealth mode
+  proven_on: {}
+  not_yet_reason: ""
+sharing.airplay_receiver:
+  summary: Let nearby devices play to this Mac with AirPlay.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - domain: com.apple.controlcenter
+      key: AirplayRecieverEnabled
+      type: bool
+      host: currentHost
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > General > AirDrop & Handoff > AirPlay
+    Receiver
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: Probably `killall
+    ControlCenter`. Guess.'
+sharing.bluetooth_sharing:
+  summary: Let nearby Bluetooth devices send files to this Mac.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - domain: com.apple.Bluetooth
+      key: PrefKeyServicesEnabled
+      type: bool
+      host: currentHost
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > General > Sharing > Bluetooth Sharing
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: Unknown.'
+sharing.content_caching:
+  summary: Cache Apple downloads for other devices on the network.
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/usr/bin/defaults, read, /Library/Preferences/com.apple.AssetCache, Activated]
+    parse: \A(?P<value>[01])$
+    map: {true: '1', false: '0'}
+    set:
+      true:
+        - [/usr/bin/AssetCacheManagerUtil, activate]
+      false:
+        - [/usr/bin/AssetCacheManagerUtil, deactivate]
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > General > Sharing > Content Caching
+  proven_on: {}
+  not_yet_reason: ""
+  notes: AssetCacheManagerUtil is the documented tool; a defaults
+    write is not the route.
+sharing.file_sharing:
+  summary: Share folders with other computers over SMB (File Sharing).
+  scope: machine
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > General > Sharing > File Sharing
+  link: x-apple.systempreferences:com.apple.Sharing-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: takes_effect not measured. Turning it on also needs shared
+    folders, so on is a click. A command sets off, but on needs
+    a click, so the whole setting is by hand.
+sharing.internet_sharing:
+  summary: Share this Mac's internet connection with other devices.
+  scope: machine
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > General > Sharing > Internet Sharing
+  link: x-apple.systempreferences:com.apple.Sharing-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+sharing.media_sharing:
+  summary: Share this account's music and videos with other devices
+    (Home Sharing).
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - domain: com.apple.amp.mediasharingd
+      key: home-sharing-enabled
+      type: int
+      map: {true: 1, false: 0}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > General > Sharing > Media Sharing
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: Probably `killall
+    mediasharingd`. Guess.'
+sharing.media_sharing_guests:
+  summary: Let guests on the network play this account's media.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - domain: com.apple.amp.mediasharingd
+      key: public-sharing-enabled
+      type: int
+      map: {true: 1, false: 0}
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: System Settings > General > Sharing > Media Sharing >
+    Share media with guests
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: Probably `killall
+    mediasharingd`. Guess.'
+sharing.printer_sharing:
+  summary: Share this Mac's printers with the network.
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/usr/sbin/cupsctl]
+    parse: ^_share_printers=(?P<value>[01])$
+    map: {true: '1', false: '0'}
+    set:
+      true:
+        - [/usr/sbin/cupsctl, --share-printers]
+      false:
+        - [/usr/sbin/cupsctl, --no-share-printers]
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > General > Sharing > Printer Sharing
+  proven_on: {}
+  not_yet_reason: ""
+sharing.remote_apple_events:
+  summary: Let other Macs send Apple events to apps here (Remote
+    Application Scripting).
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/bin/launchctl, print, system/com.apple.AEServer]
+    parse: '^exit: (?P<value>0|113)$'
+    map: {true: '0', false: '113'}
+    set:
+      true:
+        - [/usr/sbin/systemsetup, -setremoteappleevents, 'on']
+      false:
+        - [/usr/sbin/systemsetup, -setremoteappleevents, 'off']
+  takes_effect: live
+  needs: [full_disk_access]
+  lockout_risk: false
+  where: System Settings > General > Sharing > Remote Application
+    Scripting
+  proven_on: {}
+  not_yet_reason: ""
+  notes: systemsetup needs Full Disk Access.
+sharing.remote_login:
+  summary: Allow SSH logins to this Mac (Remote Login).
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/bin/launchctl, print, system/com.openssh.sshd]
+    parse: '^exit: (?P<value>0|113)$'
+    map: {true: '0', false: '113'}
+    set:
+      true:
+        - [/usr/sbin/systemsetup, -setremotelogin, 'on']
+      false:
+        - [/usr/sbin/systemsetup, -setremotelogin, 'off']
+  takes_effect: live
+  needs: [full_disk_access]
+  lockout_risk: true
+  where: System Settings > General > Sharing > Remote Login
+  proven_on: {}
+  not_yet_reason: ""
+  notes: systemsetup fails unless the terminal has Full Disk Access.
+    The lockout guard applies.
+sharing.remote_management:
+  summary: Allow Apple Remote Desktop to manage this Mac (Remote
+    Management).
+  scope: machine
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > General > Sharing > Remote Management
+  link: x-apple.systempreferences:com.apple.Sharing-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+sharing.screen_sharing:
+  summary: Let others see and control this screen (Screen Sharing).
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/bin/launchctl, print, system/com.apple.screensharing]
+    parse: '^exit: (?P<value>0|113)$'
+    map: {true: '0', false: '113'}
+    set:
+      true:
+        - [/bin/launchctl, enable, system/com.apple.screensharing]
+        - - /bin/launchctl
+          - bootstrap
+          - system
+          - /System/Library/LaunchDaemons/com.apple.screensharing.plist
+      false:
+        - [/bin/launchctl, disable, system/com.apple.screensharing]
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > General > Sharing > Screen Sharing
+  proven_on: {}
+  not_yet_reason: ""
+  notes: Medium confidence route; the safer path is the Sharing
+    pane.
+time.server:
+  summary: Network time server used to set the clock.
+  scope: machine
+  route: command
+  values: {type: text, pattern: '^[A-Za-z0-9.-]{1,253}$'}
+  macos_default: not measured
+  command:
+    read: [/usr/sbin/systemsetup, -getnetworktimeserver]
+    parse: '^Network Time Server: (?P<value>\S+)$'
+    set:
+      - [/usr/sbin/systemsetup, -setnetworktimeserver, '{value}']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > General > Date & Time > Source
+  proven_on: {}
+  not_yet_reason: ""
+  notes: The read's output is not measured on macOS 27.
+time.set_automatically:
+  summary: Set the date and time from a network time server.
+  scope: machine
+  route: command
+  values: {type: bool}
+  macos_default: not measured
+  command:
+    read: [/usr/sbin/systemsetup, -getusingnetworktime]
+    parse: '^Network Time: (?P<value>On|Off)$'
+    map: {true: 'On', false: 'Off'}
+    set:
+      true:
+        - [/usr/sbin/systemsetup, -setusingnetworktime, 'on']
+      false:
+        - [/usr/sbin/systemsetup, -setusingnetworktime, 'off']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > General > Date & Time > Set time and
+    date automatically
+  proven_on: {}
+  not_yet_reason: ""
+  notes: The read's output is not measured on macOS 27.
+time.zone:
+  summary: Time zone, such as America/Vancouver. Used when automatic
+    time zone is off.
+  scope: machine
+  route: command
+  values: {type: text, pattern: '^[A-Za-z_]+(/[A-Za-z0-9_+-]+){0,2}$'}
+  macos_default: not measured
+  command:
+    read: [/usr/bin/readlink, /etc/localtime]
+    parse: ^/var/db/timezone/zoneinfo/(?P<value>\S+)$
+    set:
+      - [/usr/sbin/systemsetup, -settimezone, '{value}']
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > General > Date & Time > Closest city
+  proven_on: {}
+  not_yet_reason: ""
+time.zone_automatic:
+  summary: Set the time zone from the Mac's location.
+  scope: machine
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: logout
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > General > Date & Time > Set time zone
+    automatically using your current location
+  link: x-apple.systempreferences:com.apple.Date-Time-Settings.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Needs Location Services too, so the Date & Time pane
+    is the safer path. Research note on when it takes effect:
+    unknown.'
+updates.check_automatically:
+  summary: Check for software updates automatically.
+  scope: machine
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - domain: /Library/Preferences/com.apple.SoftwareUpdate
+      key: AutomaticCheckEnabled
+      type: bool
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > General > Software Update > Automatic
+    updates (i) > Check for updates
+  proven_on: {}
+  not_yet_reason: ""
+updates.download_automatically:
+  summary: Download new updates when they are available.
+  scope: machine
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - domain: /Library/Preferences/com.apple.SoftwareUpdate
+      key: AutomaticDownload
+      type: bool
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Automatic updates (i) > Download new
+    updates when available
+  proven_on: {}
+  not_yet_reason: ""
+updates.install_app_store_automatically:
+  summary: Install app updates from the App Store automatically.
+  scope: machine
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: /Library/Preferences/com.apple.commerce, key: AutoUpdate, type: bool}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: System Settings > Automatic updates (i) > Install application
+    updates from the App Store
+  proven_on: {}
+  not_yet_reason: ""
+updates.install_macos_automatically:
+  summary: Install macOS updates without asking.
+  scope: machine
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - domain: /Library/Preferences/com.apple.SoftwareUpdate
+      key: AutomaticallyInstallMacOSUpdates
+      type: bool
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Automatic updates (i) > Install macOS
+    updates
+  proven_on: {}
+  not_yet_reason: ""
+updates.install_security_responses:
+  summary: Install security responses automatically.
+  scope: machine
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - domain: /Library/Preferences/com.apple.SoftwareUpdate
+      key: CriticalUpdateInstall
+      type: bool
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Automatic updates (i) > Install Security
+    Responses and system files (one toggle, two keys)
+  proven_on: {}
+  not_yet_reason: ""
+updates.install_system_data_files:
+  summary: Install system data files automatically.
+  scope: machine
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - domain: /Library/Preferences/com.apple.SoftwareUpdate
+      key: ConfigDataInstall
+      type: bool
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: System Settings > Same toggle as above
+  proven_on: {}
+  not_yet_reason: ""

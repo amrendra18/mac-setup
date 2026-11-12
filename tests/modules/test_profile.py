@@ -57,6 +57,10 @@ TEST_FILES = {
         "test.label": entry(values={"type": "text", "pattern": "[A-Z][a-z]+"}),
         "test.logout": entry(takes_effect="logout"),
         "test.click": entry(route="by_hand", writes=[]),
+        "test.later": entry(
+            route="not_yet", not_yet_reason="the value is a list", writes=[]
+        ),
+        "test.apps": entry(route="dock_apps", values={"type": "bundle_ids"}, writes=[]),
         "test.mapped": entry(
             values=["small", "large"],
             writes=[
@@ -262,6 +266,35 @@ class ProfileProblems(unittest.TestCase):
         self.assertEqual(subjects(profile_problems(risky, TEST_FILES)), ["test.risky"])
         allowed = {**risky, "allow_lockout_risk": True}
         self.assertEqual(profile_problems(allowed, TEST_FILES), [])
+
+    def test_a_setting_that_needs_a_click_is_counted(self):
+        files = {"t.yml": {"t.siri": entry(needs=["click"])}}
+        work = profile_work({"default_settings": {"t.siri": True}}, files, "runner")
+        self.assertEqual(work["counts"]["need_click"], 1)
+
+    def test_not_yet_setting_is_refused_with_its_reason(self):
+        problems = profile_problems(
+            {"default_settings": {"test.later": True}}, TEST_FILES
+        )
+        self.assertEqual(subjects(problems), ["test.later"])
+        self.assertIn("the value is a list", problems[0])
+
+    def test_bundle_ids(self):
+        for value, ok in [
+            (["com.apple.Safari", "com.apple.systempreferences"], True),
+            ([], True),
+            (["com.apple.Safari", "com.apple.Safari"], False),
+            (["Safari"], False),
+            ("com.apple.Safari", False),
+            ([1], False),
+            ([["com.apple.Safari"]], False),
+            ([{"app": "com.apple.Safari"}], False),
+        ]:
+            with self.subTest(value=value):
+                problems = profile_problems(
+                    {"default_settings": {"test.apps": value}}, TEST_FILES
+                )
+                self.assertEqual(problems == [], ok)
 
     def test_unknown_profile_key(self):
         profile = {

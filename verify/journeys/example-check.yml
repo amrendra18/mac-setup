@@ -1,0 +1,20 @@
+summary: The example profile loads with the whole settings reference, and a check run fails nothing and writes nothing.
+level: fast
+setup:
+  - mkdir -p .local/example-check && defaults export com.apple.dock .local/example-check/dock-before.plist
+profile:
+  default_settings:
+    dock.position: left
+    dock.tile_size: 32
+    dock.show_recents: false
+  accounts: []
+runs:
+  - name: check
+    args: [--check]
+    exit: 0
+    recap: {failed: 0}
+cleanup:
+  - defaults export com.apple.dock .local/example-check/dock-after.plist
+  - >-
+    cmp .local/example-check/dock-before.plist .local/example-check/dock-after.plist
+    || { echo "com.apple.dock changed during the check run"; exit 1; }

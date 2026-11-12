@@ -85,3 +85,4 @@ A read's `type` is the name macOS reports: `string`, `integer`, `float`, `boolea
 | 2 | [Dock basics](./dock-basics.md) | `scripts/verify fast --feature dock-basics` | check run, apply, second run, typed reads of 3 Dock keys, and the planted broken profile |
 | 3 | [Per-account settings](./per-account.md) | `scripts/verify fast --feature per-account` | 3 Dock keys written and read as `setuptest1`, the plist owner and mode, second run, `unset` read as absent |
 | 4 | [Refused settings](./refusals.md) | `scripts/verify fast --feature refusals` | a type mismatch refused with exit 2 and one line, the 2 other keys written, the Dock restarted |
+| 5 | [Example profile check](./example-check.md) | `scripts/verify fast --feature example-check` | the example profile and every reference entry load, and a check run fails nothing and writes nothing |

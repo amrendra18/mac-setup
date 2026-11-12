@@ -33,6 +33,6 @@ Preconditions:
 ## Gotchas
 
 - The setup deletes the 3 keys, and the Dock keeps showing the old look until it restarts. After a planted failure the Dock returns to the macOS defaults at its next restart.
-- The apply's `changed=4` needs the account signed in at the screen, so its Dock runs. With no Dock running, the restart has nothing to do and the apply shows `changed=3`.
+- The apply's `changed=4` needs the running account to own the screen. When another account or the login window owns it, the run skips the Dock restart and the apply shows `changed=3`. A restart then would leave that account's Dock stopped until it logs out and back in.
 - `tilesize` is a float. A stored integer makes `osx_defaults` fail with a type mismatch. The setup's delete avoids that.
 - The reads go through `defaults export`, so they see what the preferences system holds, and not only what is on disk.

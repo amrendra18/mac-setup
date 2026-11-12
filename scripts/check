@@ -17,8 +17,8 @@ fast  yamllint, playbook syntax, Python unit tests in tests/modules/ and tests/h
       "# expect: SUBJECT" line in the input, each line starting "SUBJECT: "),
       the structure rules, the private-word scan and gitleaks. It changes no
       settings.
-full  fast, then tests/test_reference.py when it exists, black --check on the Python
-      files, and ansible-lint when requirements/dev.txt pins it.
+full  fast, then the reference test tests/test_reference.py, black --check on the
+      Python files, and ansible-lint when requirements/dev.txt pins it.
 
 Needs scripts/bootstrap's .local/venv, the dev tools from requirements/dev.txt in it,
 gitleaks in .local/bin or on PATH, and the ignored word list .local/private-words.txt
@@ -215,7 +215,7 @@ ansible_lint() {
 python_format() {
   need "$bin/black" || { echo "install the dev tools, see scripts/check --help"; return 1; }
   local out
-  out=$(candidates | grep -zE '\.py$|^scripts/verify$' | xargs -0 "$bin/black" --check 2>&1) && return
+  out=$(candidates | grep -zE '\.py$|^scripts/(verify|render-template)$' | xargs -0 "$bin/black" --check 2>&1) && return
   printf '%s\n' "$out" | grep '^would reformat'
   echo "format them with .local/venv/bin/black"
   return 1
@@ -233,11 +233,7 @@ step "structure rules" structure
 step "private words" private_words
 step "secret scan" secrets
 if [ "$level" = full ]; then
-  if [ -f tests/test_reference.py ]; then
-    step "reference test" reference_test
-  else
-    echo "skip  reference test: tests/test_reference.py arrives in M2"
-  fi
+  step "reference test" reference_test
   step "python format" python_format
   if grep -qi '^ansible-lint==' requirements/dev.txt 2>/dev/null; then
     step ansible-lint ansible_lint

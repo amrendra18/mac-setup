@@ -39,8 +39,8 @@ Each rule names the test that enforces it. A test marked "planned" does not exis
 6. A setting macOS refuses at write time does not stop the other settings, and the run ends with exit code 2. Test: the `refusals` journey.
 7. A second run changes nothing. Test: every journey's second run expects `changed=0`.
 8. No run deletes an account or changes an existing account's password or admin rights. Test: the unit tests in `tests/modules/test_macos_account.py`.
-9. A machine-scope preference writes only a domain path that starts with `/`. Test: `tests/test_reference.py` (planned, M2).
-10. `inventory/example/TEMPLATE.yml` matches the reference. Test: `tests/test_reference.py` compares it with the output of `scripts/render-template` (planned, M2).
+9. A machine-scope preference writes only a domain path that starts with `/`. Test: `tests/test_reference.py`.
+10. `inventory/example/TEMPLATE.yml` matches the reference. Test: `tests/test_reference.py` compares it with the output of `scripts/render-template`.
 11. A setting with `lockout_risk: true` is refused unless the profile sets `allow_lockout_risk: true`. Test: `tests/inputs/lockout-no-optin.yml` (planned, M4).
 
 ## Conventions

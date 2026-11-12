@@ -366,9 +366,18 @@ class Harness(unittest.TestCase):
         self.assertNotIn("good.plist", result["reason"])
 
     def test_the_tracked_journeys_load(self):
-        for name in ("accounts", "per-account", "refusals", "dock-basics"):
-            journey = self.verify.load_journey(self.verify.JOURNEYS / f"{name}.yml")
-            self.assertEqual(journey.name, name)
+        paths = sorted(self.verify.JOURNEYS.glob("*.yml"))
+        self.assertGreaterEqual(len(paths), 5)
+        for path in paths:
+            journey = self.verify.load_journey(path)
+            self.assertEqual(journey.name, path.stem)
+
+    def test_example_check_uses_the_example_profile(self):
+        journey = self.verify.load_journey(self.verify.JOURNEYS / "example-check.yml")
+        example = ROOT / "inventory/example/host_vars/example-mac/accounts.yml"
+        self.assertEqual(
+            journey.profile, self.verify.yaml.safe_load(example.read_text())
+        )
 
     def test_journeys_use_no_real_account_name(self):
         me = getpass.getuser()

@@ -1,0 +1,478 @@
+---
+finder.column_auto_size:
+  summary: In column view, widen columns to fit filenames.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: _FXEnableColumnAutoSizing, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Column view > View > Show View Options > Resize columns
+    to fit filenames (26.1 and later)
+  proven_on: {}
+  not_yet_reason: ""
+finder.connected_servers:
+  summary: Show connected servers on the desktop.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: ShowMountedServersOnDesktop, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: same list > Connected servers
+  proven_on: {}
+  not_yet_reason: ""
+finder.desktop_icons:
+  summary: Let Finder draw any icons on the desktop at all.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: CreateDesktop, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: No Settings row (hidden setting)
+  proven_on: {}
+  not_yet_reason: ""
+finder.external_drives:
+  summary: Show external disks on the desktop.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: ShowExternalHardDrivesOnDesktop, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: same list > External disks
+  proven_on: {}
+  not_yet_reason: ""
+finder.folders_first:
+  summary: Keep folders on top when a window is sorted by name.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: _FXSortFoldersFirst, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > Settings > Advanced > Keep folders on top >
+    In windows when sorting by name
+  proven_on: {}
+  not_yet_reason: ""
+finder.folders_first_desktop:
+  summary: Keep folders on top on the desktop.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: _FXSortFoldersFirstOnDesktop, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > Settings > Advanced > Keep folders on top >
+    On Desktop
+  proven_on: {}
+  not_yet_reason: ""
+finder.internal_drives:
+  summary: Show internal disks on the desktop.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: ShowHardDrivesOnDesktop, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > Settings > General > Show these items on the
+    desktop > Hard disks
+  proven_on: {}
+  not_yet_reason: ""
+finder.new_window:
+  summary: Folder that a new Finder window opens.
+  scope: user
+  route: defaults
+  values: [recents, computer, startup-disk, home, desktop, documents, icloud-drive]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.finder
+      key: NewWindowTarget
+      type: string
+      map:
+        recents: PfAF
+        computer: PfCm
+        startup-disk: PfVo
+        home: PfHm
+        desktop: PfDe
+        documents: PfDo
+        icloud-drive: PfID
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > Settings > General > New Finder windows show
+  proven_on: {}
+  not_yet_reason: ""
+finder.no_network_ds_store:
+  summary: Stop Finder writing .DS_Store files on network shares.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.desktopservices, key: DSDontWriteNetworkStores, type: bool}
+  takes_effect: logout
+  needs: []
+  lockout_risk: false
+  where: No Settings row (hidden, documented by Apple)
+  proven_on: {}
+  not_yet_reason: ""
+finder.open_folders_in_tabs:
+  summary: Open folders in tabs instead of new windows.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: FinderSpawnTab, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > Settings > General > Open folders in tabs instead
+    of new windows
+  proven_on: {}
+  not_yet_reason: ""
+finder.removable_media:
+  summary: Show CDs, DVDs and iPods on the desktop.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: ShowRemovableMediaOnDesktop, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: same list > CDs, DVDs, and iPods
+  proven_on: {}
+  not_yet_reason: ""
+finder.search_scope:
+  summary: Where a Finder search looks first.
+  scope: user
+  route: defaults
+  values: [mac, current-folder, previous]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.finder
+      key: FXDefaultSearchScope
+      type: string
+      map: {mac: SCev, current-folder: SCcf, previous: SCsp}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > Settings > Advanced > When performing a search
+  proven_on: {}
+  not_yet_reason: ""
+finder.show_extensions:
+  summary: Show every filename extension in Finder.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: NSGlobalDomain, key: AppleShowAllExtensions, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > Settings > Advanced > Show all filename extensions
+  proven_on: {}
+  not_yet_reason: ""
+  notes: An early test applied this write and undid it exactly
+    on macOS 27.2.1.
+finder.show_hidden:
+  summary: Show hidden files and folders in Finder.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: AppleShowAllFiles, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Command-Shift-period in a Finder window; no Settings
+    row
+  proven_on: {}
+  not_yet_reason: ""
+finder.show_path_bar:
+  summary: Show the path bar at the bottom of Finder windows.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: ShowPathbar, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > View > Show Path Bar
+  proven_on: {}
+  not_yet_reason: ""
+finder.show_preview_pane:
+  summary: Show the preview pane in new Finder windows.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: ShowPreviewPane, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > View > Show Preview
+  proven_on: {}
+  not_yet_reason: ""
+finder.show_recent_tags:
+  summary: Show Recent Tags in the Finder sidebar.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: ShowRecentTags, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > Settings > Sidebar > Recent Tags
+  proven_on: {}
+  not_yet_reason: ""
+finder.show_sidebar:
+  summary: Show the sidebar in new Finder windows.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: ShowSidebar, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > View > Show Sidebar
+  proven_on: {}
+  not_yet_reason: ""
+finder.show_status_bar:
+  summary: Show the status bar with item count and free space.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: ShowStatusBar, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > View > Show Status Bar
+  proven_on: {}
+  not_yet_reason: ""
+finder.show_tab_bar:
+  summary: Always show the tab bar in Finder windows.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: ShowTabView, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > View > Show Tab Bar
+  proven_on: {}
+  not_yet_reason: ""
+finder.trash_auto_empty:
+  summary: Delete items from the Trash after 30 days.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: FXRemoveOldTrashItems, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > Settings > Advanced > Remove items from the
+    Trash after 30 days
+  proven_on: {}
+  not_yet_reason: ""
+finder.view:
+  summary: View style for folders that have no saved view of their
+    own.
+  scope: user
+  route: defaults
+  values: [icon, list, column, gallery]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.finder
+      key: FXPreferredViewStyle
+      type: string
+      map: {icon: icnv, list: Nlsv, column: clmv, gallery: Flwv}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > View > as Icons, List, Columns, Gallery, then
+    View Options > Use as Defaults
+  proven_on: {}
+  not_yet_reason: ""
+finder.warn_empty_trash:
+  summary: Warn before emptying the Trash.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: WarnOnEmptyTrash, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > Settings > Advanced > Show warning before emptying
+    the Trash
+  proven_on: {}
+  not_yet_reason: ""
+finder.warn_extension_change:
+  summary: Warn before changing a filename extension.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: FXEnableExtensionChangeWarning, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > Settings > Advanced > Show warning before changing
+    an extension
+  proven_on: {}
+  not_yet_reason: ""
+finder.warn_icloud_remove:
+  summary: Warn before removing an item from iCloud Drive.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.finder, key: FXEnableRemoveFromICloudDriveWarning, type: bool}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > Settings > Advanced > Show warning before removing
+    from iCloud Drive
+  proven_on: {}
+  not_yet_reason: ""
+screenshot.format:
+  summary: File format for new screenshots.
+  scope: user
+  route: defaults
+  values: [png, jpg, heic, pdf, tiff, gif]
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.screencapture, key: type, type: string}
+  takes_effect: systemuiserver
+  needs: []
+  lockout_risk: false
+  where: No Settings row; `screencapture -t` or Terminal only
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: `killall SystemUIServer`;
+    a guess says macOS 15 and later need none.'
+screenshot.include_date:
+  summary: Put the date and time in screenshot file names.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.screencapture, key: include-date, type: bool}
+  takes_effect: systemuiserver
+  needs: []
+  lockout_risk: false
+  where: No Settings row
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: `killall SystemUIServer`;
+    guess.'
+screenshot.no_shadow:
+  summary: Leave out the shadow around window screenshots.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.screencapture, key: disable-shadow, type: bool}
+  takes_effect: systemuiserver
+  needs: []
+  lockout_risk: false
+  where: No Settings row (Option-click a window removes the shadow
+    once)
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: `killall SystemUIServer`;
+    guess.'
+screenshot.remember_selection:
+  summary: Start the next screenshot with the last selected area.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.screencapture, key: save-selections, type: bool}
+  takes_effect: systemuiserver
+  needs: []
+  lockout_risk: false
+  where: Screenshot app > Options > Remember Last Selection
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: `killall SystemUIServer`;
+    guess.'
+screenshot.target:
+  summary: Where a new screenshot goes.
+  scope: user
+  route: defaults
+  values: [file, clipboard, preview, mail, messages]
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.screencapture, key: target, type: string}
+  takes_effect: systemuiserver
+  needs: []
+  lockout_risk: false
+  where: Screenshot app (Command-Shift-5) > Options > Save to
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: `killall SystemUIServer`;
+    guess.'
+screenshot.thumbnail:
+  summary: Show the floating thumbnail after a screenshot.
+  scope: user
+  route: defaults
+  values: {type: bool}
+  macos_default: not measured
+  writes:
+    - {domain: com.apple.screencapture, key: show-thumbnail, type: bool}
+  takes_effect: systemuiserver
+  needs: []
+  lockout_risk: false
+  where: Screenshot app > Options > Show Floating Thumbnail
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'Research note on when it takes effect: `killall SystemUIServer`;
+    guess.'

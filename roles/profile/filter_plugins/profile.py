@@ -3,6 +3,7 @@ from collections import Counter
 
 UNSET = "unset"
 ACCOUNT_NAME = re.compile(r"[a-z_][a-z0-9_.-]*")
+BUNDLE_ID = re.compile(r"[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+")
 ACCOUNT_FIELDS = {"name", "full_name", "admin", "settings"}
 PROFILE_KEYS = [
     "default_settings",
@@ -53,6 +54,14 @@ VALUE_KINDS = {
         ),
         lambda spec: f"text that matches {spec['pattern']}",
     ),
+    "bundle_ids": (
+        lambda spec, value: (
+            isinstance(value, list)
+            and all(isinstance(i, str) and BUNDLE_ID.fullmatch(i) for i in value)
+            and len(set(value)) == len(value)
+        ),
+        lambda spec: "a list of different app bundle ids, such as [com.apple.Safari]",
+    ),
 }
 
 
@@ -97,6 +106,10 @@ def _setting_problems(prefix, settings, scope, reference, allow_lockout_risk):
             problems.append(f"{subject}: unknown setting id")
         elif entry["scope"] != scope:
             problems.append(f"{subject}: {SCOPE_HINTS[entry['scope']]}")
+        elif entry["route"] == "not_yet":
+            problems.append(
+                f"{subject}: mac-setup cannot set this yet, {entry['not_yet_reason']}"
+            )
         elif value != UNSET and not _allowed(entry["values"], value):
             problems.append(
                 f"{subject}: {value!r} is not allowed, "
@@ -256,6 +269,7 @@ def profile_work(profile, files, running_account):
             + sum(_ids(other["writes"]) for other in others),
             "need_click": sum(
                 reference[setting_id]["route"] == "by_hand"
+                or "click" in reference[setting_id].get("needs", [])
                 for group in groups
                 for setting_id in group
             ),

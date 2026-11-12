@@ -1,0 +1,4 @@
+---
+# expect: input.app_expose_gesture
+default_settings:
+  input.app_expose_gesture: three_finger

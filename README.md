@@ -1,6 +1,6 @@
 # mac-setup
 
-Status: milestone M1. `scripts/bootstrap` installs mac-setup. A run creates the accounts the profile lists, and sets 3 Dock settings (position, tile size and recents) for the account that runs it and for each listed account. Machine settings, the click-through and the other settings are planned. The Plan section names the milestone that builds each one.
+Status: milestone M2. `scripts/bootstrap` installs mac-setup. The settings reference in `settings/macos/` describes 283 settings, and 5 of them are proven on macOS 27.2.1. Today a run creates the accounts the profile lists and writes account settings that macOS keeps as preferences, for the account that runs it and for each listed account. Of those, only the 3 Dock settings (position, tile size and recents) are proven. Machine settings, the click-through and the other settings are planned. The Plan section names the milestone that builds each one.
 
 mac-setup sets up a Mac from one profile file. You write down the settings you want once, for the Mac and for each account on it. One command then applies them, and running it again changes nothing.
 
@@ -14,7 +14,7 @@ Today that person clicks through System Settings by hand, once per Mac and once 
 
 ## What a run looks like
 
-This section describes the first release. Today the settings reference holds only the 3 Dock settings. The Install section below gives the steps that work today.
+This section describes the first release. Today a run applies only account settings, and only the 3 Dock settings among them are proven. The Install section below gives the steps that work today.
 
 ### First run on a fresh Mac
 
@@ -147,7 +147,7 @@ If a download does not match its pinned SHA-256 hash, the bootstrap deletes that
    test -d .local/inventory || cp -R inventory/example .local/inventory
    ```
 
-   The profile is `.local/inventory/host_vars/example-mac/accounts.yml`. Its `default_settings` hold 3 Dock settings for every account. Change a value there if you want another one. `dock.position` takes `left`, `bottom` or `right`. `dock.tile_size` takes a whole number from 16 to 128. `dock.show_recents` takes `true` or `false`. The value `unset` deletes the setting, so macOS uses its own default.
+   The profile is `.local/inventory/host_vars/example-mac/accounts.yml`. Its `default_settings` hold 3 Dock settings for every account. Change a value there if you want another one. For example, `dock.position: bottom` moves the Dock to the bottom. `inventory/example/TEMPLATE.yml` lists every setting with the values it takes. The value `unset` deletes the setting, so macOS uses its own default.
 
    Its `accounts` list is empty. To create a standard account, or to give an existing one its own settings, add an entry:
 
@@ -174,7 +174,7 @@ If a download does not match its pinned SHA-256 hash, the bootstrap deletes that
 
    With the example profile as copied, the preview ends with `changed=3` in its recap line and writes nothing. The first apply ends with `changed=4`: 3 settings and 1 Dock restart. The Dock moves to the left, gets smaller and hides recent apps. The second apply ends with `changed=0`.
 
-   When the account is not signed in at the screen, it has no running Dock. The first apply then ends with `changed=3`, and the Dock changes at that account's next sign-in.
+   When another account, or the login window, owns the screen, the run skips the Dock restart. A restart then would leave that account's Dock stopped until it logs out and back in. The first apply ends with `changed=3`, and the Dock changes at that account's next sign-in.
 
    Without step 3's copy there is no profile. The run then warns that no host matched, changes nothing and still exits 0.
 
