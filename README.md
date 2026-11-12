@@ -14,6 +14,8 @@ Today that person clicks through System Settings by hand, once per Mac and once 
 
 ## What a run looks like
 
+This section describes the first release. Today the profile holds only the 3 Dock settings, and a run needs no admin password. The Install section below gives the steps that work today.
+
 ### First run on a fresh Mac
 
 1. You sign in to the Mac's first admin account and open Terminal.
@@ -133,11 +135,35 @@ You need an Apple Silicon Mac, because every pinned download is an arm64 build. 
    scripts/bootstrap
    ```
 
-The bootstrap prints `OK` and a file name for each of its 11 pinned downloads. They are uv, 9 Python packages and one Ansible collection. uv prints its own lines for Python. The bootstrap then prints `ansible-playbook [core 2.21.5]` and the next two commands.
+The bootstrap prints `OK` and a file name for each of its 11 pinned downloads. They are uv, 9 Python packages and one Ansible collection. uv prints its own lines for Python. The bootstrap then prints `ansible-playbook [core 2.21.5]` and the copy, preview and apply commands from steps 3 and 4 below.
 
-Run `scripts/bootstrap` again at any time. A second run downloads nothing and changes nothing. On a macOS 15.6.1 virtual machine, a first run took 11.2 s and a second run 1.1 s.
+Run `scripts/bootstrap` again at any time. A second run downloads nothing and changes nothing. On a macOS 15.6.1 virtual machine, a first run took 11.2 s and a second run 1.1 s. On a Mac mini with macOS 27.2.1, a first run took 11 s.
 
 If a download does not match its pinned SHA-256 hash, the bootstrap deletes that file, names it, and exits with code 1. A network failure also stops the bootstrap with a non-zero code. In both cases, run `scripts/bootstrap` again.
+
+3. Copy the example profile to the private folder `.local/inventory/`. The `test -d` part skips the copy when the folder exists, so running the line again keeps your edits.
+
+   ```sh
+   test -d .local/inventory || cp -R inventory/example .local/inventory
+   ```
+
+   Today the profile holds 3 Dock settings, in `.local/inventory/host_vars/example-mac/accounts.yml`. Change a value there if you want another one. `dock.position` takes `left`, `bottom` or `right`. `dock.tile_size` takes a whole number from 16 to 128. `dock.show_recents` takes `true` or `false`.
+
+4. Preview the change, apply it, and apply it again.
+
+   ```sh
+   .local/venv/bin/ansible-playbook playbooks/site.yml --check
+   .local/venv/bin/ansible-playbook playbooks/site.yml
+   .local/venv/bin/ansible-playbook playbooks/site.yml
+   ```
+
+   The preview ends with `changed=3` in its recap line and writes nothing. The first apply ends with `changed=4`: 3 settings and 1 Dock restart. The Dock moves to the left, gets smaller and hides recent apps. The second apply ends with `changed=0`.
+
+   When the account is not signed in at the screen, it has no running Dock. The first apply then ends with `changed=3`, and the Dock changes at that account's next sign-in.
+
+   Without step 3's copy there is no profile. The run then warns that no host matched, changes nothing and still exits 0.
+
+   Today's run uses no admin rights, so it needs no `-K` option. `-K` makes Ansible ask for the admin password; it arrives with milestone M1, which adds accounts.
 
 ### Hosts the install contacts
 

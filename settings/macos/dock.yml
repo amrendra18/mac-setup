@@ -11,7 +11,7 @@ dock.position:
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Position on screen
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 dock.tile_size:
   summary: How big the Dock icons are, in points.
@@ -25,7 +25,7 @@ dock.tile_size:
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Size
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
 dock.show_recents:
   summary: Whether the Dock shows suggested and recent apps in their own section.
@@ -39,5 +39,5 @@ dock.show_recents:
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Show suggested and recent apps in Dock
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""

@@ -95,12 +95,13 @@ echo
 cat <<EOF
 
 Ansible is installed in $local_dir. Outside the checkout, the install keeps only Python $python_version, in $(dirname "$(dirname "$python")").
-Next, copy the example profile and edit its account names:
+Next, copy the example profile:
 
   cd '$root'
   test -d .local/inventory || cp -R inventory/example .local/inventory
 
-Then run:
+Then preview the change, and apply it:
 
-  .local/venv/bin/ansible-playbook playbooks/site.yml -K
+  .local/venv/bin/ansible-playbook playbooks/site.yml --check
+  .local/venv/bin/ansible-playbook playbooks/site.yml
 EOF
