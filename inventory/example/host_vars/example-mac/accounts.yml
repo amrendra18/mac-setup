@@ -52,4 +52,20 @@ default_settings:
   appearance.highlight_color: accent
   finder.show_hidden: true
   finder.new_window: home
+  input.auto_capitalize: true
+  input.double_space_period: true
+  input.mouse_mission_control: 'on'
+  input.mouse_secondary_click: 'off'
+  input.mouse_smart_zoom: 'off'
+  input.mouse_swipe_full_screen_apps: 'on'
+  input.notification_center_gesture: 'on'
+  input.pinch_zoom: 'on'
+  input.rotate: 'on'
+  input.secondary_click: two_finger
+  input.show_input_menu: false
+  input.smart_zoom: 'on'
+  input.tap_to_click: 'off'
+  input.three_finger_drag: false
+  input.trackpad_tap_drag: 'off'
+  privacy.personalized_ads: false
 accounts: []

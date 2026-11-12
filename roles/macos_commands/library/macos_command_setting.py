@@ -12,7 +12,7 @@ description:
   - A read that exits nonzero is an error unless the pattern matches.
   - The value found is compared with the wanted value, after map turns the wanted public value into the text the read prints.
   - Only on a difference it runs the set argv lists in order, then reads again and fails unless the read shows the wanted value.
-  - A known refusal line in any command's output, such as systemsetup's "You need administrator access", is a failure with that line, whatever the exit code.
+  - A known refusal line in any command's output, such as systemsetup's "You need administrator access", is a failure, whatever the exit code. The failure gives the entry's reason, or the line itself when the entry has no reason.
   - A read whose text matches a pattern in refuse is a failure with that pattern's reason, before parse runs.
   - Arguments go to the tool as a list, never through a shell.
 options:
@@ -27,7 +27,7 @@ options:
 REFUSALS = {
     "You need administrator access": "",
     "requires Full Disk Access": "",
-    "### Error:-99": "printed Error -99 and changed nothing; over SSH this means the session has no Full Disk Access",
+    "### Error:-99": "printed Error -99 and changed nothing; macOS gives this when the app that runs mac-setup, such as Terminal or an SSH session, has no Full Disk Access",
 }
 
 

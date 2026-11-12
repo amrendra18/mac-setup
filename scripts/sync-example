@@ -25,6 +25,14 @@ NEUTRAL = {
     "power.display_sleep_minutes": 10,
     "power.system_sleep_minutes": 30,
 }
+LEFT_OUT = {"computer.local_hostname"}
+EXAMPLE_MACHINE = {
+    "security.firewall": True,
+    "security.firewall_block_all": True,
+    "security.stealth": True,
+    "security.firewall_allow_builtin_signed": False,
+    "security.firewall_allow_downloaded_signed": False,
+}
 HEADER = "---\n# Written by scripts/sync-example from the maintainer's profile. Run it again after a change.\n"
 
 
@@ -60,7 +68,7 @@ def neutral_settings(settings, entries, refused):
     result = {}
     for key, value in (settings or {}).items():
         entry = entries.get(key, {})
-        if entry.get("lockout_risk"):
+        if entry.get("lockout_risk") or key in LEFT_OUT:
             continue
         values = entry.get("values")
         if (
@@ -72,6 +80,16 @@ def neutral_settings(settings, entries, refused):
             continue
         result[key] = neutral_value(key, value)
     return result
+
+
+def neutral_machine(settings, entries, refused):
+    return {
+        "allow_lockout_risk": True,
+        "machine_settings": {
+            **neutral_settings(settings, entries, refused),
+            **EXAMPLE_MACHINE,
+        },
+    }
 
 
 def neutral_accounts(accounts, entries, refused):
@@ -124,11 +142,7 @@ def main():
         ),
         "accounts": neutral_accounts(profile.get("accounts"), entries, refused),
     }
-    machine = {
-        "machine_settings": neutral_settings(
-            profile.get("machine_settings"), entries, refused
-        )
-    }
+    machine = neutral_machine(profile.get("machine_settings"), entries, refused)
     if refused:
         for key in sorted(set(refused)):
             print(

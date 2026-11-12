@@ -44,7 +44,7 @@ class SyncExample(unittest.TestCase):
     def test_personal_values_stay_out(self):
         result, refused = self.neutral(
             {
-                "time.zone": "Europe/Lisbon",
+                "time.zone": "Zz/Nowhere",
                 "network.wifi_power": False,
                 "computer.name": "zzPersonalMac",
                 "login_window.message": "Property of Zz Person",
@@ -76,7 +76,32 @@ class SyncExample(unittest.TestCase):
         self.assertEqual(result["power.display_sleep_minutes"], 10)
         self.assertEqual(result["power.system_sleep_minutes"], 30)
         self.assertEqual(result["apps.install"], [])
-        self.assertNotIn("zz", yaml.safe_dump(result))
+        self.assertNotIn("zz", yaml.safe_dump(result).lower())
+
+    def test_the_example_blocks_all_incoming_connections(self):
+        for private in [
+            {"time.zone": "Etc/UTC"},
+            {
+                "security.firewall": False,
+                "security.firewall_block_all": False,
+                "security.stealth": False,
+                "security.firewall_allow_builtin_signed": True,
+                "security.firewall_allow_downloaded_signed": True,
+                "computer.local_hostname": "zzPersonalMac",
+            },
+        ]:
+            refused = []
+            machine = self.script.neutral_machine(private, self.entries, refused)
+            settings = machine["machine_settings"]
+            self.assertEqual(refused, [])
+            self.assertIs(machine["allow_lockout_risk"], True)
+            self.assertIs(settings["security.firewall"], True)
+            self.assertIs(settings["security.firewall_block_all"], True)
+            self.assertIs(settings["security.stealth"], True)
+            self.assertIs(settings["security.firewall_allow_builtin_signed"], False)
+            self.assertIs(settings["security.firewall_allow_downloaded_signed"], False)
+            self.assertNotIn("computer.local_hostname", settings)
+            self.assertEqual(profile_problems(machine, reference_files()), [])
 
     def test_an_encrypted_vault_file_in_the_profile_is_skipped(self):
         folder = Path(tempfile.mkdtemp())

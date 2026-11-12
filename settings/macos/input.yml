@@ -667,8 +667,9 @@ input.secondary_click:
   where: System Settings > Trackpad
   proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
-  notes: One menu in System Settings sets two keys, plus the -currentHost copy,
-    in both trackpad domains.
+  notes: One menu in System Settings sets two keys, plus the -currentHost copy.
+    Written in the built-in trackpad domain only; a Bluetooth trackpad keeps
+    its own copy.
 input.show_desktop_gesture:
   summary: Spread thumb and three fingers to show the desktop.
   scope: user

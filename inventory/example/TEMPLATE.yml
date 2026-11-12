@@ -1086,8 +1086,8 @@ default_settings:
   #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
-  #   Note: One menu in System Settings sets two keys, plus the -currentHost copy, in both trackpad
-  #     domains.
+  #   Note: One menu in System Settings sets two keys, plus the -currentHost copy. Written in the
+  #     built-in trackpad domain only; a Bluetooth trackpad keeps its own copy.
 
   # input.show_desktop_gesture: false
   #   Spread thumb and three fingers to show the desktop.
@@ -1986,8 +1986,8 @@ machine_settings:
   #   Takes effect: at once
   #   Needs: Full Disk Access for the terminal app
   #   Proven on: not yet
-  #   Note: Over SSH, systemsetup prints Error -99 and leaves the time zone as it was; an SSH
-  #     session has no Full Disk Access (measured on macOS 27.2.1).
+  #   Note: Without Full Disk Access, systemsetup prints Error -99 and leaves the time zone as it
+  #     was. Measured on macOS 27.2.1 over SSH and in a local Terminal that has no Full Disk Access.
 
   # updates.check_automatically: false
   #   Check for software updates automatically.

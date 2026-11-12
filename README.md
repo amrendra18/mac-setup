@@ -12,7 +12,7 @@ The example file that ships with mac-setup makes these main changes, among other
 2. **Desktop.** A solid black desktop picture.
 3. **Finder.** List view, hidden files shown, and a sidebar with Applications, your home folder, Desktop and Downloads. Recents, Shared, AirDrop, Trash and iCloud leave the sidebar.
 4. **Look and menu bar.** Dark mode with an orange accent, and a 24-hour clock with seconds.
-5. **Machine settings.** Firewall on, Wi-Fi on, display sleep after 10 minutes, system sleep after 30 minutes, and the time zone you choose.
+5. **Machine settings.** Firewall on and blocking all incoming connections, with stealth mode on and no app allowed in automatically, Wi-Fi on, display sleep after 10 minutes, system sleep after 30 minutes, and the time zone you choose.
 6. **Accounts.** mac-setup creates each extra account you list, admin or standard, with its own settings. The example lists none.
 7. **Apps.** Apps you pick from a short list, such as Firefox or Sublime Text, each checked before it is copied to `/Applications`. The example installs none.
 8. **A guided walk through the clicks.** Apple lets only a person grant privacy permissions, such as camera or screen recording. For those settings, mac-setup opens the right System Settings page and tells you what to choose. The example turns Location Services off this way.
@@ -56,7 +56,9 @@ You also need a GitHub SSH key that can read this repository. Follow GitHub's gu
    test -d .local/inventory || cp -R inventory/example .local/inventory
    ```
 
-   Then open `.local/inventory/host_vars/example-mac/machine.yml` with `open -e` (TextEdit). Set `time.zone` to your own zone, such as `Europe/Berlin`. The example uses `Etc/UTC`. To see your Mac's current zone, run `readlink /etc/localtime`. The zone is the part after `zoneinfo/`. Over SSH, `systemsetup` cannot change the zone, because an SSH session has no Full Disk Access. If the run refuses `time.zone`, set the zone in System Settings > General > Date & Time.
+   Then open `.local/inventory/host_vars/example-mac/machine.yml` with `open -e` (TextEdit). Set `time.zone` to your own zone, such as `Europe/Berlin`. The example uses `Etc/UTC`. To see your Mac's current zone, run `readlink /etc/localtime`. The zone is the part after `zoneinfo/`. macOS changes the zone only for an app with Full Disk Access, and Terminal has none at first. So either turn on Terminal in System Settings > Privacy & Security > Full Disk Access before the run, or set the zone in System Settings > General > Date & Time and delete the `time.zone` line.
+
+   The example also turns on the firewall's "Block all incoming connections", which refuses SSH logins too. If you set up or reach this Mac over SSH, delete both the `security.firewall_block_all` line and the `allow_lockout_risk: true` line.
 
 4. Preview the changes. Your settings stay as they are.
 

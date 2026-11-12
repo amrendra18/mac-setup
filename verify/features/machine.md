@@ -1,6 +1,6 @@
 # Machine settings
 
-One run of `playbooks/site.yml` sets the machine settings listed under `machine_settings` that a command tool stores. Play 2 runs as admin and sets each one with the tool its reference entry names, then reads it back with the same tool. This journey covers 4 power settings. The time zone is not in it: over SSH, `systemsetup -settimezone` prints Error -99 and changes nothing, because the session has no Full Disk Access (measured on macOS 27.2.1). A second run changes nothing.
+One run of `playbooks/site.yml` sets the machine settings listed under `machine_settings` that a command tool stores. Play 2 runs as admin and sets each one with the tool its reference entry names, then reads it back with the same tool. This journey covers 4 power settings. The time zone is not in it: without Full Disk Access, `systemsetup -settimezone` prints Error -99 and changes nothing, over SSH and in a local Terminal (measured on macOS 27.2.1). A second run changes nothing.
 
 ## Sub-features
 
@@ -42,4 +42,4 @@ Preconditions:
 - The harness's `reads` read only `defaults export`, and these settings live outside the preferences system. So the proof reads in the cleanup step, which runs after the last run, as in the Dock apps journey.
 - If `.local/machine-journey/` already exists, a run stopped before its cleanup. The setup then fails at its first step. The cleanup restores the values saved by that earlier run and removes the folder, so the next run starts clean. A change made by hand between the two runs is overwritten with those saved values.
 - The module sets power values with `pmset -a`, for every power source, and reads the first source that `pmset -g custom` lists. On a laptop, the cleanup's proof also checks the other sources.
-- A Mac that does not list `womp` or `autorestart` in `pmset -g custom`, such as some virtual machines, fails at setup step 3 before any change.
+- A Mac that does not list `womp` or `autorestart` in `pmset -g custom`, such as some virtual machines, fails at setup step 2 before any change.

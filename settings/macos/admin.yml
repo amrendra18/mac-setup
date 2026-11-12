@@ -880,8 +880,9 @@ time.zone:
   where: System Settings > General > Date & Time > Closest city
   proven_on: {}
   not_yet_reason: ""
-  notes: Over SSH, systemsetup prints Error -99 and leaves the time zone as it
-    was; an SSH session has no Full Disk Access (measured on macOS 27.2.1).
+  notes: Without Full Disk Access, systemsetup prints Error -99 and leaves the
+    time zone as it was. Measured on macOS 27.2.1 over SSH and in a local
+    Terminal that has no Full Disk Access.
 time.zone_automatic:
   summary: Set the time zone from the Mac's location.
   scope: machine

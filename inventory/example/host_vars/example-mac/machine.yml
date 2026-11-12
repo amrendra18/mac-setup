@@ -1,11 +1,17 @@
 ---
 # Written by scripts/sync-example from the maintainer's profile. Run it again after a change.
+allow_lockout_risk: true
 machine_settings:
   time.zone: Etc/UTC
   network.wifi_power: true
   security.firewall: true
+  security.stealth: true
+  security.firewall_allow_builtin_signed: false
+  security.firewall_allow_downloaded_signed: false
   power.system_sleep_minutes: 30
   power.display_sleep_minutes: 10
   power.wake_for_network: true
   power.restart_after_power_failure: true
   privacy.location_services: false
+  apps.install: []
+  security.firewall_block_all: true
