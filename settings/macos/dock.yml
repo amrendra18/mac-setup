@@ -601,24 +601,43 @@ mission_control.shortcuts:
   summary: Keys for Mission Control, app windows, Show Desktop
     and Space switching.
   scope: user
-  route: not_yet
-  values: [not_yet]
+  route: defaults
+  values:
+    type: hotkeys
+    actions:
+      mission_control: 32
+      application_windows: 33
+      show_desktop: 36
+      move_left_a_space: 79
+      move_right_a_space: 81
+      switch_to_desktop_1: 118
+      switch_to_desktop_2: 119
+      switch_to_desktop_3: 120
+      switch_to_desktop_4: 121
+      switch_to_desktop_5: 122
+      switch_to_desktop_6: 123
+      switch_to_desktop_7: 124
+      switch_to_desktop_8: 125
+      switch_to_desktop_9: 126
   macos_default: not measured
+  writes:
+    - {domain: com.apple.symbolichotkeys, key: AppleSymbolicHotKeys, type: dict, dict_mode: add}
   takes_effect: logout
-  needs: [click]
+  needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Mission Control >
     Shortcuts (also Keyboard > Keyboard Shortcuts > Mission Control)
-  proven_on: {}
-  not_yet_reason: The value is a list of hotkeys, and the profile
-    check cannot validate a list yet.
-  notes: 'AppleSymbolicHotKeys in com.apple.symbolichotkeys is
-    a dictionary of numbered entries (32 Mission Control, 33 Application
-    windows, 36 Show Desktop, 79 and 81 move one Space, 118 and
-    up switch to Desktop N). The numbers are community knowledge,
-    not measured. Research note on when it takes effect: log out,
-    or run the private activateSettings -u tool (guess, not tested).
-    Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension'
+  proven_on: {"27.2.1": "2026-11-12"}
+  not_yet_reason: ""
+  notes: 'true turns a shortcut on with its standard keys, false
+    turns it off, and keys such as control+up replace its keys.
+    Each action writes its own numbered entry in AppleSymbolicHotKeys
+    in com.apple.symbolichotkeys, and the other entries stay as they
+    are. The numbers are community knowledge, not measured. A test
+    Mac with macOS 15 stores the two move one Space entries as {enabled:
+    true} (measured). Research note on when it takes effect: log
+    out, or run the private activateSettings -u tool (guess, not
+    tested). Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension'
 mission_control.switch_to_app_space:
   summary: Switching to an app moves to a Space with its windows.
   scope: user
@@ -662,9 +681,9 @@ spaces.count:
   lockout_risk: false
   where: Mission Control (F3) > + button on the Spaces bar
   proven_on: {}
-  not_yet_reason: The research gives no largest value, so the
-    profile check cannot validate one. There is no System Settings
-    page; you add or remove Spaces in Mission Control.
+  not_yet_reason: No supported command adds or removes Spaces. The
+    Dock owns the Spaces layout and rewrites it while it runs. Add
+    or remove Spaces in Mission Control.
   notes: Monitors.0 is the first display only; a Mac with more
     displays has more Monitors entries. No safe write is known,
     because the Dock owns SpacesDisplayConfiguration in com.apple.spaces

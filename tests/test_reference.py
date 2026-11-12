@@ -59,7 +59,10 @@ VALUE_FIELDS = {
     "paths": {"type"},
     "list": {"type", "choices"},
     "catalog_ids": {"type"},
+    "hotkeys": {"type", "actions"},
 }
+OPTIONAL_VALUE_FIELDS = {"list": {"min"}}
+SETTING_WORD = re.compile(r"[a-z][a-z0-9_]*")
 SETTING_ID = re.compile(r"[a-z][a-z0-9_]*(\.[a-z0-9_]+)+")
 VERSION = re.compile(r"\d+(\.\d+)*")
 NOT_FOR_USERS = re.compile(
@@ -98,11 +101,15 @@ def _values_problems(values):
         return []
     if not isinstance(values, dict) or values.get("type") not in VALUE_FIELDS:
         return [
-            "values: must be a list of choices or {type: bool, int, float, text, bundle_ids, paths, list or catalog_ids}"
+            "values: must be a list of choices or {type: bool, int, float, text, bundle_ids, paths, list, catalog_ids or hotkeys}"
         ]
     kind = values["type"]
-    if set(values) != VALUE_FIELDS[kind]:
-        return [f"values: type {kind} takes exactly {sorted(VALUE_FIELDS[kind])}"]
+    optional = OPTIONAL_VALUE_FIELDS.get(kind, set())
+    if not VALUE_FIELDS[kind] <= set(values) <= VALUE_FIELDS[kind] | optional:
+        return [
+            f"values: type {kind} takes {sorted(VALUE_FIELDS[kind])}"
+            + (f" and may take {sorted(optional)}" if optional else "")
+        ]
     if kind == "int" and not (
         type(values["min"]) is int
         and type(values["max"]) is int
@@ -124,6 +131,22 @@ def _values_problems(values):
             or len(set(choices)) != len(choices)
         ):
             return ["values: list needs choices, a list of different words"]
+        if "min" in values and not (
+            type(values["min"]) is int and 1 <= values["min"] <= len(choices)
+        ):
+            return ["values: list min must be a whole number from 1 to the choices"]
+    if kind == "hotkeys":
+        actions = values["actions"]
+        if (
+            not isinstance(actions, dict)
+            or not actions
+            or not all(SETTING_WORD.fullmatch(str(name)) for name in actions)
+            or not all(type(number) is int for number in actions.values())
+            or len(set(actions.values())) != len(actions)
+        ):
+            return [
+                "values: hotkeys needs actions, a mapping of words to different numbers"
+            ]
     if kind == "text":
         try:
             re.compile(values["pattern"])
@@ -271,8 +294,31 @@ def entry_problems(entry):
         )
     if (kind == "catalog_ids") != (route == "apps"):
         problems.append("values: {type: catalog_ids} is for route apps, and only there")
-    if kind in ("paths", "list") and route != "finder_sidebar":
-        problems.append(f"values: {{type: {kind}}} is only for route finder_sidebar")
+    if kind == "paths" and route != "finder_sidebar":
+        problems.append("values: {type: paths} is only for route finder_sidebar")
+    if kind == "list" and route == "defaults":
+        if [(w.get("type"), sorted(w.get("map", {}))) for w in entry["writes"]] != [
+            ("array", sorted(values["choices"]))
+        ]:
+            problems.append(
+                "values: {type: list} with route defaults needs one array write "
+                "whose map has one item per choice"
+            )
+    elif kind == "list" and route != "finder_sidebar":
+        problems.append(
+            "values: {type: list} is only for routes finder_sidebar and defaults"
+        )
+    if kind == "hotkeys" and (
+        route != "defaults"
+        or not all(
+            (w.get("type"), w.get("dict_mode")) == ("dict", "add") and "map" not in w
+            for w in entry["writes"]
+        )
+    ):
+        problems.append(
+            "values: {type: hotkeys} needs route defaults with dict writes in "
+            "dict_mode add and no map"
+        )
     if route == "by_hand":
         if not _line(entry["where"]):
             problems.append("where must name the System Settings page")
@@ -288,6 +334,12 @@ def entry_problems(entry):
         else:
             for write in writes:
                 problems += _write_problems(write, entry["scope"])
+                if isinstance(values, list) and isinstance(write.get("map"), dict):
+                    problems += [
+                        f"writes: map key {choice!r} is not one of the values"
+                        for choice in write["map"]
+                        if choice not in values
+                    ]
     if route == "command" and not problems:
         problems += _command_problems(entry["command"], values)
     return problems
@@ -388,6 +440,40 @@ FIXTURES = {
                     "key": "Switch",
                     "type": "int",
                     "map": {"on": 1, "off": None},
+                }
+            ],
+        ),
+        "beta.keys": fixture(
+            values={"type": "hotkeys", "actions": {"open_panel": 7}},
+            writes=[
+                {
+                    "domain": "com.example.test",
+                    "key": "Keys",
+                    "type": "dict",
+                    "dict_mode": "add",
+                }
+            ],
+            takes_effect="logout",
+        ),
+        "beta.layouts": fixture(
+            values={"type": "list", "choices": ["first", "second"], "min": 1},
+            writes=[
+                {
+                    "domain": "com.example.test",
+                    "key": "Layouts",
+                    "type": "array",
+                    "map": {"first": {"Id": 1}, "second": {"Id": 2}},
+                }
+            ],
+        ),
+        "beta.pair": fixture(
+            values=["off", "left", "right"],
+            writes=[
+                {
+                    "domain": "com.example.test",
+                    "key": "Side",
+                    "type": "int",
+                    "map": {"left": 1, "right": 2},
                 }
             ],
         ),
@@ -501,9 +587,82 @@ BROKEN = [
         "{type: paths} is only for route finder_sidebar",
     ),
     (
-        "list off finder_sidebar",
+        "list on defaults without an array write",
         lambda e: e.update(values={"type": "list", "choices": ["trash"]}),
-        "{type: list} is only for route finder_sidebar",
+        "{type: list} with route defaults needs one array write",
+    ),
+    (
+        "list off its routes",
+        lambda e: (
+            e.pop("writes"),
+            e.update(route="wallpaper", values={"type": "list", "choices": ["trash"]}),
+        ),
+        "{type: list} is only for routes finder_sidebar and defaults",
+    ),
+    (
+        "list min",
+        lambda e: e.update(
+            values={"type": "list", "choices": ["a"], "min": 2},
+            writes=[
+                {
+                    "domain": "com.example.test",
+                    "key": "L",
+                    "type": "array",
+                    "map": {"a": 1},
+                }
+            ],
+        ),
+        "values: list min must be",
+    ),
+    (
+        "hotkeys without actions",
+        lambda e: e.update(
+            values={"type": "hotkeys", "actions": {}},
+            writes=[
+                {
+                    "domain": "com.example.test",
+                    "key": "K",
+                    "type": "dict",
+                    "dict_mode": "add",
+                }
+            ],
+        ),
+        "values: hotkeys needs actions",
+    ),
+    (
+        "hotkeys with a repeated number",
+        lambda e: e.update(
+            values={"type": "hotkeys", "actions": {"one": 7, "two": 7}},
+            writes=[
+                {
+                    "domain": "com.example.test",
+                    "key": "K",
+                    "type": "dict",
+                    "dict_mode": "add",
+                }
+            ],
+        ),
+        "values: hotkeys needs actions",
+    ),
+    (
+        "hotkeys on a plain write",
+        lambda e: e.update(values={"type": "hotkeys", "actions": {"one": 7}}),
+        "{type: hotkeys} needs route defaults with dict writes in dict_mode add",
+    ),
+    (
+        "map key outside the values",
+        lambda e: e.update(
+            values=["on", "off"],
+            writes=[
+                {
+                    "domain": "com.example.test",
+                    "key": "Switch",
+                    "type": "int",
+                    "map": {"on": 1, "of": 0},
+                }
+            ],
+        ),
+        "writes: map key 'of' is not one of the values",
     ),
     (
         "writes on a command",
@@ -663,6 +822,14 @@ RECORDED_READS = {
         "2026-11-11 14:38:25.200 sysadminctl[4583:109108] SMB guest access disabled.\nexit: 0\n",
         "disabled",
     ),
+    "sound.output_volume": (
+        "output volume:0, input volume:missing value, alert volume:100, output muted:true\nexit: 0\n",
+        "0",
+    ),
+    "sound.alert_volume": (
+        "output volume:63, input volume:missing value, alert volume:100, output muted:false\nexit: 0\n",
+        "100",
+    ),
     "sound.startup_sound": (
         "nvram: Error getting variable - 'StartupMute': (iokit/common) data was not found\nexit: 1\n",
         None,
@@ -730,6 +897,9 @@ class FixtureReference(unittest.TestCase):
                 ("beta.edge", "bottom"),
                 ("beta.flag", "true"),
                 ("beta.hidden", "[]"),
+                ("beta.keys", "{}"),
+                ("beta.layouts", "[first]"),
+                ("beta.pair", "'off'"),
                 ("beta.places", "[]"),
                 ("beta.ratio", "1.5"),
                 ("beta.size", "16"),
@@ -752,6 +922,7 @@ class FixtureReference(unittest.TestCase):
             '  #   Values: left, bottom, "off"',
             '  #   Values: "on", "off"',
             "  #   Values: a list of any of recents, trash",
+            "  #   Values: a list of 1 or more of first, second",
             "  #   Values: a list of app ids from apps/macos.yml",
             '  #   Values: a list of folder paths that start with / or "~", other than / itself, in order',
             "  #   macOS default: bottom",
@@ -766,6 +937,10 @@ class FixtureReference(unittest.TestCase):
             "#   Scope: machine setting, needs admin",
         ]:
             self.assertIn(expected + "\n", text)
+        self.assertIn(
+            "  #   Values: a mapping from actions (open_panel) to true (on), false (off)",
+            text,
+        )
 
     def test_uncommented_examples_load_as_a_profile(self):
         text = template.render(write_reference(self.work / "settings", FIXTURES))
@@ -775,7 +950,7 @@ class FixtureReference(unittest.TestCase):
         self.assertEqual(profile["default_settings"]["beta.edge"], "bottom")
         self.assertIs(profile["machine_settings"]["alpha.remote"], False)
         self.assertEqual(
-            len(profile["default_settings"]) + len(profile["machine_settings"]), 14
+            len(profile["default_settings"]) + len(profile["machine_settings"]), 17
         )
 
 
@@ -809,6 +984,18 @@ class Reference(unittest.TestCase):
                     self.assertIsNone(
                         re.search(entry["command"]["parse"], "exit: 0\n", re.MULTILINE)
                     )
+
+    def test_hotkey_numbers_are_in_one_entry_each(self):
+        owners = Counter(
+            (write["domain"], write["key"], number)
+            for _, _, entry in self.entries
+            if isinstance(entry["values"], dict)
+            and entry["values"]["type"] == "hotkeys"
+            for write in entry["writes"]
+            for number in entry["values"]["actions"].values()
+        )
+        self.assertEqual([place for place, n in owners.items() if n > 1], [])
+        self.assertGreater(len(owners), 0)
 
     def test_sidebar_ids_name_the_module_options(self):
         loader = importlib.machinery.SourceFileLoader(

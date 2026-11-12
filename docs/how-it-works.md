@@ -26,7 +26,8 @@ Play 1, "This account", runs as you without admin rights:
 3. `macos_defaults` writes your account's preferences.
 4. `macos_dock_apps` sets your Dock's app list.
 5. `macos_wallpaper` sets your desktop picture.
-6. `macos_finder_sidebar` builds its helper when any account needs it, then sets your Finder sidebar.
+6. `macos_commands` sets your account's settings that need a command tool, such as the output and alert volumes through `osascript`. Another listed account gets these only when it runs mac-setup itself while signed in.
+7. `macos_finder_sidebar` builds its helper when any account needs it, then sets your Finder sidebar.
 
 Play 2, "Machine and other accounts", runs with admin rights:
 
@@ -44,7 +45,7 @@ Play 2, "Machine and other accounts", runs with admin rights:
 | # | Role | What it does | Custom module |
 | --- | --- | --- | --- |
 | 1 | `profile` | Checks the profile, splits it into work for each role, and prints the summary | none. It uses a filter plugin, a Python function Ansible calls from the playbook. |
-| 2 | `macos_defaults` | Writes preferences through `community.general.osx_defaults`, and restarts the Dock, Finder or SystemUIServer when a setting needs it | none |
+| 2 | `macos_defaults` | Writes plain preferences through `community.general.osx_defaults`, writes dictionaries and arrays of nested values, such as shortcuts and input sources, through its own module, and restarts the Dock, Finder or SystemUIServer when a setting needs it | `macos_nested_default` |
 | 3 | `macos_commands` | Reads and sets settings through command tools | `macos_command_setting` |
 | 4 | `macos_accounts` | Creates a listed account or adopts an existing one | `macos_account` |
 | 5 | `macos_dock_apps` | Sets the Dock's app list | `macos_dock_apps` |
@@ -93,7 +94,7 @@ dock.position:
 | 1 | `summary` | One line on what the setting does |
 | 2 | `scope` | `user` for an account setting, `machine` for a setting of the whole Mac |
 | 3 | `route` | How mac-setup applies it. See the routes table below. |
-| 4 | `values` | A list of plain choices, or `{type: T}`. T is `bool`; `int` or `float` with `min` and `max`; `text` with `pattern`; `bundle_ids`; `paths`; `catalog_ids`; or `list` with `choices`. |
+| 4 | `values` | A list of plain choices, or `{type: T}`. T is `bool`; `int` or `float` with `min` and `max`; `text` with `pattern`; `bundle_ids`; `paths`; `catalog_ids`; `list` with `choices` and an optional `min`, the fewest items allowed; or `hotkeys` with `actions`, which maps each shortcut name to its number in macOS. |
 | 5 | `macos_default` | The measured macOS default, or `not measured` |
 | 6 | `takes_effect` | `live`, `dock`, `finder`, `systemuiserver`, `relaunch` (when the app opens again) or `logout` |
 | 7 | `needs` | Any of `full_disk_access` and `click`, each at most once |
@@ -119,10 +120,10 @@ dock.position:
 Three optional fields change a `defaults` write:
 
 1. `host: currentHost` writes this Mac's own copy of the preference, as `defaults -currentHost` does.
-2. `map` turns each value from the profile into the value macOS stores.
+2. `map` turns each value from the profile into the value macOS stores. A value missing from the map leaves that key alone.
 3. `dict_mode` applies to a `dict` type. `replace`, the default, writes the whole dictionary, and `add` merges only the listed keys.
 
-Of the 288 entries, 212 are set by a run, 40 are on route `by_hand`, and 36 are on route `not_yet`.
+Of the 288 entries, 218 are set by a run, 40 are on route `by_hand`, and 30 are on route `not_yet`: 26 privacy permissions that only a person can grant, text replacements, modifier keys, the number of Spaces, and the password minimum length.
 
 ## How downloads are checked
 

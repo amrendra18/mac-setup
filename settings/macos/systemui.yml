@@ -1123,16 +1123,26 @@ sound.alert_sound:
 sound.alert_volume:
   summary: Alert volume, in percent.
   scope: user
-  route: not_yet
+  route: command
   values: {type: int, min: 0, max: 100}
   macos_default: not measured
+  command:
+    read: [/usr/bin/osascript, -e, get volume settings]
+    parse: '^output volume:.*, alert volume:(?P<value>\d+),'
+    set:
+      - [/usr/bin/osascript, -e, on run argv, -e, set volume alert volume (item 1 of argv as integer), -e, end run, '{value}']
   takes_effect: live
   needs: []
   lockout_risk: false
   where: System Settings > Sound
-  proven_on: {}
-  not_yet_reason: The command runs in the signed-in account's
-    session, and the command role writes machine settings only.
+  proven_on: {"27.2.1": "2026-11-12"}
+  not_yet_reason: ""
+  notes: 'The command runs in the session of the account that runs
+    mac-setup. Another listed account gets it when that account runs
+    mac-setup itself while signed in. This works without an Automation
+    prompt (reported, not tested).
+    The volume is stored as com.apple.sound.beep.volume in NSGlobalDomain,
+    a number from 0 to 1 (not measured).'
 sound.flash_screen:
   summary: Flash the screen when an alert sound plays.
   scope: user
@@ -1180,19 +1190,28 @@ sound.output_device:
 sound.output_volume:
   summary: Speaker volume, in percent.
   scope: user
-  route: not_yet
+  route: command
   values: {type: int, min: 0, max: 100}
   macos_default: not measured
+  command:
+    read: [/usr/bin/osascript, -e, get volume settings]
+    parse: '^output volume:(?P<value>\d+),'
+    set:
+      - [/usr/bin/osascript, -e, on run argv, -e, set volume output volume (item 1 of argv as integer), -e, end run, '{value}']
   takes_effect: live
   needs: []
   lockout_risk: false
   where: System Settings > Sound
-  proven_on: {}
-  not_yet_reason: The command runs in the signed-in account's
-    session, and the command role writes machine settings only.
-  notes: Volume is state people change all day, so a profile may
-    be better without it. A test Mac showed output volume 0, muted
-    (measured).
+  proven_on: {"27.2.1": "2026-11-12"}
+  not_yet_reason: ""
+  notes: 'The command runs in the session of the account that runs
+    mac-setup. Another listed account gets it when that account runs
+    mac-setup itself while signed in. This works without an Automation
+    prompt (reported, not tested).
+    Volume is state people change all day, so a profile may be better
+    without it. A test Mac showed output volume 0, muted (measured).
+    An output with no volume control reads missing value, and the
+    run refuses the setting. Whether a set also unmutes is not tested.'
 sound.startup_sound:
   summary: Play a sound when the Mac starts up.
   scope: machine

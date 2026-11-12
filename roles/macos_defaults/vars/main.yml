@@ -1,4 +1,5 @@
 ---
+macos_defaults_nested_types: [array, dict]
 macos_defaults_restarts:
   dock: [Restart Dock]
   finder: [Restart Finder]

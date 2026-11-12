@@ -34,6 +34,81 @@ ANSIBLE_NAMES = {
     "playbook_dir",
     "profile_local_hostname",
 }
+HOTKEY_MODIFIERS = {
+    "shift": 1 << 17,
+    "control": 1 << 18,
+    "option": 1 << 19,
+    "command": 1 << 20,
+}
+NO_CHARACTER = 65535
+FUNCTION_KEY = 1 << 23
+PRINTABLE_KEY_CODES = {
+    "a": 0,
+    "b": 11,
+    "c": 8,
+    "d": 2,
+    "e": 14,
+    "f": 3,
+    "g": 5,
+    "h": 4,
+    "i": 34,
+    "j": 38,
+    "k": 40,
+    "l": 37,
+    "m": 46,
+    "n": 45,
+    "o": 31,
+    "p": 35,
+    "q": 12,
+    "r": 15,
+    "s": 1,
+    "t": 17,
+    "u": 32,
+    "v": 9,
+    "w": 13,
+    "x": 7,
+    "y": 16,
+    "z": 6,
+    "0": 29,
+    "1": 18,
+    "2": 19,
+    "3": 20,
+    "4": 21,
+    "5": 23,
+    "6": 22,
+    "7": 26,
+    "8": 28,
+    "9": 25,
+}
+NAMED_KEY_CODES = {
+    "left": 123,
+    "right": 124,
+    "down": 125,
+    "up": 126,
+    "f1": 122,
+    "f2": 120,
+    "f3": 99,
+    "f4": 118,
+    "f5": 96,
+    "f6": 97,
+    "f7": 98,
+    "f8": 100,
+    "f9": 101,
+    "f10": 109,
+    "f11": 103,
+    "f12": 111,
+}
+HOTKEY_KEYS = {
+    **{key: (ord(key), code, 0) for key, code in PRINTABLE_KEY_CODES.items()},
+    "space": (ord(" "), 49, 0),
+    **{
+        key: (NO_CHARACTER, code, FUNCTION_KEY) for key, code in NAMED_KEY_CODES.items()
+    },
+}
+UNSET_REFUSALS = {
+    "hotkeys": "would reset every keyboard shortcut",
+    "list": "would delete the whole list",
+}
 SCOPE_HINTS = {
     "machine": "a machine setting, move it to machine_settings",
     "user": "an account setting, move it to default_settings or an account",
@@ -42,6 +117,32 @@ SCOPE_HINTS = {
 
 def _number(value):
     return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _hotkey(choice):
+    if isinstance(choice, bool):
+        return True
+    if not isinstance(choice, str):
+        return False
+    *modifiers, key = choice.split("+")
+    return (
+        key in HOTKEY_KEYS
+        and set(modifiers) <= set(HOTKEY_MODIFIERS)
+        and len(set(modifiers)) == len(modifiers)
+        and (modifiers != [] or HOTKEY_KEYS[key][0] == NO_CHARACTER)
+    )
+
+
+def _hotkey_entry(choice):
+    if isinstance(choice, bool):
+        return {"enabled": choice}
+    *modifiers, key = choice.split("+")
+    character, code, mask = HOTKEY_KEYS[key]
+    mask += sum(HOTKEY_MODIFIERS[modifier] for modifier in modifiers)
+    return {
+        "enabled": True,
+        "value": {"parameters": [character, code, mask], "type": "standard"},
+    }
 
 
 VALUE_KINDS = {
@@ -94,9 +195,27 @@ VALUE_KINDS = {
             isinstance(value, list)
             and all(i in spec["choices"] for i in value)
             and len(set(map(repr, value))) == len(value)
+            and len(value) >= spec.get("min", 0)
         ),
-        lambda spec: "a list of different items from "
+        lambda spec: (
+            f"a list of {spec['min']} or more different items from "
+            if "min" in spec
+            else "a list of different items from "
+        )
         + ", ".join(map(str, spec["choices"])),
+    ),
+    "hotkeys": (
+        lambda spec, value: (
+            isinstance(value, dict)
+            and all(
+                action in spec["actions"] and _hotkey(choice)
+                for action, choice in value.items()
+            )
+        ),
+        lambda spec: "a mapping from actions ("
+        + ", ".join(spec["actions"])
+        + ") to true (on), false (off) or keys joined with +, such as control+up; "
+        "a letter, digit or space needs shift, control, option or command",
     ),
     "catalog_ids": (
         lambda spec, value: (
@@ -115,6 +234,10 @@ def _choice_text(choice):
     if _misread(choice):
         return f'"{choice}"'
     return str(choice).lower() if isinstance(choice, bool) else str(choice)
+
+
+def _kind(spec):
+    return spec["type"] if isinstance(spec, dict) else None
 
 
 def _allowed(spec, value):
@@ -180,6 +303,11 @@ def _setting_problems(prefix, settings, scope, reference, allow_lockout_risk, ca
                 f"{subject}: unset works only for settings stored with defaults, "
                 f"use {_describe(entry['values'])}"
             )
+        elif value == UNSET and _kind(entry["values"]) in UNSET_REFUSALS:
+            problems.append(
+                f"{subject}: unset {UNSET_REFUSALS[_kind(entry['values'])]}, "
+                f"use {_describe(entry['values'])}"
+            )
         elif value != UNSET and not _allowed(entry["values"], value):
             quote = isinstance(entry["values"], list) and any(
                 _misread(choice) and yaml.safe_load(choice) == value
@@ -206,6 +334,28 @@ def _pair_problems(prefix, settings, together):
         f"{prefix}{setting_id}: needs {needed} in the same settings"
         for setting_id, needed in NEEDS_SETTING.items()
         if settings.get(setting_id) is True and needed not in together
+    ]
+
+
+def _conflict_problems(prefix, together, own, reference):
+    first, pairs = {}, {}
+    for write in _writes(together, reference):
+        if write["dict_mode"] == "add":
+            continue
+        earlier = first.setdefault(
+            (write["domain"], write["host"], write["key"]), write
+        )
+        pair = (
+            (write["id"], earlier["id"])
+            if write["id"] in own
+            else (earlier["id"], write["id"])
+        )
+        if earlier["value"] != write["value"] and own & set(pair):
+            pairs.setdefault(pair, write["key"])
+    return [
+        f"{prefix}{named}: {other} sets the same key {key} to another value, "
+        "so choose values that agree"
+        for (named, other), key in pairs.items()
     ]
 
 
@@ -293,6 +443,20 @@ def profile_problems(profile, files, catalog=()):
         )
     else:
         problems.append("accounts: must be a list of accounts")
+    if not problems:
+        machine = _section(profile, "machine_settings", {})
+        problems += _conflict_problems("", defaults, set(defaults), reference)
+        problems += _conflict_problems(
+            "machine_settings, ", machine, set(machine), reference
+        )
+        for account in accounts:
+            settings = _section(account, "settings", {})
+            problems += _conflict_problems(
+                f"account {account['name']}, ",
+                {**defaults, **settings},
+                set(settings),
+                reference,
+            )
     passwords = _section(profile, "account_passwords", {})
     if isinstance(passwords, dict):
         problems += [
@@ -305,10 +469,21 @@ def profile_problems(profile, files, catalog=()):
     return problems
 
 
+def _stored(value, spec, write):
+    if value == UNSET:
+        return None
+    if _kind(spec) == "hotkeys":
+        return {
+            str(spec["actions"][action]): _hotkey_entry(choice)
+            for action, choice in value.items()
+        }
+    if _kind(spec) == "list":
+        return [write["map"][item] for item in value]
+    return write["map"][value] if "map" in write else value
+
+
 def _write(setting_id, value, entry, write):
-    stored = (
-        None if value == UNSET else write["map"][value] if "map" in write else value
-    )
+    stored = _stored(value, entry["values"], write)
     return {
         "id": setting_id,
         "domain": write["domain"],
@@ -330,11 +505,21 @@ def _routed(settings, reference, route):
     }
 
 
+def _leaves_alone(value, spec, write):
+    return (
+        isinstance(spec, list)
+        and value != UNSET
+        and "map" in write
+        and value not in write["map"]
+    )
+
+
 def _writes(settings, reference):
     return [
         _write(setting_id, value, reference[setting_id], write)
         for setting_id, value in _routed(settings, reference, "defaults").items()
         for write in reference[setting_id]["writes"]
+        if not _leaves_alone(value, reference[setting_id]["values"], write)
     ]
 
 
@@ -342,10 +527,18 @@ def _item(settings, reference, route, key):
     return {key: value for value in _routed(settings, reference, route).values()}
 
 
+def _commands(settings, reference):
+    return [
+        _command(setting_id, value, reference[setting_id]["command"])
+        for setting_id, value in _routed(settings, reference, "command").items()
+    ]
+
+
 def _account_work(settings, reference):
     sidebar = _routed(settings, reference, "finder_sidebar")
     return {
         "writes": _writes(settings, reference),
+        "commands": _commands(settings, reference),
         "dock_apps": _item(settings, reference, "dock_apps", "apps"),
         "wallpaper": _item(settings, reference, "wallpaper", "color"),
         "finder_sidebar": (
@@ -438,10 +631,7 @@ def profile_work(profile, files, running_account):
         "own": own,
         "others": others,
         "machine_writes": _writes(machine, reference),
-        "commands": [
-            _command(setting_id, value, reference[setting_id]["command"])
-            for setting_id, value in _routed(machine, reference, "command").items()
-        ],
+        "commands": _commands(machine, reference),
         "apps": [
             app_id
             for app_ids in _routed(machine, reference, "apps").values()
@@ -460,6 +650,7 @@ def profile_work(profile, files, running_account):
             "after_logout": len(own_after_logout)
             + sum(len(_written(other)) for other in others),
             "need_click": len(by_hand) + clicks_elsewhere,
+            "own_session": sum(len(other["commands"]) for other in others),
         },
     }
 
@@ -503,6 +694,12 @@ def profile_summary(counts, refused_settings, account_results, waiting_wallpaper
     after_logout, click = counts["after_logout"], counts["need_click"]
     if after_logout:
         notes.append(f"log out and back in to see {_settings(after_logout)}")
+    if counts["own_session"]:
+        notes.append(
+            f"{_settings(counts['own_session'])} for other accounts "
+            f"{'runs' if counts['own_session'] == 1 else 'run'} in the account's "
+            "own session: sign in as each account and run mac-setup there"
+        )
     if click:
         notes.append(
             f"{_settings(click)} {'needs' if click == 1 else 'need'} a click: "

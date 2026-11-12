@@ -1,0 +1,111 @@
+summary: >-
+  The 6 remaining-store settings are written: keyboard and Mission Control shortcuts, input sources, the App Exposé
+  gesture beside the Mission Control gesture, and both volumes. A second run changes nothing, and the cleanup restores
+  each saved key, domain and volume.
+level: fast
+setup:
+  - >-
+    if [ -e .local/remaining-journey ]; then
+    echo "an earlier cleanup did not finish; this run's cleanup restores .local/remaining-journey";
+    exit 1; fi;
+    mkdir -p .local/remaining-journey
+  - >-
+    for k in
+    com.apple.AppleMultitouchTrackpad/TrackpadThreeFingerVertSwipeGesture
+    com.apple.AppleMultitouchTrackpad/TrackpadFourFingerVertSwipeGesture
+    com.apple.dock/showMissionControlGestureEnabled com.apple.dock/showAppExposeGestureEnabled;
+    do d=${k%%/*}; n=${k#*/};
+    if t=$(defaults read-type "$d" "$n" 2>/dev/null); then t=${t#Type is };
+    case $t in boolean|integer) ;; *) echo "cannot save $d $n of type $t" >&2; exit 1 ;; esac;
+    printf '%s %s %s %s\n' "$d" "$n" "$t" "$(defaults read "$d" "$n")";
+    else printf '%s %s absent\n' "$d" "$n"; fi;
+    done > .local/remaining-journey/saved.txt
+  - >-
+    for d in com.apple.symbolichotkeys com.apple.HIToolbox; do
+    defaults export "$d" ".local/remaining-journey/$d.plist" || exit 1;
+    done
+  - >-
+    osascript -e 'get volume settings'
+    | sed -nE 's/^output volume:([0-9]+), .*alert volume:([0-9]+), output muted:(true|false)$/\1 \2 \3/p'
+    > .local/remaining-journey/volume.txt;
+    [ -s .local/remaining-journey/volume.txt ] || { echo "cannot read the output and alert volume" >&2; exit 1; }
+  - >-
+    while read -r d n t v; do
+    [ "$t" = absent ] || defaults delete "$d" "$n" || exit 1;
+    done < .local/remaining-journey/saved.txt;
+    for k in com.apple.symbolichotkeys/AppleSymbolicHotKeys com.apple.HIToolbox/AppleEnabledInputSources; do
+    d=${k%%/*}; n=${k#*/};
+    if defaults read-type "$d" "$n" >/dev/null 2>&1; then defaults delete "$d" "$n" || exit 1; fi;
+    done;
+    osascript -e 'set volume output volume 0 alert volume 0'
+profile:
+  default_settings:
+    input.keyboard_shortcuts:
+      screenshot_options: false
+      finder_search_window: true
+    mission_control.shortcuts:
+      mission_control: control+up
+      show_desktop: f11
+      switch_to_desktop_1: control+1
+    input.input_sources: [british, canadian, emoji_and_symbols]
+    input.mission_control_gesture: 'off'
+    input.app_expose_gesture: four_finger
+    sound.output_volume: 50
+    sound.alert_volume: 75
+runs:
+  - name: check
+    args: [--check]
+    exit: 0
+    recap: {changed: 9, failed: 0}
+  - name: apply
+    exit: 0
+    recap: {changed: 10, failed: 0}
+    output:
+      - {pattern: '^RUNNING HANDLER \[[a-z_]+ : Restart Dock\].*\nchanged: \[verify-mac\]', count: 1}
+  - name: apply-again
+    exit: 0
+    recap: {changed: 0, failed: 0}
+    output:
+      - {pattern: '^RUNNING HANDLER \[[a-z_]+ : Restart Dock\]', count: 0}
+reads:
+  - domain: com.apple.symbolichotkeys
+    key: AppleSymbolicHotKeys
+    type: dictionary
+    value:
+      '184': {enabled: false}
+      '65': {enabled: true}
+      '32': {enabled: true, value: {parameters: [65535, 126, 8650752], type: standard}}
+      '36': {enabled: true, value: {parameters: [65535, 103, 8388608], type: standard}}
+      '118': {enabled: true, value: {parameters: [49, 18, 262144], type: standard}}
+  - domain: com.apple.HIToolbox
+    key: AppleEnabledInputSources
+    type: array
+    value:
+      - {InputSourceKind: Keyboard Layout, KeyboardLayout ID: 2, KeyboardLayout Name: British}
+      - {InputSourceKind: Keyboard Layout, KeyboardLayout ID: 29, KeyboardLayout Name: Canadian}
+      - {Bundle ID: com.apple.CharacterPaletteIM, InputSourceKind: Non Keyboard Input Method}
+  - {domain: com.apple.dock, key: showMissionControlGestureEnabled, type: boolean, value: false}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadThreeFingerVertSwipeGesture, type: integer, value: 0}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadFourFingerVertSwipeGesture, type: integer, value: 2}
+  - {domain: com.apple.dock, key: showAppExposeGestureEnabled, type: boolean, value: true}
+cleanup:
+  - >-
+    j=.local/remaining-journey;
+    for d in com.apple.symbolichotkeys com.apple.HIToolbox; do
+    [ ! -e "$j/$d.plist" ] || defaults import "$d" "$j/$d.plist" || { echo "could not restore $d"; exit 1; };
+    done;
+    if [ -e "$j/saved.txt" ]; then
+    while read -r d n t v; do
+    case $t in
+    absent) defaults delete "$d" "$n" 2>/dev/null || true ;;
+    boolean) if [ "$v" = 1 ]; then v=true; else v=false; fi; defaults write "$d" "$n" -bool "$v" ;;
+    integer) defaults write "$d" "$n" -int "$v" ;;
+    esac || { echo "could not restore $d $n"; exit 1; };
+    done < "$j/saved.txt" || exit 1; fi;
+    if [ -s "$j/volume.txt" ]; then
+    read -r o a m < "$j/volume.txt";
+    if [ "$m" = true ]; then m=with; else m=without; fi;
+    osascript -e "set volume output volume $o alert volume $a" -e "set volume $m output muted"
+    || { echo "could not restore the volume"; exit 1; }; fi;
+    rm -r "$j";
+    killall Dock 2>/dev/null; true

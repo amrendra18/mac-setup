@@ -1,3 +1,4 @@
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -732,13 +733,15 @@ class ProfileWork(unittest.TestCase):
             "accounts": [account("setuptest1", settings={"test.mapped": "small"})],
         }
         work = profile_work(profile, TEST_FILES, "runner")
-        self.assertEqual(work["counts"], {"after_logout": 4, "need_click": 2})
+        self.assertEqual(
+            work["counts"], {"after_logout": 4, "need_click": 2, "own_session": 0}
+        )
 
 
 class ProfileSummary(unittest.TestCase):
     def test_notes_and_refused_lines(self):
         summary = profile_summary(
-            {"after_logout": 3, "need_click": 1},
+            {"after_logout": 3, "need_click": 1, "own_session": 0},
             [
                 {
                     "account": "runner",
@@ -785,7 +788,7 @@ class ProfileSummary(unittest.TestCase):
 
     def test_check_run_names_each_account_it_skipped(self):
         summary = profile_summary(
-            {"after_logout": 0, "need_click": 0},
+            {"after_logout": 0, "need_click": 0, "own_session": 0},
             [],
             [
                 {
@@ -809,12 +812,14 @@ class ProfileSummary(unittest.TestCase):
         self.assertIn("skipped its settings", summary["notes"][0])
 
     def test_clean_run_has_no_refused_lines(self):
-        summary = profile_summary({"after_logout": 0, "need_click": 0}, [], [], [])
+        summary = profile_summary(
+            {"after_logout": 0, "need_click": 0, "own_session": 0}, [], [], []
+        )
         self.assertEqual(summary, {"notes": [], "refused": []})
 
     def test_a_missing_admin_password_is_named_as_admin_rights(self):
         summary = profile_summary(
-            {"after_logout": 0, "need_click": 0},
+            {"after_logout": 0, "need_click": 0, "own_session": 0},
             [
                 {
                     "account": "machine",
@@ -836,7 +841,10 @@ class ProfileSummary(unittest.TestCase):
 
     def test_a_wallpaper_waiting_for_another_account_is_a_note(self):
         summary = profile_summary(
-            {"after_logout": 0, "need_click": 2}, [], [], ["setuptest1"]
+            {"after_logout": 0, "need_click": 2, "own_session": 0},
+            [],
+            [],
+            ["setuptest1"],
         )
         self.assertEqual(
             summary,
@@ -848,6 +856,321 @@ class ProfileSummary(unittest.TestCase):
                 ],
                 "refused": [],
             },
+        )
+
+
+def hotkey(parameters):
+    return {"enabled": True, "value": {"parameters": parameters, "type": "standard"}}
+
+
+class RemainingStores(unittest.TestCase):
+    def problems(self, settings, **profile):
+        return profile_problems({"default_settings": settings, **profile}, FILES)
+
+    def test_hotkey_values(self):
+        good = {
+            "mission_control": "control+up",
+            "show_desktop": "f11",
+            "switch_to_desktop_1": "control+1",
+            "move_left_a_space": True,
+            "application_windows": False,
+        }
+        self.assertEqual(self.problems({"mission_control.shortcuts": good}), [])
+        for bad in [
+            {"open_the_pod_bay_doors": True},
+            {"mission_control": "space"},
+            {"mission_control": "a"},
+            {"mission_control": "control+control+up"},
+            {"mission_control": "hyper+up"},
+            {"mission_control": "control+"},
+            {"mission_control": "Control+Up"},
+            {"mission_control": 5},
+            {"mission_control": "on"},
+            ["mission_control"],
+            "control+up",
+        ]:
+            with self.subTest(bad):
+                [line] = self.problems({"mission_control.shortcuts": bad})
+                self.assertTrue(line.startswith("mission_control.shortcuts: "))
+                self.assertIn("is not allowed, use a mapping from actions (", line)
+
+    def test_unset_is_refused_for_hotkeys(self):
+        [line] = self.problems({"input.keyboard_shortcuts": "unset"})
+        self.assertTrue(
+            line.startswith(
+                "input.keyboard_shortcuts: unset would reset every keyboard shortcut"
+            )
+        )
+
+    def test_hotkeys_are_encoded_into_numbered_entries(self):
+        profile = {
+            "default_settings": {
+                "input.keyboard_shortcuts": {
+                    "spotlight_search": "command+option+space",
+                    "screenshot_options": False,
+                    "finder_search_window": True,
+                },
+                "mission_control.shortcuts": {
+                    "mission_control": "control+up",
+                    "show_desktop": "f11",
+                    "switch_to_desktop_2": "control+shift+2",
+                    "move_right_a_space": "command+l",
+                },
+            }
+        }
+        writes = profile_work(profile, FILES, "runner")["own"]["writes"]
+        self.assertEqual(
+            [
+                (w["id"], w["domain"], w["key"], w["type"], w["dict_mode"])
+                for w in writes
+            ],
+            [
+                (
+                    setting_id,
+                    "com.apple.symbolichotkeys",
+                    "AppleSymbolicHotKeys",
+                    "dict",
+                    "add",
+                )
+                for setting_id in profile["default_settings"]
+            ],
+        )
+        self.assertEqual(
+            writes[0]["value"],
+            {
+                "64": hotkey([32, 49, 1572864]),
+                "184": {"enabled": False},
+                "65": {"enabled": True},
+            },
+        )
+        self.assertEqual(
+            writes[1]["value"],
+            {
+                "32": hotkey([65535, 126, 8650752]),
+                "36": hotkey([65535, 103, 8388608]),
+                "119": hotkey([50, 19, 393216]),
+                "81": hotkey([108, 37, 1048576]),
+            },
+        )
+        self.assertEqual({w["takes_effect"] for w in writes}, {"logout"})
+
+    def test_input_sources(self):
+        self.assertEqual(
+            self.problems({"input.input_sources": ["british", "emoji_and_symbols"]}),
+            [],
+        )
+        for bad in [[], ["us", "us"], ["klingon"], "us"]:
+            with self.subTest(bad):
+                [line] = self.problems({"input.input_sources": bad})
+                self.assertIn("use a list of 1 or more different items from us,", line)
+        [write] = profile_work(
+            {
+                "default_settings": {
+                    "input.input_sources": ["canadian", "emoji_and_symbols"]
+                }
+            },
+            FILES,
+            "runner",
+        )["own"]["writes"]
+        self.assertEqual(
+            (write["domain"], write["key"], write["type"], write["value"]),
+            (
+                "com.apple.HIToolbox",
+                "AppleEnabledInputSources",
+                "array",
+                [
+                    {
+                        "InputSourceKind": "Keyboard Layout",
+                        "KeyboardLayout ID": 29,
+                        "KeyboardLayout Name": "Canadian",
+                    },
+                    {
+                        "Bundle ID": "com.apple.CharacterPaletteIM",
+                        "InputSourceKind": "Non Keyboard Input Method",
+                    },
+                ],
+            ),
+        )
+
+    def test_off_leaves_the_shared_finger_keys_alone(self):
+        work = profile_work(
+            {
+                "default_settings": {
+                    "input.mission_control_gesture": "off",
+                    "input.app_expose_gesture": "four_finger",
+                }
+            },
+            FILES,
+            "runner",
+        )
+        self.assertEqual(
+            [(w["id"], w["key"], w["value"]) for w in work["own"]["writes"]],
+            [
+                (
+                    "input.mission_control_gesture",
+                    "showMissionControlGestureEnabled",
+                    False,
+                ),
+                ("input.app_expose_gesture", "TrackpadThreeFingerVertSwipeGesture", 0),
+                ("input.app_expose_gesture", "TrackpadFourFingerVertSwipeGesture", 2),
+                ("input.app_expose_gesture", "showAppExposeGestureEnabled", True),
+            ],
+        )
+
+    def test_gestures_that_share_keys_must_agree(self):
+        mc, ae = "input.mission_control_gesture", "input.app_expose_gesture"
+        for agree in [
+            {mc: "three_finger", ae: "three_finger"},
+            {mc: "three_finger", ae: "off"},
+            {mc: "off", ae: "four_finger"},
+            {mc: "off", ae: "off"},
+            {mc: "unset", ae: "unset"},
+        ]:
+            with self.subTest(agree):
+                self.assertEqual(self.problems(agree), [])
+        for disagree in [
+            {mc: "three_finger", ae: "four_finger"},
+            {mc: "three_finger", ae: "unset"},
+        ]:
+            with self.subTest(disagree):
+                self.assertEqual(
+                    self.problems(disagree),
+                    [
+                        f"{ae}: {mc} sets the same key TrackpadThreeFingerVertSwipeGesture "
+                        "to another value, so choose values that agree"
+                    ],
+                )
+
+    def test_a_shared_key_is_checked_once_per_place(self):
+        mc, ae = "input.mission_control_gesture", "input.app_expose_gesture"
+        problems = self.problems(
+            {mc: "three_finger", ae: "four_finger"},
+            accounts=[
+                account("setuptest1"),
+                account("setuptest2", settings={ae: "three_finger"}),
+            ],
+        )
+        self.assertEqual(subjects(problems), [ae])
+        problems = self.problems(
+            {mc: "three_finger"},
+            accounts=[account("setuptest1", settings={ae: "four_finger"})],
+        )
+        self.assertEqual(subjects(problems), [f"account setuptest1, {ae}"])
+
+    def test_swipes_that_share_the_three_finger_key(self):
+        pages, apps = "input.swipe_between_pages", "input.swipe_full_screen_apps"
+        for agree in [
+            {pages: "two_finger", apps: "three_finger"},
+            {pages: "off", apps: "three_finger"},
+            {pages: "three_finger", apps: "four_finger"},
+            {pages: "two_or_three_finger", apps: "off"},
+        ]:
+            with self.subTest(agree):
+                self.assertEqual(self.problems(agree), [])
+        for disagree in [
+            {pages: "three_finger", apps: "three_finger"},
+            {pages: "two_or_three_finger", apps: "three_finger"},
+        ]:
+            with self.subTest(disagree):
+                self.assertEqual(
+                    self.problems(disagree),
+                    [
+                        f"{apps}: {pages} sets the same key TrackpadThreeFingerHorizSwipeGesture "
+                        "to another value, so choose values that agree"
+                    ],
+                )
+        work = profile_work(
+            {"default_settings": {pages: "two_finger", apps: "three_finger"}},
+            FILES,
+            "runner",
+        )
+        self.assertEqual(
+            [(w["id"], w["key"], w["value"]) for w in work["own"]["writes"]],
+            [
+                (pages, "AppleEnableSwipeNavigateWithScrolls", True),
+                (apps, "TrackpadThreeFingerHorizSwipeGesture", 2),
+                (apps, "TrackpadFourFingerHorizSwipeGesture", 0),
+            ],
+        )
+
+    def test_the_conflict_names_the_account_own_setting(self):
+        mc, ae = "input.mission_control_gesture", "input.app_expose_gesture"
+        problems = self.problems(
+            {mc: "three_finger", ae: "three_finger"},
+            accounts=[account("setuptest1", settings={mc: "four_finger"})],
+        )
+        self.assertEqual(
+            problems,
+            [
+                f"account setuptest1, {mc}: {ae} sets the same key "
+                "TrackpadThreeFingerVertSwipeGesture to another value, "
+                "so choose values that agree"
+            ],
+        )
+
+    def test_unset_is_refused_for_input_sources(self):
+        [line] = self.problems({"input.input_sources": "unset"})
+        self.assertTrue(
+            line.startswith(
+                "input.input_sources: unset would delete the whole list, use "
+            )
+        )
+
+    def test_volume_is_an_account_setting(self):
+        [line] = profile_problems(
+            {"machine_settings": {"sound.output_volume": 50}}, FILES
+        )
+        self.assertEqual(
+            line,
+            "machine_settings, sound.output_volume: an account setting, "
+            "move it to default_settings or an account",
+        )
+        [line] = self.problems({"sound.alert_volume": 101})
+        self.assertIn("use a whole number from 0 to 100", line)
+
+    def test_volume_runs_only_for_the_running_account(self):
+        work = profile_work(
+            {
+                "default_settings": {"sound.output_volume": 50},
+                "accounts": [
+                    account("runner"),
+                    account("setuptest1", settings={"sound.alert_volume": 75}),
+                ],
+            },
+            FILES,
+            "runner",
+        )
+        [own] = work["own"]["commands"]
+        self.assertEqual((own["id"], own["value"]), ("sound.output_volume", 50))
+        self.assertEqual(own["set"][0][-1], "{value}")
+        [other] = work["others"]
+        self.assertEqual(
+            [(c["id"], c["value"]) for c in other["commands"]],
+            [("sound.output_volume", 50), ("sound.alert_volume", 75)],
+        )
+        self.assertEqual(work["commands"], [])
+        self.assertEqual(work["counts"]["own_session"], 2)
+
+    def test_the_volume_parse_reads_each_part(self):
+        read = "output volume:65, input volume:missing value, alert volume:100, output muted:false\nexit: 0\n"
+        for setting_id, expected in [
+            ("sound.output_volume", "65"),
+            ("sound.alert_volume", "100"),
+        ]:
+            with self.subTest(setting_id):
+                parse = FILES["systemui.yml"][setting_id]["command"]["parse"]
+                self.assertEqual(re.search(parse, read, re.M).group("value"), expected)
+
+    def test_settings_for_another_session_are_a_note(self):
+        summary = profile_summary(
+            {"after_logout": 0, "need_click": 0, "own_session": 2}, [], [], []
+        )
+        self.assertEqual(
+            summary["notes"],
+            [
+                "2 settings for other accounts run in the account's own session: "
+                "sign in as each account and run mac-setup there"
+            ],
         )
 
 

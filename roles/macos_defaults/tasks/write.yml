@@ -1,5 +1,7 @@
 ---
 - name: "Write {{ macos_defaults_write.id }}"
+  vars:
+    macos_defaults_notify: "{{ macos_defaults_restarts[macos_defaults_write.takes_effect] | default([]) if macos_defaults_restart else [] }}"
   block:
     - name: "Set {{ macos_defaults_write.id }}"
       community.general.osx_defaults:
@@ -10,7 +12,19 @@
         value: "{{ macos_defaults_write.value }}"
         state: "{{ macos_defaults_write.state }}"
         dict_mode: "{{ macos_defaults_write.dict_mode }}"
-      notify: "{{ macos_defaults_restarts[macos_defaults_write.takes_effect] | default([]) if macos_defaults_restart else [] }}"
+      notify: "{{ macos_defaults_notify }}"
+      when: macos_defaults_write.type not in macos_defaults_nested_types
+
+    - name: "Set the nested value of {{ macos_defaults_write.id }}"
+      macos_nested_default:
+        domain: "{{ macos_defaults_write.domain }}"
+        host: "{{ macos_defaults_write.host }}"
+        key: "{{ macos_defaults_write.key }}"
+        value: "{{ macos_defaults_write.value }}"
+        state: "{{ macos_defaults_write.state }}"
+        dict_mode: "{{ macos_defaults_write.dict_mode }}"
+      notify: "{{ macos_defaults_notify }}"
+      when: macos_defaults_write.type in macos_defaults_nested_types
   rescue:
     - name: "Record the refusal of {{ macos_defaults_write.id }}"
       ansible.builtin.include_tasks: refused.yml

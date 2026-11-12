@@ -95,13 +95,15 @@ def example(values, default):
     kind = values["type"]
     if kind in ("int", "float"):
         return values["min"]
+    if kind == "list":
+        return values["choices"][: values.get("min", 0)]
     return {
         "bool": False,
         "text": "unset",
         "bundle_ids": [],
         "paths": [],
-        "list": [],
         "catalog_ids": [],
+        "hotkeys": {},
     }[kind]
 
 
@@ -127,9 +129,13 @@ def describe(values):
     if kind == "text":
         return f"text that matches {values['pattern']}"
     if kind == "list":
-        return "a list of any of " + ", ".join(
-            map(profile._choice_text, values["choices"])
-        )
+        return (
+            f"a list of {values['min']} or more of "
+            if "min" in values
+            else "a list of any of "
+        ) + ", ".join(map(profile._choice_text, values["choices"]))
+    if kind == "hotkeys":
+        return profile._describe(values)
     return {
         "bool": "true or false",
         "bundle_ids": "a list of app bundle ids, in Dock order",

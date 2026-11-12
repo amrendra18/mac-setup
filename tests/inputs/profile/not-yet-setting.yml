@@ -1,4 +1,4 @@
 ---
-# expect: input.app_expose_gesture
+# expect: spaces.count
 default_settings:
-  input.app_expose_gesture: three_finger
+  spaces.count: 4

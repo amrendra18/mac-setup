@@ -1,0 +1,4 @@
+---
+# expect: input.input_sources
+default_settings:
+  input.input_sources: []

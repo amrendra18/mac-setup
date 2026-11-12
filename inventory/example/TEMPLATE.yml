@@ -311,6 +311,26 @@ default_settings:
   #   Needs: nothing extra
   #   Proven on: not yet
 
+  # mission_control.shortcuts: {}
+  #   Keys for Mission Control, app windows, Show Desktop and Space switching.
+  #   Values: a mapping from actions (mission_control, application_windows, show_desktop,
+  #     move_left_a_space, move_right_a_space, switch_to_desktop_1, switch_to_desktop_2,
+  #     switch_to_desktop_3, switch_to_desktop_4, switch_to_desktop_5, switch_to_desktop_6,
+  #     switch_to_desktop_7, switch_to_desktop_8, switch_to_desktop_9) to true (on), false (off) or
+  #     keys joined with +, such as control+up; a letter, digit or space needs shift, control,
+  #     option or command
+  #   macOS default: not measured
+  #   Takes effect: at the next login
+  #   Needs: nothing extra
+  #   Proven on: macOS 27.2.1 (2026-11-12)
+  #   Note: true turns a shortcut on with its standard keys, false turns it off, and keys such as
+  #     control+up replace its keys. Each action writes its own numbered entry in
+  #     AppleSymbolicHotKeys in com.apple.symbolichotkeys, and the other entries stay as they are.
+  #     The numbers are community knowledge, not measured. A test Mac with macOS 15 stores the two
+  #     move one Space entries as {enabled: true} (measured). Research note on when it takes effect:
+  #     log out, or run the private activateSettings -u tool (guess, not tested). Page:
+  #     x-apple.systempreferences:com.apple.Keyboard-Settings.extension
+
   # mission_control.switch_to_app_space: false
   #   Switching to an app moves to a Space with its windows.
   #   Values: true or false
@@ -774,6 +794,19 @@ default_settings:
 
   # Area: input
 
+  # input.app_expose_gesture: 'off'
+  #   Gesture to show all windows of the current app (swipe down).
+  #   Values: "off", three_finger, four_finger
+  #   macOS default: not measured
+  #   Takes effect: when the Dock restarts
+  #   Needs: nothing extra
+  #   Proven on: macOS 27.2.1 (2026-11-12)
+  #   Note: It shares the two finger keys with input.mission_control_gesture. off writes only its
+  #     Dock key and leaves the finger keys alone. That the Dock key alone turns the gesture off is
+  #     not tested. When both gestures are on, they use the same number of fingers, and the profile
+  #     check refuses a pair that disagrees. A test Mac had no showAppExposeGestureEnabled key
+  #     (measured). Research note on when it takes effect: Dock restart; not tested.
+
   # input.auto_capitalize: false
   #   Capitalize the first word of a sentence automatically.
   #   Values: true or false
@@ -841,6 +874,22 @@ default_settings:
   #   Note: Key name unproven. Research note on when it takes effect: each app after it relaunches;
   #     not tested.
 
+  # input.input_sources: [us]
+  #   Keyboard layouts turned on, in the order the input menu lists them.
+  #   Values: a list of 1 or more of us, abc, british, canadian, dvorak, french, german,
+  #     emoji_and_symbols
+  #   macOS default: not measured
+  #   Takes effect: at the next login
+  #   Needs: nothing extra
+  #   Proven on: macOS 27.2.1 (2026-11-12)
+  #   Note: The list replaces the whole AppleEnabledInputSources array in com.apple.HIToolbox, so
+  #     list at least one keyboard layout. emoji_and_symbols is the Emoji & Symbols viewer, which
+  #     macOS turns on by itself. The canadian and emoji_and_symbols items match what a test Mac
+  #     with macOS 15 stores (measured). The other layout numbers come from community lists. Input
+  #     methods that type other scripts are not offered yet. Research note on when it takes effect:
+  #     logout; list writes are reported fragile. Page:
+  #     x-apple.systempreferences:com.apple.Keyboard-Settings.extension
+
   # input.key_repeat: 1
   #   How fast a held key repeats. Smaller is faster; the slider runs from 120 to 2.
   #   Values: a whole number from 1 to 120
@@ -859,6 +908,26 @@ default_settings:
   #   Note: A choice instead of true or false, because the stored value is 0 or 2. macOS 12 and
   #     older used 3 for on; that reads as unknown. Research note on when it takes effect: apps
   #     opened after the change; not tested.
+
+  # input.keyboard_shortcuts: {}
+  #   Turn system keyboard shortcuts on or off and change their keys.
+  #   Values: a mapping from actions (focus_menu_bar, focus_dock, screenshot_screen_to_file,
+  #     screenshot_screen_to_clipboard, screenshot_area_to_file, screenshot_area_to_clipboard,
+  #     previous_input_source, next_input_source, spotlight_search, finder_search_window,
+  #     screenshot_options) to true (on), false (off) or keys joined with +, such as control+up; a
+  #     letter, digit or space needs shift, control, option or command
+  #   macOS default: not measured
+  #   Takes effect: at the next login
+  #   Needs: nothing extra
+  #   Proven on: macOS 27.2.1 (2026-11-12)
+  #   Note: true turns a shortcut on with its standard keys, false turns it off, and keys such as
+  #     command+shift+5 replace its keys. Each action writes its own numbered entry in
+  #     AppleSymbolicHotKeys in com.apple.symbolichotkeys, and the other entries stay as they are.
+  #     The action numbers and key codes come from community lists. A test Mac with macOS 15 stores
+  #     an entry that is off as {enabled: false}, and Control-Space as the numbers 32, 49 and 262144
+  #     (measured). The Mission Control keys are in mission_control.shortcuts. Research note on when
+  #     it takes effect: logout, or activateSettings -u (reported, not tested). Page:
+  #     x-apple.systempreferences:com.apple.Keyboard-Settings.extension
 
   # input.launchpad_gesture: false
   #   Pinch with thumb and three fingers to open Launchpad (macOS 15 only).
@@ -885,9 +954,13 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the Dock restarts
   #   Needs: nothing extra
-  #   Proven on: not yet
-  #   Note: One menu in System Settings sets three keys. Research note on when it takes effect: Dock
-  #     restart (killall Dock) plus a trackpad reload; not tested.
+  #   Proven on: macOS 27.2.1 (2026-11-12)
+  #   Note: One menu in System Settings sets three keys. It shares the two finger keys with
+  #     input.app_expose_gesture. off writes only its Dock key and leaves the finger keys alone.
+  #     That the Dock key alone turns the gesture off is not tested. When both gestures are on, they
+  #     use the same number of fingers, and the profile check refuses a pair that disagrees.
+  #     Research note on when it takes effect: Dock restart (killall Dock) plus a trackpad reload;
+  #     not tested.
 
   # input.mouse_mission_control: 'off'
   #   Double-tap a Magic Mouse with two fingers to open Mission Control.
@@ -1082,8 +1155,11 @@ default_settings:
   #   Takes effect: at the next login
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: One menu in System Settings sets two keys. Research note on when it takes effect: not
-  #     tested.
+  #   Note: One menu in System Settings sets two keys. It shares
+  #     TrackpadThreeFingerHorizSwipeGesture with input.swipe_full_screen_apps, so off and
+  #     two_finger leave that key alone, and the profile check refuses a pair that claims three
+  #     fingers for both. A choice that leaves the key alone does not turn off a three-finger swipe
+  #     already on the Mac. Research note on when it takes effect: not tested.
 
   # input.swipe_full_screen_apps: 'off'
   #   Gesture to move between full-screen apps.
@@ -1092,8 +1168,11 @@ default_settings:
   #   Takes effect: at the next login
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: One menu in System Settings sets two keys. Research note on when it takes effect: not
-  #     tested.
+  #   Note: One menu in System Settings sets two keys. It shares
+  #     TrackpadThreeFingerHorizSwipeGesture with input.swipe_between_pages, so off and four_finger
+  #     leave that key alone, and the profile check refuses a pair that claims three fingers for
+  #     both. A choice that leaves the key alone does not turn off a three-finger swipe already on
+  #     the Mac. Research note on when it takes effect: not tested.
 
   # input.tap_to_click: 'off'
   #   Tap the trackpad with one finger to click.
@@ -1585,6 +1664,18 @@ default_settings:
   #   Note: Older answers write the key in the ByHost global domain; both are read. Research note on
   #     when it takes effect: none reported (guess).
 
+  # sound.alert_volume: 0
+  #   Alert volume, in percent.
+  #   Values: a whole number from 0 to 100
+  #   macOS default: not measured
+  #   Takes effect: at once
+  #   Needs: nothing extra
+  #   Proven on: macOS 27.2.1 (2026-11-12)
+  #   Note: The command runs in the session of the account that runs mac-setup. Another listed
+  #     account gets it when that account runs mac-setup itself while signed in. This works without
+  #     an Automation prompt (reported, not tested). The volume is stored as
+  #     com.apple.sound.beep.volume in NSGlobalDomain, a number from 0 to 1 (not measured).
+
   # sound.flash_screen: 'on'
   #   Flash the screen when an alert sound plays.
   #   Values: "on", "off"
@@ -1593,6 +1684,20 @@ default_settings:
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: none (guess).
+
+  # sound.output_volume: 0
+  #   Speaker volume, in percent.
+  #   Values: a whole number from 0 to 100
+  #   macOS default: not measured
+  #   Takes effect: at once
+  #   Needs: nothing extra
+  #   Proven on: macOS 27.2.1 (2026-11-12)
+  #   Note: The command runs in the session of the account that runs mac-setup. Another listed
+  #     account gets it when that account runs mac-setup itself while signed in. This works without
+  #     an Automation prompt (reported, not tested). Volume is state people change all day, so a
+  #     profile may be better without it. A test Mac showed output volume 0, muted (measured). An
+  #     output with no volume control reads missing value, and the run refuses the setting. Whether
+  #     a set also unmutes is not tested.
 
   # sound.ui_sounds: 'on'
   #   Play user interface sound effects.
@@ -2297,63 +2402,27 @@ machine_settings:
 # password.minimum_length
 #   Shortest password the Mac accepts for local accounts.
 #   Scope: machine setting, needs admin
-#   Not yet because: Read-only check. Setting it needs pwpolicy with a policy file or a
-#     configuration profile.
+#   Not yet because: It sets the password rules for every account on this Mac, through pwpolicy or a
+#     configuration profile, and mac-setup does not change security policy yet.
 
 # Area: dock
-
-# mission_control.shortcuts
-#   Keys for Mission Control, app windows, Show Desktop and Space switching.
-#   Scope: account setting
-#   Not yet because: The value is a list of hotkeys, and the profile check cannot validate a list
-#     yet.
-#   Note: AppleSymbolicHotKeys in com.apple.symbolichotkeys is a dictionary of numbered entries (32
-#     Mission Control, 33 Application windows, 36 Show Desktop, 79 and 81 move one Space, 118 and up
-#     switch to Desktop N). The numbers are community knowledge, not measured. Research note on when
-#     it takes effect: log out, or run the private activateSettings -u tool (guess, not tested).
-#     Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension
 
 # spaces.count
 #   Number of Spaces (desktops) on each display.
 #   Scope: account setting
-#   Not yet because: The research gives no largest value, so the profile check cannot validate one.
-#     There is no System Settings page; you add or remove Spaces in Mission Control.
+#   Not yet because: No supported command adds or removes Spaces. The Dock owns the Spaces layout
+#     and rewrites it while it runs. Add or remove Spaces in Mission Control.
 #   Note: Monitors.0 is the first display only; a Mac with more displays has more Monitors entries.
 #     No safe write is known, because the Dock owns SpacesDisplayConfiguration in com.apple.spaces
 #     and rewrites it, and writing it while the Dock runs is unsupported (inferred).
 
 # Area: input
 
-# input.app_expose_gesture
-#   Gesture to show all windows of the current app (swipe down).
-#   Scope: account setting
-#   Not yet because: For off and three_finger and four_finger, a write deletes a key or leaves one
-#     alone, and a defaults write map cannot express that yet.
-#   Note: Shares keys with input.mission_control_gesture, so the two must be written together.
-#     Research note on when it takes effect: Dock restart; not tested.
-
-# input.input_sources
-#   Keyboard layouts and input methods turned on, in order.
-#   Scope: account setting
-#   Not yet because: The value is a list of input source ids, and the profile check cannot validate
-#     a list yet.
-#   Note: The value is an array of dictionaries in com.apple.HIToolbox. Page:
-#     x-apple.systempreferences:com.apple.Keyboard-Settings.extension
-
-# input.keyboard_shortcuts
-#   Turn system keyboard shortcuts on or off and change their keys.
-#   Scope: account setting
-#   Not yet because: The value is a list of hotkeys, and the profile check cannot validate a list
-#     yet.
-#   Note: The value is a dictionary keyed by numeric hotkey ids in com.apple.symbolichotkeys.
-#     Research note on when it takes effect: logout, or activateSettings -u (reported, not tested).
-#     Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension
-
 # input.modifier_keys
 #   Remap Caps Lock, Control, Option, Command and Globe for a keyboard.
 #   Scope: account setting
-#   Not yet because: The value is a list of modifier mappings, and the profile check cannot validate
-#     a list yet.
+#   Not yet because: macOS stores each remapping under a name made from one keyboard's hardware ids,
+#     and no such entry exists until a key is remapped, so a profile cannot name it ahead of time.
 #   Note: Stored per keyboard under -currentHost NSGlobalDomain as
 #     com.apple.keyboard.modifiermapping.<vendor>-<product>-0. The device IDs differ per keyboard,
 #     so a profile cannot name the key ahead of time. Research note on when it takes effect:
@@ -2363,8 +2432,8 @@ machine_settings:
 # input.text_replacements
 #   Typed shortcuts that expand to longer text, such as omw to On my way!.
 #   Scope: account setting
-#   Not yet because: The value is a list of text replacements, and the profile check cannot validate
-#     a list yet.
+#   Not yet because: macOS keeps the list in a database that iCloud syncs, and no supported command
+#     writes it. Add replacements in System Settings > Keyboard > Text Replacements.
 #   Note: takes_effect not measured. The live list is a Core Data SQLite file synced through iCloud,
 #     and no supported write command exists. You can open the pane, or drag a .plist of replacements
 #     from Finder into the list. A read-only check counts rows with sqlite3 -readonly. Page:
@@ -2603,19 +2672,3 @@ machine_settings:
 #   Note: Research note on when it takes effect: The app usually needs a relaunch after a change
 #     (inferred). Page:
 #     x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_AudioCapture
-
-# Area: systemui
-
-# sound.alert_volume
-#   Alert volume, in percent.
-#   Scope: account setting
-#   Not yet because: The command runs in the signed-in account's session, and the command role
-#     writes machine settings only.
-
-# sound.output_volume
-#   Speaker volume, in percent.
-#   Scope: account setting
-#   Not yet because: The command runs in the signed-in account's session, and the command role
-#     writes machine settings only.
-#   Note: Volume is state people change all day, so a profile may be better without it. A test Mac
-#     showed output volume 0, muted (measured).

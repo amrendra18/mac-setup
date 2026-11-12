@@ -1,0 +1,6 @@
+---
+# expect: input.keyboard_shortcuts
+# expect: mission_control.shortcuts
+default_settings:
+  input.keyboard_shortcuts: {spotlight_search: space}
+  mission_control.shortcuts: unset

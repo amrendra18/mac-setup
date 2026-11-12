@@ -3,20 +3,35 @@ input.app_expose_gesture:
   summary: Gesture to show all windows of the current app (swipe
     down).
   scope: user
-  route: not_yet
+  route: defaults
   values: ['off', three_finger, four_finger]
   macos_default: not measured
+  writes:
+    - domain: com.apple.AppleMultitouchTrackpad
+      key: TrackpadThreeFingerVertSwipeGesture
+      type: int
+      map: {three_finger: 2, four_finger: 0}
+    - domain: com.apple.AppleMultitouchTrackpad
+      key: TrackpadFourFingerVertSwipeGesture
+      type: int
+      map: {three_finger: 0, four_finger: 2}
+    - domain: com.apple.dock
+      key: showAppExposeGestureEnabled
+      type: bool
+      map: {'off': false, three_finger: true, four_finger: true}
   takes_effect: dock
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
-  proven_on: {}
-  not_yet_reason: For off and three_finger and four_finger, a
-    write deletes a key or leaves one alone, and a defaults write
-    map cannot express that yet.
-  notes: 'Shares keys with input.mission_control_gesture, so the
-    two must be written together. Research note on when it takes
-    effect: Dock restart; not tested.'
+  proven_on: {"27.2.1": "2026-11-12"}
+  not_yet_reason: ""
+  notes: 'It shares the two finger keys with input.mission_control_gesture.
+    off writes only its Dock key and leaves the finger keys alone.
+    That the Dock key alone turns the gesture off is not tested.
+    When both gestures are on, they use the same number of fingers,
+    and the profile check refuses a pair that disagrees. A test
+    Mac had no showAppExposeGestureEnabled key (measured). Research
+    note on when it takes effect: Dock restart; not tested.'
 input.auto_capitalize:
   summary: Capitalize the first word of a sentence automatically.
   scope: user
@@ -158,20 +173,42 @@ input.inline_predictive_text:
   notes: 'Key name unproven. Research note on when it takes effect:
     each app after it relaunches; not tested.'
 input.input_sources:
-  summary: Keyboard layouts and input methods turned on, in order.
+  summary: Keyboard layouts turned on, in the order the input menu
+    lists them.
   scope: user
-  route: not_yet
-  values: [not_yet]
+  route: defaults
+  values:
+    type: list
+    min: 1
+    choices: [us, abc, british, canadian, dvorak, french, german, emoji_and_symbols]
   macos_default: not measured
+  writes:
+    - domain: com.apple.HIToolbox
+      key: AppleEnabledInputSources
+      type: array
+      map:
+        us: {InputSourceKind: Keyboard Layout, KeyboardLayout ID: 0, KeyboardLayout Name: U.S.}
+        abc: {InputSourceKind: Keyboard Layout, KeyboardLayout ID: 252, KeyboardLayout Name: ABC}
+        british: {InputSourceKind: Keyboard Layout, KeyboardLayout ID: 2, KeyboardLayout Name: British}
+        canadian: {InputSourceKind: Keyboard Layout, KeyboardLayout ID: 29, KeyboardLayout Name: Canadian}
+        dvorak: {InputSourceKind: Keyboard Layout, KeyboardLayout ID: 16300, KeyboardLayout Name: Dvorak}
+        french: {InputSourceKind: Keyboard Layout, KeyboardLayout ID: 1, KeyboardLayout Name: French}
+        german: {InputSourceKind: Keyboard Layout, KeyboardLayout ID: 3, KeyboardLayout Name: German}
+        emoji_and_symbols: {Bundle ID: com.apple.CharacterPaletteIM, InputSourceKind: Non Keyboard Input Method}
   takes_effect: logout
-  needs: [click]
+  needs: []
   lockout_risk: false
   where: System Settings > Keyboard
-  proven_on: {}
-  not_yet_reason: The value is a list of input source ids, and
-    the profile check cannot validate a list yet.
-  notes: 'The value is an array of dictionaries in com.apple.HIToolbox.
-    Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension'
+  proven_on: {"27.2.1": "2026-11-12"}
+  not_yet_reason: ""
+  notes: 'The list replaces the whole AppleEnabledInputSources array
+    in com.apple.HIToolbox, so list at least one keyboard layout.
+    emoji_and_symbols is the Emoji & Symbols viewer, which macOS
+    turns on by itself. The canadian and emoji_and_symbols items
+    match what a test Mac with macOS 15 stores (measured). The other
+    layout numbers come from community lists. Input methods that
+    type other scripts are not offered yet. Research note on when it takes
+    effect: logout; list writes are reported fragile. Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension'
 input.key_repeat:
   summary: How fast a held key repeats. Smaller is faster; the
     slider runs from 120 to 2.
@@ -212,20 +249,40 @@ input.keyboard_shortcuts:
   summary: Turn system keyboard shortcuts on or off and change
     their keys.
   scope: user
-  route: not_yet
-  values: [not_yet]
+  route: defaults
+  values:
+    type: hotkeys
+    actions:
+      focus_menu_bar: 7
+      focus_dock: 8
+      screenshot_screen_to_file: 28
+      screenshot_screen_to_clipboard: 29
+      screenshot_area_to_file: 30
+      screenshot_area_to_clipboard: 31
+      previous_input_source: 60
+      next_input_source: 61
+      spotlight_search: 64
+      finder_search_window: 65
+      screenshot_options: 184
   macos_default: not measured
+  writes:
+    - {domain: com.apple.symbolichotkeys, key: AppleSymbolicHotKeys, type: dict, dict_mode: add}
   takes_effect: logout
-  needs: [click]
+  needs: []
   lockout_risk: false
   where: System Settings > Keyboard
-  proven_on: {}
-  not_yet_reason: The value is a list of hotkeys, and the profile
-    check cannot validate a list yet.
-  notes: 'The value is a dictionary keyed by numeric hotkey ids
-    in com.apple.symbolichotkeys. Research note on when it takes
-    effect: logout, or activateSettings -u (reported, not tested).
-    Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension'
+  proven_on: {"27.2.1": "2026-11-12"}
+  not_yet_reason: ""
+  notes: 'true turns a shortcut on with its standard keys, false
+    turns it off, and keys such as command+shift+5 replace its keys.
+    Each action writes its own numbered entry in AppleSymbolicHotKeys
+    in com.apple.symbolichotkeys, and the other entries stay as they
+    are. The action numbers and key codes come from community lists.
+    A test Mac with macOS 15 stores an entry that is off as {enabled:
+    false}, and Control-Space as the numbers 32, 49 and 262144 (measured).
+    The Mission Control keys are in mission_control.shortcuts. Research
+    note on when it takes effect: logout, or activateSettings -u
+    (reported, not tested). Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension'
 input.launchpad_gesture:
   summary: Pinch with thumb and three fingers to open Launchpad
     (macOS 15 only).
@@ -277,11 +334,11 @@ input.mission_control_gesture:
     - domain: com.apple.AppleMultitouchTrackpad
       key: TrackpadThreeFingerVertSwipeGesture
       type: int
-      map: {'off': 0, three_finger: 2, four_finger: 0}
+      map: {three_finger: 2, four_finger: 0}
     - domain: com.apple.AppleMultitouchTrackpad
       key: TrackpadFourFingerVertSwipeGesture
       type: int
-      map: {'off': 0, three_finger: 0, four_finger: 2}
+      map: {three_finger: 0, four_finger: 2}
     - domain: com.apple.dock
       key: showMissionControlGestureEnabled
       type: bool
@@ -290,11 +347,16 @@ input.mission_control_gesture:
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
-  notes: 'One menu in System Settings sets three keys. Research
-    note on when it takes effect: Dock restart (killall Dock)
-    plus a trackpad reload; not tested.'
+  notes: 'One menu in System Settings sets three keys. It shares
+    the two finger keys with input.app_expose_gesture. off writes
+    only its Dock key and leaves the finger keys alone. That the
+    Dock key alone turns the gesture off is not tested. When both
+    gestures are on, they use the same number of fingers, and the
+    profile check refuses a pair that disagrees. Research note on
+    when it takes effect: Dock restart (killall Dock) plus a trackpad
+    reload; not tested.'
 input.modifier_keys:
   summary: Remap Caps Lock, Control, Option, Command and Globe
     for a keyboard.
@@ -307,8 +369,9 @@ input.modifier_keys:
   lockout_risk: false
   where: System Settings > Keyboard
   proven_on: {}
-  not_yet_reason: The value is a list of modifier mappings, and
-    the profile check cannot validate a list yet.
+  not_yet_reason: macOS stores each remapping under a name made
+    from one keyboard's hardware ids, and no such entry exists until
+    a key is remapped, so a profile cannot name it ahead of time.
   notes: 'Stored per keyboard under -currentHost NSGlobalDomain
     as com.apple.keyboard.modifiermapping.<vendor>-<product>-0.
     The device IDs differ per keyboard, so a profile cannot name
@@ -735,15 +798,19 @@ input.swipe_between_pages:
     - domain: com.apple.AppleMultitouchTrackpad
       key: TrackpadThreeFingerHorizSwipeGesture
       type: int
-      map: {'off': 0, two_finger: 0, three_finger: 1, two_or_three_finger: 1}
+      map: {three_finger: 1, two_or_three_finger: 1}
   takes_effect: logout
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
   proven_on: {}
   not_yet_reason: ""
-  notes: 'One menu in System Settings sets two keys. Research
-    note on when it takes effect: not tested.'
+  notes: 'One menu in System Settings sets two keys. It shares
+    TrackpadThreeFingerHorizSwipeGesture with input.swipe_full_screen_apps,
+    so off and two_finger leave that key alone, and the profile check
+    refuses a pair that claims three fingers for both. A choice that
+    leaves the key alone does not turn off a three-finger swipe already
+    on the Mac. Research note on when it takes effect: not tested.'
 input.swipe_full_screen_apps:
   summary: Gesture to move between full-screen apps.
   scope: user
@@ -754,7 +821,7 @@ input.swipe_full_screen_apps:
     - domain: com.apple.AppleMultitouchTrackpad
       key: TrackpadThreeFingerHorizSwipeGesture
       type: int
-      map: {'off': 0, three_finger: 2, four_finger: 0}
+      map: {three_finger: 2}
     - domain: com.apple.AppleMultitouchTrackpad
       key: TrackpadFourFingerHorizSwipeGesture
       type: int
@@ -765,8 +832,12 @@ input.swipe_full_screen_apps:
   where: System Settings > Trackpad
   proven_on: {}
   not_yet_reason: ""
-  notes: 'One menu in System Settings sets two keys. Research
-    note on when it takes effect: not tested.'
+  notes: 'One menu in System Settings sets two keys. It shares
+    TrackpadThreeFingerHorizSwipeGesture with input.swipe_between_pages,
+    so off and four_finger leave that key alone, and the profile check
+    refuses a pair that claims three fingers for both. A choice that
+    leaves the key alone does not turn off a three-finger swipe already
+    on the Mac. Research note on when it takes effect: not tested.'
 input.tap_to_click:
   summary: Tap the trackpad with one finger to click.
   scope: user
@@ -804,8 +875,9 @@ input.text_replacements:
   lockout_risk: false
   where: System Settings > Keyboard
   proven_on: {}
-  not_yet_reason: The value is a list of text replacements, and
-    the profile check cannot validate a list yet.
+  not_yet_reason: macOS keeps the list in a database that iCloud
+    syncs, and no supported command writes it. Add replacements
+    in System Settings > Keyboard > Text Replacements.
   notes: 'takes_effect not measured. The live list is a Core Data
     SQLite file synced through iCloud, and no supported write
     command exists. You can open the pane, or drag a .plist of

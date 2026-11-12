@@ -217,8 +217,9 @@ password.minimum_length:
   where: System Settings > No System Settings row. Set by a policy
     file or MDM.
   proven_on: {}
-  not_yet_reason: Read-only check. Setting it needs pwpolicy with
-    a policy file or a configuration profile.
+  not_yet_reason: It sets the password rules for every account
+    on this Mac, through pwpolicy or a configuration profile, and
+    mac-setup does not change security policy yet.
 power.disk_sleep_minutes:
   summary: Minutes idle before hard disks sleep. 0 means never.
   scope: machine

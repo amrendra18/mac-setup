@@ -18,6 +18,10 @@
       vars:
         macos_wallpaper_items: "{{ profile_own_work.wallpaper }}"
         macos_wallpaper_account: "{{ profile_running_account }}"
+    - role: macos_commands
+      vars:
+        macos_commands_items: "{{ profile_own_work.commands }}"
+        macos_commands_account: "{{ profile_running_account }}"
   tasks:
     - name: Build the Finder sidebar helper
       ansible.builtin.include_role:
@@ -62,6 +66,7 @@
         name: macos_commands
       vars:
         macos_commands_items: "{{ profile_commands }}"
+        macos_commands_account: machine
 
     - name: Install the listed apps
       ansible.builtin.include_role:
