@@ -44,3 +44,108 @@ little_snitch:
     page: https://www.obdev.at/products/littlesnitch/download.html
     pattern: 'href="https://www\.obdev\.at/downloads/littlesnitch/LittleSnitch-([0-9.]+)\.dmg"'
     url: https://www.obdev.at/downloads/littlesnitch/LittleSnitch-{}.dmg
+
+proton_pass:
+  name: Proton Pass
+  url: https://proton.me/download/pass/macos/ProtonPass_1.43.0.dmg
+  host: proton.me
+  sha256: f9db644a12c481e1b7fe235ffb1140e4b4ca36e54a502fe57192dc03d0ee9727
+  published: "2026-10-22"
+  team_id: 2SB5Z68H26
+  bundle_id: me.proton.pass.electron
+  container: dmg
+  app: Proton Pass.app
+  version: "1.43.0"
+  note: Sign in with a Proton account after the install.
+  latest:
+    page: https://proton.me/download/PassDesktop/darwin/universal/version.json
+    pattern: '"CategoryName": *"Stable",\s*"Version": *"([0-9.]+)"'
+    url: https://proton.me/download/pass/macos/ProtonPass_{}.dmg
+
+ente_auth:
+  name: Ente Auth
+  url: https://github.com/ente/ente/releases/download/auth-v4.4.26/ente-auth-v4.4.26.dmg
+  host: github.com
+  redirect_host: release-assets.githubusercontent.com
+  sha256: f063d87dc247feed7dba0ecdae208ffc22f9b5b2de0c58506394a2cae0610ada
+  published: "2026-10-19"
+  team_id: 6Z68YJY9Q2
+  bundle_id: io.ente.auth.mac
+  container: dmg
+  app: Ente Auth.app
+  version: "4.4.26"
+  note: Sign in with an Ente account after the install.
+  latest:
+    page: https://api.github.com/repos/ente/ente/releases?per_page=100
+    pattern: '"tag_name": *"auth-v([0-9.]+)"'
+    url: https://github.com/ente/ente/releases/download/auth-v{}/ente-auth-v{}.dmg
+
+ente_photos:
+  name: Ente Photos
+  url: https://github.com/ente/photos-desktop/releases/download/v1.7.30/ente-1.7.30-universal.dmg
+  host: github.com
+  redirect_host: release-assets.githubusercontent.com
+  sha256: c889ee351d8032accc153878b06570a6503e24e48d03b0ea10b262618270fe52
+  published: "2026-10-06"
+  team_id: 6Z68YJY9Q2
+  bundle_id: io.ente.bhari-frame
+  container: dmg
+  app: ente.app
+  version: "1.7.30"
+  note: Sign in with an Ente account after the install.
+  latest:
+    page: https://api.github.com/repos/ente/photos-desktop/releases/latest
+    pattern: '"tag_name": *"v([0-9.]+)"'
+    url: https://github.com/ente/photos-desktop/releases/download/v{}/ente-{}-universal.dmg
+
+utm:
+  name: UTM
+  url: https://github.com/utmapp/UTM/releases/download/v5.0.8/UTM.dmg
+  host: github.com
+  redirect_host: release-assets.githubusercontent.com
+  sha256: 7b2d7b2e2a02b3de1757ef19a8f36573e6d9cceae8c8cca0abcbcaa4a852019a
+  published: "2026-10-17"
+  team_id: WDNLXAD4W8
+  bundle_id: com.utmapp.UTM
+  container: dmg
+  app: UTM.app
+  version: "5.0.8"
+  note: A virtual machine may ask a person to allow access the first time it runs.
+  latest:
+    page: https://api.github.com/repos/utmapp/UTM/releases/latest
+    pattern: '"tag_name": *"v([0-9.]+)"'
+    url: https://github.com/utmapp/UTM/releases/download/v{}/UTM.dmg
+
+firefox:
+  name: Firefox
+  url: https://archive.mozilla.org/pub/firefox/releases/158.0.1/mac/en-US/Firefox%20158.0.1.dmg
+  host: archive.mozilla.org
+  sha256: 1d7aa96b51fc9110185047de18228ac87238fba5e42bba53c9d696f88878cba6
+  published: "2026-10-20"
+  team_id: 43AQ936H96
+  bundle_id: org.mozilla.firefox
+  container: dmg
+  app: Firefox.app
+  version: "158.0.1"
+  note: Firefox updates itself after the install.
+  latest:
+    page: https://product-details.mozilla.org/1.0/firefox_versions.json
+    pattern: '"LATEST_FIREFOX_VERSION": *"([0-9.]+)"'
+    url: https://archive.mozilla.org/pub/firefox/releases/{}/mac/en-US/Firefox%20{}.dmg
+
+micro_snitch:
+  name: Micro Snitch
+  url: https://www.obdev.at/downloads/MicroSnitch/MicroSnitch-1.6.1.dmg
+  host: www.obdev.at
+  sha256: 700a265156ae7c8138d7764a0ce87feba098bcaf77deed9b8d9aaa0b3c4fa197
+  published: "2023-09-13"
+  team_id: MLZF7K7B5R
+  bundle_id: at.obdev.MicroSnitch
+  container: dmg
+  app: Micro Snitch.app
+  version: "1.6.1"
+  note: Needs a license.
+  latest:
+    page: https://www.obdev.at/products/microsnitch/download.html
+    pattern: 'href="https://www\.obdev\.at/downloads/MicroSnitch/MicroSnitch-([0-9.]+)\.dmg"'
+    url: https://www.obdev.at/downloads/MicroSnitch/MicroSnitch-{}.dmg

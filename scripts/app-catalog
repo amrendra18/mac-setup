@@ -30,7 +30,7 @@ Prints the vendor's current version, URL and SHA-256 for one app in apps/macos.y
 for review. It never edits the catalog. It finds the current download from the
 entry's latest page, or uses the entry's URL when the vendor serves only the
 latest build. The download then passes every check the install runs except the
-pinned hash and the age rule: HTTPS from the entry's host, VirusTotal, codesign,
+pinned hash and the age rule: HTTPS from the entry's host or its redirect host, VirusTotal, codesign,
 spctl, Team ID, bundle id, and at least the catalog's version. It asks for the
 VirusTotal API key with a hidden prompt and never stores it; press Return to
 skip it when the file already has a stored verdict. Downloads and verdicts are cached in .local/downloads/.
@@ -51,7 +51,7 @@ def latest_url(item, entry, opener):
     if not latest:
         return entry["url"]
     page = latest["page"]
-    with vd.open_https(item, page, urlsplit(page).hostname, opener) as response:
+    with vd.open_https(item, page, (urlsplit(page).hostname,), opener) as response:
         text = response.read().decode(errors="replace")
     found = re.search(latest["pattern"], text)
     if not found:

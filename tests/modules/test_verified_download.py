@@ -241,6 +241,11 @@ class Verifies(Case):
         web = FakeWeb(files={final: ARCHIVE}, redirect={app().url: final})
         self.verify(web=web)
 
+    def test_redirect_to_the_redirect_host_is_followed(self):
+        final = "https://files.example.com/app-1.2.dmg"
+        web = FakeWeb(files={final: ARCHIVE}, redirect={app().url: final})
+        self.verify(item=app(redirect_host="files.example.com"), web=web)
+
 
 class RefusesTheDownload(Case):
     def test_http_url(self):
@@ -249,6 +254,14 @@ class RefusesTheDownload(Case):
 
     def test_other_host(self):
         self.refused("host", item=app(url="https://evil.example.net/app-1.2.dmg"))
+        self.assertEqual(self.web.requests, [])
+
+    def test_url_on_the_redirect_host(self):
+        item = app(
+            url="https://files.example.com/app-1.2.dmg",
+            redirect_host="files.example.com",
+        )
+        self.refused("host", item=item)
         self.assertEqual(self.web.requests, [])
 
     def test_redirect_to_other_host(self):
@@ -390,7 +403,18 @@ class ParsesTheCatalog(unittest.TestCase):
 
         catalog = yaml.safe_load((ROOT / "apps/macos.yml").read_text())
         self.assertEqual(
-            sorted(catalog), ["google_chrome", "little_snitch", "sublime_text"]
+            sorted(catalog),
+            [
+                "ente_auth",
+                "ente_photos",
+                "firefox",
+                "google_chrome",
+                "little_snitch",
+                "micro_snitch",
+                "proton_pass",
+                "sublime_text",
+                "utm",
+            ],
         )
         for item, value in catalog.items():
             vd.parse_app(item, value)
@@ -406,6 +430,8 @@ class ParsesTheCatalog(unittest.TestCase):
             {"app": "../Example.app"},
             {"version": "latest"},
             {"colour": "red"},
+            {"redirect_host": ""},
+            {"redirect_host": "dl.example.com"},
         ):
             with self.subTest(changes), self.assertRaises(vd.Refused) as caught:
                 app(**changes)
@@ -446,27 +472,31 @@ class Redirects(unittest.TestCase):
                 response.msg = "OK"
                 return response
 
-        return urllib.request.build_opener(Canned, vd.SameHostRedirects)
+        return urllib.request.build_opener(Canned, vd.AllowedHostRedirects)
+
+    def follow(self, location, hosts=("dl.example.com",)):
+        with vd.open_https(
+            "example", "https://dl.example.com/a", hosts, self.opener(location)
+        ) as response:
+            return response.read()
 
     def test_redirect_handler_refuses_another_host(self):
-        with self.assertRaises(vd.Refused) as caught:
-            with vd.open_https(
-                "example",
-                "https://dl.example.com/a",
-                "dl.example.com",
-                self.opener("https://evil.example.net/b"),
-            ):
-                pass
-        self.assertEqual(caught.exception.check, "host")
+        for location, hosts in (
+            ("https://evil.example.net/b", ("dl.example.com",)),
+            ("https://evil.example.net/b", ("dl.example.com", "files.example.com")),
+            ("http://dl.example.com/b", ("dl.example.com",)),
+            ("http://files.example.com/b", ("dl.example.com", "files.example.com")),
+        ):
+            with self.subTest(location), self.assertRaises(vd.Refused) as caught:
+                self.follow(location, hosts)
+            self.assertEqual(caught.exception.check, "host")
 
     def test_redirect_handler_follows_the_same_host(self):
-        with vd.open_https(
-            "example",
-            "https://dl.example.com/a",
-            "dl.example.com",
-            self.opener("https://dl.example.com/b"),
-        ) as response:
-            self.assertEqual(response.read(), b"ok")
+        self.assertEqual(self.follow("https://dl.example.com/b"), b"ok")
+
+    def test_redirect_handler_follows_the_redirect_host(self):
+        hosts = ("dl.example.com", "files.example.com")
+        self.assertEqual(self.follow("https://files.example.com/b", hosts), b"ok")
 
 
 if __name__ == "__main__":

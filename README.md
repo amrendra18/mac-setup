@@ -215,7 +215,7 @@ If a download does not match its pinned SHA-256 hash, the bootstrap deletes that
 
 ### Apps
 
-mac-setup installs apps from a small catalog, `apps/macos.yml`. Each entry names the vendor's download URL and the only host it may come from. It also names the pinned SHA-256 hash, the vendor's release date, the vendor's Apple Team ID (the ID of the developer certificate that signs the app), the bundle id and the lowest version accepted. Today the catalog holds `google_chrome`, `sublime_text` and `little_snitch`. To install some of them, list their ids under `machine_settings`:
+mac-setup installs apps from a small catalog, `apps/macos.yml`. Each entry names the vendor's download URL and the only host it may come from. An entry may name one more host that a redirect may go to, such as `release-assets.githubusercontent.com`, GitHub's file host. It also names the pinned SHA-256 hash, the vendor's release date, the vendor's Apple Team ID (the ID of the developer certificate that signs the app), the bundle id and the lowest version accepted. Today the catalog holds `google_chrome`, `sublime_text`, `little_snitch`, `proton_pass`, `ente_auth`, `ente_photos`, `utm`, `firefox` and `micro_snitch`. Ente makes two desktop apps: `ente_photos` is the photo app most people mean by "Ente", and `ente_auth` is its two-factor code app. To install some of them, list their ids under `machine_settings`:
 
 ```yaml
 machine_settings:
@@ -228,7 +228,7 @@ An app already in `/Applications` at the catalog's version or newer is left alon
 
 1. **Catalog entry.** Every field is present and well formed.
 2. **Age.** A pinned build must be at least 21 days old by its release date.
-3. **HTTPS and host.** The URL and every redirect use HTTPS on the entry's host only.
+3. **HTTPS and host.** The URL uses HTTPS on the entry's host. Every redirect uses HTTPS on that host or on the entry's one redirect host.
 4. **SHA-256.** The download must match the pinned hash. Downloads are kept in `.local/downloads/` by hash, so a second run downloads nothing.
 5. **VirusTotal.** The run sends only the file's SHA-256 to `www.virustotal.com`, never the file. Any engine that reports the file as malicious or suspicious refuses it. So does a file VirusTotal does not know, a file no engine has scanned, and a missing key.
 6. **Unpack.** A disk image is mounted read-only and hidden from Finder. A zip is unpacked with `ditto`. The app must be inside.
@@ -239,13 +239,13 @@ An app already in `/Applications` at the catalog's version or newer is left alon
 
 The install fails closed. A refused app is not copied, the other apps still install, and the run ends with one `refused` line per app and exit code 2. A preview with `--check` runs every check, so it also downloads and asks VirusTotal, and it installs nothing.
 
-Google serves only its latest Chrome build, so `google_chrome` has no pinned hash and no age check. The signature, Gatekeeper, Team ID and VirusTotal checks still apply. Chrome updates itself after the install. Little Snitch needs a license, and a one-time approval of its network filter in System Settings, which only a person can give.
+Google serves only its latest Chrome build, so `google_chrome` has no pinned hash and no age check. The signature, Gatekeeper, Team ID and VirusTotal checks still apply. Chrome updates itself after the install. Little Snitch needs a license, and a one-time approval of its network filter in System Settings, which only a person can give. Micro Snitch needs a license. Proton Pass, Ente Auth and Ente Photos each need a sign-in to the vendor's account. A UTM virtual machine may ask a person to allow access the first time it runs. Firefox updates itself after the install.
 
 VirusTotal's verdict for each file is stored in `.local/downloads/SHA256.virustotal.json`, where SHA256 is the file's hash. A later run reads the stored verdict and asks VirusTotal nothing, so it needs no key. A stored `flagged` verdict keeps refusing that file. The run makes at most 4 lookups per minute, the free API key's limit, and waits when it reaches that rate.
 
 An upgrade replaces the old copy whole. The run copies the new app next to the old one, swaps the two, and then deletes the old copy. mac-setup deletes no other app, and never touches Apple's own apps.
 
-An app install contacts the catalog entry's host (`dl.google.com`, `download.sublimetext.com` or `www.obdev.at`) and `www.virustotal.com`. `scripts/app-catalog ID` prints a vendor's current version, URL and SHA-256 for review; it never edits the catalog.
+An app install contacts the catalog entry's host (`dl.google.com`, `download.sublimetext.com`, `www.obdev.at`, `proton.me`, `github.com` or `archive.mozilla.org`), its redirect host (`release-assets.githubusercontent.com` for `ente_auth`, `ente_photos` and `utm`), and `www.virustotal.com`. `scripts/app-catalog ID` prints a vendor's current version, URL and SHA-256 for review; it never edits the catalog.
 
 ### Secrets
 

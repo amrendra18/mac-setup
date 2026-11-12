@@ -33,6 +33,7 @@ CATALOG_KEYS = {
     "name",
     "url",
     "host",
+    "redirect_host",
     "sha256",
     "sha256_reason",
     "team_id",
@@ -70,6 +71,11 @@ class App:
     container: str
     app: str
     version: str
+    redirect_host: Optional[str] = None
+
+    @property
+    def hosts(self):
+        return (self.host, self.redirect_host) if self.redirect_host else (self.host,)
 
 
 @dataclass(frozen=True)
@@ -119,6 +125,13 @@ def parse_app(item, entry):
         if not isinstance(value, str) or not value:
             fail(f"{key} must be a non-empty string")
         fields[key] = value
+    redirect_host = entry.get("redirect_host")
+    if redirect_host is not None and not (
+        isinstance(redirect_host, str)
+        and redirect_host
+        and redirect_host != fields["host"]
+    ):
+        fail("redirect_host must be a host name other than host")
     sha256, published = entry.get("sha256"), entry.get("published")
     if sha256 is None:
         if not entry.get("sha256_reason"):
@@ -142,7 +155,13 @@ def parse_app(item, entry):
         fail("app must be a bundle name ending in .app")
     if not re.search(r"\d", fields["version"]):
         fail("version must hold a version number")
-    return App(id=item, sha256=sha256, published=published, **fields)
+    return App(
+        id=item,
+        sha256=sha256,
+        published=published,
+        redirect_host=redirect_host,
+        **fields,
+    )
 
 
 def version_key(item, version):
@@ -173,38 +192,46 @@ class _OffHost(Exception):
     pass
 
 
-class SameHostRedirects(urllib.request.HTTPRedirectHandler):
+class AllowedHostRedirects(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
-        new, old = urlsplit(newurl), urlsplit(req.full_url)
-        if (new.scheme, new.hostname) != (old.scheme, old.hostname):
+        new = urlsplit(newurl)
+        if new.scheme != "https" or new.hostname not in req.allowed_hosts:
             raise _OffHost(newurl)
-        return super().redirect_request(req, fp, code, msg, headers, newurl)
+        follow = super().redirect_request(req, fp, code, msg, headers, newurl)
+        follow.allowed_hosts = req.allowed_hosts
+        return follow
 
 
 def default_opener():
-    return urllib.request.build_opener(SameHostRedirects)
+    return urllib.request.build_opener(AllowedHostRedirects)
 
 
-def check_url(item, url, host):
+def _named(hosts):
+    return " or ".join(hosts)
+
+
+def check_url(item, url, hosts):
     parts = urlsplit(url)
     if parts.scheme != "https":
         raise Refused("https", item, f"{url} is not an HTTPS URL")
-    if parts.hostname != host:
-        raise Refused("host", item, f"{url} is not on the allowed host {host}")
+    if parts.hostname not in hosts:
+        raise Refused("host", item, f"{url} is not on the allowed host {_named(hosts)}")
 
 
 @contextmanager
-def open_https(item, url, host, opener, headers=None):
-    check_url(item, url, host)
+def open_https(item, url, hosts, opener, headers=None):
+    check_url(item, url, hosts[:1])
+    request = urllib.request.Request(url, headers=headers or {})
+    request.allowed_hosts = hosts
     try:
-        with opener.open(
-            urllib.request.Request(url, headers=headers or {}), timeout=TIMEOUT
-        ) as response:
-            check_url(item, response.geturl(), host)
+        with opener.open(request, timeout=TIMEOUT) as response:
+            check_url(item, response.geturl(), hosts)
             yield response
     except _OffHost as error:
         raise Refused(
-            "host", item, f"{url} redirected to {error}, which is not https://{host}"
+            "host",
+            item,
+            f"{url} redirected to {error}, which is not on https://{_named(hosts)}",
         ) from None
     except urllib.error.HTTPError as error:
         raise Refused(
@@ -239,7 +266,7 @@ def download(app, downloads, opener):
     )
     try:
         digest = hashlib.sha256()
-        with part, open_https(app.id, app.url, app.host, opener) as response:
+        with part, open_https(app.id, app.url, app.hosts, opener) as response:
             for chunk in iter(lambda: response.read(CHUNK), b""):
                 digest.update(chunk)
                 part.write(chunk)
@@ -276,7 +303,11 @@ def ask_virustotal(item, sha256, setup):
     wait_for_lookup_slot(setup.downloads, setup.clock)
     try:
         with open_https(
-            item, VIRUSTOTAL + sha256, VIRUSTOTAL_HOST, setup.opener, {"x-apikey": key}
+            item,
+            VIRUSTOTAL + sha256,
+            (VIRUSTOTAL_HOST,),
+            setup.opener,
+            {"x-apikey": key},
         ) as response:
             stats = json.load(response)["data"]["attributes"]["last_analysis_stats"]
         engines = {kind: int(count) for kind, count in stats.items()}
