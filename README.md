@@ -1,6 +1,6 @@
 # mac-setup
 
-Status: milestone M0. `scripts/bootstrap` installs mac-setup, and a run sets 3 Dock settings for the account that runs it (position, tile size and recents). Accounts, machine settings, the click-through and the other settings are planned. The Plan section names the milestone that builds each one.
+Status: milestone M1. `scripts/bootstrap` installs mac-setup. A run creates the accounts the profile lists, and sets 3 Dock settings (position, tile size and recents) for the account that runs it and for each listed account. Machine settings, the click-through and the other settings are planned. The Plan section names the milestone that builds each one.
 
 mac-setup sets up a Mac from one profile file. You write down the settings you want once, for the Mac and for each account on it. One command then applies them, and running it again changes nothing.
 
@@ -14,7 +14,7 @@ Today that person clicks through System Settings by hand, once per Mac and once 
 
 ## What a run looks like
 
-This section describes the first release. Today the profile holds only the 3 Dock settings, and a run needs no admin password. The Install section below gives the steps that work today.
+This section describes the first release. Today the settings reference holds only the 3 Dock settings. The Install section below gives the steps that work today.
 
 ### First run on a fresh Mac
 
@@ -147,23 +147,40 @@ If a download does not match its pinned SHA-256 hash, the bootstrap deletes that
    test -d .local/inventory || cp -R inventory/example .local/inventory
    ```
 
-   Today the profile holds 3 Dock settings, in `.local/inventory/host_vars/example-mac/accounts.yml`. Change a value there if you want another one. `dock.position` takes `left`, `bottom` or `right`. `dock.tile_size` takes a whole number from 16 to 128. `dock.show_recents` takes `true` or `false`.
+   The profile is `.local/inventory/host_vars/example-mac/accounts.yml`. Its `default_settings` hold 3 Dock settings for every account. Change a value there if you want another one. `dock.position` takes `left`, `bottom` or `right`. `dock.tile_size` takes a whole number from 16 to 128. `dock.show_recents` takes `true` or `false`. The value `unset` deletes the setting, so macOS uses its own default.
+
+   Its `accounts` list is empty. To create a standard account, or to give an existing one its own settings, add an entry:
+
+   ```yaml
+   accounts:
+     - name: sam
+       full_name: Sam Example
+       admin: false
+       settings:
+         dock.position: bottom
+   ```
+
+   `settings` is optional. It adds to or overrides `default_settings` for that account only. An account that exists already is adopted: its password and admin rights stay as they are, and a different `admin` value is reported as refused.
 
 4. Preview the change, apply it, and apply it again.
 
    ```sh
-   .local/venv/bin/ansible-playbook playbooks/site.yml --check
-   .local/venv/bin/ansible-playbook playbooks/site.yml
-   .local/venv/bin/ansible-playbook playbooks/site.yml
+   .local/venv/bin/ansible-playbook playbooks/site.yml -K --check
+   .local/venv/bin/ansible-playbook playbooks/site.yml -K
+   .local/venv/bin/ansible-playbook playbooks/site.yml -K
    ```
 
-   The preview ends with `changed=3` in its recap line and writes nothing. The first apply ends with `changed=4`: 3 settings and 1 Dock restart. The Dock moves to the left, gets smaller and hides recent apps. The second apply ends with `changed=0`.
+   `-K` makes Ansible ask for your admin password once (`BECOME password:`). The run's second part uses it to create accounts and to write other accounts' settings as those accounts. With an empty `accounts` list nothing uses it, but Ansible still asks. For each listed account that does not exist yet, the apply also asks that account's new password once, with typing hidden. The preview creates nothing and asks no account password.
+
+   With the example profile as copied, the preview ends with `changed=3` in its recap line and writes nothing. The first apply ends with `changed=4`: 3 settings and 1 Dock restart. The Dock moves to the left, gets smaller and hides recent apps. The second apply ends with `changed=0`.
 
    When the account is not signed in at the screen, it has no running Dock. The first apply then ends with `changed=3`, and the Dock changes at that account's next sign-in.
 
    Without step 3's copy there is no profile. The run then warns that no host matched, changes nothing and still exits 0.
 
-   Today's run uses no admin rights, so it needs no `-K` option. `-K` makes Ansible ask for the admin password; it arrives with milestone M1, which adds accounts.
+   Each new account adds 1 to the apply's `changed` count, and each setting written for another account adds 1 more. Those settings show at that account's next sign-in. A new account has no secure token, so with FileVault on it cannot unlock the Mac at startup; the run's summary names each such account.
+
+   A setting macOS refuses at write time, such as a stored value of another type, does not stop the others. The run's last task then fails with one `refused` line per setting, and the run ends with exit code 2.
 
 ### Hosts the install contacts
 

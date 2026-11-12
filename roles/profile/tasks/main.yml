@@ -1,16 +1,23 @@
 ---
-- name: Load the settings reference
-  ansible.builtin.include_vars:
-    dir: "{{ playbook_dir }}/../settings/macos"
-    name: profile_reference
-
 - name: Check the profile
   ansible.builtin.fail:
-    msg: "{{ profile_errors | join('\n') }}"
+    msg: "{{ profile_problem_lines | join('\n') }}"
   vars:
-    profile_errors: "{{ default_settings | default({}) | profile_problems(profile_reference) }}"
-  when: profile_errors | length > 0
+    profile_problem_lines: "{{ hostvars[inventory_hostname] | profile_problems(profile_reference_files) }}"
+  when: profile_problem_lines | length > 0
 
-- name: Build the work list
+- name: Read the running account
+  ansible.builtin.command: id -un
+  register: profile_id
+  changed_when: false
+  check_mode: false
+
+- name: Build the work lists
   ansible.builtin.set_fact:
-    profile_defaults_writes: "{{ default_settings | default({}) | profile_defaults_writes(profile_reference) }}"
+    profile_running_account: "{{ profile_id.stdout }}"
+    profile_defaults_writes: "{{ profile_work.defaults_writes }}"
+    profile_accounts: "{{ profile_work.accounts }}"
+    profile_other_account_writes: "{{ profile_work.other_account_writes }}"
+    profile_counts: "{{ profile_work.counts }}"
+  vars:
+    profile_work: "{{ hostvars[inventory_hostname] | profile_work(profile_reference_files, profile_id.stdout) }}"

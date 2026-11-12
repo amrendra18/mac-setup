@@ -1,4 +1,6 @@
 ---
+# expect: dock.postion
+# expect: dock.show_recents
 default_settings:
   dock.postion: left
   dock.tile_size: 32

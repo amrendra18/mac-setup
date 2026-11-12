@@ -18,6 +18,7 @@ import os
 import platform
 import plistlib
 import re
+import secrets
 import shlex
 import subprocess
 import sys
@@ -31,7 +32,9 @@ ROOT = Path(__file__).resolve().parent.parent
 JOURNEYS = ROOT / "verify" / "journeys"
 FEATURES = ROOT / "verify" / "features"
 BIN = ROOT / ".local" / "venv" / "bin"
+LOGS = ROOT / ".local" / "logs"
 HOST = "verify-mac"
+RUNNING_ACCOUNT = "<running account>"
 ENV = {
     **os.environ,
     "ANSIBLE_CONFIG": str(ROOT / "ansible.cfg"),
@@ -53,24 +56,29 @@ PLIST_TYPES = {
 FIELDS = {
     "journey": (
         {"summary", "runs"},
-        {"level", "playbook", "profile", "setup", "cleanup", "reads"},
+        {
+            "level",
+            "playbook",
+            "profile",
+            "setup",
+            "cleanup",
+            "reads",
+            "passwords",
+            "creates",
+            "create_runs",
+            "files",
+        },
     ),
-    "run": ({"name", "exit"}, {"args", "recap"}),
+    "run": ({"name", "exit"}, {"args", "recap", "profile", "reads", "output"}),
     "read": ({"domain", "key"}, {"type", "value", "absent", "account", "host"}),
+    "output": ({"pattern", "count"}, set()),
+    "file": ({"path", "owner", "mode"}, set()),
 }
 RECAP = re.compile(r"^(\S+)\s*:\s*((?:\w+=\d+\s*)+)$", re.M)
 
 
 class JourneyError(Exception):
     pass
-
-
-@dataclass
-class Run:
-    name: str
-    exit: int
-    args: list = field(default_factory=list)
-    recap: dict = field(default_factory=dict)
 
 
 @dataclass
@@ -85,6 +93,30 @@ class Read:
 
 
 @dataclass
+class Output:
+    pattern: str
+    count: int
+
+
+@dataclass
+class FileCheck:
+    path: str
+    owner: str
+    mode: str
+
+
+@dataclass
+class Run:
+    name: str
+    exit: int
+    args: list = field(default_factory=list)
+    recap: dict = field(default_factory=dict)
+    profile: dict | None = None
+    reads: list = field(default_factory=list)
+    output: list = field(default_factory=list)
+
+
+@dataclass
 class Journey:
     name: str
     summary: str
@@ -95,6 +127,10 @@ class Journey:
     setup: list = field(default_factory=list)
     cleanup: list = field(default_factory=list)
     reads: list = field(default_factory=list)
+    passwords: list = field(default_factory=list)
+    creates: str = ""
+    create_runs: list = field(default_factory=list)
+    files: list = field(default_factory=list)
 
 
 def checked(kind, data, where):
@@ -110,37 +146,99 @@ def checked(kind, data, where):
     return data
 
 
-def load_journey(path):
-    where = str(path.relative_to(ROOT))
-    data = checked("journey", yaml.safe_load(path.read_text()), where)
-    journey = Journey(name=path.stem, **{**data, "runs": [], "reads": []})
-    journey.runs = [
-        Run(**checked("run", r, f"{where} run {i + 1}"))
-        for i, r in enumerate(data["runs"])
+def parse_reads(items, where):
+    reads = [
+        Read(**checked("read", r, f"{where} read {i + 1}")) for i, r in enumerate(items)
     ]
-    journey.reads = [
-        Read(**checked("read", r, f"{where} read {i + 1}"))
-        for i, r in enumerate(data.get("reads", []))
-    ]
+    for read in reads:
+        if read.absent == bool(read.type) or (read.type and read.value is None):
+            raise JourneyError(
+                f"{where}: read {read.domain} {read.key} needs either type and value, or absent: true"
+            )
+    return reads
+
+
+def parse_output(item, where):
+    output = Output(**checked("output", item, where))
+    if not isinstance(output.count, int) or not isinstance(output.pattern, str):
+        raise JourneyError(f"{where}: needs a text pattern and an integer count")
+    try:
+        re.compile(output.pattern)
+    except re.error as error:
+        raise JourneyError(f"{where}: pattern does not compile: {error}")
+    return output
+
+
+def parse_runs(items, where):
+    runs = []
+    for i, data in enumerate(items or []):
+        at = f"{where} run {i + 1}"
+        data = checked("run", data, at)
+        run = Run(
+            **{
+                **data,
+                "reads": parse_reads(data.get("reads", []), at),
+                "output": [
+                    parse_output(o, f"{at} output {j + 1}")
+                    for j, o in enumerate(data.get("output", []))
+                ],
+            }
+        )
+        if not (
+            isinstance(run.exit, int)
+            and isinstance(run.args, list)
+            and isinstance(run.profile, (dict, type(None)))
+        ):
+            raise JourneyError(
+                f"{at}: needs an integer exit, a list of args and a mapping profile"
+            )
+        runs.append(run)
+    if not runs or len({r.name for r in runs}) != len(runs):
+        raise JourneyError(f"{where}: needs at least one run, each with its own name")
+    return runs
+
+
+def parse_journey(name, data, where):
+    data = checked("journey", data, where)
+    journey = Journey(
+        name=name,
+        **{
+            **data,
+            "runs": parse_runs(data["runs"], where),
+            "reads": parse_reads(data.get("reads", []), where),
+            "create_runs": [],
+            "files": [
+                FileCheck(**checked("file", f, f"{where} file {i + 1}"))
+                for i, f in enumerate(data.get("files", []))
+            ],
+        },
+    )
     if journey.level not in ("fast", "full"):
         raise JourneyError(f"{where}: level must be fast or full")
-    if not journey.runs or not all(
-        isinstance(r.exit, int) and isinstance(r.args, list) for r in journey.runs
-    ):
-        raise JourneyError(
-            f"{where}: needs at least one run, each with an integer exit and a list of args"
-        )
     if not isinstance(journey.profile, dict) or not all(
         isinstance(c, str) for c in journey.setup + journey.cleanup
     ):
         raise JourneyError(
             f"{where}: profile must be a mapping, and setup and cleanup lists of shell commands"
         )
-    for read in journey.reads:
-        if read.absent == bool(read.type) or (read.type and read.value is None):
-            raise JourneyError(
-                f"{where}: read {read.domain} {read.key} needs either type and value, or absent: true"
-            )
+    if not isinstance(journey.passwords, list) or not all(
+        isinstance(n, str) and n for n in journey.passwords
+    ):
+        raise JourneyError(f"{where}: passwords must be a list of account names")
+    if not isinstance(journey.creates, str) or bool(journey.creates) != (
+        "create_runs" in data
+    ):
+        raise JourneyError(f"{where}: creates and create_runs go together")
+    if journey.creates:
+        journey.create_runs = parse_runs(data["create_runs"], f"{where} create_runs")
+    if not all(isinstance(f.mode, str) for f in journey.files):
+        raise JourneyError(f'{where}: a file mode is quoted text, such as "600"')
+    return journey
+
+
+def load_journey(path):
+    where = str(path.relative_to(ROOT))
+    journey = parse_journey(path.stem, yaml.safe_load(path.read_text()), where)
     if not (FEATURES / f"{journey.name}.md").is_file():
         raise JourneyError(f"{where}: verify/features/{journey.name}.md is missing")
     return journey
@@ -151,6 +249,7 @@ def sh(argv, **kwargs):
         argv,
         cwd=ROOT,
         env=ENV,
+        stdin=subprocess.DEVNULL,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
@@ -203,6 +302,7 @@ def doctor(journeys):
         [BIN / "ansible-galaxy", "collection", "list", "--format", "json"],
         cwd=ROOT,
         env=ENV,
+        stdin=subprocess.DEVNULL,
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
         text=True,
@@ -224,20 +324,25 @@ def doctor(journeys):
             (ROOT / journey.playbook).is_file(),
             journey.playbook,
         )
-    if any(
-        read.account and read.account != getpass.getuser()
-        for journey in journeys
-        for read in journey.reads
-    ):
-        check(
-            "sudo",
-            sh(["sudo", "-n", "true"]).returncode == 0,
-            "reads as another account need password-free sudo",
-        )
+    check(
+        "sudo",
+        sh(["sudo", "-n", "true"]).returncode == 0,
+        "play 2 of playbooks/site.yml and reads as another account need password-free sudo, because the harness passes no -K",
+    )
     return checks
 
 
-def write_inventory(folder, journey, profile_file):
+def filled(value):
+    if value == RUNNING_ACCOUNT:
+        return getpass.getuser()
+    if isinstance(value, list):
+        return [filled(v) for v in value]
+    if isinstance(value, dict):
+        return {k: filled(v) for k, v in value.items()}
+    return value
+
+
+def write_inventory(folder, profile, profile_file):
     host_vars = folder / "host_vars" / HOST
     host_vars.mkdir(parents=True)
     hosts = {
@@ -251,12 +356,57 @@ def write_inventory(folder, journey, profile_file):
         }
     }
     (folder / "hosts.yml").write_text(yaml.safe_dump(hosts, sort_keys=False))
-    profile = host_vars / "profile.yml"
+    file = host_vars / "profile.yml"
     if profile_file:
-        profile.write_bytes(profile_file.read_bytes())
+        file.write_bytes(profile_file.read_bytes())
     else:
-        profile.write_text(yaml.safe_dump(journey.profile, sort_keys=False))
+        file.write_text(yaml.safe_dump(filled(profile), sort_keys=False))
     return folder
+
+
+def account_exists(name):
+    return (
+        subprocess.run(
+            ["dscl", ".", "-read", f"/Users/{name}"],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        ).returncode
+        == 0
+    )
+
+
+def check_files(files):
+    rows, problems = [], []
+    for f in files:
+        argv = ["/usr/bin/stat", "-f", "%Su %Lp", os.path.expanduser(f.path)]
+        if f.owner != getpass.getuser():
+            argv = ["sudo", "-n", "-u", f.owner] + argv
+        out = subprocess.run(
+            argv, stdin=subprocess.DEVNULL, capture_output=True, text=True
+        )
+        got = out.stdout.split() if out.returncode == 0 else []
+        row = (
+            {"path": f.path, "owner": got[0], "mode": got[1]}
+            if len(got) == 2
+            else {"path": f.path, "error": "stat failed"}
+        )
+        rows.append(row)
+        if row != {"path": f.path, "owner": f.owner, "mode": f.mode}:
+            problems.append(
+                f"file {f.path}: got {row}, expected owner {f.owner} mode {f.mode}"
+            )
+    return rows, problems
+
+
+def copies(secret, folders):
+    needle = secret.encode()
+    return sum(
+        path.read_bytes().count(needle)
+        for folder in folders
+        for path in folder.rglob("*")
+        if path.is_file()
+    )
 
 
 def plain(value):
@@ -284,7 +434,7 @@ def read_all(reads):
             )
             if read.account and read.account != getpass.getuser():
                 argv = ["sudo", "-n", "-u", read.account] + argv
-            out = subprocess.run(argv, capture_output=True)
+            out = subprocess.run(argv, stdin=subprocess.DEVNULL, capture_output=True)
             exports[source] = (
                 plistlib.loads(out.stdout) if out.returncode == 0 else None
             )
@@ -330,73 +480,131 @@ def run_steps(kind, commands, log):
             done = sh(["/bin/sh", "-c", command])
             out.write(f"$ {command}\n{done.stdout}exit {done.returncode}\n\n")
             if done.returncode != 0:
-                return f"{kind} step {i} exited {done.returncode}"
+                last = done.stdout.strip().splitlines()[-1:]
+                return f"{kind} step {i} exited {done.returncode}" + "".join(
+                    f": {line}" for line in last
+                )
     return ""
 
 
-def run_journey(journey, evidence, profile_file):
-    logs, reads = evidence / "logs", evidence / "reads"
+def drive(journey, run, evidence, profile_file, password_file):
     inventory = write_inventory(
-        evidence / "inventory" / journey.name, journey, profile_file
+        evidence / "inventory" / journey.name / run.name,
+        journey.profile if run.profile is None else run.profile,
+        profile_file,
     )
+    argv = [
+        str(BIN / "ansible-playbook"),
+        "-i",
+        str(inventory),
+        journey.playbook,
+        *run.args,
+    ] + (["-e", f"@{password_file}"] if password_file else [])
+    started = time.monotonic()
+    done = sh(argv)
+    seconds = round(time.monotonic() - started, 2)
+    (evidence / "logs" / f"{journey.name}-{run.name}.txt").write_text(
+        f"$ {shlex.join(argv)}\n{done.stdout}exit {done.returncode}\n"
+    )
+    recaps = {
+        host: dict(pair.split("=") for pair in counts.split())
+        for host, counts in RECAP.findall(done.stdout)
+    }
+    recap = {k: int(v) for k, v in recaps.get(HOST, {}).items()}
+    problems = (
+        []
+        if done.returncode == run.exit
+        else [f"exit {done.returncode}, expected {run.exit}"]
+    )
+    problems += [
+        f"{k}={recap.get(k, 'missing')}, expected {v}"
+        for k, v in run.recap.items()
+        if recap.get(k) != v
+    ]
+    for output in run.output:
+        found = len(re.findall(output.pattern, done.stdout, re.M))
+        if found != output.count:
+            problems.append(
+                f"output /{output.pattern}/ found {found} times, expected {output.count}"
+            )
+    if run.reads:
+        got = read_all(run.reads)
+        (evidence / "reads" / f"{journey.name}-{run.name}.json").write_text(
+            json.dumps(got, indent=2)
+        )
+        problems += read_problems(run.reads, got)
+    return {
+        "run": run.name,
+        "exit": done.returncode,
+        "recap": recap,
+        "seconds": seconds,
+        "expected": {"exit": run.exit, "recap": run.recap},
+        "problems": problems,
+    }
+
+
+def run_journey(journey, evidence, profile_file):
+    reads = evidence / "reads"
+    LOGS.mkdir(parents=True, exist_ok=True)
     result = {
         "feature": journey.name,
         "profile": str(profile_file or f"verify/journeys/{journey.name}.yml"),
         "runs": [],
     }
-    failure = run_steps("setup", journey.setup, logs / f"{journey.name}-setup.txt")
+    failure = run_steps(
+        "setup", journey.setup, evidence / "logs" / f"{journey.name}-setup.txt"
+    )
+    runs = journey.runs
+    if journey.creates:
+        existed = account_exists(journey.creates)
+        result["case"] = "adopt" if existed else "create"
+        runs = journey.runs if existed else journey.create_runs
     before = read_all(journey.reads)
     (reads / f"{journey.name}-before.json").write_text(json.dumps(before, indent=2))
-    for run in [] if failure else journey.runs:
-        argv = [
-            str(BIN / "ansible-playbook"),
-            "-i",
-            str(inventory),
-            journey.playbook,
-            *run.args,
-        ]
-        started = time.monotonic()
-        done = sh(argv)
-        seconds = round(time.monotonic() - started, 2)
-        (logs / f"{journey.name}-{run.name}.txt").write_text(
-            f"$ {shlex.join(argv)}\n{done.stdout}exit {done.returncode}\n"
-        )
-        recaps = {
-            host: dict(pair.split("=") for pair in counts.split())
-            for host, counts in RECAP.findall(done.stdout)
-        }
-        recap = {k: int(v) for k, v in recaps.get(HOST, {}).items()}
-        problems = (
-            []
-            if done.returncode == run.exit
-            else [f"exit {done.returncode}, expected {run.exit}"]
-        )
-        problems += [
-            f"{k}={recap.get(k, 'missing')}, expected {v}"
-            for k, v in run.recap.items()
-            if recap.get(k) != v
-        ]
-        result["runs"].append(
-            {
-                "run": run.name,
-                "exit": done.returncode,
-                "recap": recap,
-                "seconds": seconds,
-                "expected": {"exit": run.exit, "recap": run.recap},
-                "problems": problems,
-            }
-        )
-        if problems:
-            failure = f"{run.name} run: {'; '.join(problems)}"
-            break
+    passwords = {name: secrets.token_urlsafe(24) for name in journey.passwords}
+    password_file = evidence / f"{journey.name}-passwords.json"
+    if passwords:
+        fd = os.open(password_file, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(fd, "w") as out:
+            json.dump({"account_passwords": passwords}, out)
+    try:
+        for run in [] if failure else runs:
+            outcome = drive(
+                journey,
+                run,
+                evidence,
+                profile_file,
+                password_file if passwords else None,
+            )
+            result["runs"].append(outcome)
+            if outcome["problems"]:
+                failure = f"{run.name} run: {'; '.join(outcome['problems'])}"
+                break
+    finally:
+        password_file.unlink(missing_ok=True)
     after = read_all(journey.reads)
     (reads / f"{journey.name}-after.json").write_text(json.dumps(after, indent=2))
+    files, file_problems = check_files(journey.files)
+    if journey.files:
+        (reads / f"{journey.name}-files.json").write_text(json.dumps(files, indent=2))
     if not failure:
-        failure = "; ".join(read_problems(journey.reads, after))
+        failure = "; ".join(read_problems(journey.reads, after) + file_problems)
+    if journey.creates and not account_exists(journey.creates):
+        failure = failure or f"{journey.creates} does not exist after the runs"
     cleanup_failure = run_steps(
-        "cleanup", journey.cleanup, logs / f"{journey.name}-cleanup.txt"
+        "cleanup", journey.cleanup, evidence / "logs" / f"{journey.name}-cleanup.txt"
     )
     failure = failure or cleanup_failure
+    result["passwords"] = [
+        {"account": name, "copies": copies(password, [LOGS, evidence])}
+        for name, password in passwords.items()
+    ]
+    leaks = [
+        f"{p['copies']} copies of the test password for {p['account']} in .local/logs/ or the evidence folder"
+        for p in result["passwords"]
+        if p["copies"]
+    ]
+    failure = "; ".join(filter(None, [failure, *leaks]))
     result.update(
         status="failed" if failure else "proven",
         reason=failure,
@@ -407,7 +615,10 @@ def run_journey(journey, evidence, profile_file):
 
 def git(*args):
     done = subprocess.run(
-        ["git", "-C", str(ROOT), *args], capture_output=True, text=True
+        ["git", "-C", str(ROOT), *args],
+        stdin=subprocess.DEVNULL,
+        capture_output=True,
+        text=True,
     )
     return done.stdout.strip() if done.returncode == 0 else None
 
@@ -455,6 +666,16 @@ def write_summary(evidence, summary):
             "",
             f"Profile: `{r['profile']}`.",
             "",
+        ]
+        if "case" in r:
+            existed = "existed" if r["case"] == "adopt" else "was missing"
+            lines += [f"Case: {r['case']}. The account {existed} before the runs.", ""]
+        for p in r["passwords"]:
+            lines += [
+                f"Test password for {p['account']}: {p['copies']} copies in `.local/logs/` and the evidence folder.",
+                "",
+            ]
+        lines += [
             "| # | Run | Exit | Recap | Seconds | Problems |",
             "| --- | --- | --- | --- | --- | --- |",
         ]
@@ -531,6 +752,7 @@ def main():
             summary["features"].append(result)
             print(
                 f"{result['status']:<7}{journey.name}"
+                + (f" [{result['case']}]" if "case" in result else "")
                 + (f": {result['reason']}" if result["reason"] else "")
             )
         summary["exit"] = (

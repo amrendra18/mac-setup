@@ -32,13 +32,13 @@ This repository is an Ansible project that sets up a Mac from one profile. `READ
 Each rule names the test that enforces it. A test marked "planned" does not exist yet; its milestone adds it.
 
 1. No machine name, account name, host name or address appears in a tracked file. Test: the private-word scan in `scripts/check fast`, which reads its word list from the ignored file `.local/private-words.txt`.
-2. No password or secret appears in a tracked file, a log, or an evidence folder. Every task that handles a password sets `no_log: true`. Test: gitleaks in `scripts/check fast`, and the `accounts` journey, which finds 0 copies of its random test password (planned, M1).
+2. No password or secret appears in a tracked file, a log, or an evidence folder. Every task that handles a password sets `no_log: true`, or passes it only to a module parameter declared `no_log`. Test: gitleaks in `scripts/check fast`, and the `accounts` journey, which finds 0 copies of its random test password.
 3. Admin rights appear only in play 2 of `playbooks/site.yml`. No role contains `become:` or `sudo`. Test: the structure check in `scripts/check fast`.
 4. No task writes the privacy database, runs `tccutil reset`, turns off System Integrity Protection, or works around a consent prompt. Test: the structure check in `scripts/check fast`.
-5. A profile error stops the run before any write, with exit code 2 and one line per problem. Test: the broken test inputs in `scripts/check fast`, `tests/inputs/bad-position.yml` in the `dock-basics` journey, and the broken profiles in `tests/inputs/profile/` (planned, M1).
-6. A setting macOS refuses at write time does not stop the other settings, and the run ends with exit code 2. Test: the `refusals` journey (planned, M1).
+5. A profile error stops the run before any write, with exit code 2 and one line per problem. Test: the broken test inputs in `scripts/check fast`, `tests/inputs/bad-position.yml` in the `dock-basics` journey, and the broken profiles in `tests/inputs/profile/`.
+6. A setting macOS refuses at write time does not stop the other settings, and the run ends with exit code 2. Test: the `refusals` journey.
 7. A second run changes nothing. Test: every journey's second run expects `changed=0`.
-8. No run deletes an account or changes an existing account's password or admin rights. Test: the unit tests in `tests/modules/test_macos_account.py` (planned, M1).
+8. No run deletes an account or changes an existing account's password or admin rights. Test: the unit tests in `tests/modules/test_macos_account.py`.
 9. A machine-scope preference writes only a domain path that starts with `/`. Test: `tests/test_reference.py` (planned, M2).
 10. `inventory/example/TEMPLATE.yml` matches the reference. Test: `tests/test_reference.py` compares it with the output of `scripts/render-template` (planned, M2).
 11. A setting with `lockout_risk: true` is refused unless the profile sets `allow_lockout_risk: true`. Test: `tests/inputs/lockout-no-optin.yml` (planned, M4).
@@ -46,7 +46,7 @@ Each rule names the test that enforces it. A test marked "planned" does not exis
 ## Conventions
 
 1. yamllint checks every YAML file against the repository's `.yamllint`. Python files follow black's default format, checked by `black --check` in `scripts/check full`. Python modules have unit tests that use a fake command runner, so tests never touch the Mac.
-2. A custom module reads first, writes only on a difference, and supports `--check` and `--diff`.
+2. A custom module reads first, writes only on a difference, and supports `--check`. A module that changes a value also supports `--diff`.
 3. macOS-only roles carry the `macos_` prefix.
 4. Examples, test profiles and journeys use made-up names only.
 5. Keep a code comment only for a reason the code cannot show.

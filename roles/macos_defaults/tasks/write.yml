@@ -1,8 +1,19 @@
 ---
-- name: "Set {{ macos_defaults_write.id }}"
-  community.general.osx_defaults:
-    domain: "{{ macos_defaults_write.domain }}"
-    key: "{{ macos_defaults_write.key }}"
-    type: "{{ macos_defaults_write.type }}"
-    value: "{{ macos_defaults_write.value }}"
-  notify: "{{ macos_defaults_restarts[macos_defaults_write.takes_effect] | default([]) }}"
+- name: "Write {{ macos_defaults_write.id }}"
+  block:
+    - name: "Set {{ macos_defaults_write.id }}"
+      community.general.osx_defaults:
+        domain: "{{ macos_defaults_write.domain }}"
+        host: "{{ macos_defaults_write.host or omit }}"
+        key: "{{ macos_defaults_write.key }}"
+        type: "{{ macos_defaults_write.type }}"
+        value: "{{ macos_defaults_write.value }}"
+        state: "{{ macos_defaults_write.state }}"
+        dict_mode: "{{ macos_defaults_write.dict_mode }}"
+      notify: "{{ macos_defaults_restarts[macos_defaults_write.takes_effect] | default([]) if macos_defaults_restart else [] }}"
+  rescue:
+    - name: "Record the refusal of {{ macos_defaults_write.id }}"
+      ansible.builtin.set_fact:
+        macos_defaults_refused: >-
+          {{ macos_defaults_refused | default([])
+          + [{'account': macos_defaults_account, 'id': macos_defaults_write.id, 'message': ansible_failed_result.msg}] }}

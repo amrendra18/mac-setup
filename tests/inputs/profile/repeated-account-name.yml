@@ -1,0 +1,7 @@
+---
+# expect: account setuptest1
+accounts:
+  - name: setuptest1
+    full_name: Setup Test One
+  - name: setuptest1
+    full_name: Setup Test Again

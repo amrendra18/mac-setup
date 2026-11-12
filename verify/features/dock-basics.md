@@ -12,19 +12,20 @@ One run of `playbooks/site.yml` puts the Dock of the account that runs it on the
 ## How to get to it (user POV)
 
 - Put `dock.position`, `dock.tile_size` and `dock.show_recents` under `default_settings` in the profile.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml --check` to preview.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml` to apply, then the same command again.
+- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check` to preview.
+- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K` to apply, then the same command again.
 
 ## Driving it with scripts/verify
 
 Preconditions:
 
 - The Mac is set aside for testing. The run changes the running account's real Dock.
+- The running account is an admin with password-free sudo, because the harness passes no `-K`.
 - `scripts/bootstrap` has run in this checkout.
 
 - **Setup.** The journey deletes the 3 Dock keys with `defaults delete com.apple.dock KEY || true`, so the first run starts as on a fresh Mac.
-- **Preview.** Run `ansible-playbook playbooks/site.yml --check`. Exit 0 with recap `changed=3 failed=0`.
-- **Apply.** Run `ansible-playbook playbooks/site.yml`. Exit 0 with recap `changed=4 failed=0`: 3 keys and 1 Dock restart. The Dock moves to the left.
+- **Preview.** Run `ansible-playbook playbooks/site.yml -K --check`. Exit 0 with recap `changed=3 failed=0`.
+- **Apply.** Run `ansible-playbook playbooks/site.yml -K`. Exit 0 with recap `changed=4 failed=0`: 3 keys and 1 Dock restart. The Dock moves to the left.
 - **Apply again.** Run the same command. Exit 0 with recap `changed=0 failed=0`.
 - **Proof.** `reads/dock-basics-after.json` holds `orientation` left (string), `tilesize` 32 (float) and `show-recents` false (boolean).
 - **Planted failure.** Run `scripts/verify fast --feature dock-basics --profile tests/inputs/bad-position.yml`. Exit 1, the output line names `dock-basics`, the check run's log shows the profile check stopping with exit 2, and `summary.json` has `reads_unchanged: true`.

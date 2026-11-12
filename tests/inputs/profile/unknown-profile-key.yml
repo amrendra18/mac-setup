@@ -1,0 +1,4 @@
+---
+# expect: default_setting
+default_setting:
+  dock.position: left

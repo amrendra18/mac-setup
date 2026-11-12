@@ -1,4 +1,5 @@
 ---
+# expect: dock.postion
 default_settings:
   dock.postion: left
   dock.tile_size: 32

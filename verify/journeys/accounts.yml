@@ -1,0 +1,39 @@
+summary: The running account is adopted with 0 changes, and setuptest1 is created on the first run ever and adopted with 0 changes on every later run.
+level: fast
+passwords: [setuptest1]
+creates: setuptest1
+profile:
+  accounts:
+    - name: "<running account>"
+      full_name: Running Account
+      admin: true
+    - name: setuptest1
+      full_name: Setup Test One
+      admin: false
+runs:
+  - name: check
+    args: [--check]
+    exit: 0
+    recap: {changed: 0, failed: 0}
+    output: &no-prompt
+      - {pattern: Not waiting for response to prompt, count: 0}
+  - name: apply
+    exit: 0
+    recap: {changed: 0, failed: 0}
+    output: *no-prompt
+create_runs:
+  - name: check
+    args: [--check]
+    exit: 0
+    recap: {changed: 1, failed: 0}
+    output: *no-prompt
+  - name: apply
+    exit: 0
+    recap: {changed: 1, failed: 0}
+    output: *no-prompt
+  - name: apply-again
+    exit: 0
+    recap: {changed: 0, failed: 0}
+    output: *no-prompt
+files:
+  - {path: "~setuptest1", owner: setuptest1, mode: "750"}

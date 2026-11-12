@@ -1,7 +1,7 @@
 ---
 - name: Write each setting
   ansible.builtin.include_tasks: write.yml
-  loop: "{{ profile_defaults_writes }}"
+  loop: "{{ macos_defaults_writes }}"
   loop_control:
     loop_var: macos_defaults_write
     label: "{{ macos_defaults_write.id }}"

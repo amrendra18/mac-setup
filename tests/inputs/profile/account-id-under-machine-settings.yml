@@ -1,0 +1,4 @@
+---
+# expect: machine_settings, dock.position
+machine_settings:
+  dock.position: left

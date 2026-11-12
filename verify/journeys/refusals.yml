@@ -1,0 +1,36 @@
+summary: A setting macOS refuses does not stop the others; the Dock still restarts, and the run ends with exit 2 and one line for the refused setting.
+level: fast
+setup:
+  - defaults delete com.apple.dock orientation || true
+  - defaults delete com.apple.dock show-recents || true
+  - defaults write com.apple.dock tilesize -int 48
+profile:
+  default_settings:
+    dock.position: left
+    dock.tile_size: 32
+    dock.show_recents: false
+runs:
+  - name: check
+    args: [--check]
+    exit: 2
+    recap: {changed: 2, failed: 1}
+    output:
+      - &refused-line {pattern: '(?i)^(?!TASK |RUNNING HANDLER |\[ERROR\]|\d)[^\n]*\brefused\b[^\n]*\bdock\.tile_size\b', count: 1}
+  - name: apply
+    exit: 2
+    recap: {changed: 3, failed: 1}
+    output:
+      - *refused-line
+      - {pattern: '^RUNNING HANDLER \[macos_defaults : Restart Dock\].*\nchanged: \[verify-mac\]', count: 1}
+  - name: apply-again
+    exit: 2
+    recap: {changed: 0, failed: 1}
+    output:
+      - *refused-line
+      - {pattern: '^RUNNING HANDLER \[macos_defaults : Restart Dock\]', count: 0}
+reads:
+  - {domain: com.apple.dock, key: orientation, type: string, value: left}
+  - {domain: com.apple.dock, key: tilesize, type: integer, value: 48}
+  - {domain: com.apple.dock, key: show-recents, type: boolean, value: false}
+cleanup:
+  - defaults delete com.apple.dock tilesize || true

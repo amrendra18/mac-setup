@@ -102,6 +102,6 @@ Next, copy the example profile:
 
 Then preview the change, and apply it:
 
-  .local/venv/bin/ansible-playbook playbooks/site.yml --check
-  .local/venv/bin/ansible-playbook playbooks/site.yml
+  .local/venv/bin/ansible-playbook playbooks/site.yml -K --check
+  .local/venv/bin/ansible-playbook playbooks/site.yml -K
 EOF

@@ -11,10 +11,12 @@ usage() {
   cat <<'EOF'
 usage: scripts/check [fast|full]
 
-fast  yamllint, playbook syntax, Python unit tests in tests/modules/, every broken
+fast  yamllint, playbook syntax, Python unit tests in tests/modules/ and tests/harness/, every broken
       test input in tests/inputs/ (each must stop in the profile check with exit 2
-      and changed=0, run with --check), the structure rules, the private-word scan
-      and gitleaks. It changes no settings.
+      and changed=0, run with --check, and print one problem line per
+      "# expect: SUBJECT" line in the input, each line starting "SUBJECT: "),
+      the structure rules, the private-word scan and gitleaks. It changes no
+      settings.
 full  fast, then tests/test_reference.py when it exists, black --check on the Python
       files, and ansible-lint when requirements/dev.txt pins it.
 
@@ -84,32 +86,54 @@ syntax() {
 }
 
 unit_tests() {
-  "$bin/python" -I -m unittest discover -s tests/modules -t tests/modules -p 'test_*.py' 2>&1
+  "$bin/python" -I -m unittest discover -s tests/modules -t tests/modules -p 'test_*.py' 2>&1 &&
+    "$bin/python" -I -m unittest discover -s tests/harness -t tests/harness -p 'test_*.py' 2>&1
 }
 
+input_check='
+import re, sys, textwrap
+from collections import Counter
+import yaml
+
+name, code = sys.argv[1], int(sys.argv[3])
+out = open(sys.argv[2]).read().splitlines()
+expected = Counter(re.findall(r"^# expect: (.+?) *$", open(name).read(), re.M))
+recap = next((line for line in reversed(out) if re.match(r"example-mac +:", line)), "")
+task, problems = "", []
+for i, line in enumerate(out):
+    if line.startswith("TASK ["):
+        task = line.rstrip(" *")
+    elif line.startswith("fatal: [example-mac]"):
+        end = out.index("", i) if "" in out[i:] else len(out)
+        result = yaml.safe_load(textwrap.dedent("\n".join(out[i + 1 : end])))
+        problems = str(result.get("msg", "")).splitlines()
+        break
+got = Counter(line.split(": ", 1)[0] for line in problems)
+faults = []
+if code != 2:
+    faults.append(f"exit {code}, expected 2")
+if " changed=0 " not in recap:
+    faults.append(f"recap {recap!r}, expected changed=0")
+if not task.startswith("TASK [profile : "):
+    faults.append(f"failed task {task!r}, expected one in the profile role")
+if not expected:
+    faults.append("no # expect: lines")
+if got != expected or any(": " not in line for line in problems):
+    faults.append(f"problem lines {problems}, expected one per subject {sorted(expected.elements())}")
+if faults:
+    sys.exit(f"{name}: " + "; ".join(faults))
+print(f"{name} stopped at exit 2 in {task}, {len(problems)} problem lines, one per expected subject")
+'
+
 test_inputs() {
-  need "$bin/ansible-playbook" ansible.cfg playbooks/site.yml || return 1
-  local input n=0 bad=0 out code recap stopped problems
+  need "$bin/ansible-playbook" "$bin/python" ansible.cfg playbooks/site.yml || return 1
+  local input n=0 bad=0 out code
   while IFS= read -r -d '' input; do
     n=$((n + 1))
     out=$work/input-$n.txt
     "$bin/ansible-playbook" -i inventory/example -e @"$input" playbooks/site.yml --check >"$out" 2>&1
     code=$?
-    recap=$(grep -E '^example-mac +:' "$out" | tail -1)
-    stopped=$(awk '/^TASK \[/ { task = $0 } /^fatal: \[example-mac\]/ { print task; exit }' "$out")
-    problems=$(sed -n 's/^  \([^ #][^:]*\):.*/\1: /p' "$input" | awk '
-      NR == FNR { id[++ids] = $0; next }
-      /^fatal: \[example-mac\]/ { f = 1 }
-      f && !NF { exit }
-      f { k = 0; for (i = 1; i <= ids; i++) k += index($0, id[i]) > 0; if (k) { lines++; named += k } }
-      END { print (lines == named ? lines + 0 : "several on one line") }' - "$out")
-    if [ $code = 2 ] && [[ $recap == *" changed=0 "* ]] && [[ $stopped == "TASK [profile : "* ]] && [[ $problems == [1-9]* ]]; then
-      echo "$input stopped at exit 2 in ${stopped%% \**}, one line per problem, $problems in all"
-    else
-      echo "$input: exit $code, expected 2; recap '${recap:-none}'; failed task '${stopped:-none}', expected one in the profile role; problem lines '$problems', expected one per problem"
-      sed 's/^/  /' "$out"
-      bad=1
-    fi
+    "$bin/python" -I -c "$input_check" "$input" "$out" "$code" 2>&1 || { sed 's/^/  /' "$out"; bad=1; }
   done < <(find tests/inputs -type f \( -name '*.yml' -o -name '*.yaml' \) -print0 | sort -z)
   [ $n -gt 0 ] || { echo "no test inputs in tests/inputs/"; return 1; }
   return $bad

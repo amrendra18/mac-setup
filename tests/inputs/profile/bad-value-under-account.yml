@@ -1,0 +1,7 @@
+---
+# expect: account setuptest1, dock.tile_size
+accounts:
+  - name: setuptest1
+    full_name: Setup Test One
+    settings:
+      dock.tile_size: 200

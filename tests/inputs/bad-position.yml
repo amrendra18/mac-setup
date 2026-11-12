@@ -1,4 +1,5 @@
 ---
+# expect: dock.position
 default_settings:
   dock.position: middle
   dock.tile_size: 32

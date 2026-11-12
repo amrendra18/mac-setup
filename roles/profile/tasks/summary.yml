@@ -1,0 +1,14 @@
+---
+- name: Summarize the run
+  vars:
+    profile_summary_lines: >-
+      {{ profile_counts | profile_summary(macos_defaults_refused | default([]), macos_accounts_results | default([])) }}
+  block:
+    - name: Show what happens next
+      ansible.builtin.debug:
+        msg: "{{ profile_summary_lines.notes }}"
+
+    - name: Stop on refused settings and accounts
+      ansible.builtin.fail:
+        msg: "{{ profile_summary_lines.refused | join('\n') }}"
+      when: profile_summary_lines.refused | length > 0

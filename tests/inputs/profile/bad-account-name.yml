@@ -1,0 +1,8 @@
+---
+# expect: account item 1
+# expect: account item 2
+accounts:
+  - name: "-admin"
+    full_name: Leading Dash
+  - name: "../x"
+    full_name: Path Name

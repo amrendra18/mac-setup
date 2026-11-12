@@ -7,3 +7,36 @@
     - role: profile
       tags: [always]
     - role: macos_defaults
+      vars:
+        macos_defaults_writes: "{{ profile_defaults_writes }}"
+        macos_defaults_account: "{{ profile_running_account }}"
+
+- name: Machine and other accounts
+  hosts: macs
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Create or adopt the listed accounts
+      ansible.builtin.include_role:
+        name: macos_accounts
+
+    - name: Write each other account's settings as that account
+      ansible.builtin.include_role:
+        name: macos_defaults
+        apply:
+          become_user: "{{ other_account.account }}"
+      vars:
+        macos_defaults_writes: "{{ other_account.writes }}"
+        macos_defaults_account: "{{ other_account.account }}"
+        macos_defaults_restart: false
+      loop: >-
+        {{ profile_other_account_writes | rejectattr('account', 'in',
+        macos_accounts_results | default([]) | selectattr('state', 'eq', 'would_create') | map(attribute='name') | list) }}
+      loop_control:
+        loop_var: other_account
+        label: "{{ other_account.account }}"
+
+    - name: Summarize the run
+      ansible.builtin.include_role:
+        name: profile
+        tasks_from: summary

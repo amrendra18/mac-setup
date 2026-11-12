@@ -1,0 +1,42 @@
+---
+- name: Read each account
+  macos_account:
+    name: "{{ item.name }}"
+    full_name: "{{ item.full_name }}"
+    admin: "{{ item.admin }}"
+  check_mode: true
+  changed_when: false
+  loop: "{{ profile_accounts }}"
+  loop_control:
+    label: "{{ item.name }}"
+  register: macos_accounts_read
+
+- name: Ask for each new account's password
+  ansible.builtin.pause:
+    prompt: "Password for the new account {{ item.item.name }}"
+    echo: false
+  when:
+    - not ansible_check_mode
+    - item.account.state == 'would_create'
+    - item.item.name not in account_passwords | default({}, true)
+  loop: "{{ macos_accounts_read.results }}"
+  loop_control:
+    label: "{{ item.item.name }}"
+  register: macos_accounts_typed
+  no_log: true
+
+- name: Create or adopt each account
+  macos_account:
+    name: "{{ item.name }}"
+    full_name: "{{ item.full_name }}"
+    admin: "{{ item.admin }}"
+    password: "{{ (account_passwords | default({}, true))[item.name] | default(macos_accounts_typed.results[macos_accounts_index].user_input | default('')) }}"
+  loop: "{{ profile_accounts }}"
+  loop_control:
+    index_var: macos_accounts_index
+    label: "{{ item.name }}"
+  register: macos_accounts_done
+
+- name: Record the account results
+  ansible.builtin.set_fact:
+    macos_accounts_results: "{{ macos_accounts_done.results | map(attribute='account') | list }}"

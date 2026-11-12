@@ -1,0 +1,5 @@
+---
+profile_reference_paths: "{{ query('ansible.builtin.fileglob', playbook_dir ~ '/../settings/macos/*.yml') | sort }}"
+profile_reference_files: >-
+  {{ dict(profile_reference_paths | map('basename')
+  | zip(query('ansible.builtin.file', *profile_reference_paths) | map('from_yaml'))) }}

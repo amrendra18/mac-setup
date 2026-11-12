@@ -1,0 +1,7 @@
+---
+# expect: account setuptest1, dock.postion
+accounts:
+  - name: setuptest1
+    full_name: Setup Test One
+    settings:
+      dock.postion: left

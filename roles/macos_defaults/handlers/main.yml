@@ -4,3 +4,15 @@
   register: macos_defaults_dock_restart
   changed_when: macos_defaults_dock_restart.rc == 0
   failed_when: macos_defaults_dock_restart.rc not in [0, 1]
+
+- name: Restart Finder
+  ansible.builtin.command: killall Finder
+  register: macos_defaults_finder_restart
+  changed_when: macos_defaults_finder_restart.rc == 0
+  failed_when: macos_defaults_finder_restart.rc not in [0, 1]
+
+- name: Restart SystemUIServer
+  ansible.builtin.command: killall SystemUIServer
+  register: macos_defaults_systemuiserver_restart
+  changed_when: macos_defaults_systemuiserver_restart.rc == 0
+  failed_when: macos_defaults_systemuiserver_restart.rc not in [0, 1]

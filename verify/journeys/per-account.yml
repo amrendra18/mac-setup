@@ -1,0 +1,53 @@
+summary: setuptest1 gets its own 3 Dock settings in its own preferences, a second run changes nothing, and unset deletes a key.
+level: fast
+setup:
+  - id setuptest1 >/dev/null 2>&1 || { echo "setuptest1 is missing. Run scripts/verify fast --feature accounts first."; exit 1; }
+  - sudo -n -u setuptest1 defaults delete com.apple.dock orientation || true
+  - sudo -n -u setuptest1 defaults delete com.apple.dock tilesize || true
+  - sudo -n -u setuptest1 defaults delete com.apple.dock show-recents || true
+profile:
+  accounts:
+    - name: setuptest1
+      full_name: Setup Test One
+      admin: false
+      settings:
+        dock.position: left
+        dock.tile_size: 32
+        dock.show_recents: false
+runs:
+  - name: check
+    args: [--check]
+    exit: 0
+    recap: {changed: 3, failed: 0}
+  - name: apply
+    exit: 0
+    recap: {changed: 3, failed: 0}
+    reads:
+      - {domain: com.apple.dock, key: orientation, type: string, value: left, account: setuptest1}
+      - {domain: com.apple.dock, key: tilesize, type: float, value: 32, account: setuptest1}
+      - {domain: com.apple.dock, key: show-recents, type: boolean, value: false, account: setuptest1}
+  - name: apply-again
+    exit: 0
+    recap: {changed: 0, failed: 0}
+  - name: unset
+    exit: 0
+    recap: {changed: 1, failed: 0}
+    profile: &unset
+      accounts:
+        - name: setuptest1
+          full_name: Setup Test One
+          admin: false
+          settings:
+            dock.position: left
+            dock.tile_size: 32
+            dock.show_recents: unset
+  - name: unset-again
+    exit: 0
+    recap: {changed: 0, failed: 0}
+    profile: *unset
+reads:
+  - {domain: com.apple.dock, key: orientation, type: string, value: left, account: setuptest1}
+  - {domain: com.apple.dock, key: tilesize, type: float, value: 32, account: setuptest1}
+  - {domain: com.apple.dock, key: show-recents, absent: true, account: setuptest1}
+files:
+  - {path: "~setuptest1/Library/Preferences/com.apple.dock.plist", owner: setuptest1, mode: "600"}
