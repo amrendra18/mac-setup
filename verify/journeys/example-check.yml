@@ -7,7 +7,64 @@ profile:
     dock.position: left
     dock.tile_size: 32
     dock.show_recents: false
+    menu_bar.clock_24_hour: true
+    menu_bar.clock_seconds: true
+    menu_bar.clock_flash_separators: true
+    widgets.on_desktop: hide
+    widgets.in_stage_manager: hide
+    dock.autohide: false
+    dock.minimize_to_application: true
+    dock.show_open_indicators: true
+    finder.show_sidebar: true
+    finder.trash_auto_empty: true
+    finder.view: list
+    hot_corners.bottom_right: quick_note
+    menu_bar.sound: always
+    mission_control.display_spaces: separate
+    mission_control.group_by_app: true
+    notifications.iphone_sounds: true
+    notifications.show_previews: when_unlocked
+    notifications.summarize: false
+    siri.enabled: false
+    stage_manager.recent_apps: hide
+    widgets.iphone_widgets: false
+    windows.on_quit: keep
+    finder.show_recent_tags: false
+    hot_corners.top_left: none
+    hot_corners.top_right: none
+    hot_corners.bottom_left: none
+    menu_bar.user_switcher: show
+    spotlight.improve_search: 'off'
+    dock.applications:
+      - com.apple.Terminal
+    desktop.wallpaper: black
+    finder.sidebar_favorites:
+      - /Applications
+      - '~'
+      - ~/Desktop
+      - ~/Downloads
+    finder.sidebar_hide:
+      - recents
+      - shared
+      - airdrop
+      - trash
+      - icloud
+      - home_in_locations
+    appearance.theme: dark
+    appearance.accent_color: orange
+    appearance.highlight_color: accent
+    finder.show_hidden: true
+    finder.new_window: home
   accounts: []
+  machine_settings:
+    time.zone: Etc/UTC
+    network.wifi_power: true
+    security.firewall: true
+    power.system_sleep_minutes: 30
+    power.display_sleep_minutes: 10
+    power.wake_for_network: true
+    power.restart_after_power_failure: true
+    privacy.location_services: false
 runs:
   - name: check
     args: [--check]

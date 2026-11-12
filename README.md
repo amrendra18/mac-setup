@@ -155,7 +155,7 @@ If a download does not match its pinned SHA-256 hash, the bootstrap deletes that
    test -d .local/inventory || cp -R inventory/example .local/inventory
    ```
 
-   The profile is `.local/inventory/host_vars/example-mac/accounts.yml`. Its `default_settings` hold 3 Dock settings for every account. Change a value there if you want another one. For example, `dock.position: bottom` moves the Dock to the bottom. `inventory/example/TEMPLATE.yml` lists every setting with the values it takes. The value `unset` deletes a setting stored as a preference, so macOS uses its own default.
+   The profile is `.local/inventory/host_vars/example-mac/accounts.yml`. Its `default_settings` hold the settings for every account, and `machine.yml` beside it holds the machine settings. Set `time.zone` in `machine.yml` to your own zone first; the example uses `Etc/UTC`. Change a value there if you want another one. For example, `dock.position: bottom` moves the Dock to the bottom. `inventory/example/TEMPLATE.yml` lists every setting with the values it takes. The value `unset` deletes a setting stored as a preference, so macOS uses its own default.
 
    Quote a value such as `"on"`, `"off"`, `"yes"` or `"no"`. Without quotes, YAML reads it as true or false, and the profile check refuses it with a line that says to quote it.
 
@@ -194,11 +194,11 @@ If a download does not match its pinned SHA-256 hash, the bootstrap deletes that
    .local/venv/bin/ansible-playbook playbooks/site.yml -K
    ```
 
-   `-K` makes Ansible ask for your admin password once (`BECOME password:`). The run's second part uses it to create accounts, to write machine settings, and to write other accounts' settings as those accounts. With no machine settings and an empty `accounts` list nothing uses it, but Ansible still asks. For each listed account that does not exist yet, the apply also asks that account's new password once, with typing hidden. The preview creates nothing and asks no account password.
+   `-K` makes Ansible ask for your admin password once (`BECOME password:`). The run's second part uses it to create accounts, to write machine settings, and to write other accounts' settings as those accounts. For each listed account that does not exist yet, the apply also asks that account's new password once, with typing hidden. The preview creates nothing and asks no account password.
 
-   With the example profile as copied, the preview ends with `changed=3` in its recap line and writes nothing. The first apply ends with `changed=4`: 3 settings and 1 Dock restart. The Dock moves to the left, gets smaller and hides recent apps. The second apply ends with `changed=0`.
+   With the example profile as copied, the preview lists each setting that differs from your Mac and writes nothing. The first apply sets them and restarts the Dock and Finder once, and its summary says how many settings show only after you log out and back in, and how many need a click in System Settings (run `playbooks/by-hand.yml` for those). The second apply ends with `changed=0`.
 
-   When another account, or the login window, owns the screen, the run skips the Dock restart. A restart then would leave that account's Dock stopped until it logs out and back in. The first apply ends with `changed=3`, and the Dock changes at that account's next sign-in.
+   When another account, or the login window, owns the screen, the run skips the Dock restart. A restart then would leave that account's Dock stopped until it logs out and back in. The Dock then changes at that account's next sign-in.
 
    Without step 3's copy there is no profile. The run then warns that no host matched, changes nothing and still exits 0.
 
@@ -251,7 +251,7 @@ The second line removes Python 3.13.15 and its `cpython-3.13` link from `~/.loca
 
 ### Checks for contributors
 
-`scripts/check fast` runs the quick checks (YAML lint, playbook syntax, unit tests, the profile checks against broken test profiles, the structure rules, the private-word scan and a secret scan). `scripts/check full` adds the reference test, which also checks that the template matches the reference, a `black --check` format check of the Python files, and ansible-lint. `scripts/verify` proves features on a real Mac and keeps evidence in `.local/verify/`.
+`scripts/check fast` runs the quick checks (YAML lint, playbook syntax, unit tests, the profile checks against broken test profiles, the structure rules, the private-word scan and a secret scan). `scripts/check full` adds the reference test, which also checks that the template matches the reference, a `black --check` format check of the Python files, and ansible-lint. `scripts/verify` proves features on a real Mac and keeps evidence in `.local/verify/`. The maintainer refreshes the example profile from their own profile with `scripts/sync-example`, which keeps personal values out and stops on a free-text setting it has no neutral value for.
 
 Besides `scripts/bootstrap`, the checks need three things:
 

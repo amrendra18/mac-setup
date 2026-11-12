@@ -1,0 +1,105 @@
+import importlib.machinery
+import importlib.util
+import sys
+import unittest
+from pathlib import Path
+
+import yaml
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "roles/profile/filter_plugins"))
+
+from profile import profile_problems
+
+
+def load_script():
+    loader = importlib.machinery.SourceFileLoader(
+        "sync_example_under_test", str(ROOT / "scripts" / "sync-example")
+    )
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    return module
+
+
+def reference_files():
+    return {
+        path.name: yaml.safe_load(path.read_text())
+        for path in sorted((ROOT / "settings/macos").glob("*.yml"))
+    }
+
+
+class SyncExample(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.script = load_script()
+        cls.entries = cls.script.reference()
+
+    def neutral(self, settings):
+        refused = []
+        return self.script.neutral_settings(settings, self.entries, refused), refused
+
+    def test_personal_values_stay_out(self):
+        result, refused = self.neutral(
+            {
+                "time.zone": "America/Whitehorse",
+                "network.wifi_power": False,
+                "computer.name": "zzPersonalMac",
+                "login_window.message": "Property of Zz Person",
+                "sharing.remote_login": False,
+                "finder.sidebar_favorites": [
+                    "/Applications",
+                    "~",
+                    str(Path("/Users") / "zzother"),
+                    "/Volumes/zzdrive",
+                    "~/Documents/zzclient",
+                    "~/Downloads",
+                ],
+                "dock.position": "left",
+                "dock.applications": ["com.google.Chrome", "com.apple.Terminal"],
+                "power.display_sleep_minutes": 3,
+                "power.system_sleep_minutes": 0,
+            }
+        )
+        self.assertEqual(sorted(refused), ["computer.name", "login_window.message"])
+        self.assertEqual(result["time.zone"], "Etc/UTC")
+        self.assertIs(result["network.wifi_power"], True)
+        self.assertNotIn("sharing.remote_login", result)
+        self.assertEqual(
+            result["finder.sidebar_favorites"], ["/Applications", "~", "~/Downloads"]
+        )
+        self.assertEqual(result["dock.position"], "left")
+        self.assertEqual(result["dock.applications"], ["com.apple.Terminal"])
+        self.assertEqual(result["power.display_sleep_minutes"], 10)
+        self.assertEqual(result["power.system_sleep_minutes"], 30)
+        self.assertNotIn("zz", yaml.safe_dump(result))
+
+    def test_accounts_get_made_up_names(self):
+        refused = []
+        accounts = self.script.neutral_accounts(
+            [
+                {
+                    "name": "zzreal",
+                    "full_name": "Zz Real",
+                    "admin": True,
+                    "password": "x",
+                }
+            ],
+            self.entries,
+            refused,
+        )
+        self.assertEqual(
+            accounts, [{"name": "sam", "full_name": "Sam Example", "admin": True}]
+        )
+
+    def test_the_tracked_example_passes_the_profile_check(self):
+        example = {}
+        for path in sorted(
+            (ROOT / "inventory/example/host_vars/example-mac").glob("*.yml")
+        ):
+            example.update(yaml.safe_load(path.read_text()))
+        self.assertEqual(profile_problems(example, reference_files()), [])
+
+
+if __name__ == "__main__":
+    unittest.main()

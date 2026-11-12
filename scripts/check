@@ -128,10 +128,11 @@ print(f"{name} stopped at exit 2 in {task}, {len(problems)} problem lines, one p
 test_inputs() {
   need "$bin/ansible-playbook" "$bin/python" ansible.cfg playbooks/site.yml || return 1
   local input n=0 bad=0 out code
+  mkdir -p "$work/inputs-inventory" && cp inventory/example/hosts.yml "$work/inputs-inventory/hosts.yml"
   while IFS= read -r -d '' input; do
     n=$((n + 1))
     out=$work/input-$n.txt
-    "$bin/ansible-playbook" -i inventory/example -e @"$input" playbooks/site.yml --check >"$out" 2>&1
+    "$bin/ansible-playbook" -i "$work/inputs-inventory" -e @"$input" playbooks/site.yml --check >"$out" 2>&1
     code=$?
     "$bin/python" -I -c "$input_check" "$input" "$out" "$code" 2>&1 || { sed 's/^/  /' "$out"; bad=1; }
   done < <(find tests/inputs -type f \( -name '*.yml' -o -name '*.yaml' \) -print0 | sort -z)
@@ -215,7 +216,7 @@ ansible_lint() {
 python_format() {
   need "$bin/black" || { echo "install the dev tools, see scripts/check --help"; return 1; }
   local out
-  out=$(candidates | grep -zE '\.py$|^scripts/(verify|render-template)$' | xargs -0 "$bin/black" --check 2>&1) && return
+  out=$(candidates | grep -zE '\.py$|^scripts/(verify|render-template|sync-example)$' | xargs -0 "$bin/black" --check 2>&1) && return
   printf '%s\n' "$out" | grep '^would reformat'
   echo "format them with .local/venv/bin/black"
   return 1

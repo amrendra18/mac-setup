@@ -404,10 +404,12 @@ class Harness(unittest.TestCase):
 
     def test_example_check_uses_the_example_profile(self):
         journey = self.verify.load_journey(self.verify.JOURNEYS / "example-check.yml")
-        example = ROOT / "inventory/example/host_vars/example-mac/accounts.yml"
-        self.assertEqual(
-            journey.profile, self.verify.yaml.safe_load(example.read_text())
-        )
+        example = {}
+        for path in sorted(
+            (ROOT / "inventory/example/host_vars/example-mac").glob("*.yml")
+        ):
+            example.update(self.verify.yaml.safe_load(path.read_text()))
+        self.assertEqual(journey.profile, example)
 
     def test_journeys_use_no_real_account_name(self):
         me = getpass.getuser()

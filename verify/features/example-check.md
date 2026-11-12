@@ -26,5 +26,5 @@ Preconditions:
 
 ## Gotchas
 
-- The journey's profile repeats the example profile's values. The harness test `test_example_check_uses_the_example_profile` fails when the two differ.
+- The journey's profile repeats the example profile's values; `scripts/sync-example` writes both, and a harness test keeps them equal.
 - A person who uses the Dock during the run can change its preferences and fail the comparison.

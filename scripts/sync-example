@@ -1,0 +1,158 @@
+#!/bin/sh
+# fmt: off
+''':'
+root=$(cd "$(dirname "$0")/.." && pwd)
+[ -x "$root/.local/venv/bin/python" ] || { echo "sync-example: $root/.local/venv is missing. Run scripts/bootstrap first." >&2; exit 3; }
+exec "$root/.local/venv/bin/python" -I "$0" "$@"
+'''
+# fmt: on
+
+import argparse
+import sys
+from pathlib import Path
+
+import yaml
+
+ROOT = Path(__file__).resolve().parent.parent
+EXAMPLE = ROOT / "inventory" / "example" / "host_vars" / "example-mac"
+JOURNEY = ROOT / "verify" / "journeys" / "example-check.yml"
+NAMES = ["sam", "robin", "alex", "kim", "lee", "max"]
+SETTINGS = ROOT / "settings" / "macos"
+SAFE_PATHS = ["/Applications", "~", "~/Desktop", "~/Documents", "~/Downloads"]
+NEUTRAL = {
+    "time.zone": "Etc/UTC",
+    "network.wifi_power": True,
+    "power.display_sleep_minutes": 10,
+    "power.system_sleep_minutes": 30,
+}
+HEADER = "---\n# Written by scripts/sync-example from the maintainer's profile. Run it again after a change.\n"
+
+
+def load(folder):
+    profile = {}
+    for path in sorted(folder.glob("host_vars/*/*.yml")):
+        profile.update(yaml.safe_load(path.read_text()) or {})
+    return profile
+
+
+def reference():
+    entries = {}
+    for path in sorted(SETTINGS.glob("*.yml")):
+        entries.update(yaml.safe_load(path.read_text()) or {})
+    return entries
+
+
+def neutral_value(setting_id, value):
+    if setting_id in NEUTRAL:
+        return NEUTRAL[setting_id]
+    if setting_id == "finder.sidebar_favorites":
+        return [item for item in value if item in SAFE_PATHS]
+    if setting_id == "dock.applications":
+        return [item for item in value if item.startswith("com.apple.")]
+    return value
+
+
+def neutral_settings(settings, entries, refused):
+    result = {}
+    for key, value in (settings or {}).items():
+        entry = entries.get(key, {})
+        if entry.get("lockout_risk"):
+            continue
+        values = entry.get("values")
+        if (
+            isinstance(values, dict)
+            and values.get("type") == "text"
+            and key not in NEUTRAL
+        ):
+            refused.append(key)
+            continue
+        result[key] = neutral_value(key, value)
+    return result
+
+
+def neutral_accounts(accounts, entries, refused):
+    result = []
+    for number, account in enumerate(accounts or []):
+        name = NAMES[number % len(NAMES)] + ("" if number < len(NAMES) else str(number))
+        item = {
+            "name": name,
+            "full_name": f"{name.title()} Example",
+            "admin": bool(account.get("admin", False)),
+        }
+        if account.get("settings"):
+            item["settings"] = neutral_settings(account["settings"], entries, refused)
+        result.append(item)
+    return result
+
+
+class Dumper(yaml.SafeDumper):
+    def increase_indent(self, flow=False, indentless=False):
+        return super().increase_indent(flow, False)
+
+
+def dump(data):
+    return HEADER + yaml.dump(
+        data, Dumper=Dumper, sort_keys=False, default_flow_style=False, width=100
+    )
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Write inventory/example/ with the same settings as a private profile, without personal values.",
+        epilog="exit codes: 0 written, 1 a free-text setting needs a neutral value, 2 usage error, 3 not ready",
+    )
+    parser.add_argument(
+        "profile",
+        nargs="?",
+        default=str(ROOT / ".local" / "inventory"),
+        help="private profile folder, default .local/inventory",
+    )
+    args = parser.parse_args()
+    folder = Path(args.profile)
+    if not folder.is_dir():
+        parser.error(f"{folder} is not a folder")
+    profile = load(folder)
+    entries, refused = reference(), []
+    accounts = {
+        "default_settings": neutral_settings(
+            profile.get("default_settings"), entries, refused
+        ),
+        "accounts": neutral_accounts(profile.get("accounts"), entries, refused),
+    }
+    machine = {
+        "machine_settings": neutral_settings(
+            profile.get("machine_settings"), entries, refused
+        )
+    }
+    if refused:
+        for key in sorted(set(refused)):
+            print(
+                f"sync-example: {key} is free text and may be personal; add a neutral value for it to NEUTRAL",
+                file=sys.stderr,
+            )
+        return 1
+    EXAMPLE.mkdir(parents=True, exist_ok=True)
+    (EXAMPLE / "accounts.yml").write_text(dump(accounts))
+    (EXAMPLE / "machine.yml").write_text(dump(machine))
+    journey = JOURNEY.read_text()
+    start, end = journey.index("profile:\n"), journey.index("runs:\n")
+    profile_block = yaml.dump(
+        {"profile": {**accounts, **machine}},
+        Dumper=Dumper,
+        sort_keys=False,
+        default_flow_style=False,
+        width=100,
+    )
+    JOURNEY.write_text(journey[:start] + profile_block + journey[end:])
+    print(f"wrote {JOURNEY} (the example-check journey's profile)")
+    print(
+        f"wrote {EXAMPLE / 'accounts.yml'} ({len(accounts['default_settings'])} settings, {len(accounts['accounts'])} accounts)"
+    )
+    print(
+        f"wrote {EXAMPLE / 'machine.yml'} ({len(machine['machine_settings'])} settings)"
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
