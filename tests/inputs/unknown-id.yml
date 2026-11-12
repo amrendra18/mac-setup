@@ -1,5 +1,4 @@
 ---
-# Test input, broken on purpose: "dock.postion" is a typo for dock.position.
 default_settings:
   dock.postion: left
   dock.tile_size: 32

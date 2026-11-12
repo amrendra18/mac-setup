@@ -21,7 +21,7 @@ This repository is an Ansible project that sets up a Mac from one profile. `READ
 
 1. Builders never commit, push, change the remote, or rewrite history. Only the maintainer's main agent commits, after its own review and an independent review.
 2. Nobody makes this repository public except the maintainer.
-3. No agent adds or upgrades a dependency without the maintainer's yes. Every pin carries a SHA-256 hash and is at least 21 days old.
+3. No agent adds or upgrades a dependency without the maintainer's yes. Every pin carries a SHA-256 hash and is at least 21 days old. Test: `scripts/collection-age` checks the Ansible collection pins in `requirements/collections.txt` against Galaxy's publish dates. Run it before a collection pin changes; it needs the network.
 4. Only the maintainer's main agent touches a real Mac or GitHub. Builders work in their own worktree with no network.
 5. A step that needs a person at the Mac (deleting an account, granting a secure token, a privacy permission, signing in) belongs to the maintainer.
 6. Do not edit files outside your assigned list, and do not tidy unrelated code.
@@ -45,7 +45,7 @@ Each rule names the test that enforces it. A test marked "planned" does not exis
 
 ## Conventions
 
-1. yamllint checks every YAML file against the repository's `.yamllint`. Python modules follow PEP 8 and have unit tests that use a fake command runner, so tests never touch the Mac.
+1. yamllint checks every YAML file against the repository's `.yamllint`. Python files follow black's default format, checked by `black --check` in `scripts/check full`. Python modules have unit tests that use a fake command runner, so tests never touch the Mac.
 2. A custom module reads first, writes only on a difference, and supports `--check` and `--diff`.
 3. macOS-only roles carry the `macos_` prefix.
 4. Examples, test profiles and journeys use made-up names only.

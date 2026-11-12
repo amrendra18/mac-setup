@@ -19,7 +19,7 @@ Today that person clicks through System Settings by hand, once per Mac and once 
 1. You sign in to the Mac's first admin account and open Terminal.
 2. You check that Apple's Command Line Tools are installed with `xcode-select -p`. If they are missing, `xcode-select --install` opens a dialog, and you click Install. The tools provide `git` and `curl`.
 3. You clone this repository and run `scripts/bootstrap`. It downloads pinned copies of uv (a Python installer), Python 3.13.15, Ansible and one Ansible collection, checks each against a SHA-256 hash, and installs them inside the checkout and your home folder. It needs no admin password.
-4. You copy the example profile to the private folder `.local/inventory/` and edit the account names.
+4. You copy the example profile to the private folder `.local/inventory/` with `test -d .local/inventory || cp -R inventory/example .local/inventory`, then edit the account names. The `test -d` part skips the copy when the folder exists, so running the line again keeps your edits and adds no nested copy.
 5. You run `.local/venv/bin/ansible-playbook playbooks/site.yml -K`.
 6. Ansible asks for your admin password once (`BECOME password:`). For each account in the profile that does not exist yet, it asks that account's new password once, with typing hidden.
 7. You watch the settings change. The Dock moves, Finder changes, and so on. Each line of output names a setting and whether it changed.
@@ -183,7 +183,19 @@ The second line removes Python 3.13.15 and its `cpython-3.13` link from `~/.loca
 
 ### Checks for contributors
 
-`scripts/check fast` runs the quick checks (YAML lint, playbook syntax, unit tests, the profile checks against broken test profiles, the structure rules, the private-word scan and a secret scan). `scripts/check full` adds the reference test, which also checks that the template matches the reference. `scripts/verify` proves features on a real Mac and keeps evidence in `.local/verify/`.
+`scripts/check fast` runs the quick checks (YAML lint, playbook syntax, unit tests, the profile checks against broken test profiles, the structure rules, the private-word scan and a secret scan). `scripts/check full` adds the reference test, which also checks that the template matches the reference, a `black --check` format check of the Python files, and ansible-lint. `scripts/verify` proves features on a real Mac and keeps evidence in `.local/verify/`.
+
+Besides `scripts/bootstrap`, the checks need three things:
+
+1. The dev tools pinned in `requirements/dev.txt` (yamllint, ansible-lint, black and their dependencies) in `.local/venv`. These two commands download each pinned file from its direct link in `requirements/dev-urls.txt`, check its SHA-256 hash, and install it without the PyPI index:
+
+   ```sh
+   mkdir -p .local/wheels && (cd .local/wheels && xargs -n 1 curl --fail --silent --show-error --location --remote-name <../../requirements/dev-urls.txt)
+   .local/venv/bin/python -I -m pip install --isolated --no-index --find-links .local/wheels --no-deps --require-hashes --only-binary :all: -r requirements/dev.txt
+   ```
+
+2. The Gitleaks secret scanner, in `.local/bin/gitleaks` or on your PATH. The `first-commit-setup` command below puts it in `.local/bin/`.
+3. The file `.local/private-words.txt`, with one private word per line, such as your machine and account names. Git ignores it. The private-word scan fails when a file in the repository contains one of these words.
 
 Commits and pushes run pre-commit hooks from [first-commit](https://github.com/amrendra18/first-commit), pinned in `.pre-commit-config.yaml`. They check signing, secrets and private values. In a new clone, install pre-commit (`pipx install --python python3.13 pre-commit` or `brew install pre-commit`), then run:
 

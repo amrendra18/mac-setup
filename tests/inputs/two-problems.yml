@@ -1,6 +1,0 @@
----
-# Test input, broken on purpose: "dock.postion" is a typo for dock.position, and "middle" is not true or false.
-default_settings:
-  dock.postion: left
-  dock.tile_size: 32
-  dock.show_recents: middle

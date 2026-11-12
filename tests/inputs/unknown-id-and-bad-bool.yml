@@ -1,0 +1,5 @@
+---
+default_settings:
+  dock.postion: left
+  dock.tile_size: 32
+  dock.show_recents: middle
