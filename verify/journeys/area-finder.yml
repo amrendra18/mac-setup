@@ -1,12 +1,13 @@
-summary: Six Finder settings are written from the profile and read back with their types, a second run changes nothing, and the cleanup restores the saved keys.
+summary: Six Finder settings are written from the profile and read back with their types, a second run changes nothing, and the harness restores the saved keys.
 level: fast
+saves:
+  - {domain: com.apple.finder, key: ShowSidebar}
+  - {domain: com.apple.finder, key: FXRemoveOldTrashItems}
+  - {domain: com.apple.finder, key: FXPreferredViewStyle}
+  - {domain: com.apple.finder, key: ShowRecentTags}
+  - {domain: com.apple.finder, key: AppleShowAllFiles}
+  - {domain: com.apple.finder, key: NewWindowTarget}
 setup:
-  - >-
-    if [ -e .local/area-finder-journey/finder-before.plist ]; then
-    echo "an earlier cleanup did not finish; this run's cleanup restores .local/area-finder-journey/finder-before.plist";
-    exit 1; fi;
-    mkdir -p .local/area-finder-journey
-  - defaults export com.apple.finder .local/area-finder-journey/finder-before.plist
   - >-
     for k in ShowSidebar FXRemoveOldTrashItems FXPreferredViewStyle ShowRecentTags AppleShowAllFiles NewWindowTarget; do
     defaults delete com.apple.finder "$k" 2>/dev/null || true; done
@@ -40,17 +41,3 @@ reads:
   - {domain: com.apple.finder, key: ShowRecentTags, type: boolean, value: false}
   - {domain: com.apple.finder, key: AppleShowAllFiles, type: boolean, value: true}
   - {domain: com.apple.finder, key: NewWindowTarget, type: string, value: PfHm}
-cleanup:
-  - >-
-    f=.local/area-finder-journey/finder-before.plist;
-    test -f "$f" || { echo "no saved Finder keys in $f"; exit 1; };
-    for k in ShowSidebar FXRemoveOldTrashItems FXPreferredViewStyle ShowRecentTags AppleShowAllFiles NewWindowTarget; do
-    if t=$(plutil -type "$k" "$f" 2>/dev/null); then
-    case "$t" in
-    bool|string|integer|float) defaults write com.apple.finder "$k" "-$t" "$(plutil -extract "$k" raw -o - "$f")" || exit 1; echo "restored $k ($t)";;
-    *) echo "cannot restore $k of type $t; the saved domain is in $f"; exit 1;;
-    esac;
-    else defaults delete com.apple.finder "$k" 2>/dev/null || true; echo "deleted $k, absent before"; fi;
-    done;
-    rm -f "$f";
-    killall Finder 2>/dev/null || true

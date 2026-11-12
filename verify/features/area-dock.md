@@ -19,11 +19,11 @@ One run of `playbooks/site.yml` writes 17 settings of the Desktop & Dock pane fo
 
 Preconditions:
 
-- The Mac is set aside for testing. The run changes the running account's real settings. The cleanup puts each key back as it was.
+- The Mac is set aside for testing. The run changes the running account's real settings. The harness puts each key back as it was.
 - The running account is an admin with password-free sudo, because the harness passes no `-K`.
 - The running account is signed in at the screen, so the Dock runs and its restart reports `changed`.
 
-- **Setup.** The journey stops if `.local/area-dock-journey/saved.txt` is left from an earlier run whose cleanup did not finish. It reads each of the 17 keys with `defaults read-type` and `defaults read`. It saves the type and value, or the word `absent`, to `.local/area-dock-journey/saved.txt`. Then it deletes each saved key, so the first run changes every setting. A key whose type is not boolean, integer, float or string stops the setup before any key is deleted.
+- **Setup.** The journey's `saves` lists the 17 keys, so the harness saves the type and value of each, or that it is absent, before setup. A key whose type is not boolean, integer, float or string fails the journey before setup deletes any key. The setup then deletes each key that exists, so the first run changes every setting.
 - **Preview.** Check run: exit 0, `changed=17 failed=0`. That is 1 per setting.
 - **Apply.** Exit 0, `changed=18 failed=0`. That is the 17 settings and 1 Dock restart. The handler `Restart Dock` reports `changed`. 11 settings ask for the Dock restart, and it runs once. The other 6 take effect at logout or when an app opens again, so they restart nothing.
 - **Apply again.** Exit 0, `changed=0 failed=0`, and no Dock restart.
@@ -49,7 +49,7 @@ Preconditions:
 | 16 | `widgets.iphone_widgets: false` | `com.apple.chronod` | `remoteWidgetsEnabled` | boolean | `false` |
 | 17 | `windows.on_quit: keep` | `NSGlobalDomain` | `NSQuitAlwaysKeepsWindows` | boolean | `true` |
 
-- **Cleanup.** The journey writes each saved key back with its saved type and value, deletes each key that was absent, deletes `saved.txt`, and restarts the Dock. It runs also after a failed run. It changes only these 17 keys, so the rest of each domain stays as it is.
+- **Cleanup.** The journey has no cleanup commands. The harness restore writes each saved key back with its saved type and value, deletes each key that was absent, and restarts the Dock when the running account owns the screen. It runs also after a failed run. It changes only these 17 keys, so the rest of each domain stays as it is.
 
 ## Gotchas
 
@@ -59,4 +59,4 @@ Preconditions:
 - `chronod` also keeps `effectiveRemoteWidgetsEnabled` and a migration flag. It may overwrite a direct write of `remoteWidgetsEnabled`. Then the read of row 16 fails, and the journey reports it.
 - The Dock owns `com.apple.spaces`. If its restart writes `spans-displays` back, the read of row 12 or the second run fails, and the journey reports it.
 - The cleanup cannot log out. Until the next logout, the Mission Control, Stage Manager and widget settings may still look as the apply left them, though the keys hold the saved values.
-- A `saved.txt` left by an unfinished cleanup holds the account's own values. The next setup refuses to overwrite it and fails the journey. That run's cleanup restores the old values and deletes the file, so the run after it works.
+- A `.local/area-dock-journey/saved.plist` left by an unfinished restore holds the account's own values. The next run refuses to overwrite it and fails the journey before setup. That run's restore puts the old values back and deletes the file, so the run after it works.

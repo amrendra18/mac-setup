@@ -21,12 +21,12 @@ Preconditions:
 - The running account is an admin with password-free sudo, because the harness passes no `-K`.
 - The running account owns the screen, so the run restarts its Dock and the restart reports `changed`.
 
-- **Setup.** The journey saves the 3 Dock keys to `.local/refusals-journey/saved.txt`, deletes `orientation` and `show-recents`, and writes `tilesize` as the integer 48 with `defaults write com.apple.dock tilesize -int 48`. `dock.tile_size` writes a float, so `osx_defaults` refuses it with a type mismatch.
+- **Setup.** The journey's `saves` lists the 3 Dock keys, so the harness saves them before setup. The setup deletes `orientation` and `show-recents`, and writes `tilesize` as the integer 48 with `defaults write com.apple.dock tilesize -int 48`. `dock.tile_size` writes a float, so `osx_defaults` refuses it with a type mismatch.
 - **Preview.** Check run: exit 2, `changed=2 failed=1`, one refused line naming `dock.tile_size`.
 - **Apply.** Exit 2, `changed=3 failed=1`: 2 keys and 1 Dock restart. One refused line naming `dock.tile_size`, and the handler `Restart Dock` reports `changed`.
 - **Apply again.** Exit 2, `changed=0 failed=1`, the same refused line, and no Dock restart.
 - **Proof.** `reads/refusals-after.json` holds `orientation` left (string), `show-recents` false (boolean) and `tilesize` 48 (integer).
-- **Cleanup.** The journey puts `orientation`, `tilesize` and `show-recents` back to the values and types it saved in setup, or deletes a key that was absent, then restarts the Dock. A save left by an unfinished cleanup stops the next setup, and that run's cleanup restores it.
+- **Cleanup.** The journey has no cleanup commands. The harness restore puts `orientation`, `tilesize` and `show-recents` back to their saved values and types, or deletes a key that was absent, then restarts the Dock when the running account owns the screen. A save left by an unfinished restore fails the next run before setup, and that run's restore puts it back.
 
 ## Gotchas
 

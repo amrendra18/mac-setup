@@ -1,18 +1,25 @@
-summary: The 13 system UI settings are written from the profile as 14 keys with no restart, a second run changes nothing, and the cleanup restores each key.
+summary: The 13 system UI settings are written from the profile as 14 keys with no restart, a second run changes nothing, and the harness restores each key.
 level: fast
+saves:
+  - {domain: NSGlobalDomain, key: AppleInterfaceStyle}
+  - {domain: NSGlobalDomain, key: AppleInterfaceStyleSwitchesAutomatically}
+  - {domain: NSGlobalDomain, key: AppleAccentColor}
+  - {domain: NSGlobalDomain, key: AppleHighlightColor}
+  - {domain: com.apple.menuextra.clock, key: Show24Hour}
+  - {domain: com.apple.menuextra.clock, key: ShowSeconds}
+  - {domain: com.apple.menuextra.clock, key: FlashDateSeparators}
+  - {domain: com.apple.controlcenter, key: Sound, host: currentHost}
+  - {domain: com.apple.controlcenter, key: UserSwitcher, host: currentHost}
+  - {domain: com.apple.ncprefs, key: play_forwarded_notifications_sounds}
+  - {domain: com.apple.ncprefs, key: content_visibility}
+  - {domain: com.apple.ncprefs, key: summarize_previews}
+  - {domain: com.apple.assistant.support, key: Assistant Enabled}
+  - {domain: com.apple.assistant.support, key: Search Queries Data Sharing Status}
 setup:
-  - >-
-    if [ -e .local/area-systemui-journey/saved.txt ]; then
-    echo "an earlier cleanup did not finish; this run's cleanup restores .local/area-systemui-journey/saved.txt";
-    exit 1; fi;
-    mkdir -p .local/area-systemui-journey
   - |-
     while IFS='|' read -r h d n; do
-    if t=$(defaults $h read-type "$d" "$n" 2>/dev/null); then t=${t#Type is }
-    case $t in boolean|integer|float|string) ;; *) echo "cannot save $d $n of type $t" >&2; exit 1 ;; esac
-    printf '%s|%s|%s|%s|%s\n' "$h" "$d" "$n" "$t" "$(defaults $h read "$d" "$n")"
-    else printf '%s|%s|%s|absent|\n' "$h" "$d" "$n"; fi
-    done > .local/area-systemui-journey/saved.txt <<'KEYS'
+    if defaults $h read-type "$d" "$n" >/dev/null 2>&1; then defaults $h delete "$d" "$n" || exit 1; fi
+    done <<'KEYS'
     |NSGlobalDomain|AppleInterfaceStyle
     |NSGlobalDomain|AppleInterfaceStyleSwitchesAutomatically
     |NSGlobalDomain|AppleAccentColor
@@ -28,10 +35,6 @@ setup:
     |com.apple.assistant.support|Assistant Enabled
     |com.apple.assistant.support|Search Queries Data Sharing Status
     KEYS
-  - >-
-    while IFS='|' read -r h d n t v; do
-    [ "$t" = absent ] || defaults $h delete "$d" "$n" || exit 1;
-    done < .local/area-systemui-journey/saved.txt
   - defaults write NSGlobalDomain AppleInterfaceStyleSwitchesAutomatically -bool false
   - defaults write NSGlobalDomain AppleHighlightColor -string '0.698039 0.843137 1.000000 Blue'
 profile:
@@ -78,15 +81,3 @@ reads:
   - {domain: com.apple.ncprefs, key: summarize_previews, type: boolean, value: false}
   - {domain: com.apple.assistant.support, key: Assistant Enabled, type: boolean, value: false}
   - {domain: com.apple.assistant.support, key: Search Queries Data Sharing Status, type: integer, value: 2}
-cleanup:
-  - >-
-    while IFS='|' read -r h d n t v; do
-    case $t in
-    absent) defaults $h delete "$d" "$n" 2>/dev/null || true ;;
-    boolean) if [ "$v" = 1 ]; then v=true; else v=false; fi; defaults $h write "$d" "$n" -bool "$v" ;;
-    integer) defaults $h write "$d" "$n" -int "$v" ;;
-    float) defaults $h write "$d" "$n" -float "$v" ;;
-    string) defaults $h write "$d" "$n" -string "$v" ;;
-    esac || { echo "could not restore $d $n"; exit 1; };
-    done < .local/area-systemui-journey/saved.txt;
-    rm -f .local/area-systemui-journey/saved.txt

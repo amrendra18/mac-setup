@@ -33,6 +33,10 @@ JOURNEYS = ROOT / "verify" / "journeys"
 FEATURES = ROOT / "verify" / "features"
 BIN = ROOT / ".local" / "venv" / "bin"
 LOGS = ROOT / ".local" / "logs"
+SAVES = ROOT / ".local"
+DEFAULTS = "defaults"
+KILLALL = "killall"
+CONSOLE = Path("/dev/console")
 HOST = "verify-mac"
 RUNNING_ACCOUNT = "<running account>"
 ENV = {
@@ -53,6 +57,13 @@ PLIST_TYPES = {
     bytes: "data",
     datetime.datetime: "date",
 }
+WRITE_FLAGS = {
+    "boolean": lambda v: ["-bool", "true" if v else "false"],
+    "integer": lambda v: ["-int", str(v)],
+    "float": lambda v: ["-float", repr(v)],
+    "string": lambda v: ["-string", v],
+}
+RESTARTS = {"com.apple.dock": "Dock", "com.apple.finder": "Finder"}
 FIELDS = {
     "journey": (
         {"summary", "runs"},
@@ -67,12 +78,14 @@ FIELDS = {
             "creates",
             "create_runs",
             "files",
+            "saves",
         },
     ),
     "run": ({"name", "exit"}, {"args", "recap", "profile", "reads", "output"}),
     "read": ({"domain", "key"}, {"type", "value", "absent", "account", "host"}),
     "output": ({"pattern", "count"}, set()),
     "file": ({"path", "owner", "mode"}, set()),
+    "save": ({"domain"}, {"key", "host"}),
 }
 RECAP = re.compile(r"^(\S+)\s*:\s*((?:\w+=\d+\s*)+)$", re.M)
 
@@ -106,6 +119,13 @@ class FileCheck:
 
 
 @dataclass
+class Save:
+    domain: str
+    key: str = ""
+    host: str = ""
+
+
+@dataclass
 class Run:
     name: str
     exit: int
@@ -131,6 +151,7 @@ class Journey:
     creates: str = ""
     create_runs: list = field(default_factory=list)
     files: list = field(default_factory=list)
+    saves: list = field(default_factory=list)
 
 
 def checked(kind, data, where):
@@ -156,6 +177,30 @@ def parse_reads(items, where):
                 f"{where}: read {read.domain} {read.key} needs either type and value, or absent: true"
             )
     return reads
+
+
+def parse_saves(items, where):
+    saves = [
+        Save(**checked("save", s, f"{where} save {i + 1}")) for i, s in enumerate(items)
+    ]
+    seen = {(s.host, s.domain, s.key) for s in saves}
+    if not all(
+        isinstance(s.domain, str)
+        and s.domain
+        and isinstance(s.key, str)
+        and s.host in ("", "currentHost")
+        for s in saves
+    ):
+        raise JourneyError(
+            f"{where}: a save needs a domain, an optional key and an optional host: currentHost"
+        )
+    if len(seen) != len(saves) or any(
+        s.key and (s.host, s.domain, "") in seen for s in saves
+    ):
+        raise JourneyError(
+            f"{where}: saves lists each key once, and a whole domain without its keys"
+        )
+    return saves
 
 
 def parse_output(item, where):
@@ -207,6 +252,7 @@ def parse_journey(name, data, where):
             "runs": parse_runs(data["runs"], where),
             "reads": parse_reads(data.get("reads", []), where),
             "create_runs": [],
+            "saves": parse_saves(data.get("saves") or [], where),
             "files": [
                 FileCheck(**checked("file", f, f"{where} file {i + 1}"))
                 for i, f in enumerate(data.get("files", []))
@@ -421,23 +467,25 @@ def plain(value):
     return value
 
 
+def defaults_argv(host, *args):
+    return [DEFAULTS, *(["-currentHost"] if host else []), *args]
+
+
+def export(domain, host="", account=""):
+    argv = defaults_argv(host, "export", domain, "-")
+    if account and account != getpass.getuser():
+        argv = ["sudo", "-n", "-u", account] + argv
+    out = subprocess.run(argv, stdin=subprocess.DEVNULL, capture_output=True, env=ENV)
+    return plistlib.loads(out.stdout) if out.returncode == 0 else None
+
+
 def read_all(reads):
     exports = {}
     results = []
     for read in reads:
         source = (read.account, read.host, read.domain)
         if source not in exports:
-            argv = (
-                ["defaults"]
-                + (["-currentHost"] if read.host else [])
-                + ["export", read.domain, "-"]
-            )
-            if read.account and read.account != getpass.getuser():
-                argv = ["sudo", "-n", "-u", read.account] + argv
-            out = subprocess.run(argv, stdin=subprocess.DEVNULL, capture_output=True)
-            exports[source] = (
-                plistlib.loads(out.stdout) if out.returncode == 0 else None
-            )
+            exports[source] = export(read.domain, read.host, read.account)
         values = exports[source]
         row = {
             "domain": read.domain,
@@ -472,6 +520,84 @@ def read_problems(reads, got):
                 f"read {read.domain} {read.key} as {row['account']}: got {actual}, expected {want}"
             )
     return problems
+
+
+def saved_value(values, key):
+    if key not in values:
+        return {"absent": True}
+    return {"type": PLIST_TYPES.get(type(values[key]), "unknown"), "value": values[key]}
+
+
+def save(saves, path):
+    if not saves:
+        return ""
+    exports = {(s.host, s.domain): export(s.domain, s.host) for s in saves}
+    entries, problems = [], []
+    for s in saves:
+        values = exports[(s.host, s.domain)]
+        entry = {"domain": s.domain, "host": s.host}
+        if values is None:
+            problems.append(f"cannot save {s.domain}: defaults export failed")
+        elif not s.key:
+            entries.append({**entry, "values": values})
+        else:
+            entry.update(key=s.key, **saved_value(values, s.key))
+            if "type" in entry and entry["type"] not in WRITE_FLAGS:
+                problems.append(
+                    f"cannot save {s.domain} {s.key} of type {entry['type']}"
+                )
+            entries.append(entry)
+    if problems:
+        return "; ".join(problems)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    part = path.with_suffix(".part")
+    part.write_bytes(plistlib.dumps(entries))
+    part.replace(path)
+    return ""
+
+
+def restore(path, log):
+    entries = plistlib.loads(path.read_bytes())
+    problems = []
+    with log.open("a") as out:
+
+        def run(argv, data=b""):
+            done = subprocess.run(argv, input=data, capture_output=True, env=ENV)
+            text = (done.stdout + done.stderr).decode(errors="replace")
+            out.write(f"$ {shlex.join(argv)}\n{text}exit {done.returncode}\n\n")
+            return done.returncode
+
+        for e in entries:
+            if "values" in e:
+                argv = defaults_argv(e["host"], "import", e["domain"], "-")
+                if run(argv, plistlib.dumps(e["values"])):
+                    problems.append(f"could not import {e['domain']}")
+            elif e.get("absent"):
+                run(defaults_argv(e["host"], "delete", e["domain"], e["key"]))
+            else:
+                flags = WRITE_FLAGS[e["type"]](e["value"])
+                run(defaults_argv(e["host"], "write", e["domain"], e["key"], *flags))
+        keys = [e for e in entries if "key" in e]
+        now = {(e["host"], e["domain"]): export(e["domain"], e["host"]) for e in keys}
+        for e in keys:
+            want = {k: e[k] for k in ("absent", "type", "value") if k in e}
+            got = saved_value(now[(e["host"], e["domain"])] or {}, e["key"])
+            if got != want:
+                problems.append(f"{e['domain']} {e['key']} reads {got}, saved {want}")
+        apps = sorted(
+            {RESTARTS[e["domain"]] for e in entries if e["domain"] in RESTARTS}
+        )
+        if apps and CONSOLE.owner() != getpass.getuser():
+            out.write(
+                f"the screen belongs to {CONSOLE.owner()}; no restart of {', '.join(apps)}\n"
+            )
+        elif apps:
+            for app in apps:
+                run([KILLALL, app])
+    if problems:
+        return f"restore: {'; '.join(problems)}; the save stays in {os.path.relpath(path, ROOT)}"
+    path.unlink()
+    return ""
 
 
 def run_steps(kind, commands, log):
@@ -553,7 +679,12 @@ def run_journey(journey, evidence, profile_file):
         "profile": str(profile_file or f"verify/journeys/{journey.name}.yml"),
         "runs": [],
     }
-    failure = run_steps(
+    saved = SAVES / f"{journey.name}-journey" / "saved.plist"
+    if saved.exists():
+        failure = f"an earlier restore did not finish; this run restores {os.path.relpath(saved, ROOT)}"
+    else:
+        failure = save(journey.saves, saved)
+    failure = failure or run_steps(
         "setup", journey.setup, evidence / "logs" / f"{journey.name}-setup.txt"
     )
     runs = journey.runs
@@ -596,7 +727,12 @@ def run_journey(journey, evidence, profile_file):
     cleanup_failure = run_steps(
         "cleanup", journey.cleanup, evidence / "logs" / f"{journey.name}-cleanup.txt"
     )
-    failure = failure or cleanup_failure
+    restore_failure = (
+        restore(saved, evidence / "logs" / f"{journey.name}-restore.txt")
+        if saved.exists()
+        else ""
+    )
+    failure = "; ".join(filter(None, [failure or cleanup_failure, restore_failure]))
     result["passwords"] = [
         {"account": name, "copies": copies(password, [LOGS, evidence])}
         for name, password in passwords.items()

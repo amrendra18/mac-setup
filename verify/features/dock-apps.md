@@ -19,22 +19,22 @@ One run of `playbooks/site.yml` keeps only the listed apps in the Dock of the ac
 
 Preconditions:
 
-- The Mac is set aside for testing. The run changes the running account's real Dock: the setup saves the Dock and empties its app tiles, the apply leaves only Terminal and Safari, and the cleanup puts the saved Dock back.
+- The Mac is set aside for testing. The run changes the running account's real Dock: the setup saves the Dock and empties its app tiles, the apply leaves only Terminal and Safari, and the harness puts the saved Dock back.
 - The running account is an admin with password-free sudo, because the harness passes no `-K`.
 - The running account is signed in at the screen, so the Dock runs and its restart reports `changed`.
 - The module finds each app with `mdfind`, and scans `/Applications`, `/System/Applications` and `/System/Applications/Utilities` when Spotlight has not indexed it yet.
 
-- **Setup.** The journey saves the whole `com.apple.dock` domain to `.local/dock-apps-journey/dock-before.plist`, then empties the Dock's app tiles with `defaults write com.apple.dock persistent-apps -array`, so the first run has something to change.
+- **Setup.** The journey's `saves` holds the whole `com.apple.dock` domain, so the harness saves it before setup. The setup then empties the Dock's app tiles with `defaults write com.apple.dock persistent-apps -array`, so the first run has something to change.
 - **Preview.** Check run: exit 0, `changed=1 failed=0`.
 - **Apply.** Exit 0, `changed=2 failed=0`: the Dock apps and 1 Dock restart. The handler `Restart Dock` reports `changed`.
 - **Apply again.** Exit 0, `changed=0 failed=0`, and no Dock restart.
 - **Not installed.** The profile lists `com.example.notinstalled` after Terminal. Exit 2, `changed=0 failed=1 rescued=1`, and one refused line naming `dock.applications`.
-- **Proof.** The cleanup step reads `persistent-apps` with `defaults export com.apple.dock -` and `plutil` and prints `Dock bundle ids: com.apple.Terminal com.apple.Safari`. It then imports the saved domain with `defaults import` and restarts the Dock, and last fails the journey when the ids it read differ. It runs after the not-installed run, so it also proves that run changed nothing.
+- **Proof.** The cleanup step reads `persistent-apps` with `defaults export com.apple.dock -` and `plutil` and prints `Dock bundle ids: com.apple.Terminal com.apple.Safari`. It fails the journey when the ids it read differ. After it, the harness imports the saved domain with `defaults import` and restarts the Dock when the running account owns the screen. It runs after the not-installed run, so it also proves that run changed nothing.
 
 ## Gotchas
 
 - The harness's `reads` compare a whole key, and each Dock tile holds values macOS sets itself, such as `GUID` and `book`. So the proof reads the bundle ids in the cleanup step, which logs the ids it found in `logs/dock-apps-cleanup.txt`.
-- The setup empties the Dock's app tiles, and the Dock shows the old tiles until it restarts. The cleanup always restores the saved domain, also after a failed run. The restore replaces every Dock key, so a Dock change made by hand during the journey is lost.
+- The setup empties the Dock's app tiles, and the Dock shows the old tiles until it restarts. The harness always restores the saved domain, also after a failed run. The restore writes the saved Dock domain back with `defaults import`, so a Dock change made by hand during the journey is lost. Whether a key macOS added during the run is removed is not tested.
 - The apply's `changed=2` needs the account signed in at the screen. With no Dock running, the restart has nothing to do and the apply shows `changed=1`.
 - A listed app already in the Dock keeps its tile. A new one gets a tile with its bundle id, name and file URL, and the Dock may add its own fields, such as `GUID` and `book`, later. The module compares bundle ids only, so such fields never count as a change.
 - The module searches for each app with `mdfind`, then the three app folders above. When several copies exist, it prefers one in `/Applications/` or `/System/Applications/`. A bundle that is not an `.app`, such as a plug-in, is not found, and neither is an app on a disk Spotlight does not index.

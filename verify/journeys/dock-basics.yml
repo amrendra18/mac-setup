@@ -1,18 +1,10 @@
 summary: The Dock moves to the left at size 32 with recents hidden, and a second run changes nothing.
 level: fast
+saves:
+  - {domain: com.apple.dock, key: orientation}
+  - {domain: com.apple.dock, key: tilesize}
+  - {domain: com.apple.dock, key: show-recents}
 setup:
-  - >-
-    if [ -e .local/dock-basics-journey/saved.txt ]; then
-    echo "an earlier cleanup did not finish; this run's cleanup restores .local/dock-basics-journey/saved.txt";
-    exit 1; fi;
-    mkdir -p .local/dock-basics-journey
-  - >-
-    for n in orientation tilesize show-recents; do
-    if t=$(defaults read-type com.apple.dock "$n" 2>/dev/null); then t=${t#Type is };
-    case $t in boolean|integer|float|string) ;; *) echo "cannot save com.apple.dock $n of type $t" >&2; exit 1 ;; esac;
-    printf '%s %s %s\n' "$n" "$t" "$(defaults read com.apple.dock "$n")";
-    else printf '%s absent\n' "$n"; fi;
-    done > .local/dock-basics-journey/saved.txt
   - defaults delete com.apple.dock orientation || true
   - defaults delete com.apple.dock tilesize || true
   - defaults delete com.apple.dock show-recents || true
@@ -36,16 +28,3 @@ reads:
   - {domain: com.apple.dock, key: orientation, type: string, value: left}
   - {domain: com.apple.dock, key: tilesize, type: float, value: 32}
   - {domain: com.apple.dock, key: show-recents, type: boolean, value: false}
-cleanup:
-  - >-
-    while read -r n t v; do
-    case $t in
-    absent) defaults delete com.apple.dock "$n" 2>/dev/null || true ;;
-    boolean) if [ "$v" = 1 ]; then v=true; else v=false; fi; defaults write com.apple.dock "$n" -bool "$v" ;;
-    integer) defaults write com.apple.dock "$n" -int "$v" ;;
-    float) defaults write com.apple.dock "$n" -float "$v" ;;
-    string) defaults write com.apple.dock "$n" -string "$v" ;;
-    esac || { echo "could not restore com.apple.dock $n"; exit 1; };
-    done < .local/dock-basics-journey/saved.txt || exit 1;
-    rm .local/dock-basics-journey/saved.txt;
-    killall Dock 2>/dev/null; true

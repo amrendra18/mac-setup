@@ -1,8 +1,8 @@
-summary: The Dock keeps only Terminal and Safari in order, a second run and a missing app change nothing, and the cleanup restores the saved Dock.
+summary: The Dock keeps only Terminal and Safari in order, a second run and a missing app change nothing, and the harness restores the saved Dock.
 level: fast
+saves:
+  - {domain: com.apple.dock}
 setup:
-  - rm -rf .local/dock-apps-journey && mkdir -p .local/dock-apps-journey
-  - defaults export com.apple.dock .local/dock-apps-journey/dock-before.plist
   - defaults write com.apple.dock persistent-apps -array
 profile:
   default_settings:
@@ -37,6 +37,4 @@ cleanup:
     defaults export com.apple.dock - | plutil -extract "persistent-apps.$i.tile-data.bundle-identifier" raw -o - -;
     i=$((i + 1)); done | paste -sd ' ' -);
     echo "Dock bundle ids: $got";
-    defaults import com.apple.dock .local/dock-apps-journey/dock-before.plist || { echo "could not restore the saved Dock"; exit 1; };
-    killall Dock 2>/dev/null;
     test "$got" = "com.apple.Terminal com.apple.Safari"

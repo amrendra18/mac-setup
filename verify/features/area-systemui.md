@@ -19,12 +19,12 @@ One run of `playbooks/site.yml` writes 13 system UI settings of the account that
 
 Preconditions:
 
-- The Mac is set aside for testing. The run changes the running account's real appearance, menu bar, notification, Siri and Spotlight settings. The cleanup puts each saved key back.
+- The Mac is set aside for testing. The run changes the running account's real appearance, menu bar, notification, Siri and Spotlight settings. The harness puts each saved key back.
 - The running account is signed in at the screen, so the menu bar and notification processes that read these keys run.
 - The running account is an admin with password-free sudo, because the harness passes no `-K`.
 - `scripts/bootstrap` has run in this checkout.
 
-- **Setup.** The journey stops if `.local/area-systemui-journey/saved.txt` is left from an earlier run whose cleanup did not finish; that run's cleanup restores it. Then the journey saves the type and value of each of the 14 keys, or that it is absent, to `.local/area-systemui-journey/saved.txt`. It then deletes each saved key one by one. It never deletes or imports a whole domain. Last, it writes `AppleInterfaceStyleSwitchesAutomatically` false and `AppleHighlightColor` to the blue string, because the profile's values delete those 2 keys, and a delete of a missing key changes nothing.
+- **Setup.** The journey's `saves` lists the 14 keys, 2 of them with `host: currentHost`, so the harness saves the type and value of each, or that it is absent, before setup. The setup then deletes each key that exists, one by one. It never deletes or imports a whole domain. Last, it writes `AppleInterfaceStyleSwitchesAutomatically` false and `AppleHighlightColor` to the blue string, because the profile's values delete those 2 keys, and a delete of a missing key changes nothing.
 - **Preview.** Check run: exit 0, `changed=14 failed=0`.
 - **Apply.** Exit 0, `changed=14 failed=0`: 12 keys written and 2 keys deleted. No handler runs, because every entry's `takes_effect` is `relaunch` or `logout`. The summary prints `log out and back in to see 2 settings`, for the theme and Spotlight.
 - **Apply again.** Exit 0, `changed=0 failed=0`.
@@ -47,7 +47,7 @@ Preconditions:
 | 13 | `siri.enabled` | `com.apple.assistant.support` | `Assistant Enabled` | boolean | false |
 | 14 | `spotlight.improve_search` | `com.apple.assistant.support` | `Search Queries Data Sharing Status` | integer | 2 (off) |
 
-- **Cleanup.** It writes each saved key back with its saved type and value, and deletes each key that was absent. Then it deletes `saved.txt`.
+- **Cleanup.** The journey has no cleanup commands. The harness restore writes each saved key back with its saved type and value, and deletes each key that was absent. It restarts nothing.
 
 ## Gotchas
 
@@ -56,4 +56,4 @@ Preconditions:
 - Nothing restarts, so the menu bar clock and items keep their old look until ControlCenter relaunches or the account logs out and in.
 - The setup deletes `AppleInterfaceStyle`, so new windows open in light mode until the apply writes `Dark`.
 - `siri.enabled` lists `needs: [click]`, because turning Siri on needs the pane. The summary therefore says 1 setting needs a click, even when the profile turns Siri off.
-- The cleanup restores only the 14 keys. A change made by hand to one of them during the journey is lost.
+- The restore puts back only the 14 keys. A change made by hand to one of them during the journey is lost.

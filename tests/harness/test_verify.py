@@ -55,6 +55,35 @@ sys.exit(plan.get("exit", 0))
 """
 
 
+FAKE_DEFAULTS = """#!{python} -I
+import json, os, plistlib, sys
+args = sys.argv[1:]
+host = "currentHost" if args[0] == "-currentHost" else ""
+verb, domain, *rest = args[1:] if host else args
+path = os.environ["FAKE_DEFAULTS_STORE"]
+store = json.load(open(path))
+values = store.setdefault(host + "|" + domain, {{}})
+if verb == "export":
+    sys.stdout.buffer.write(plistlib.dumps(values))
+    sys.exit(0)
+fail = os.environ["FAKE_DEFAULTS_FAIL"]
+if verb in ("write", "delete") and os.path.exists(fail) and domain + "/" + rest[0] in open(fail).read().split():
+    sys.exit("Could not write domain " + domain)
+if verb == "import":
+    store[host + "|" + domain] = plistlib.loads(sys.stdin.buffer.read())
+elif verb == "delete":
+    if values.pop(rest[0], None) is None:
+        sys.exit("The domain/default pair does not exist")
+elif verb == "write":
+    kinds = {{"-bool": lambda t: t in ("true", "yes", "1"), "-int": int, "-float": float, "-string": str}}
+    values[rest[0]] = kinds[rest[1]](rest[2])
+json.dump(store, open(path, "w"))
+"""
+FAKE_KILLALL = """#!/bin/sh
+echo "$@" >> "$FAKE_KILLALL_LOG"
+"""
+
+
 class Harness(unittest.TestCase):
     def setUp(self):
         self.verify = load_verify()
@@ -73,6 +102,8 @@ class Harness(unittest.TestCase):
         self.calls = self.tmp / "calls.jsonl"
         self.plan = self.tmp / "plan.json"
         self.scratch = str(self.tmp / "scratch-domain")
+        self.verify.SAVES = self.tmp
+        self.saved = self.tmp / "test-journey" / "saved.plist"
 
     def tearDown(self):
         subprocess.run(["rm", "-rf", str(self.tmp)])
@@ -382,6 +413,293 @@ class Harness(unittest.TestCase):
         self.assertEqual(result["status"], "failed")
         self.assertIn("bad.plist", result["reason"])
         self.assertNotIn("good.plist", result["reason"])
+
+    def fake_defaults(self, store):
+        for name, text in (("defaults", FAKE_DEFAULTS), ("killall", FAKE_KILLALL)):
+            tool = self.bin / name
+            tool.write_text(text.format(python=sys.executable))
+            tool.chmod(0o755)
+        self.store = self.tmp / "store.json"
+        self.store.write_text(json.dumps(store))
+        self.killed = self.tmp / "killall.txt"
+        self.fail = self.tmp / "fail.txt"
+        self.verify.DEFAULTS = str(self.bin / "defaults")
+        self.verify.KILLALL = str(self.bin / "killall")
+        self.verify.CONSOLE = self.store
+        self.verify.ENV = {
+            **self.verify.ENV,
+            "PATH": f"{self.bin}:{os.environ['PATH']}",
+            "FAKE_DEFAULTS_STORE": str(self.store),
+            "FAKE_DEFAULTS_FAIL": str(self.fail),
+            "FAKE_KILLALL_LOG": str(self.killed),
+        }
+
+    def stored(self):
+        return json.loads(self.store.read_text())
+
+    def restarts(self):
+        return self.killed.read_text().split() if self.killed.exists() else []
+
+    SCALARS = {
+        "flag": True,
+        "count": 3,
+        "size": 32.0,
+        "name": "left",
+    }
+
+    def scalar_journey(self, **extra):
+        return {
+            "summary": "s",
+            "saves": [{"domain": "com.apple.dock", "key": k} for k in self.SCALARS]
+            + [{"domain": "com.apple.dock", "key": "gone"}],
+            "setup": [
+                "defaults write com.apple.dock flag -bool false",
+                "defaults write com.apple.dock count -float 9.5",
+                "defaults delete com.apple.dock size",
+                "defaults write com.apple.dock name -int 7",
+            ],
+            "runs": [{"name": "a", "exit": 0}],
+            **extra,
+        }
+
+    def test_each_saved_type_is_restored_with_its_type_and_absent_keys_deleted(self):
+        self.fake_defaults({"|com.apple.dock": dict(self.SCALARS, other="kept")})
+        result = self.journey(
+            self.scalar_journey(),
+            [{"defaults": [["com.apple.dock", "gone", "string", "new"]]}],
+        )
+        self.assertEqual(result["status"], "proven", result["reason"])
+        dock = self.stored()["|com.apple.dock"]
+        self.assertEqual(dock, dict(self.SCALARS, other="kept"))
+        self.assertEqual(
+            {k: type(v) for k, v in dock.items()},
+            {"flag": bool, "count": int, "size": float, "name": str, "other": str},
+        )
+        self.assertFalse(self.saved.exists())
+
+    def test_reads_see_the_run_and_cleanup_runs_before_the_restore(self):
+        self.fake_defaults({"|com.apple.dock": {"name": "left"}})
+        result = self.journey(
+            {
+                "summary": "s",
+                "saves": [{"domain": "com.apple.dock", "key": "name"}],
+                "runs": [{"name": "a", "exit": 0}],
+                "reads": [
+                    {
+                        "domain": "com.apple.dock",
+                        "key": "name",
+                        "type": "string",
+                        "value": "right",
+                    }
+                ],
+                "cleanup": ["defaults export com.apple.dock - | grep -q right"],
+            },
+            [{"defaults": [["com.apple.dock", "name", "string", "right"]]}],
+        )
+        self.assertEqual(result["status"], "proven", result["reason"])
+        self.assertEqual(self.stored()["|com.apple.dock"], {"name": "left"})
+
+    def test_a_journey_with_no_saves_writes_no_save(self):
+        self.fake_defaults({})
+        result = self.journey(
+            {"summary": "s", "runs": [{"name": "a", "exit": 0}]},
+            [{"defaults": []}],
+        )
+        self.assertEqual(result["status"], "proven", result["reason"])
+        self.assertEqual(sorted(self.tmp.glob("*-journey")), [])
+
+    def test_current_host_keys_are_saved_and_restored_on_their_own_host(self):
+        self.fake_defaults(
+            {
+                "|com.apple.controlcenter": {"Sound": 8},
+                "currentHost|com.apple.controlcenter": {"Sound": 18},
+            }
+        )
+        result = self.journey(
+            {
+                "summary": "s",
+                "saves": [
+                    {
+                        "domain": "com.apple.controlcenter",
+                        "key": "Sound",
+                        "host": "currentHost",
+                    }
+                ],
+                "setup": [
+                    "defaults -currentHost write com.apple.controlcenter Sound -int 2"
+                ],
+                "runs": [{"name": "a", "exit": 0}],
+            },
+            [{}],
+        )
+        self.assertEqual(result["status"], "proven", result["reason"])
+        self.assertEqual(
+            self.stored(),
+            {
+                "|com.apple.controlcenter": {"Sound": 8},
+                "currentHost|com.apple.controlcenter": {"Sound": 18},
+            },
+        )
+
+    def test_a_whole_domain_save_restores_every_key_of_any_type(self):
+        before = {
+            "persistent-apps": [{"tile-data": {"bundle-identifier": "a"}}],
+            "x": 1,
+        }
+        self.fake_defaults({"|com.apple.dock": before})
+        result = self.journey(
+            {
+                "summary": "s",
+                "saves": [{"domain": "com.apple.dock"}],
+                "setup": ["defaults write com.apple.dock added -bool true"],
+                "runs": [{"name": "a", "exit": 0}],
+            },
+            [{}],
+        )
+        self.assertEqual(result["status"], "proven", result["reason"])
+        self.assertEqual(self.stored()["|com.apple.dock"], before)
+        self.assertEqual(self.restarts(), ["Dock"])
+
+    def test_a_leftover_save_stops_the_setup_and_is_restored(self):
+        self.fake_defaults({"|com.apple.dock": {"name": "now"}})
+        marker = self.tmp / "setup-ran"
+        self.saved.parent.mkdir()
+        self.saved.write_bytes(
+            self.verify.plistlib.dumps(
+                [
+                    {
+                        "domain": "com.apple.dock",
+                        "host": "",
+                        "key": "name",
+                        "type": "string",
+                        "value": "old",
+                    }
+                ]
+            )
+        )
+        result = self.journey(
+            {
+                "summary": "s",
+                "saves": [{"domain": "com.apple.dock", "key": "name"}],
+                "setup": [f"touch {marker}"],
+                "runs": [{"name": "a", "exit": 0}],
+            },
+            [{}],
+        )
+        self.assertEqual(result["status"], "failed")
+        self.assertIn("earlier restore did not finish", result["reason"])
+        self.assertFalse(marker.exists())
+        self.assertFalse(self.calls.exists())
+        self.assertEqual(self.stored()["|com.apple.dock"], {"name": "old"})
+        self.assertFalse(self.saved.exists())
+
+    def test_a_failed_restore_keeps_the_save_and_restores_the_other_keys(self):
+        self.fake_defaults({"|com.apple.dock": dict(self.SCALARS)})
+        result = self.journey(
+            self.scalar_journey(cleanup=[f"echo com.apple.dock/count > {self.fail}"]),
+            [{}],
+        )
+        self.assertEqual(result["status"], "failed")
+        self.assertIn("com.apple.dock count reads", result["reason"])
+        self.assertIn("the save stays in", result["reason"])
+        self.assertTrue(self.saved.exists())
+        dock = self.stored()["|com.apple.dock"]
+        self.assertEqual(dock["count"], 9.5)
+        self.assertEqual(
+            {k: v for k, v in dock.items() if k != "count"},
+            {k: v for k, v in self.SCALARS.items() if k != "count"},
+        )
+
+    def test_a_failed_delete_of_an_absent_key_keeps_the_save(self):
+        self.fake_defaults({"|com.apple.dock": {}})
+        result = self.journey(
+            {
+                "summary": "s",
+                "saves": [{"domain": "com.apple.dock", "key": "gone"}],
+                "runs": [{"name": "a", "exit": 0}],
+                "cleanup": [f"echo com.apple.dock/gone > {self.fail}"],
+            },
+            [{"defaults": [["com.apple.dock", "gone", "string", "new"]]}],
+        )
+        self.assertEqual(result["status"], "failed")
+        self.assertIn("com.apple.dock gone reads", result["reason"])
+        self.assertTrue(self.saved.exists())
+
+    def test_a_key_type_the_harness_cannot_save_stops_before_setup(self):
+        before = {"|com.apple.dock": {"name": "left", "tiles": [1, 2]}}
+        self.fake_defaults(before)
+        marker = self.tmp / "setup-ran"
+        result = self.journey(
+            {
+                "summary": "s",
+                "saves": [
+                    {"domain": "com.apple.dock", "key": "name"},
+                    {"domain": "com.apple.dock", "key": "tiles"},
+                ],
+                "setup": [
+                    f"touch {marker}",
+                    "defaults write com.apple.dock name -string x",
+                ],
+                "runs": [{"name": "a", "exit": 0}],
+            },
+            [{}],
+        )
+        self.assertEqual(result["status"], "failed")
+        self.assertIn(
+            "cannot save com.apple.dock tiles of type array", result["reason"]
+        )
+        self.assertFalse(marker.exists())
+        self.assertFalse(self.calls.exists())
+        self.assertFalse(self.saved.exists())
+        self.assertEqual(self.stored(), before)
+
+    def restarted(self, console):
+        self.fake_defaults({})
+        self.verify.CONSOLE = console or self.store
+        result = self.journey(
+            {
+                "summary": "s",
+                "saves": [
+                    {"domain": "com.apple.dock", "key": "a"},
+                    {"domain": "com.apple.finder", "key": "b"},
+                    {"domain": "NSGlobalDomain", "key": "c"},
+                ],
+                "runs": [{"name": "a", "exit": 0}],
+            },
+            [{}],
+        )
+        self.assertEqual(result["status"], "proven", result["reason"])
+        return self.restarts()
+
+    def test_restore_restarts_dock_and_finder_when_the_running_account_owns_the_screen(
+        self,
+    ):
+        self.assertEqual(self.restarted(None), ["Dock", "Finder"])
+
+    def test_restore_restarts_nothing_when_another_account_owns_the_screen(self):
+        self.assertEqual(self.restarted(Path("/")), [])
+        log = (self.evidence / "logs" / "test-restore.txt").read_text()
+        self.assertIn("no restart of Dock, Finder", log)
+
+    def test_saves_reject_a_bad_host_a_repeated_key_and_a_key_inside_a_saved_domain(
+        self,
+    ):
+        for saves in (
+            [{"domain": "d", "key": "k", "host": "localhost"}],
+            [{"domain": "d", "key": "k"}, {"domain": "d", "key": "k"}],
+            [{"domain": "d"}, {"domain": "d", "key": "k"}],
+            [{"key": "k"}],
+        ):
+            with self.assertRaises(self.verify.JourneyError, msg=saves):
+                self.verify.parse_journey(
+                    "x",
+                    {
+                        "summary": "s",
+                        "saves": saves,
+                        "runs": [{"name": "a", "exit": 0}],
+                    },
+                    "x",
+                )
 
     def test_the_tracked_journeys_load(self):
         paths = sorted(self.verify.JOURNEYS.glob("*.yml"))

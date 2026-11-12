@@ -18,12 +18,12 @@ One run of `playbooks/site.yml` writes 6 Finder settings of the account that run
 
 Preconditions:
 
-- The Mac is set aside for testing. The run changes the running account's real Finder settings. The cleanup puts back the saved keys.
+- The Mac is set aside for testing. The run changes the running account's real Finder settings. The harness puts back the saved keys.
 - The running account is an admin with password-free sudo, because the harness passes no `-K`.
 - The running account is signed in at the screen, so Finder runs and its restart reports `changed`.
 - `scripts/bootstrap` has run in this checkout.
 
-- **Setup.** The journey stops if `.local/area-finder-journey/finder-before.plist` is left from an earlier run whose cleanup did not finish; that run's cleanup restores it. Then the journey saves the whole `com.apple.finder` domain to `.local/area-finder-journey/finder-before.plist`. It then deletes the 6 keys with `defaults delete com.apple.finder KEY || true`, so the first run changes each setting.
+- **Setup.** The journey's `saves` lists the 6 keys, so the harness saves their types and values, or that each is absent, before setup (step 3 of the [map](README.md#steps-of-one-run)). The setup then deletes the 6 keys with `defaults delete com.apple.finder KEY || true`, so the first run changes each setting.
 - **Preview.** Check run: exit 0, `changed=6 failed=0`.
 - **Apply.** Exit 0, `changed=7 failed=0`: 6 keys and 1 Finder restart. The handler `Restart Finder` reports `changed`.
 - **Apply again.** Exit 0, `changed=0 failed=0`, and no Finder restart.
@@ -38,14 +38,14 @@ Preconditions:
 | 5 | `finder.show_hidden: true` | `AppleShowAllFiles` | boolean | true |
 | 6 | `finder.new_window: home` | `NewWindowTarget` | string | `PfHm` |
 
-- **Cleanup.** For each of the 6 keys, the cleanup writes back the saved value with its saved type, or deletes the key when it was absent before. It logs one line per key in `logs/`, deletes `finder-before.plist`, then restarts Finder.
+- **Cleanup.** The journey has no cleanup commands. The harness restore writes each of the 6 keys back with its saved type and value, or deletes it when it was absent, logs each command in `logs/area-finder-restore.txt`, then restarts Finder when the running account owns the screen.
 
 ## Gotchas
 
 - The apply's `changed=7` needs the account signed in at the screen. With no Finder running for that account, the restart is skipped and the apply shows `changed=6`.
 - The restart closes every Finder window and stops a Finder copy in progress.
-- The cleanup restores only the 6 keys. The saved file holds the whole domain, so a person can restore other keys from it by hand.
-- The cleanup restores a saved boolean, string, integer or float. A saved key of another type stops the cleanup with exit 1 and names the saved file.
+- The restore puts back only the 6 keys. The rest of `com.apple.finder` stays as the runs left it.
+- The harness saves a boolean, string, integer or float. A key of another type fails the journey before setup changes anything.
 - A key stored with another type than the reference, such as `AppleShowAllFiles` as the string `YES`, makes `osx_defaults` refuse the setting with a type mismatch. The setup's delete avoids that in the journey.
 - Guess, not measured: Finder writes `ShowSidebar` itself, because a test Mac had it with no setting made. If Finder writes it back after its restart, the second run shows `changed=1`.
 - The reads prove the stored values. They do not prove that Finder shows them. A person checks the screen. Folders with their own saved view ignore `FXPreferredViewStyle`.

@@ -34,12 +34,12 @@ default_settings:
 
 Preconditions:
 
-- The Mac is set aside for testing. The run changes the running account's real settings. The cleanup puts each value back as it was.
+- The Mac is set aside for testing. The run changes the running account's real settings. The harness and the cleanup put each value back as it was.
 - The running account is an admin with password-free sudo, because the harness passes no `-K`.
 - The running account is signed in at the screen, so the Dock runs and its restart reports `changed`, and `osascript` reaches the sound settings.
 - The sound output has a volume control. An output that reads `missing value`, such as some displays, stops the setup.
 
-- **Setup.** The journey stops if `.local/remaining-journey/` is left from an earlier run whose cleanup did not finish. It saves 4 trackpad and Dock keys to `saved.txt` with their type and value, or the word `absent`. It saves the whole `com.apple.symbolichotkeys` and `com.apple.HIToolbox` domains with `defaults export`. It saves the output volume, the alert volume and the mute state to `volume.txt`. Only then does it delete the 4 keys, `AppleSymbolicHotKeys` and `AppleEnabledInputSources`, and set both volumes to 0, so the first run changes every setting.
+- **Setup.** The journey's `saves` lists 4 trackpad and Dock keys and the whole `com.apple.symbolichotkeys` and `com.apple.HIToolbox` domains, so the harness saves them before setup. The setup stops if `.local/remaining-journey/volume.txt` is left from an earlier run whose cleanup did not finish. It saves the output volume, the alert volume and the mute state to `volume.txt`. Only then does it delete the 4 keys, `AppleSymbolicHotKeys` and `AppleEnabledInputSources`, and set both volumes to 0, so the first run changes every setting.
 - **Preview.** Check run: exit 0, `changed=9 failed=0`. That is 1 nested write for each shortcut setting (2), 1 array write for the input sources (1), 1 Dock key for the Mission Control gesture set to off (1), 3 keys for the App Exposé gesture (3), and 1 command for each volume (2): 2 + 1 + 1 + 3 + 2 = 9.
 - **Apply.** Exit 0, `changed=10 failed=0`. That is the 9 changes and 1 Dock restart. Both gestures ask for the Dock restart, and it runs once. The shortcuts and input sources take effect at logout and restart nothing. Each volume command reads the volume again after the set and fails unless it reads 50 and 75.
 - **Apply again.** Exit 0, `changed=0 failed=0`, and no Dock restart. The volume reads show 50 and 75, so no command runs.
@@ -54,15 +54,15 @@ Preconditions:
 | 5 | `input.app_expose_gesture: four_finger` | `com.apple.AppleMultitouchTrackpad` | `TrackpadFourFingerVertSwipeGesture` | integer | `2` |
 | 6 | `input.app_expose_gesture: four_finger` | `com.apple.dock` | `showAppExposeGestureEnabled` | boolean | `true` |
 
-- **Cleanup.** The journey writes each saved domain back with `defaults import`. Whether a key macOS added during the run is removed, and whether a running app keeps its own copy until it reloads, is not tested. It writes each saved trackpad and Dock key back, or deletes it if it was absent. It sets the saved volumes and mute state again, deletes `.local/remaining-journey/`, and restarts the Dock. It runs also after a failed run, and it skips each save the setup did not reach.
+- **Cleanup.** The cleanup sets the saved volumes and mute state again and deletes `volume.txt`. It runs also after a failed run, and it skips the volume when the setup did not save it. Then the harness restore writes each saved domain back with `defaults import`, writes each saved trackpad and Dock key back or deletes it if it was absent, and restarts the Dock when the running account owns the screen. Whether a key macOS added during the run is removed, and whether a running app keeps its own copy until it reloads, is not tested.
 
 ## Gotchas
 
 - Row 1 compares the whole dictionary, so it holds only the 5 journey entries. If macOS adds a shortcut entry by itself during the run, row 1 fails, and the journey reports it.
-- `screenshot_options: false` turns off Command-Shift-5 until the cleanup. The cleanup restores the keys, but the old shortcuts may show only after the next logout.
+- `screenshot_options: false` turns off Command-Shift-5 until the restore. The harness restores the keys, but the old shortcuts may show only after the next logout.
 - Removing `AppleEnabledInputSources` at setup leaves the account with no listed input source until the apply. macOS may add one back by itself, and then the preview may show the array as changed from that value. The count stays 9.
 - The off value for each gesture writes only its own Dock key and leaves the finger keys alone. That the Dock key alone turns the gesture off is inferred, not measured.
 - The character codes for a letter, digit or space follow what a test Mac with macOS 15 stores for Control-Space. The digit 1 is stored as 49 here, while community lists show 65535 for Desktop 1. If macOS rewrites entry 118, row 1 fails.
 - A set of the output volume may also unmute the output. The cleanup restores the saved mute state either way.
 - The volume is not a `defaults` key the harness can read, so the volume commands prove themselves: each set reads the volume again, and the second run reads both volumes as wanted.
-- A `.local/remaining-journey/` folder left by an unfinished cleanup holds the account's own values. The next setup refuses to overwrite it and fails the journey. That run's cleanup restores the old values and deletes the folder, so the run after it works.
+- A `saved.plist` or `volume.txt` left in `.local/remaining-journey/` by an unfinished restore or cleanup holds the account's own values. The next run refuses to overwrite it and fails the journey. That run's restore and cleanup put the old values back and delete the files, so the run after it works.
