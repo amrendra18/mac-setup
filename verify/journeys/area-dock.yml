@@ -63,6 +63,8 @@ runs:
     recap: {changed: 18, failed: 0}
     output:
       - {pattern: '^RUNNING HANDLER \[[a-z_]+ : Restart Dock\].*\nchanged: \[verify-mac\]', count: 1}
+      - {pattern: '^ +- log out and back in to see 1 setting$', count: 1}
+      - {pattern: '^ +- 5 settings may need a logout or an app restart to show; their timing is not measured$', count: 1}
   - name: apply-again
     exit: 0
     recap: {changed: 0, failed: 0}

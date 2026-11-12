@@ -96,7 +96,7 @@ dock.position:
 | 3 | `route` | How mac-setup applies it. See the routes table below. |
 | 4 | `values` | A list of plain choices, or `{type: T}`. T is `bool`; `int` or `float` with `min` and `max`; `text` with `pattern`; `bundle_ids`; `paths`; `catalog_ids`; `list` with `choices` and an optional `min`, the fewest items allowed; or `hotkeys` with `actions`, which maps each shortcut name to its number in macOS. |
 | 5 | `macos_default` | The measured macOS default, or `not measured` |
-| 6 | `takes_effect` | `live`, `dock`, `finder`, `systemuiserver`, `relaunch` (when the app opens again), `logout`, or `not measured` when no test has shown when the change appears |
+| 6 | `takes_effect` | `live`, `dock`, `finder`, `systemuiserver`, `relaunch` (when the app opens again), `logout`, or `not measured` when no test, document or report says when the change appears and the run restarts nothing for it; the other values come from a document, a report, or a guess that makes the run restart the Dock or the menu bar |
 | 7 | `needs` | Any of `full_disk_access` and `click`, each at most once |
 | 8 | `lockout_risk` | `true` when the setting could cut a remote connection. The profile must then set `allow_lockout_risk: true`. |
 | 9 | `where` | The place in System Settings, in one line |

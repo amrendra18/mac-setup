@@ -46,15 +46,7 @@ ROUTES = (
     "not_yet",
 )
 SCOPES = {"user", "machine"}
-TAKES_EFFECT = {
-    "live",
-    "dock",
-    "finder",
-    "systemuiserver",
-    "relaunch",
-    "logout",
-    "not measured",
-}
+TAKES_EFFECT = set(template.TAKES_EFFECT)
 NEEDS = {"full_disk_access", "click"}
 WRITE_TYPES = {"string", "int", "float", "bool", "array", "dict"}
 WRITE_FIELDS = {"domain", "key", "type", "host", "map", "dict_mode"}

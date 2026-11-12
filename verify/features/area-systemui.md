@@ -1,6 +1,6 @@
 # System UI area
 
-One run of `playbooks/site.yml` writes 13 system UI settings of the account that runs it: the appearance theme, accent and highlight colors, the menu bar clock, the Sound and Fast User Switching menu bar items, notification previews, sounds and summaries, Siri, and Spotlight search sharing. They take 14 `defaults` keys, because the theme writes 2. No process restarts. The theme shows after a logout. No test has measured when the other settings appear; a logout shows them. A second run changes nothing.
+One run of `playbooks/site.yml` writes 13 system UI settings of the account that runs it: the appearance theme, accent and highlight colors, the menu bar clock, the Sound and Fast User Switching menu bar items, notification previews, sounds and summaries, Siri, and Spotlight search sharing. They take 14 `defaults` keys, because the theme writes 2. No process restarts. The theme shows after a logout. No test has measured when the other settings appear. A second run changes nothing.
 
 ## Sub-features
 

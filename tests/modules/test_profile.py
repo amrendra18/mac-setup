@@ -881,6 +881,43 @@ class ProfileSummary(unittest.TestCase):
             },
         )
 
+    def test_unmeasured_timing_has_its_own_line(self):
+        for unmeasured, line in [
+            (
+                1,
+                "1 setting may need a logout or an app restart to show; "
+                "its timing is not measured",
+            ),
+            (
+                3,
+                "3 settings may need a logout or an app restart to show; "
+                "their timing is not measured",
+            ),
+        ]:
+            with self.subTest(unmeasured):
+                summary = profile_summary(
+                    counts(after_logout=2, timing_not_measured=unmeasured), [], [], []
+                )
+                self.assertEqual(
+                    summary["notes"],
+                    ["log out and back in to see 2 settings", line],
+                )
+
+    def test_settings_for_another_session_are_a_note(self):
+        summary = profile_summary(
+            counts(own_session=2),
+            [],
+            [],
+            [],
+        )
+        self.assertEqual(
+            summary["notes"],
+            [
+                "2 settings for other accounts run in the account's own session: "
+                "sign in as each account and run mac-setup there"
+            ],
+        )
+
 
 def hotkey(parameters):
     return {"enabled": True, "value": {"parameters": parameters, "type": "standard"}}
@@ -1185,43 +1222,6 @@ class RemainingStores(unittest.TestCase):
             with self.subTest(setting_id):
                 parse = FILES["systemui.yml"][setting_id]["command"]["parse"]
                 self.assertEqual(re.search(parse, read, re.M).group("value"), expected)
-
-    def test_unmeasured_timing_has_its_own_line(self):
-        for unmeasured, line in [
-            (
-                1,
-                "1 setting may need a logout or an app restart to show; "
-                "its timing is not measured",
-            ),
-            (
-                3,
-                "3 settings may need a logout or an app restart to show; "
-                "their timing is not measured",
-            ),
-        ]:
-            with self.subTest(unmeasured):
-                summary = profile_summary(
-                    counts(after_logout=2, timing_not_measured=unmeasured), [], [], []
-                )
-                self.assertEqual(
-                    summary["notes"],
-                    ["log out and back in to see 2 settings", line],
-                )
-
-    def test_settings_for_another_session_are_a_note(self):
-        summary = profile_summary(
-            counts(own_session=2),
-            [],
-            [],
-            [],
-        )
-        self.assertEqual(
-            summary["notes"],
-            [
-                "2 settings for other accounts run in the account's own session: "
-                "sign in as each account and run mac-setup there"
-            ],
-        )
 
 
 if __name__ == "__main__":

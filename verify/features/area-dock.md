@@ -1,11 +1,11 @@
 # Dock area
 
-One run of `playbooks/site.yml` writes 17 settings of the Desktop & Dock pane for the account that runs it. They are the Dock's position, size, recent apps, hiding, minimizing and open-app dots, the 4 hot corners, 2 Mission Control settings, Stage Manager's recent apps, 3 widget settings, and what happens to windows when an app quits. The Dock restarts once, so the Dock and hot corner changes show at once. No test has measured when the other settings appear; a logout shows them. A second run changes nothing.
+One run of `playbooks/site.yml` writes 17 settings of the Desktop & Dock pane for the account that runs it. They are the Dock's position, size, recent apps, hiding, minimizing and open-app dots, the 4 hot corners, 2 Mission Control settings, Stage Manager's recent apps, 3 widget settings, and what happens to windows when an app quits. The Dock restarts once, so the Dock and hot corner changes show at once. No test has measured when the other settings appear. A second run changes nothing.
 
 ## Sub-features
 
 - `area-dock-preview` reports 17 settings as changed and writes nothing.
-- `area-dock-apply` writes 17 keys in 5 domains and restarts the Dock once.
+- `area-dock-apply` writes 17 keys in 5 domains, restarts the Dock once, and its summary prints `log out and back in to see 1 setting` and `5 settings may need a logout or an app restart to show; their timing is not measured`.
 - `area-dock-again` reports `changed=0` when every key already holds its value.
 
 ## How to get to it (user POV)

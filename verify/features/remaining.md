@@ -1,11 +1,11 @@
 # Remaining stores
 
-One run of `playbooks/site.yml` sets 6 settings that need more than one plain key, for the account that runs it. They are the system keyboard shortcuts, the Mission Control shortcuts, the list of input sources, the App Exposé gesture, the speaker volume and the alert volume. The journey also sets the Mission Control gesture, because it shares two keys with the App Exposé gesture. The Dock restarts once, so the gestures work at once. The input sources show after a logout. No test has measured when the shortcuts appear; a logout shows them. The volumes change at once. A second run changes nothing.
+One run of `playbooks/site.yml` sets 6 settings that need more than one plain key, for the account that runs it. They are the system keyboard shortcuts, the Mission Control shortcuts, the list of input sources, the App Exposé gesture, the speaker volume and the alert volume. The journey also sets the Mission Control gesture, because it shares two keys with the App Exposé gesture. The Dock restarts once, so the gestures work at once. The input sources show after a logout. No test has measured when the shortcuts appear. The volumes change at once. A second run changes nothing.
 
 ## Sub-features
 
 - `remaining-preview` reports 9 changes and writes nothing.
-- `remaining-apply` writes 2 nested values, 1 array and 4 trackpad and Dock keys, sets 2 volumes, and restarts the Dock once.
+- `remaining-apply` writes 2 nested values, 1 array and 4 trackpad and Dock keys, sets 2 volumes, restarts the Dock once, and its summary prints `log out and back in to see 1 setting` and `2 settings may need a logout or an app restart to show; their timing is not measured`.
 - `remaining-again` reports `changed=0` when every value already holds.
 
 ## How to get to it (user POV)
