@@ -32,6 +32,7 @@ ANSIBLE_NAMES = {
     "inventory_hostname",
     "inventory_hostname_short",
     "playbook_dir",
+    "profile_local_hostname",
 }
 SCOPE_HINTS = {
     "machine": "a machine setting, move it to machine_settings",

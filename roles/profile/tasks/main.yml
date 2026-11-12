@@ -1,4 +1,28 @@
 ---
+- name: Read this Mac's local hostname
+  ansible.builtin.command: /usr/sbin/scutil --get LocalHostName
+  register: profile_local_hostname
+  changed_when: false
+  check_mode: false
+  when: groups['macs'] | length > 1
+
+- name: Stop when no profile entry is named after this Mac
+  ansible.builtin.fail:
+    msg: >-
+      local hostname: this Mac is {{ profile_local_hostname.stdout }}, and the profile lists
+      {{ groups['macs'] | join(', ') }}; name an entry's hosts.yml key and its host_vars folder after
+      this Mac, or change its local hostname in System Settings > General > Sharing
+  run_once: true
+  when:
+    - groups['macs'] | length > 1
+    - profile_local_hostname.stdout not in groups['macs']
+
+- name: Skip the profile entries of other Macs
+  ansible.builtin.meta: end_host
+  when:
+    - groups['macs'] | length > 1
+    - inventory_hostname != profile_local_hostname.stdout
+
 - name: Check the profile
   ansible.builtin.fail:
     msg: "{{ profile_problem_lines | join('\n') }}"

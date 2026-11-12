@@ -401,6 +401,14 @@ class ProfileProblems(unittest.TestCase):
         self.assertEqual(subjects(problems), ["default_settng"])
         self.assertFalse(any(secret in line for line in problems))
 
+    def test_internal_profile_names_are_not_profile_keys(self):
+        profile = {"profile_local_hostname": {"stdout": "sample-mac"}}
+        self.assertEqual(profile_problems(profile, TEST_FILES), [])
+        profile = {"profile_settings": {}}
+        self.assertEqual(
+            subjects(profile_problems(profile, TEST_FILES)), ["profile_settings"]
+        )
+
     def test_unknown_profile_key(self):
         profile = {
             "default_setting": {"dock.position": "left"},

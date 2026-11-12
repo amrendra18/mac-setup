@@ -41,6 +41,10 @@
       {{ profile_other_work | rejectattr('account', 'in',
       macos_accounts_results | default([]) | selectattr('state', 'eq', 'would_create') | map(attribute='name') | list) }}
   tasks:
+    - name: Skip the profile entries of other Macs
+      ansible.builtin.meta: end_host
+      when: profile_running_account is not defined
+
     - name: Create or adopt the listed accounts
       ansible.builtin.include_role:
         name: macos_accounts

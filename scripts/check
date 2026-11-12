@@ -137,6 +137,10 @@ test_inputs() {
     "$bin/python" -I -c "$input_check" "$input" "$out" "$code" 2>&1 || { sed 's/^/  /' "$out"; bad=1; }
   done < <(find tests/inputs -type f \( -name '*.yml' -o -name '*.yaml' \) -print0 | sort -z)
   [ $n -gt 0 ] || { echo "no test inputs in tests/inputs/"; return 1; }
+  out=$work/input-two-macs.txt
+  "$bin/ansible-playbook" -i tests/two-macs/hosts.yml playbooks/site.yml --check >"$out" 2>&1
+  code=$?
+  "$bin/python" -I -c "$input_check" tests/two-macs/hosts.yml "$out" "$code" 2>&1 || { sed 's/^/  /' "$out"; bad=1; }
   return $bad
 }
 

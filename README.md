@@ -121,7 +121,7 @@ Nothing runs in the background. You start `ansible-playbook` in Terminal, it run
 ### The parts
 
 1. **The settings reference**, `settings/macos/*.yml`, one file per area. Each entry describes one setting with what it does, its allowed values, whether it belongs to an account or the machine, how it is stored, when it takes effect, and anything a person must do by hand.
-2. **The profile**, your copy of `inventory/example/` in `.local/inventory/`. It holds `default_settings` (for every account), an `accounts` list (each with optional settings of its own), and `machine_settings`. It holds no password.
+2. **The profile**, your copy of `inventory/example/` in `.local/inventory/`. It holds `default_settings` (for every account), an `accounts` list (each with optional settings of its own), and `machine_settings`. It holds no password. A profile may list several Macs, each entry's `hosts.yml` key and `host_vars/` folder named after that Mac's local hostname. A run applies only the entry named after the Mac it runs on, and stops before any change when no entry matches.
 3. **The playbook**, `playbooks/site.yml`. Play 1 runs as you, checks the profile, and sets your account's settings. Play 2 runs with admin rights and creates accounts, sets machine settings, and sets every other account's settings as that account.
 4. **The click-through**, `playbooks/by-hand.yml`, for settings only a person can change.
 5. **The template**, `inventory/example/TEMPLATE.yml`, generated from the reference by `scripts/render-template`.
