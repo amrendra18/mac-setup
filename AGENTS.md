@@ -5,7 +5,7 @@ This repository is an Ansible project that sets up a Mac from one profile. `READ
 ## Where to look
 
 1. For a change to what a user sees or runs, read `README.md` and the "Scope" section of `docs/how-it-works.md`.
-2. For a new or changed setting, read the entry shape in `settings/macos/` and the sections "The settings reference" and "The two plays" in `docs/how-it-works.md`.
+2. For a new or changed setting, read the entry shape in `settings/macos/` and the sections "The settings reference" and "The plays" in `docs/how-it-works.md`.
 3. For a test or a check, read `CONTRIBUTING.md`, `scripts/check`, `scripts/verify`, `verify/features/` and `verify/journeys/`.
 4. `docs/how-it-works.md` lists the milestones and their "Done when" lines. Which milestone is current sits in the maintainer's private plan. Ask the maintainer when you need it.
 

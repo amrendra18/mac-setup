@@ -8,35 +8,48 @@ Nothing runs in the background. You start `ansible-playbook` in Terminal. It run
 
 ## The parts
 
-1. **The settings reference**, `settings/macos/*.yml`, one file per area. Each entry describes one setting. The section [The settings reference](#the-settings-reference) gives its fields.
+1. **The settings reference**, `settings/macos/*.yml`, one file per area. Each entry describes one setting. The section [The settings reference](#the-settings-reference) gives its fields. The permissions table, `settings/macos/permissions/table.yml`, describes each privacy permission a setting can need.
 2. **The profile**, your copy of `inventory/example/` in `.local/inventory/`. It holds `default_settings` for every account, an `accounts` list where each account may have settings of its own, and `machine_settings`. It holds no password.
-3. **The playbook**, `playbooks/site.yml`, which applies the profile in two plays.
+3. **The playbook**, `playbooks/site.yml`, which applies the profile in four plays.
 4. **The click-through**, `playbooks/by-hand.yml`, for settings only a person can change.
 5. **The template**, `inventory/example/TEMPLATE.yml`. `scripts/render-template` writes it from the reference.
 6. **The app catalog**, `apps/macos.yml`, the apps mac-setup can install and the facts each download must match.
 
-## The two plays
+## The plays
 
-`playbooks/site.yml` has two plays. Only the second uses admin rights, so every admin step sits in one place.
+`playbooks/site.yml` has four plays: "Permissions", "This account", "Machine and other accounts", and "Take back permissions and summarize". Only "Machine and other accounts" uses admin rights, so every admin step sits in one place. `scripts/check` and the invariants call it play 2, counting from 0.
 
-Play 1, "This account", runs as you without admin rights:
+"Permissions" runs as you without admin rights:
 
-1. When the profile lists more than one Mac, the `profile` role reads this Mac's local hostname with `scutil --get LocalHostName`. It stops with one line when no entry has that name, and ends every other entry, so play 2 skips them too. The compare is case-sensitive.
+1. When the profile lists more than one Mac, the `profile` role reads this Mac's local hostname with `scutil --get LocalHostName`. It stops with one line when no entry has that name, and ends every other entry, so the later plays skip them too. The compare is case-sensitive.
 2. The `profile` role checks the whole profile against the reference and the catalog. A problem stops the run here, before any change.
-3. `macos_defaults` writes your account's preferences.
-4. `macos_dock_apps` sets your Dock's app list.
-5. `macos_wallpaper` sets your desktop picture.
-6. `macos_commands` sets your account's settings that need a command tool, such as the output and alert volumes through `osascript`. Another listed account gets these only when it runs mac-setup itself while signed in.
-7. `macos_finder_sidebar` builds its helper when any account needs it, then sets your Finder sidebar.
+3. The `profile` role works out the permissions this run needs from your account's settings and the machine settings. A setting's `needs` names rows of the permissions table. A folder row counts only when the setting's value lists that folder or a folder inside it.
+4. `macos_permissions` tests each needed permission with `ls` of a protected folder: `~/Library/Mail` for Full Disk Access, and the folder itself for Desktop, Documents and Downloads. "Operation not permitted" means the permission is off. When `~/Library/Mail` does not exist, as on a fresh account, it lists `/Library/Application Support/com.apple.TCC` instead. That folder exists on every Mac, and listing it reads no file inside it.
+5. At the Mac's screen, it asks for each permission that is off. For Full Disk Access it opens the page, says what to turn on, waits for Return, and tests again. For a folder it says to click Allow, then reads the folder, which shows macOS's own dialog the first time. Over SSH (`SSH_CONNECTION`, `SSH_CLIENT` or `SSH_TTY` is set) or with `--check`, it asks for nothing and lists what it would ask. It skips the folder tests there, because a test read shows the dialog.
+6. "This account" and "Machine and other accounts" may not write a setting whose permission is still off. A command setting is read first. If it already matches, it is `ok`. If it would change, the module returns an Ansible skip. The Finder sidebar is set in one step, so a missing folder skips all three sidebar settings without a read.
 
-Play 2, "Machine and other accounts", runs with admin rights:
+"This account" runs as you without admin rights:
+
+1. `macos_defaults` writes your account's preferences.
+2. `macos_dock_apps` sets your Dock's app list.
+3. `macos_wallpaper` sets your desktop picture.
+4. `macos_commands` sets your account's settings that need a command tool, such as the output and alert volumes through `osascript`. Another listed account gets these only when it runs mac-setup itself while signed in.
+5. `macos_finder_sidebar` builds its helper when any account needs it, then sets your Finder sidebar.
+
+"Machine and other accounts" runs with admin rights:
 
 1. `macos_accounts` creates each listed account, or adopts an existing one. Adopting takes the account over without changing its password or admin rights.
 2. `macos_defaults` writes the machine preferences as root.
 3. `macos_commands` sets the machine settings that need a command tool, such as `pmset` or `systemsetup`.
 4. `macos_apps` installs the listed apps.
 5. `macos_defaults`, `macos_dock_apps`, `macos_wallpaper` and `macos_finder_sidebar` set each other account's settings, running as that account.
-6. The `profile` role prints the summary, then fails the run with one `refused` line per refused setting or account.
+
+"Take back permissions and summarize" runs as you without admin rights:
+
+1. `macos_permissions` takes back each temporary permission that "Permissions" found off and you turned on. Today that is only Full Disk Access. It opens the page, says to turn the app off, waits for Return, and tests that it is off. A permission that was on before the run stays on.
+2. The `profile` role prints the summary, with one line per needed permission and one line per skipped setting, then fails the run with one `refused` line per refused setting or account. A skipped setting is not a refusal, so it leaves the exit code at 0.
+
+"This account" and "Machine and other accounts" each wrap their work in one block. An unexpected error, such as a wrong admin password or a failed helper build, is recorded instead of ending the run. "Machine and other accounts" then does nothing, and "Take back permissions and summarize" still takes back Full Disk Access. The summary ends with "the run stopped early at" the failed task and its message, and the run exits with code 2. Only a run stopped with Control-C skips the take-back.
 
 `playbooks/by-hand.yml` runs the `profile` role, then `macos_by_hand` for the click-only settings of your account and of the machine.
 
@@ -44,7 +57,7 @@ Play 2, "Machine and other accounts", runs with admin rights:
 
 | # | Role | What it does | Custom module |
 | --- | --- | --- | --- |
-| 1 | `profile` | Checks the profile, splits it into work for each role, and prints the summary | none. It uses a filter plugin, a Python function Ansible calls from the playbook. |
+| 1 | `profile` | Checks the profile, splits it into work for each role, works out the permissions it needs, and prints the summary | none. It uses a filter plugin, a Python function Ansible calls from the playbook. |
 | 2 | `macos_defaults` | Writes plain preferences through `community.general.osx_defaults`, writes dictionaries and arrays of nested values, such as shortcuts and input sources, through its own module, and restarts the Dock, Finder or SystemUIServer when a setting needs it | `macos_nested_default` |
 | 3 | `macos_commands` | Reads and sets settings through command tools | `macos_command_setting` |
 | 4 | `macos_accounts` | Creates a listed account or adopts an existing one | `macos_account` |
@@ -53,6 +66,7 @@ Play 2, "Machine and other accounts", runs with admin rights:
 | 7 | `macos_finder_sidebar` | Builds a small helper with the Command Line Tools and sets the Finder sidebar | `macos_finder_sidebar` |
 | 8 | `macos_apps` | Checks and installs apps from the catalog | `macos_app` |
 | 9 | `macos_by_hand` | Opens each click-only System Settings page and waits for you | none |
+| 10 | `macos_permissions` | Tests each permission the run needs, asks for the missing ones at the screen, and takes back Full Disk Access at the end | none. It uses a filter plugin. |
 
 A custom module exists only where no existing module does the job. Each one reads before it writes and supports `--check`.
 
@@ -97,7 +111,7 @@ dock.position:
 | 4 | `values` | A list of plain choices, or `{type: T}`. T is `bool`; `int` or `float` with `min` and `max`; `text` with `pattern`; `bundle_ids`; `paths`; `catalog_ids`; `list` with `choices` and an optional `min`, the fewest items allowed; or `hotkeys` with `actions`, which maps each shortcut name to its number in macOS. |
 | 5 | `macos_default` | The measured macOS default, or `not measured` |
 | 6 | `takes_effect` | `live`, `dock`, `finder`, `systemuiserver`, `relaunch` (when the app opens again), `logout`, or `not measured` when no test, document or report says when the change appears and the run restarts nothing for it; the other values come from a document, a report, or a guess that makes the run restart the Dock or the menu bar |
-| 7 | `needs` | Any of `full_disk_access` and `click`, each at most once |
+| 7 | `needs` | Any of `click` and the rows of the permissions table, each at most once. A permission is allowed only on routes `command` and `finder_sidebar`, where a run can skip the setting. |
 | 8 | `lockout_risk` | `true` when the setting could cut a remote connection. The profile must then set `allow_lockout_risk: true`. |
 | 9 | `where` | The place in System Settings, in one line |
 | 10 | `proven_on` | macOS versions mapped to the date the setting was applied and read back on a real Mac |
@@ -116,6 +130,24 @@ dock.position:
 | 6 | `apps` | none | Installs apps from the catalog. Values are `catalog_ids`. |
 | 7 | `by_hand` | `link`, an `x-apple.systempreferences:` URL or `""` | Opens the System Settings page for a person to click. |
 | 8 | `not_yet` | none | Nothing yet. The profile check refuses the setting. |
+
+### The permissions table
+
+`settings/macos/permissions/table.yml` maps each permission to one row, such as `full_disk_access` or `desktop_folder`.
+
+| # | Field | Meaning |
+| --- | --- | --- |
+| 1 | `name` | The name the run prints, such as `Full Disk Access` |
+| 2 | `test` | The folder whose `ls` shows whether the permission is on |
+| 3 | `fallback` | A folder to list instead when `test` does not exist, or `""` |
+| 4 | `only_when_listed` | `true` when the permission counts only if the setting's value lists `test` or a folder inside it |
+| 5 | `ask` | `pane` when a person turns the app on in a System Settings page, `dialog` when macOS shows its own dialog at the first read |
+| 6 | `where` | The System Settings page, in one line |
+| 7 | `link` | The `x-apple.systempreferences:` URL that opens that page |
+| 8 | `tick` | What the person does, with `{app}` for the app that runs mac-setup |
+| 9 | `temporary` | `true` when the last play asks the person to turn it off again. Only a `pane` row can be temporary. |
+
+`tests/test_reference.py` checks each row, and checks that every `needs` value names a row or `click`.
 
 Three optional fields change a `defaults` write:
 
@@ -229,3 +261,4 @@ The [verification map](../verify/features/README.md) describes the harness in fu
 | 8 | M7 | the remaining settings | Every setting has a way to apply it or a written reason why none is safe. |
 | 9 | M8 | the new-Mac journey | A fresh admin account follows the README end to end with one command. |
 | 10 | M9 | the next items | Dotfiles, FileVault, MDM, undo and SSH runs, each planned and approved first. |
+| 11 | M10 | permissions up front | A run asks for the permissions its profile needs before any change, skips the settings of a permission that stays off, and takes back Full Disk Access at the end. |

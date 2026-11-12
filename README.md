@@ -56,7 +56,7 @@ You also need a GitHub SSH key that can read this repository. Follow GitHub's gu
    test -d .local/inventory || cp -R inventory/example .local/inventory
    ```
 
-   Then open `.local/inventory/host_vars/example-mac/machine.yml` with `open -e` (TextEdit). Set `time.zone` to your own zone, such as `Europe/Berlin`. The example uses `Etc/UTC`. To see your Mac's current zone, run `readlink /etc/localtime`. The zone is the part after `zoneinfo/`. macOS changes the zone only for an app with Full Disk Access, and Terminal has none at first. So either turn on Terminal in System Settings > Privacy & Security > Full Disk Access before the run, or set the zone in System Settings > General > Date & Time and delete the `time.zone` line.
+   Then open `.local/inventory/host_vars/example-mac/machine.yml` with `open -e` (TextEdit). Set `time.zone` to your own zone, such as `Europe/Berlin`. The example uses `Etc/UTC`. To see your Mac's current zone, run `readlink /etc/localtime`. The zone is the part after `zoneinfo/`. macOS changes the zone only for an app with Full Disk Access, so step 5 asks you to turn it on for Terminal.
 
    The example also turns on the firewall's "Block all incoming connections", which refuses SSH logins too. If you set up or reach this Mac over SSH, delete both the `security.firewall_block_all` line and the `allow_lockout_risk: true` line.
 
@@ -66,7 +66,7 @@ You also need a GitHub SSH key that can read this repository. Follow GitHub's gu
    .local/venv/bin/ansible-playbook playbooks/site.yml -K --check
    ```
 
-   `-K` makes Ansible ask once for your admin password, shown as `BECOME password:`. Each setting that would change prints a `changed` line. The preview creates no account and asks no account password.
+   `-K` makes Ansible ask once for your admin password, shown as `BECOME password:`. Each setting that would change prints a `changed` line. The preview creates no account and asks no account password. It asks for no permission either, and lists what step 5 would ask for.
 
 5. Apply the changes, then run the same command once more.
 
@@ -74,7 +74,14 @@ You also need a GitHub SSH key that can read this repository. Follow GitHub's gu
    .local/venv/bin/ansible-playbook playbooks/site.yml -K
    ```
 
-   macOS may ask whether Terminal may use your Desktop and Downloads folders. Click Allow. You see the Dock and Finder change. The run ends with a short summary. It says how many settings show only after you log out and back in, and how many need a click in System Settings. It also counts the settings whose timing is not measured, which may need a logout or an app restart to show. The last line, called the recap, shows `failed=0` when everything worked. In the second run, every setting prints `ok` and the recap shows `changed=0`, because the Mac already matches. It asks no account password, because the accounts exist.
+   Before any change, the run asks for the permissions your settings need. Only you can turn them on.
+
+   1. **Full Disk Access for Terminal**, which the time zone needs. The run opens the Full Disk Access page, asks you to turn on Terminal, and waits until you press Return. Full Disk Access lets every command in Terminal read every file. So at the end the run opens the page again and asks you to turn Terminal off. If Terminal had it before the run, the run leaves it on. If a step fails, the run still asks you to turn Terminal off before it ends. If you stop the run with Control-C, turn Terminal off there yourself.
+   2. **Desktop and Downloads access**, which the Finder sidebar needs. macOS asks whether Terminal may use each folder. Click Allow. Terminal keeps this access.
+
+   If a permission stays off, the run skips each setting that needs it and would change, and names each one in the summary. Over SSH, the run asks for nothing, because nobody at the screen can answer. It skips the settings that need Full Disk Access, such as the time zone, and lists the permissions it would ask for.
+
+   You see the Dock and Finder change. The run ends with a short summary. It says how many settings show only after you log out and back in, and how many need a click in System Settings. It also counts the settings whose timing is not measured, which may need a logout or an app restart to show. The last line, called the recap, shows `failed=0` when everything worked. In the second run, every setting prints `ok` and the recap shows `changed=0`, because the Mac already matches. It asks no account password, because the accounts exist.
 
 If the profile lists accounts that do not exist yet, the run asks each new account's password once, with typing hidden. mac-setup never stores a password.
 
@@ -83,7 +90,8 @@ If the profile lists accounts that do not exist yet, the run asks each new accou
 1. A mistake in the profile, such as an unknown setting or a value that is not allowed, stops the run before anything changes. The run prints one line per problem and ends with exit code 2.
 2. If macOS refuses one setting, the other settings still apply. The run ends with one `refused` line per setting and exit code 2.
 3. Without `-K`, or from an account without admin rights, your own account's settings still apply first. The summary then names each machine or other-account setting it could not set, with "needs admin rights: run with -K".
-4. If you skipped step 3, there is no profile. The run warns that no host (Ansible's word for a Mac) matched, changes nothing, and exits 0.
+4. A setting whose permission is off, and whose value would change, is skipped, as Quick start step 5 says. The summary names it in one `skipped` line, and the run still ends with exit code 0.
+5. If you skipped step 3, there is no profile. The run warns that no host (Ansible's word for a Mac) matched, changes nothing, and exits 0.
 
 Every run writes its log to `.local/logs/ansible.log`.
 
@@ -118,7 +126,7 @@ finder.sidebar_hide: [recents, airdrop]
 
 1. `dock.applications` keeps only the listed apps in the Dock, in that order. You name each app by its bundle id, the app's unique name such as `com.apple.Safari`. To find one, run `osascript -e 'id of app "Safari"'` with the app's name. An app that the same run installs joins the Dock on the next run.
 2. `desktop.wallpaper` needs the account signed in at the screen. For another account, the summary says its picture is set at its next run while that account is signed in.
-3. `finder.sidebar_favorites` puts the listed folders first in Finder's sidebar. `"~"` means each account's home folder. `finder.sidebar_favorites_only: true` also removes every favorite the list does not name. The first time you add Desktop, Documents or Downloads, macOS asks whether Terminal may use that folder. Click Allow. Terminal keeps that right, so later runs do not ask again. You can take it back in System Settings > Privacy & Security > Files and Folders. If you click Don't Allow, the run names that folder as refused.
+3. `finder.sidebar_favorites` puts the listed folders first in Finder's sidebar. `"~"` means each account's home folder. `finder.sidebar_favorites_only: true` also removes every favorite the list does not name. For each of Desktop, Documents and Downloads in the list, the run first asks you to click Allow, as Quick start step 5 says. Terminal keeps that right, so later runs do not ask again. You can take it back in System Settings > Privacy & Security > Files & Folders. If you click Don't Allow, the run skips every Finder sidebar setting and names each one in the summary.
 
 ### Other accounts
 

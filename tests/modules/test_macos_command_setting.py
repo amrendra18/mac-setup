@@ -140,9 +140,13 @@ def computer_name(name):
     return tool, entry
 
 
-def ensure(tool, entry, value, check_mode=False):
+def ensure(tool, entry, value, check_mode=False, write_allowed=True):
     return ensure_setting(
-        tool, value=value, check_mode=check_mode, **{"refuse": {}, **entry}
+        tool,
+        value=value,
+        check_mode=check_mode,
+        write_allowed=write_allowed,
+        **{"refuse": {}, **entry},
     )
 
 
@@ -220,6 +224,33 @@ class CheckAndDiff(unittest.TestCase):
         tool, entry = display_sleep("10")
         result = ensure(tool, entry, 15, check_mode=True)
         self.assertEqual(result["diff"], {"before": "10\n", "after": "15\n"})
+
+
+class WriteNotAllowed(unittest.TestCase):
+    def test_a_value_that_would_change_is_skipped_without_a_set(self):
+        for check_mode in (True, False):
+            with self.subTest(check_mode=check_mode):
+                tool, entry = remote_login(on=False)
+                result = ensure(
+                    tool, entry, True, check_mode=check_mode, write_allowed=False
+                )
+                self.assertEqual(
+                    result,
+                    {
+                        "changed": False,
+                        "skipped": True,
+                        "msg": "the value differs, and this run may not write it",
+                    },
+                )
+                self.assertEqual(tool.sets(), [])
+                self.assertFalse(tool.state)
+
+    def test_a_value_that_already_matches_is_ok(self):
+        tool, entry = display_sleep("10")
+        self.assertEqual(
+            ensure(tool, entry, 10, write_allowed=False), {"changed": False}
+        )
+        self.assertEqual(tool.sets(), [])
 
 
 class Refusals(unittest.TestCase):

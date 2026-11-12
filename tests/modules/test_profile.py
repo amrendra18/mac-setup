@@ -15,6 +15,7 @@ FILES = {
     for path in sorted((ROOT / "settings/macos").glob("*.yml"))
 }
 CATALOG = yaml.safe_load((ROOT / "apps/macos.yml").read_text())
+TABLE = yaml.safe_load((ROOT / "settings/macos/permissions/table.yml").read_text())
 TEST_CATALOG = {"alpha_app": {}, "beta_app": {}}
 
 VALID = {"dock.position": "left", "dock.tile_size": 32, "dock.show_recents": False}
@@ -533,6 +534,8 @@ class ProfileProblems(unittest.TestCase):
             "by_hand_open": "/usr/bin/true",
             "macos_apps_downloads": "/tmp/downloads",
             "macos_apps_applications": "/tmp/Applications",
+            "permissions_ls": "/usr/bin/false",
+            "permissions_open": "/usr/bin/true",
         }
         self.assertEqual(profile_problems(profile, FILES), [])
 
@@ -903,6 +906,47 @@ class ProfileSummary(unittest.TestCase):
                     ["log out and back in to see 2 settings", line],
                 )
 
+    def test_permission_notes_come_first(self):
+        summary = profile_summary(
+            counts(need_click=1),
+            [],
+            [],
+            [],
+            ["Full Disk Access: off", "skipped time.zone: needs Full Disk Access"],
+        )
+        self.assertEqual(
+            summary["notes"],
+            [
+                "Full Disk Access: off",
+                "skipped time.zone: needs Full Disk Access",
+                "1 setting needs a click: run playbooks/by-hand.yml",
+            ],
+        )
+
+    def test_a_stop_in_play_1_or_2_ends_the_run_with_its_line(self):
+        summary = profile_summary(
+            counts(),
+            [
+                {
+                    "account": "runner",
+                    "id": "dock.tile_size",
+                    "message": "Type mismatch.",
+                }
+            ],
+            [],
+            [],
+            [],
+            "Set each command setting: Invalid data passed to 'loop'",
+        )
+        self.assertEqual(
+            summary["refused"],
+            [
+                "the run stopped early at Set each command setting: "
+                "Invalid data passed to 'loop'",
+                "refused dock.tile_size for runner: Type mismatch.",
+            ],
+        )
+
     def test_settings_for_another_session_are_a_note(self):
         summary = profile_summary(
             counts(own_session=2),
@@ -916,6 +960,119 @@ class ProfileSummary(unittest.TestCase):
                 "2 settings for other accounts run in the account's own session: "
                 "sign in as each account and run mac-setup there"
             ],
+        )
+
+
+def needed(profile, running_account="runner"):
+    return [
+        (permission["id"], permission["settings"])
+        for permission in profile_work(profile, FILES, running_account, TABLE)[
+            "permissions"
+        ]
+    ]
+
+
+class ProfilePermissions(unittest.TestCase):
+    def test_full_disk_access_comes_from_needs(self):
+        profile = {
+            "machine_settings": {
+                "time.zone": "Etc/UTC",
+                "power.system_sleep_minutes": 30,
+                "sharing.remote_apple_events": False,
+            }
+        }
+        self.assertEqual(
+            needed(profile),
+            [("full_disk_access", ["time.zone", "sharing.remote_apple_events"])],
+        )
+
+    def test_folders_come_from_the_favorites_listed(self):
+        profile = {
+            "default_settings": {
+                "finder.sidebar_favorites": [
+                    "/Applications",
+                    "~",
+                    "~/Downloads/Projects",
+                    "~/Desktop/",
+                ]
+            }
+        }
+        self.assertEqual(
+            needed(profile),
+            [
+                ("desktop_folder", ["finder.sidebar_favorites"]),
+                ("downloads_folder", ["finder.sidebar_favorites"]),
+            ],
+        )
+
+    def test_a_favorite_outside_the_three_folders_needs_nothing(self):
+        profile = {
+            "default_settings": {
+                "finder.sidebar_favorites": ["~", "/Applications", "~/Desktopper"]
+            }
+        }
+        self.assertEqual(needed(profile), [])
+
+    def test_only_the_running_account_and_the_machine_count(self):
+        profile = {
+            "accounts": [
+                account(
+                    "setuptest1",
+                    settings={"finder.sidebar_favorites": ["~/Documents"]},
+                ),
+                account("runner", settings={"finder.sidebar_favorites": ["~/Desktop"]}),
+            ]
+        }
+        self.assertEqual(
+            needed(profile), [("desktop_folder", ["finder.sidebar_favorites"])]
+        )
+        self.assertEqual(
+            needed(profile, "setuptest1"),
+            [("documents_folder", ["finder.sidebar_favorites"])],
+        )
+
+    def test_each_permission_carries_its_table_row(self):
+        permission = profile_work(
+            {"machine_settings": {"time.zone": "Etc/UTC"}}, FILES, "runner", TABLE
+        )["permissions"][0]
+        self.assertEqual(
+            permission,
+            {
+                "id": "full_disk_access",
+                **TABLE["full_disk_access"],
+                "settings": ["time.zone"],
+                "skips": ["time.zone"],
+            },
+        )
+
+    def test_a_missing_folder_skips_the_whole_sidebar_step(self):
+        profile = {
+            "default_settings": {
+                "finder.sidebar_hide": ["recents"],
+                "finder.sidebar_favorites": ["~/Desktop", "~/Downloads"],
+                "finder.sidebar_favorites_only": True,
+            }
+        }
+        permissions = profile_work(profile, FILES, "runner", TABLE)["permissions"]
+        self.assertEqual(
+            [(p["id"], p["settings"], p["skips"]) for p in permissions],
+            [
+                (
+                    folder,
+                    ["finder.sidebar_favorites"],
+                    [
+                        "finder.sidebar_favorites",
+                        "finder.sidebar_favorites_only",
+                        "finder.sidebar_hide",
+                    ],
+                )
+                for folder in ("desktop_folder", "downloads_folder")
+            ],
+        )
+
+    def test_a_click_is_no_permission(self):
+        self.assertEqual(
+            needed({"machine_settings": {"network.bluetooth_power": False}}), []
         )
 
 

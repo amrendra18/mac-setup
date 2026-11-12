@@ -37,6 +37,9 @@ TAKES_EFFECT = {
 }
 NEEDS = {
     "full_disk_access": "Full Disk Access for the terminal app",
+    "desktop_folder": "access to ~/Desktop when listed",
+    "documents_folder": "access to ~/Documents when listed",
+    "downloads_folder": "access to ~/Downloads when listed",
     "click": "a click at the Mac's screen",
 }
 ORDERED_WORDS = {

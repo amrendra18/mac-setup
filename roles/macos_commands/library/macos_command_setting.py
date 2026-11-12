@@ -15,6 +15,7 @@ description:
   - A known refusal line in any command's output, such as systemsetup's "You need administrator access", is a failure, whatever the exit code. The failure gives the entry's reason, or the line itself when the entry has no reason.
   - A read whose text matches a pattern in refuse is a failure with that pattern's reason, before parse runs.
   - Arguments go to the tool as a list, never through a shell.
+  - With write_allowed false, a value that differs is skipped without any set, and a value that matches is ok.
 options:
   read: {description: Argv that prints the current state., type: list, elements: str, required: true}
   parse: {description: Regular expression with one named group "value"., type: str, required: true}
@@ -22,6 +23,7 @@ options:
   refuse: {description: Regular expression to the plain reason the read refuses the setting., type: dict, default: {}}
   set: {description: Public value to a list of argv lists, or a list of argv lists where the item "{value}" becomes the value., type: raw, required: true}
   value: {description: The wanted public value., type: raw, required: true}
+  write_allowed: {description: Whether this run may run the set commands., type: bool, default: true}
 """
 
 REFUSALS = {
@@ -80,7 +82,17 @@ def set_commands(set_spec, value):
     ]
 
 
-def ensure_setting(runner, read, parse, mapping, refuse, set_spec, value, check_mode):
+def ensure_setting(
+    runner,
+    read,
+    parse,
+    mapping,
+    refuse,
+    set_spec,
+    value,
+    check_mode,
+    write_allowed=True,
+):
     try:
         pattern = re.compile(parse, re.MULTILINE)
         refusals = {
@@ -97,6 +109,12 @@ def ensure_setting(runner, read, parse, mapping, refuse, set_spec, value, check_
     current = read_state(runner, read, pattern, refusals)
     if current == wanted:
         return {"changed": False}
+    if not write_allowed:
+        return {
+            "changed": False,
+            "skipped": True,
+            "msg": "the value differs, and this run may not write it",
+        }
     commands = set_commands(set_spec, value)
     diff = {
         "before": f"{public.get(current, current)}\n",
@@ -124,6 +142,7 @@ def main():
             "refuse": {"type": "dict", "default": {}},
             "set": {"type": "raw", "required": True},
             "value": {"type": "raw", "required": True},
+            "write_allowed": {"type": "bool", "default": True},
         },
         supports_check_mode=True,
     )
@@ -138,6 +157,7 @@ def main():
             params["set"],
             params["value"],
             module.check_mode,
+            params["write_allowed"],
         )
     except SettingError as error:
         module.fail_json(msg=str(error))

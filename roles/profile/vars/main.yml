@@ -4,3 +4,4 @@ profile_reference_files: >-
   {{ dict(profile_reference_paths | map('basename')
   | zip(query('ansible.builtin.file', *profile_reference_paths) | map('from_yaml'))) }}
 profile_app_catalog: "{{ lookup('ansible.builtin.file', playbook_dir ~ '/../apps/macos.yml') | from_yaml }}"
+profile_permission_table: "{{ lookup('ansible.builtin.file', playbook_dir ~ '/../settings/macos/permissions/table.yml') | from_yaml }}"

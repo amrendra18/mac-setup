@@ -1,0 +1,4 @@
+---
+- name: Record the settings skipped for a missing permission
+  ansible.builtin.set_fact:
+    macos_permissions_skipped: "{{ (macos_permissions_skipped | default([]) + [macos_permissions_skipped_ids]) | flatten }}"

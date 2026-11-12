@@ -1,6 +1,7 @@
 ---
 macos_finder_sidebar_items: {}
 macos_finder_sidebar_restart: true
+macos_finder_sidebar_skip: []
 macos_finder_sidebar_source: "{{ role_path }}/files/sidebar.m"
 macos_finder_sidebar_helper: >-
   {{ playbook_dir }}/../.local/finder-sidebar/sidebar-{{ lookup('ansible.builtin.file', macos_finder_sidebar_source) | hash('sha256') | truncate(16, end='') }}

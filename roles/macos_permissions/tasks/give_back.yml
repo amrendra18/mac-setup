@@ -1,0 +1,9 @@
+---
+- name: Ask to turn off {{ macos_permissions_item.name }}
+  ansible.builtin.include_tasks: ask.yml
+  vars:
+    macos_permissions_lines: "{{ macos_permissions_item | macos_permissions_take_back_lines(macos_permissions_app_name) }}"
+
+- name: Record the end state of {{ macos_permissions_item.name }}
+  ansible.builtin.set_fact:
+    macos_permissions_results: "{{ macos_permissions_results | combine({macos_permissions_item.id: {'end': macos_permissions_state_now}}, recursive=true) }}"

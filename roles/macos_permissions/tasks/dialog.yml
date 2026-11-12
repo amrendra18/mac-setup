@@ -1,0 +1,21 @@
+---
+- name: Say what a run would ask for {{ macos_permissions_item.name }}
+  ansible.builtin.debug:
+    msg: "{{ macos_permissions_item | macos_permissions_list_line(none, macos_permissions_app_name) }}"
+  when: not macos_permissions_run_mode.ask
+
+- name: Say what macOS asks for {{ macos_permissions_item.name }}
+  ansible.builtin.debug:
+    msg: "{{ macos_permissions_item | macos_permissions_ask_lines(macos_permissions_app_name) }}"
+  when: macos_permissions_run_mode.ask
+
+- name: Read the folder, which shows macOS's dialog the first time, for {{ macos_permissions_item.name }}
+  ansible.builtin.include_tasks: test.yml
+  when: macos_permissions_run_mode.ask
+
+- name: Record {{ macos_permissions_item.name }}
+  ansible.builtin.set_fact:
+    macos_permissions_results: "{{ macos_permissions_results | default({}) | combine({macos_permissions_item.id: macos_permissions_record}) }}"
+  vars:
+    macos_permissions_record:
+      after: "{{ macos_permissions_state_now if macos_permissions_run_mode.ask else none }}"

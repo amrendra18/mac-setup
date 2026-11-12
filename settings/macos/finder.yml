@@ -364,7 +364,7 @@ finder.sidebar_favorites:
   values: {type: paths}
   macos_default: not measured
   takes_effect: finder
-  needs: []
+  needs: [desktop_folder, documents_folder, downloads_folder]
   lockout_risk: false
   where: Finder > Settings > Sidebar, or drag folders in the
     sidebar

@@ -1,0 +1,41 @@
+---
+full_disk_access:
+  name: Full Disk Access
+  test: ~/Library/Mail
+  fallback: /Library/Application Support/com.apple.TCC
+  only_when_listed: false
+  ask: pane
+  where: System Settings > Privacy & Security > Full Disk Access
+  link: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_AllFiles
+  tick: turn on {app}
+  temporary: true
+desktop_folder:
+  name: Desktop folder access
+  test: ~/Desktop
+  fallback: ""
+  only_when_listed: true
+  ask: dialog
+  where: System Settings > Privacy & Security > Files & Folders
+  link: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_FilesAndFolders
+  tick: click Allow when macOS asks whether {app} may use your Desktop folder
+  temporary: false
+documents_folder:
+  name: Documents folder access
+  test: ~/Documents
+  fallback: ""
+  only_when_listed: true
+  ask: dialog
+  where: System Settings > Privacy & Security > Files & Folders
+  link: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_FilesAndFolders
+  tick: click Allow when macOS asks whether {app} may use your Documents folder
+  temporary: false
+downloads_folder:
+  name: Downloads folder access
+  test: ~/Downloads
+  fallback: ""
+  only_when_listed: true
+  ask: dialog
+  where: System Settings > Privacy & Security > Files & Folders
+  link: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_FilesAndFolders
+  tick: click Allow when macOS asks whether {app} may use your Downloads folder
+  temporary: false

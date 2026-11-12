@@ -1,0 +1,39 @@
+summary: >-
+  A check run of a profile that needs Full Disk Access and the Desktop and Downloads folders lists what it would ask
+  for each, asks for nothing, skips time.zone while Full Disk Access is off, and changes no Dock, Finder or time zone value.
+level: fast
+setup:
+  - rm -rf .local/permissions-journey && mkdir -p .local/permissions-journey
+  - for d in com.apple.dock com.apple.finder; do defaults export "$d" - >".local/permissions-journey/$d-before.plist" || exit 1; done
+  - readlink /etc/localtime >.local/permissions-journey/zone-before.txt
+profile:
+  default_settings:
+    finder.sidebar_favorites: ["~", ~/Desktop, ~/Downloads]
+  machine_settings:
+    time.zone: Etc/UTC
+runs:
+  - name: list
+    args: [--check]
+    exit: 0
+    recap: {failed: 0}
+    output:
+      - {pattern: '^ +msg: this run asks for no permission, because it ', count: 1}
+      - {pattern: "^ +msg: '?would ask for Full Disk Access, which time\\.zone needs", count: 1}
+      - {pattern: "^ +msg: '?would ask for Desktop folder access, which finder\\.sidebar_favorites needs", count: 1}
+      - {pattern: "^ +msg: '?would ask for Downloads folder access, which finder\\.sidebar_favorites needs", count: 1}
+      - {pattern: 'Documents folder access', count: 0}
+      - {pattern: '^TASK \[macos_permissions : (?:Ask for Full Disk Access|Read the folder, [^\]]*)\] \**\nskipping: \[verify-mac\]$', count: 3}
+      - {pattern: '^TASK \[macos_permissions : (?:Open the page|Wait while)', count: 0}
+      - {pattern: '^TASK \[macos_commands : Set time\.zone\] \**\nskipping: \[verify-mac\]$', count: 1}
+      - {pattern: "^ +- 'Full Disk Access: off'$", count: 1}
+      - {pattern: "^ +- 'skipped time\\.zone: needs Full Disk Access, which ", count: 1}
+      - {pattern: "^ +- 'Desktop folder access: not tested, because ", count: 1}
+      - {pattern: "^ +- 'Downloads folder access: not tested, because ", count: 1}
+cleanup:
+  - >-
+    for d in com.apple.dock com.apple.finder; do defaults export "$d" - >".local/permissions-journey/$d-after.plist"
+    && cmp -s ".local/permissions-journey/$d-before.plist" ".local/permissions-journey/$d-after.plist"
+    || { echo "$d changed during the run"; exit 1; }; done
+  - >-
+    readlink /etc/localtime | cmp -s - .local/permissions-journey/zone-before.txt
+    || { echo "the time zone changed during the run"; exit 1; }

@@ -177,7 +177,7 @@ for name in sys.stdin.read().split("\0"):
     for key, path, value in keys(yaml.load(open(name), Loader), []):
         in_role = name.startswith("roles/")
         if (key == "ansible_become" and value is not False) or (
-            key == "become" and (in_role or (value is not False and (name, path) != ("playbooks/site.yml", [1])))
+            key == "become" and (in_role or (value is not False and (name, path) != ("playbooks/site.yml", [2])))
         ):
             print(f"{name}: {key}: {value} at {path}; admin rights belong only in play 2 of playbooks/site.yml")
             bad = 1

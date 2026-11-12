@@ -45,7 +45,8 @@
     profile_commands: "{{ profile_work.commands }}"
     profile_apps: "{{ profile_work.apps }}"
     profile_by_hand: "{{ profile_work.by_hand }}"
+    profile_permissions: "{{ profile_work.permissions }}"
     profile_accounts: "{{ profile_work.accounts }}"
     profile_counts: "{{ profile_work.counts }}"
   vars:
-    profile_work: "{{ hostvars[inventory_hostname] | profile_work(profile_reference_files, profile_id.stdout) }}"
+    profile_work: "{{ hostvars[inventory_hostname] | profile_work(profile_reference_files, profile_id.stdout, profile_permission_table) }}"

@@ -669,7 +669,8 @@ default_settings:
   #   Values: a list of folder paths that start with / or "~", other than / itself, in order
   #   macOS default: not measured
   #   Takes effect: when Finder restarts
-  #   Needs: nothing extra
+  #   Needs: access to ~/Desktop when listed, access to ~/Documents when listed, access to
+  #     ~/Downloads when listed
   #   Proven on: not yet
   #   Note: "~" means the home folder of each account. Other favorite folders stay after the listed
   #     ones unless finder.sidebar_favorites_only is true. Finder refuses / as a favorite.

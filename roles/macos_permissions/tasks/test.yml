@@ -1,0 +1,24 @@
+---
+- name: Read the test folder for {{ macos_permissions_item.name }}
+  ansible.builtin.command:
+    argv: ["{{ macos_permissions_ls }}", "{{ macos_permissions_item.test | expanduser }}"]
+  register: macos_permissions_read
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Read the fallback folder for {{ macos_permissions_item.name }}
+  ansible.builtin.command:
+    argv: ["{{ macos_permissions_ls }}", "{{ macos_permissions_item.fallback }}"]
+  register: macos_permissions_fallback_read
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  when:
+    - macos_permissions_item.fallback | length > 0
+    - "'No such file' in macos_permissions_read.stderr"
+
+- name: Work out the state of {{ macos_permissions_item.name }}
+  ansible.builtin.set_fact:
+    macos_permissions_state_now: >-
+      {{ (macos_permissions_read if macos_permissions_fallback_read is skipped else macos_permissions_fallback_read) | macos_permissions_state }}

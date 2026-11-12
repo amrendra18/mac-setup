@@ -21,6 +21,8 @@ RUN_SWITCHES = {
     "by_hand_open",
     "macos_apps_downloads",
     "macos_apps_applications",
+    "permissions_ls",
+    "permissions_open",
 }
 SIDEBAR_PREFIX = "finder.sidebar_"
 NEEDS_SETTING = {"finder.sidebar_favorites_only": "finder.sidebar_favorites"}
@@ -598,7 +600,38 @@ def _written(work):
     )
 
 
-def profile_work(profile, files, running_account):
+def _lists(paths, folder):
+    return any(
+        posixpath.normpath(path) == folder
+        or posixpath.normpath(path).startswith(folder + "/")
+        for path in paths
+    )
+
+
+def _step(setting_id, settings, reference):
+    if reference[setting_id]["route"] == "finder_sidebar":
+        return sorted(_routed(settings, reference, "finder_sidebar"))
+    return [setting_id]
+
+
+def _permissions(groups, reference, table):
+    needed = {}
+    for settings in groups:
+        for setting_id, value in settings.items():
+            for need in reference[setting_id]["needs"]:
+                row = table.get(need)
+                if row and (not row["only_when_listed"] or _lists(value, row["test"])):
+                    found = needed.setdefault(need, {"settings": [], "skips": []})
+                    found["settings"].append(setting_id)
+                    found["skips"] += _step(setting_id, settings, reference)
+    return [
+        {"id": need, **row, **needed[need]}
+        for need, row in table.items()
+        if need in needed
+    ]
+
+
+def profile_work(profile, files, running_account, permission_table=None):
     reference, _ = _reference(files)
     defaults = _section(profile, "default_settings", {})
     accounts = _section(profile, "accounts", [])
@@ -637,6 +670,9 @@ def profile_work(profile, files, running_account):
             for app_id in app_ids
         ],
         "by_hand": by_hand,
+        "permissions": _permissions(
+            [settings[running_account], machine], reference, permission_table or {}
+        ),
         "accounts": [
             {
                 "name": account["name"],
@@ -665,17 +701,29 @@ def _reason(message):
     return message
 
 
-def profile_summary(counts, refused_settings, account_results, waiting_wallpaper):
-    refused = [
-        f"refused {item['id']} for {item['account']}: {_reason(item['message'])}"
-        for item in refused_settings
-    ] + [
-        f"refused account {item['name']}: {item['refused']}"
-        for item in account_results
-        if item["refused"]
-    ]
+def profile_summary(
+    counts,
+    refused_settings,
+    account_results,
+    waiting_wallpaper,
+    permission_notes=(),
+    stopped="",
+):
+    refused = (
+        ([f"the run stopped early at {stopped}"] if stopped else [])
+        + [
+            f"refused {item['id']} for {item['account']}: {_reason(item['message'])}"
+            for item in refused_settings
+        ]
+        + [
+            f"refused account {item['name']}: {item['refused']}"
+            for item in account_results
+            if item["refused"]
+        ]
+    )
     notes = (
-        [
+        list(permission_notes)
+        + [
             f"account {item['name']} does not exist yet, so this check run skipped its settings"
             for item in account_results
             if item["state"] == "would_create"

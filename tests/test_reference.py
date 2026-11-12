@@ -47,7 +47,21 @@ ROUTES = (
 )
 SCOPES = {"user", "machine"}
 TAKES_EFFECT = set(template.TAKES_EFFECT)
-NEEDS = {"full_disk_access", "click"}
+PERMISSIONS_FILE = ROOT / template.SETTINGS / "permissions/table.yml"
+PERMISSIONS = yaml.safe_load(PERMISSIONS_FILE.read_text())
+PERMISSION_FIELDS = {
+    "name",
+    "test",
+    "fallback",
+    "only_when_listed",
+    "ask",
+    "where",
+    "link",
+    "tick",
+    "temporary",
+}
+SKIPPABLE_ROUTES = ("command", "finder_sidebar")
+NEEDS = set(PERMISSIONS) | {"click"}
 WRITE_TYPES = {"string", "int", "float", "bool", "array", "dict"}
 WRITE_FIELDS = {"domain", "key", "type", "host", "map", "dict_mode"}
 VALUE_FIELDS = {
@@ -282,7 +296,19 @@ def entry_problems(entry):
         or len(set(needs)) != len(needs)
     ):
         problems.append(
-            f"needs {needs!r} must list each of {sorted(NEEDS)} at most once"
+            f"needs {needs!r} must name rows of the permissions table or click, "
+            "each at most once"
+        )
+    elif set(needs) - {"click"} and route not in SKIPPABLE_ROUTES:
+        problems.append(
+            "needs: a permission is only for routes command and finder_sidebar, "
+            "where a run skips the setting while the permission is off"
+        )
+    elif any(
+        PERMISSIONS[need]["only_when_listed"] for need in set(needs) - {"click"}
+    ) and (entry["values"] != {"type": "paths"}):
+        problems.append(
+            "needs: a permission needed only when listed is for {type: paths} values"
         )
     if not isinstance(entry["lockout_risk"], bool):
         problems.append("lockout_risk must be true or false")
@@ -569,6 +595,7 @@ FIXTURES = {
             route="command",
             values={"type": "int", "min": 0, "max": 180},
             command=COMMAND_INT,
+            needs=["full_disk_access"],
         ),
         "alpha.label": fixture(
             scope="machine",
@@ -580,7 +607,6 @@ FIXTURES = {
                     "type": "string",
                 }
             ],
-            needs=["full_disk_access"],
         ),
         "alpha.message": fixture(
             scope="machine",
@@ -620,7 +646,24 @@ BROKEN = [
         lambda e: e.update(takes_effect="not_measured"),
         "takes_effect 'not_measured'",
     ),
-    ("needs word", lambda e: e.update(needs=["admin"]), "needs ['admin']"),
+    (
+        "needs names no permission",
+        lambda e: e.update(needs=["screen_recording"]),
+        "needs ['screen_recording'] must name rows of the permissions table",
+    ),
+    (
+        "permission on a route that cannot skip it",
+        lambda e: e.update(needs=["full_disk_access"]),
+        "a permission is only for routes command and finder_sidebar",
+    ),
+    (
+        "folder permission on a value that lists no folder",
+        lambda e: (
+            e.pop("writes"),
+            e.update(route="finder_sidebar", needs=["desktop_folder"]),
+        ),
+        "needed only when listed is for {type: paths} values",
+    ),
     (
         "lockout_risk text",
         lambda e: e.update(lockout_risk="no"),
@@ -1167,6 +1210,47 @@ class Reference(unittest.TestCase):
         self.assertEqual(
             sidebar["finder.sidebar_hide"]["values"]["choices"], list(module.HIDE)
         )
+
+    def test_each_permission_row_has_a_test_a_page_and_what_to_tick(self):
+        problems = []
+        for need, row in PERMISSIONS.items():
+            if not (isinstance(row, dict) and set(row) == PERMISSION_FIELDS):
+                problems.append(f"{need}: fields must be {sorted(PERMISSION_FIELDS)}")
+                continue
+            if not SETTING_WORD.fullmatch(need) or need == "click":
+                problems.append(f"{need}: the id must be a word other than click")
+            if row["ask"] not in ("pane", "dialog"):
+                problems.append(f"{need}: ask must be pane or dialog")
+            if not (_line(row["test"]) and row["test"].startswith("~/")):
+                problems.append(
+                    f"{need}: test must be a folder path that starts with ~/"
+                )
+            if row["fallback"] != "" and not (
+                _line(row["fallback"]) and row["fallback"].startswith("/")
+            ):
+                problems.append(
+                    f'{need}: fallback must be an absolute folder path or ""'
+                )
+            if not row["link"].startswith(
+                "x-apple.systempreferences:com.apple.settings.PrivacySecurity"
+            ):
+                problems.append(f"{need}: link must open a Privacy & Security page")
+            if not row["where"].startswith("System Settings > Privacy & Security > "):
+                problems.append(f"{need}: where must name the Privacy & Security page")
+            if "{app}" not in row["tick"] or not row["tick"][:1].islower():
+                problems.append(f"{need}: tick must be a lowercase phrase with {{app}}")
+            if not isinstance(row["only_when_listed"], bool):
+                problems.append(f"{need}: only_when_listed must be true or false")
+            if row["temporary"] not in (True, False) or (
+                row["temporary"] and row["ask"] != "pane"
+            ):
+                problems.append(
+                    f"{need}: temporary must be true or false, and true only for ask pane"
+                )
+        self.assertEqual(problems, [], "\n" + "\n".join(problems))
+
+    def test_every_needs_value_has_template_words(self):
+        self.assertEqual(set(template.NEEDS), NEEDS)
 
     def test_reference_has_every_researched_setting(self):
         routes = Counter(entry.get("route") for _, _, entry in self.entries)

@@ -9,6 +9,14 @@
         refuse: "{{ macos_commands_item.refuse }}"
         set: "{{ macos_commands_item.set }}"
         value: "{{ macos_commands_item.value }}"
+        write_allowed: "{{ macos_commands_item.id not in macos_commands_skip }}"
+      register: macos_commands_result
+
+    - name: "Record the skip of {{ macos_commands_item.id }}"
+      ansible.builtin.include_tasks: "{{ role_path }}/../macos_permissions/tasks/skipped.yml"
+      vars:
+        macos_permissions_skipped_ids: ["{{ macos_commands_item.id }}"]
+      when: macos_commands_result is skipped
   rescue:
     - name: "Record the refusal of {{ macos_commands_item.id }}"
       ansible.builtin.include_tasks: "{{ role_path }}/../macos_defaults/tasks/refused.yml"

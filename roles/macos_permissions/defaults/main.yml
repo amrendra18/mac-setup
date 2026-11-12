@@ -1,0 +1,7 @@
+---
+macos_permissions_items: []
+macos_permissions_ls: "{{ permissions_ls | default('/bin/ls') }}"
+macos_permissions_open: "{{ permissions_open | default('/usr/bin/open') }}"
+macos_permissions_run_mode: >-
+  {{ query('ansible.builtin.env', 'SSH_CONNECTION', 'SSH_CLIENT', 'SSH_TTY') | macos_permissions_mode(ansible_check_mode) }}
+macos_permissions_app_name: "{{ lookup('ansible.builtin.env', 'TERM_PROGRAM') | macos_permissions_app }}"
