@@ -1,0 +1,17 @@
+---
+- name: List the pages this run would open
+  ansible.builtin.debug:
+    msg: "would open {{ macos_by_hand_item.link or 'System Settings' }} for {{ macos_by_hand_item.id }} ({{ macos_by_hand_item.choose }})"
+  loop: "{{ macos_by_hand_items }}"
+  loop_control:
+    loop_var: macos_by_hand_item
+    label: "{{ macos_by_hand_item.id }}"
+  when: macos_by_hand_list | bool
+
+- name: Walk through each page
+  ansible.builtin.include_tasks: item.yml
+  loop: "{{ macos_by_hand_items }}"
+  loop_control:
+    loop_var: macos_by_hand_item
+    label: "{{ macos_by_hand_item.id }}"
+  when: not macos_by_hand_list | bool

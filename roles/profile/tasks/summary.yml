@@ -2,7 +2,8 @@
 - name: Summarize the run
   vars:
     profile_summary_lines: >-
-      {{ profile_counts | profile_summary(macos_defaults_refused | default([]), macos_accounts_results | default([])) }}
+      {{ profile_counts | profile_summary(macos_defaults_refused | default([]), macos_accounts_results | default([]),
+      macos_wallpaper_waiting | default([])) }}
   block:
     - name: Show what happens next
       ansible.builtin.debug:

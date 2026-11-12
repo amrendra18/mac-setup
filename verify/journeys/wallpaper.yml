@@ -1,0 +1,32 @@
+summary: Every screen of the account that runs the playbook shows solid black, and a second run changes nothing.
+level: fast
+setup:
+  - >-
+    /usr/bin/osascript -l JavaScript -e 'ObjC.import("AppKit");
+    var url = $.NSURL.fileURLWithPath("/System/Library/CoreServices/DefaultDesktop.heic"), screens = $.NSScreen.screens, out = [];
+    for (var i = 0; i < screens.count; i++)
+    out.push($.NSWorkspace.sharedWorkspace.setDesktopImageURLForScreenOptionsError(url, screens.objectAtIndex(i), $({}), null));
+    out.length && out.every(function (ok) { return ok === true; }) ? out.join(" ") : (function () { throw new Error("no screen took the default picture"); })()'
+profile:
+  default_settings:
+    desktop.wallpaper: black
+runs:
+  - name: check
+    args: [--check]
+    exit: 0
+    recap: {changed: 1, failed: 0}
+  - name: apply
+    exit: 0
+    recap: {changed: 1, failed: 0}
+  - name: apply-again
+    exit: 0
+    recap: {changed: 0, failed: 0}
+cleanup:
+  - >-
+    screens=$(/usr/bin/osascript -l JavaScript -e 'ObjC.import("AppKit");
+    var screens = $.NSScreen.screens, out = [];
+    for (var i = 0; i < screens.count; i++) {
+    var url = $.NSWorkspace.sharedWorkspace.desktopImageURLForScreen(screens.objectAtIndex(i));
+    out.push(url.isNil() ? "none" : url.absoluteString.js); }
+    out.join("\n")') && printf '%s\n' "$screens" &&
+    [ -n "$screens" ] && ! printf '%s\n' "$screens" | grep -vqx 'file:///System/Library/Desktop%20Pictures/Solid%20Colors/Black.png'

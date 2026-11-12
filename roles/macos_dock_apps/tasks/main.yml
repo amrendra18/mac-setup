@@ -1,0 +1,16 @@
+---
+- name: Keep only the listed Dock apps
+  when: macos_dock_apps_items.apps is defined
+  block:
+    - name: Set the Dock apps
+      macos_dock_apps:
+        apps: "{{ macos_dock_apps_items.apps }}"
+      notify: "{{ ['Restart Dock'] if macos_dock_apps_restart else [] }}"
+  rescue:
+    - name: Record the refusal of dock.applications
+      ansible.builtin.include_role:
+        name: macos_defaults
+        tasks_from: refused
+      vars:
+        macos_defaults_refused_account: "{{ macos_dock_apps_account }}"
+        macos_defaults_refused_id: dock.applications

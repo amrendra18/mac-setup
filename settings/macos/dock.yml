@@ -161,7 +161,7 @@ dock.applications:
   needs: []
   lockout_risk: false
   where: Dock app tiles (drag in or out of the Dock)
-  proven_on: {}
+  proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
   notes: The stored value is an array of tile dictionaries, not
     a single value. No stock Ansible module sets the Dock apps

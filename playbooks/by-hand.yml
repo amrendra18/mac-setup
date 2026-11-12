@@ -1,0 +1,11 @@
+---
+- name: Guided click-through
+  hosts: macs
+  become: false
+  gather_facts: false
+  roles:
+    - role: profile
+      tags: [always]
+    - role: macos_by_hand
+      vars:
+        macos_by_hand_items: "{{ profile_by_hand | selectattr('account', 'in', ['machine', profile_running_account]) }}"

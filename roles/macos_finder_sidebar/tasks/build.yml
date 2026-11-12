@@ -1,0 +1,24 @@
+---
+- name: Make the helper folder in .local
+  ansible.builtin.file:
+    path: "{{ macos_finder_sidebar_helper | dirname }}"
+    state: directory
+    mode: "0755"
+  check_mode: false
+  changed_when: false
+
+- name: Compile the helper once per source version
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/clang
+      - -fobjc-arc
+      - -framework
+      - Foundation
+      - -framework
+      - CoreServices
+      - -o
+      - "{{ macos_finder_sidebar_helper }}"
+      - "{{ macos_finder_sidebar_source }}"
+    creates: "{{ macos_finder_sidebar_helper }}"
+  check_mode: false
+  changed_when: false

@@ -342,6 +342,24 @@ class Harness(unittest.TestCase):
         self.assertEqual(result["status"], "failed")
         self.assertIn("found 2 times, expected 1", result["reason"])
 
+    def test_a_template_error_in_the_output_fails_the_run(self):
+        result = self.journey(
+            {"summary": "s", "runs": [{"name": "a", "exit": 0}]},
+            [
+                {
+                    "print": [
+                        "TASK [macos_finder_sidebar : Set << error 1 - object of "
+                        "type 'dict' has no attribute 'ids' >>]"
+                    ]
+                }
+            ],
+        )
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(
+            result["runs"][0]["problems"],
+            ["the output holds a template error (<< error)"],
+        )
+
     def test_file_checks_compare_owner_and_mode(self):
         good = self.tmp / "good.plist"
         good.write_text("x")
@@ -367,7 +385,19 @@ class Harness(unittest.TestCase):
 
     def test_the_tracked_journeys_load(self):
         paths = sorted(self.verify.JOURNEYS.glob("*.yml"))
-        self.assertGreaterEqual(len(paths), 5)
+        self.assertLessEqual(
+            {
+                "accounts",
+                "by-hand",
+                "dock-apps",
+                "dock-basics",
+                "example-check",
+                "per-account",
+                "refusals",
+                "wallpaper",
+            },
+            {path.stem for path in paths},
+        )
         for path in paths:
             journey = self.verify.load_journey(path)
             self.assertEqual(journey.name, path.stem)

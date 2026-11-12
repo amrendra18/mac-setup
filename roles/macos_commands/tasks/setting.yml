@@ -1,0 +1,18 @@
+---
+- name: "Set {{ macos_commands_item.id }}"
+  block:
+    - name: "Set {{ macos_commands_item.id }}"
+      macos_command_setting:
+        read: "{{ macos_commands_item.read }}"
+        parse: "{{ macos_commands_item.parse }}"
+        map: "{{ macos_commands_item.map }}"
+        set: "{{ macos_commands_item.set }}"
+        value: "{{ macos_commands_item.value }}"
+  rescue:
+    - name: "Record the refusal of {{ macos_commands_item.id }}"
+      ansible.builtin.include_role:
+        name: macos_defaults
+        tasks_from: refused
+      vars:
+        macos_defaults_refused_account: machine
+        macos_defaults_refused_id: "{{ macos_commands_item.id }}"

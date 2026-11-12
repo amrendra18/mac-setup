@@ -1,0 +1,19 @@
+---
+- name: Keep the listed Finder sidebar
+  when: macos_finder_sidebar_items | length > 0
+  block:
+    - name: Set the Finder sidebar
+      macos_finder_sidebar:
+        helper: "{{ macos_finder_sidebar_helper }}"
+        favorites: "{{ macos_finder_sidebar_items.favorites | default(omit) }}"
+        favorites_only: "{{ macos_finder_sidebar_items.favorites_only | default(false) }}"
+        hide: "{{ macos_finder_sidebar_items.hide | default([]) }}"
+      notify: "{{ ['Restart Finder'] if macos_finder_sidebar_restart else [] }}"
+  rescue:
+    - name: Record the refusal of the Finder sidebar
+      ansible.builtin.include_role:
+        name: macos_defaults
+        tasks_from: refused
+      vars:
+        macos_defaults_refused_account: "{{ macos_finder_sidebar_account }}"
+        macos_defaults_refused_id: "{{ macos_finder_sidebar_items.ids | join(', ') }}"

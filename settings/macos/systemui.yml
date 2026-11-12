@@ -2,34 +2,42 @@
 appearance.accent_color:
   summary: Accent color for buttons, menus, and controls.
   scope: user
-  route: not_yet
+  route: defaults
   values: [multicolor, blue, purple, pink, red, orange, yellow, green, graphite]
   macos_default: not measured
+  writes:
+    - domain: NSGlobalDomain
+      key: AppleAccentColor
+      type: int
+      map: {multicolor: null, blue: 4, purple: 5, pink: 6, red: 0, orange: 1, yellow: 2, green: 3, graphite: -1}
   takes_effect: relaunch
   needs: []
   lockout_risk: false
   where: System Settings > Appearance
   proven_on: {}
-  not_yet_reason: For multicolor, a write deletes a key or leaves
-    one alone, and a defaults write map cannot express that yet.
+  not_yet_reason: ""
   notes: 'The stored numbers are common community values, not
     measured. Research note on when it takes effect: open apps
     redraw after a relaunch or logout (guess).'
 appearance.highlight_color:
   summary: Color of selected text.
   scope: user
-  route: not_yet
-  values: [accent, blue, purple, pink, red, orange, yellow, green, graphite]
+  route: defaults
+  values: [accent, blue]
   macos_default: not measured
+  writes:
+    - domain: NSGlobalDomain
+      key: AppleHighlightColor
+      type: string
+      map: {accent: null, blue: 0.698039 0.843137 1.000000 Blue}
   takes_effect: relaunch
   needs: []
   lockout_risk: false
   where: System Settings > Appearance
   proven_on: {}
-  not_yet_reason: For accent, a write deletes a key or leaves
-    one alone, and a defaults write map cannot express that yet.
-  notes: 'The Other color choice is free-form and is left out.
-    The stored strings are guesses. Research note on when it takes
+  not_yet_reason: ""
+  notes: 'Only accent and blue are offered, because only the stored
+    string for blue was read on a Mac. Research note on when it takes
     effect: apps pick it up after a relaunch (guess).'
 appearance.icon_style:
   summary: Icon and widget style (macOS 26 and later).
@@ -113,19 +121,28 @@ appearance.sidebar_icon_size:
   proven_on: {}
   not_yet_reason: ""
 appearance.theme:
-  summary: Light, Dark, or Auto (follows the time of day).
+  summary: Light or Dark.
   scope: user
-  route: not_yet
-  values: [light, dark, auto]
+  route: defaults
+  values: [light, dark]
   macos_default: not measured
+  writes:
+    - domain: NSGlobalDomain
+      key: AppleInterfaceStyle
+      type: string
+      map: {light: null, dark: Dark}
+    - domain: NSGlobalDomain
+      key: AppleInterfaceStyleSwitchesAutomatically
+      type: bool
+      map: {light: null, dark: null}
   takes_effect: logout
   needs: []
   lockout_risk: false
   where: System Settings > Appearance
   proven_on: {}
-  not_yet_reason: For light and dark and auto, a write deletes
-    a key or leaves one alone, and a defaults write map cannot
-    express that yet.
+  not_yet_reason: ""
+  notes: A null in the map deletes the key, so both values turn Auto
+    off. auto is not measured, so it is not offered yet.
 appearance.wallpaper_tinting:
   summary: Tint window backgrounds with the wallpaper color.
   scope: user

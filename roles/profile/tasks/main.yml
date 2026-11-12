@@ -15,9 +15,12 @@
 - name: Build the work lists
   ansible.builtin.set_fact:
     profile_running_account: "{{ profile_id.stdout }}"
-    profile_defaults_writes: "{{ profile_work.defaults_writes }}"
+    profile_own_work: "{{ profile_work.own }}"
+    profile_other_work: "{{ profile_work.others }}"
+    profile_machine_writes: "{{ profile_work.machine_writes }}"
+    profile_commands: "{{ profile_work.commands }}"
+    profile_by_hand: "{{ profile_work.by_hand }}"
     profile_accounts: "{{ profile_work.accounts }}"
-    profile_other_account_writes: "{{ profile_work.other_account_writes }}"
     profile_counts: "{{ profile_work.counts }}"
   vars:
     profile_work: "{{ hostvars[inventory_hostname] | profile_work(profile_reference_files, profile_id.stdout) }}"

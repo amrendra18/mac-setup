@@ -1,0 +1,7 @@
+---
+- name: Set each command setting
+  ansible.builtin.include_tasks: setting.yml
+  loop: "{{ macos_commands_items }}"
+  loop_control:
+    loop_var: macos_commands_item
+    label: "{{ macos_commands_item.id }}"

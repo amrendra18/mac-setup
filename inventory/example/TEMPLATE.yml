@@ -104,7 +104,7 @@ default_settings:
   #   macOS default: not measured
   #   Takes effect: when the Dock restarts
   #   Needs: nothing extra
-  #   Proven on: not yet
+  #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: The stored value is an array of tile dictionaries, not a single value. No stock Ansible
   #     module sets the Dock apps by bundle id.
 
@@ -568,6 +568,17 @@ default_settings:
   #   Needs: nothing extra
   #   Proven on: not yet
 
+  # finder.search_view: icon
+  #   View style for the results of a Finder search.
+  #   Values: icon, list, column, gallery
+  #   macOS default: not measured
+  #   Takes effect: when Finder restarts
+  #   Needs: nothing extra
+  #   Proven on: not yet
+  #   Note: The key name appears in the Finder program on macOS 15.6.1. Finder also keeps
+  #     FXPreferredSearchViewStyleVersion, which this setting does not write. Guess: Finder may
+  #     ignore the key until that version key is present.
+
   # finder.show_extensions: false
   #   Show every filename extension in Finder.
   #   Values: true or false
@@ -632,6 +643,37 @@ default_settings:
   #   Takes effect: when Finder restarts
   #   Needs: nothing extra
   #   Proven on: not yet
+
+  # finder.sidebar_favorites: []
+  #   Folders that come first in the Favorites section of the Finder sidebar, in this order.
+  #   Values: a list of folder paths that start with / or "~", other than / itself, in order
+  #   macOS default: not measured
+  #   Takes effect: when Finder restarts
+  #   Needs: nothing extra
+  #   Proven on: not yet
+  #   Note: "~" means the home folder of each account. Other favorite folders stay after the listed
+  #     ones unless finder.sidebar_favorites_only is true. Finder refuses / as a favorite.
+
+  # finder.sidebar_favorites_only: false
+  #   Remove every favorite folder that finder.sidebar_favorites does not list.
+  #   Values: true or false
+  #   macOS default: false
+  #   Takes effect: when Finder restarts
+  #   Needs: nothing extra
+  #   Proven on: not yet
+  #   Note: Works only together with finder.sidebar_favorites. Recents, AirDrop and iCloud items
+  #     stay unless finder.sidebar_hide names them.
+
+  # finder.sidebar_hide: []
+  #   Items to remove from the Finder sidebar.
+  #   Values: a list of any of recents, shared, airdrop, trash, icloud, home_in_locations
+  #   macOS default: not measured
+  #   Takes effect: when Finder restarts
+  #   Needs: nothing extra
+  #   Proven on: not yet
+  #   Note: Finder ignores the hidden mark on a sidebar item, so mac-setup removes the item.
+  #     home_in_locations is the home folder in the Locations section. Guess, not measured, how
+  #     Finder stores recents, shared, airdrop, trash and icloud in the sidebar lists.
 
   # finder.trash_auto_empty: false
   #   Delete items from the Trash after 30 days.
@@ -779,7 +821,7 @@ default_settings:
 
   # input.force_click: 'off'
   #   Force Click and haptic feedback on a Force Touch trackpad.
-  #   Values: off, on
+  #   Values: "off", "on"
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -807,7 +849,7 @@ default_settings:
 
   # input.keyboard_navigation: 'off'
   #   Move focus between all controls with Tab and Shift-Tab.
-  #   Values: off, on
+  #   Values: "off", "on"
   #   macOS default: not measured
   #   Takes effect: when the app opens again
   #   Needs: nothing extra
@@ -827,7 +869,7 @@ default_settings:
 
   # input.look_up_gesture: 'off'
   #   Gesture for Look up and data detectors.
-  #   Values: off, force_click, three_finger_tap
+  #   Values: "off", force_click, three_finger_tap
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -837,7 +879,7 @@ default_settings:
 
   # input.mission_control_gesture: 'off'
   #   Gesture to open Mission Control (swipe up).
-  #   Values: off, three_finger, four_finger
+  #   Values: "off", three_finger, four_finger
   #   macOS default: not measured
   #   Takes effect: when the Dock restarts
   #   Needs: nothing extra
@@ -847,7 +889,7 @@ default_settings:
 
   # input.mouse_mission_control: 'off'
   #   Double-tap a Magic Mouse with two fingers to open Mission Control.
-  #   Values: off, on
+  #   Values: "off", "on"
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -865,7 +907,7 @@ default_settings:
 
   # input.mouse_secondary_click: 'off'
   #   Right-click on a Magic Mouse: off, right side or left side.
-  #   Values: off, right, left
+  #   Values: "off", right, left
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -875,7 +917,7 @@ default_settings:
 
   # input.mouse_smart_zoom: 'off'
   #   Double-tap a Magic Mouse with one finger to zoom.
-  #   Values: off, on
+  #   Values: "off", "on"
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -902,7 +944,7 @@ default_settings:
 
   # input.mouse_swipe_full_screen_apps: 'off'
   #   Swipe left or right with two fingers on a Magic Mouse to change full-screen apps.
-  #   Values: off, on
+  #   Values: "off", "on"
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -921,7 +963,7 @@ default_settings:
 
   # input.notification_center_gesture: 'off'
   #   Swipe left from the right edge with two fingers to open Notification Center.
-  #   Values: off, on
+  #   Values: "off", "on"
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -930,7 +972,7 @@ default_settings:
 
   # input.pinch_zoom: 'off'
   #   Pinch with two fingers to zoom in or out.
-  #   Values: off, on
+  #   Values: "off", "on"
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -939,7 +981,7 @@ default_settings:
 
   # input.pointer_acceleration: 'off'
   #   Speed the pointer up when you move the mouse faster.
-  #   Values: off, on
+  #   Values: "off", "on"
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -949,7 +991,7 @@ default_settings:
 
   # input.quiet_click: 'off'
   #   Make trackpad clicks quieter (Quiet Click; Silent clicking on macOS 15).
-  #   Values: off, on
+  #   Values: "off", "on"
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -967,7 +1009,7 @@ default_settings:
 
   # input.rotate: 'off'
   #   Rotate items with two fingers.
-  #   Values: off, on
+  #   Values: "off", "on"
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -976,7 +1018,7 @@ default_settings:
 
   # input.secondary_click: two_finger
   #   How to right-click on the trackpad.
-  #   Values: two_finger, bottom_right, bottom_left, off
+  #   Values: two_finger, bottom_right, bottom_left, "off"
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -1015,7 +1057,7 @@ default_settings:
 
   # input.smart_zoom: 'off'
   #   Double-tap with two fingers to zoom.
-  #   Values: off, on
+  #   Values: "off", "on"
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -1033,7 +1075,7 @@ default_settings:
 
   # input.swipe_between_pages: 'off'
   #   Gesture to go back or forward a page.
-  #   Values: off, two_finger, three_finger, two_or_three_finger
+  #   Values: "off", two_finger, three_finger, two_or_three_finger
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -1043,7 +1085,7 @@ default_settings:
 
   # input.swipe_full_screen_apps: 'off'
   #   Gesture to move between full-screen apps.
-  #   Values: off, three_finger, four_finger
+  #   Values: "off", three_finger, four_finger
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -1053,7 +1095,7 @@ default_settings:
 
   # input.tap_to_click: 'off'
   #   Tap the trackpad with one finger to click.
-  #   Values: off, on
+  #   Values: "off", "on"
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -1105,7 +1147,7 @@ default_settings:
 
   # input.trackpad_tap_drag: 'off'
   #   Double-tap and drag to move items, with or without drag lock.
-  #   Values: off, without_drag_lock, with_drag_lock
+  #   Values: "off", without_drag_lock, with_drag_lock
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -1117,7 +1159,7 @@ default_settings:
 
   # privacy.improve_siri_dictation: not_asked
   #   Share Siri and Dictation audio with Apple to improve them.
-  #   Values: not_asked, on, off
+  #   Values: not_asked, "on", "off"
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -1134,6 +1176,26 @@ default_settings:
   #   Note: Research note on when it takes effect: not checked.
 
   # Area: systemui
+
+  # appearance.accent_color: multicolor
+  #   Accent color for buttons, menus, and controls.
+  #   Values: multicolor, blue, purple, pink, red, orange, yellow, green, graphite
+  #   macOS default: not measured
+  #   Takes effect: when the app opens again
+  #   Needs: nothing extra
+  #   Proven on: not yet
+  #   Note: The stored numbers are common community values, not measured. Research note on when it
+  #     takes effect: open apps redraw after a relaunch or logout (guess).
+
+  # appearance.highlight_color: accent
+  #   Color of selected text.
+  #   Values: accent, blue
+  #   macOS default: not measured
+  #   Takes effect: when the app opens again
+  #   Needs: nothing extra
+  #   Proven on: not yet
+  #   Note: Only accent and blue are offered, because only the stored string for blue was read on a
+  #     Mac. Research note on when it takes effect: apps pick it up after a relaunch (guess).
 
   # appearance.scroll_bar_click: next_page
   #   Clicking the scroll bar jumps one page or to the spot clicked.
@@ -1159,9 +1221,19 @@ default_settings:
   #   Needs: nothing extra
   #   Proven on: not yet
 
+  # appearance.theme: light
+  #   Light or Dark.
+  #   Values: light, dark
+  #   macOS default: not measured
+  #   Takes effect: at the next login
+  #   Needs: nothing extra
+  #   Proven on: not yet
+  #   Note: A null in the map deletes the key, so both values turn Auto off. auto is not measured,
+  #     so it is not offered yet.
+
   # appearance.wallpaper_tinting: 'on'
   #   Tint window backgrounds with the wallpaper color.
-  #   Values: on, off
+  #   Values: "on", "off"
   #   macOS default: not measured
   #   Takes effect: when the app opens again
   #   Needs: nothing extra
@@ -1491,7 +1563,7 @@ default_settings:
 
   # siri.voice_feedback: 'on'
   #   Siri speaks its answers out loud.
-  #   Values: on, off
+  #   Values: "on", "off"
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -1513,7 +1585,7 @@ default_settings:
 
   # sound.flash_screen: 'on'
   #   Flash the screen when an alert sound plays.
-  #   Values: on, off
+  #   Values: "on", "off"
   #   macOS default: not measured
   #   Takes effect: at once
   #   Needs: nothing extra
@@ -1522,7 +1594,7 @@ default_settings:
 
   # sound.ui_sounds: 'on'
   #   Play user interface sound effects.
-  #   Values: on, off
+  #   Values: "on", "off"
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -1531,7 +1603,7 @@ default_settings:
 
   # sound.volume_feedback: 'on'
   #   Play a sound when the volume changes.
-  #   Values: on, off
+  #   Values: "on", "off"
   #   macOS default: not measured
   #   Takes effect: at once
   #   Needs: nothing extra
@@ -1540,7 +1612,7 @@ default_settings:
 
   # spotlight.improve_search: 'on'
   #   Share Spotlight and Siri search data with Apple.
-  #   Values: on, off
+  #   Values: "on", "off"
   #   macOS default: not measured
   #   Takes effect: at the next login
   #   Needs: nothing extra
@@ -1780,6 +1852,7 @@ machine_settings:
   #   Proven on: not yet
   #   Warning: can lock you out of this Mac; it needs allow_lockout_risk: true
   #   Note: systemsetup fails unless the terminal has Full Disk Access. The lockout guard applies.
+  #     -f stops systemsetup asking to confirm the off step.
 
   # sharing.screen_sharing: false
   #   Let others see and control this screen (Screen Sharing).
@@ -1788,7 +1861,8 @@ machine_settings:
   #   Takes effect: at once
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: Medium confidence route; the safer path is the Sharing pane.
+  #   Note: Medium confidence route; the safer path is the Sharing pane. Turning it off by script is
+  #     not yet measured.
 
   # time.server: unset
   #   Network time server used to set the clock.
@@ -1876,14 +1950,6 @@ machine_settings:
   #   Note: Research note on when it takes effect: not checked; Control Center may need a restart
   #     (guess).
 
-  # privacy.location_services: false
-  #   Let apps and system services find where this Mac is.
-  #   Values: true or false
-  #   macOS default: not measured
-  #   Takes effect: when the app opens again
-  #   Needs: nothing extra
-  #   Proven on: not yet
-
   # privacy.share_mac_analytics: false
   #   Send Mac crash and usage data to Apple.
   #   Values: true or false
@@ -1916,7 +1982,7 @@ machine_settings:
 
   # sound.startup_sound: 'on'
   #   Play a sound when the Mac starts up.
-  #   Values: on, off
+  #   Values: "on", "off"
   #   macOS default: not measured
   #   Takes effect: at once
   #   Needs: nothing extra
@@ -1924,36 +1990,42 @@ machine_settings:
   #   Note: When the StartupMute variable is absent, the read finds no value and macOS plays the
   #     sound.
 
-# Click-only settings. No script can set these; change them by hand in System Settings.
+# Click-only settings. No script can set these. List one under default_settings or
+# machine_settings, as its scope says, and playbooks/by-hand.yml walks you through it.
 
 # Area: admin
 
 # login_window.automatic_login_user
 #   Account that logs in by itself at startup. Empty means nobody.
 #   Scope: machine setting, needs admin
+#   Values: text that matches ^[a-z_][a-z0-9_.-]{0,31}$
 #   Where: System Settings > Users & Groups > Automatically log in as
 
 # network.bluetooth_power
 #   Turn Bluetooth on or off.
 #   Scope: machine setting, needs admin
+#   Values: true or false
 #   Where: System Settings > Bluetooth
 #   Note: macOS has no supported command to turn Bluetooth on or off.
 
 # security.admin_password_for_settings
 #   Ask for an admin password before changing system-wide settings.
 #   Scope: machine setting, needs admin
+#   Values: true or false
 #   Where: System Settings > Privacy & Security > Advanced > Require an administrator password to
 #     access system-wide settings
 
 # security.filevault
 #   Encrypt the startup disk with FileVault.
 #   Scope: machine setting, needs admin
+#   Values: true or false
 #   Where: System Settings > Privacy & Security > FileVault
 #   Note: takes_effect not measured.
 
 # security.gatekeeper
 #   Check apps before they open (Gatekeeper).
 #   Scope: machine setting, needs admin
+#   Values: true or false
 #   Where: System Settings > Privacy & Security > Security > Allow applications from
 #   Note: Turning Gatekeeper off needs a click on macOS 15 and later. A command sets on, but off
 #     needs a click, so the whole setting is by hand.
@@ -1961,12 +2033,14 @@ machine_settings:
 # security.gatekeeper_allow_identified_developers
 #   Allow apps from identified developers, not only the App Store.
 #   Scope: machine setting, needs admin
+#   Values: true or false
 #   Where: System Settings > Privacy & Security > Allow applications from: App Store and identified
 #     developers
 
 # sharing.file_sharing
 #   Share folders with other computers over SMB (File Sharing).
 #   Scope: machine setting, needs admin
+#   Values: true or false
 #   Where: System Settings > General > Sharing > File Sharing
 #   Note: takes_effect not measured. Turning it on also needs shared folders, so on is a click. A
 #     command sets off, but on needs a click, so the whole setting is by hand.
@@ -1974,16 +2048,19 @@ machine_settings:
 # sharing.internet_sharing
 #   Share this Mac's internet connection with other devices.
 #   Scope: machine setting, needs admin
+#   Values: true or false
 #   Where: System Settings > General > Sharing > Internet Sharing
 
 # sharing.remote_management
 #   Allow Apple Remote Desktop to manage this Mac (Remote Management).
 #   Scope: machine setting, needs admin
+#   Values: true or false
 #   Where: System Settings > General > Sharing > Remote Management
 
 # time.zone_automatic
 #   Set the time zone from the Mac's location.
 #   Scope: machine setting, needs admin
+#   Values: true or false
 #   Where: System Settings > General > Date & Time > Set time zone automatically using your current
 #     location
 #   Note: Needs Location Services too, so the Date & Time pane is the safer path. Research note on
@@ -1994,6 +2071,7 @@ machine_settings:
 # desktop.default_browser
 #   App that opens web links.
 #   Scope: account setting
+#   Values: text that matches ^[A-Za-z0-9.-]+$
 #   Where: System Settings > Desktop & Dock > Widgets > Default web browser
 #   Note: macOS shows a confirmation dialog for any change, so a script cannot change it silently.
 #     Apple's guide places it under Widgets in Desktop & Dock. The setting is the LaunchServices
@@ -2004,6 +2082,7 @@ machine_settings:
 # input.dictation
 #   Turn on Dictation, which types what you say.
 #   Scope: account setting
+#   Values: "off", "on"
 #   Where: System Settings > Keyboard
 #   Note: takes_effect not measured. Turning Dictation on shows a consent dialog and may download a
 #     language model, so a person turns it on in the pane.
@@ -2013,12 +2092,23 @@ machine_settings:
 # privacy.improve_assistive_voice
 #   Share Voice Control and Vocal Shortcuts audio with Apple.
 #   Scope: account setting
+#   Values: true or false
 #   Where: System Settings > Privacy & Security > Analytics & Improvements
 #   Note: Research note on when it takes effect: not checked.
+
+# privacy.location_services
+#   Let apps and system services find where this Mac is.
+#   Scope: machine setting, needs admin
+#   Values: true or false
+#   Where: System Settings > Privacy & Security > Location Services
+#   Note: Reading works: the value sits in
+#     /var/db/locationd/Library/Preferences/ByHost/com.apple.locationd.<hardware id>.plist, readable
+#     as root with plutil. Writing it by script is not measured: the file belongs to _locationd.
 
 # privacy.share_icloud_analytics
 #   Share iCloud usage data with Apple.
 #   Scope: account setting
+#   Values: true or false
 #   Where: System Settings > Privacy & Security > Analytics & Improvements
 
 # Area: systemui
@@ -2026,142 +2116,167 @@ machine_settings:
 # appearance.icon_style
 #   Icon and widget style (macOS 26 and later).
 #   Scope: account setting
+#   Values: default, dark, clear, tinted
 #   Where: System Settings > Appearance
 #   Note: Research note on when it takes effect: unknown.
 
 # appearance.liquid_glass
 #   Liquid Glass look: Clear or Tinted (macOS 26.1 and later).
 #   Scope: account setting
+#   Values: clear, tinted
 #   Where: System Settings > Appearance
 #   Note: Research note on when it takes effect: unknown.
 
 # battery.optimized_charging
 #   Optimized battery charging (laptops).
 #   Scope: machine setting, needs admin
+#   Values: true or false
 #   Where: System Settings > Battery
 
 # lock_screen.large_clock
 #   Show the large clock on the lock screen and screen saver.
 #   Scope: account setting
+#   Values: by_hand
 #   Where: System Settings > Lock Screen
 #   Note: Research note on when it takes effect: unknown.
 
 # lock_screen.password_after
 #   Ask for the password this many seconds after sleep or screen saver.
 #   Scope: account setting
+#   Values: 0, 5, 60, 300, 900, 3600, 28800, never
 #   Where: System Settings > Lock Screen
 #   Note: sysadminctl asks for the account's own password, so a person sets it.
 
 # menu_bar.background
 #   Show a solid menu bar background (macOS 26 and later).
 #   Scope: account setting
+#   Values: true or false
 #   Where: System Settings > Control Center
 #   Note: Research note on when it takes effect: unknown.
 
 # menu_bar.clock_announce
 #   Say the time out loud on the hour.
 #   Scope: account setting
+#   Values: true or false
 #   Where: System Settings > Control Center
 #   Note: Research note on when it takes effect: unknown.
 
 # menu_bar.spotlight
 #   Show the Spotlight icon in the menu bar.
 #   Scope: account setting
+#   Values: true or false
 #   Where: System Settings > Control Center
 #   Note: Research note on when it takes effect: unknown.
 
 # menu_bar.time_machine
 #   Show Time Machine in the menu bar.
 #   Scope: account setting
+#   Values: show, hide
 #   Where: System Settings > Control Center
 #   Note: Research note on when it takes effect: unknown.
 
 # notifications.focus
 #   Focus modes and their schedules.
 #   Scope: account setting
+#   Values: by_hand
 #   Where: System Settings > Focus
 
 # notifications.per_app
 #   Notification style, sounds, and badges for each app.
 #   Scope: account setting
+#   Values: by_hand
 #   Where: System Settings > Notifications
 
 # notifications.when_display_sleeping
 #   Allow notifications when the display is sleeping.
 #   Scope: account setting
+#   Values: true or false
 #   Where: System Settings > Notifications
 #   Note: Research note on when it takes effect: unknown.
 
 # notifications.when_locked
 #   Allow notifications when the screen is locked.
 #   Scope: account setting
+#   Values: true or false
 #   Where: System Settings > Notifications
 #   Note: Research note on when it takes effect: unknown.
 
 # notifications.when_mirroring
 #   Allow notifications when mirroring or sharing the display.
 #   Scope: account setting
+#   Values: true or false
 #   Where: System Settings > Notifications
 #   Note: Research note on when it takes effect: unknown.
 
 # screen_saver.choice
 #   Which screen saver runs.
 #   Scope: account setting
+#   Values: by_hand
 #   Where: System Settings > Screen Saver
 
 # siri.apple_intelligence
 #   Turn Apple Intelligence on.
 #   Scope: account setting
+#   Values: by_hand
 #   Where: System Settings > Apple Intelligence & Siri
 
 # siri.keyboard_shortcut
 #   Keyboard shortcut that starts Siri.
 #   Scope: account setting
+#   Values: by_hand
 #   Where: System Settings > Apple Intelligence & Siri
 #   Note: Research note on when it takes effect: unknown.
 
 # siri.language_and_voice
 #   Siri language and voice.
 #   Scope: account setting
+#   Values: by_hand
 #   Where: System Settings > Apple Intelligence & Siri
 #   Note: Research note on when it takes effect: unknown.
 
 # siri.listen_for
 #   Listen for 'Siri' or 'Hey Siri'.
 #   Scope: account setting
+#   Values: true or false
 #   Where: System Settings > Apple Intelligence & Siri
 #   Note: Research note on when it takes effect: unknown.
 
 # sound.alert_device
 #   Which device plays alert sounds.
 #   Scope: account setting
+#   Values: by_hand
 #   Where: System Settings > Sound
 
 # sound.input_device
 #   Which microphone records sound.
 #   Scope: account setting
+#   Values: by_hand
 #   Where: System Settings > Sound
 
 # sound.output_device
 #   Which speaker or headphones play sound.
 #   Scope: account setting
+#   Values: by_hand
 #   Where: System Settings > Sound
 
 # spotlight.categories
 #   Which result categories Spotlight shows.
 #   Scope: account setting
+#   Values: by_hand
 #   Where: System Settings > Spotlight
 #   Note: Research note on when it takes effect: killall Spotlight (guess).
 
 # spotlight.clipboard_history
 #   Keep clipboard history in Spotlight (macOS 26 and later).
 #   Scope: account setting
+#   Values: true or false
 #   Where: System Settings > Spotlight
 #   Note: Research note on when it takes effect: unknown.
 
 # spotlight.privacy
 #   Folders and disks Spotlight must not search.
 #   Scope: machine setting, needs admin
+#   Values: by_hand
 #   Where: System Settings > Spotlight
 
 # Not yet supported. mac-setup knows these settings but cannot set them yet.
@@ -2479,28 +2594,6 @@ machine_settings:
 #     x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_AudioCapture
 
 # Area: systemui
-
-# appearance.accent_color
-#   Accent color for buttons, menus, and controls.
-#   Scope: account setting
-#   Not yet because: For multicolor, a write deletes a key or leaves one alone, and a defaults write
-#     map cannot express that yet.
-#   Note: The stored numbers are common community values, not measured. Research note on when it
-#     takes effect: open apps redraw after a relaunch or logout (guess).
-
-# appearance.highlight_color
-#   Color of selected text.
-#   Scope: account setting
-#   Not yet because: For accent, a write deletes a key or leaves one alone, and a defaults write map
-#     cannot express that yet.
-#   Note: The Other color choice is free-form and is left out. The stored strings are guesses.
-#     Research note on when it takes effect: apps pick it up after a relaunch (guess).
-
-# appearance.theme
-#   Light, Dark, or Auto (follows the time of day).
-#   Scope: account setting
-#   Not yet because: For light and dark and auto, a write deletes a key or leaves one alone, and a
-#     defaults write map cannot express that yet.
 
 # sound.alert_volume
 #   Alert volume, in percent.

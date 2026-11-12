@@ -328,19 +328,20 @@ privacy.location_menu_icon:
 privacy.location_services:
   summary: Let apps and system services find where this Mac is.
   scope: machine
-  route: defaults
+  route: by_hand
   values: {type: bool}
   macos_default: not measured
-  writes:
-    - domain: /var/db/locationd/Library/Preferences/ByHost/com.apple.locationd
-      key: LocationServicesEnabled
-      type: bool
-  takes_effect: relaunch
-  needs: []
+  link: ""
+  takes_effect: live
+  needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Location Services
   proven_on: {}
   not_yet_reason: ""
+  notes: 'Reading works: the value sits in
+    /var/db/locationd/Library/Preferences/ByHost/com.apple.locationd.<hardware id>.plist,
+    readable as root with plutil. Writing it by script is not measured: the
+    file belongs to _locationd.'
 privacy.location_system_services:
   summary: System services allowed to use location, such as time
     zone and Find My.

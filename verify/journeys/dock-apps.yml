@@ -1,0 +1,42 @@
+summary: The Dock keeps only Terminal and Safari in order, a second run and a missing app change nothing, and the cleanup restores the saved Dock.
+level: fast
+setup:
+  - rm -rf .local/dock-apps-journey && mkdir -p .local/dock-apps-journey
+  - defaults export com.apple.dock .local/dock-apps-journey/dock-before.plist
+  - defaults write com.apple.dock persistent-apps -array
+profile:
+  default_settings:
+    dock.applications: [com.apple.Terminal, com.apple.Safari]
+runs:
+  - name: check
+    args: [--check]
+    exit: 0
+    recap: {changed: 1, failed: 0}
+  - name: apply
+    exit: 0
+    recap: {changed: 2, failed: 0}
+    output:
+      - {pattern: '^RUNNING HANDLER \[[a-z_]+ : Restart Dock\].*\nchanged: \[verify-mac\]', count: 1}
+  - name: apply-again
+    exit: 0
+    recap: {changed: 0, failed: 0}
+    output:
+      - {pattern: '^RUNNING HANDLER \[[a-z_]+ : Restart Dock\]', count: 0}
+  - name: not-installed
+    exit: 2
+    recap: {changed: 0, failed: 1, rescued: 1}
+    profile:
+      default_settings:
+        dock.applications: [com.apple.Terminal, com.example.notinstalled]
+    output:
+      - {pattern: '(?i)^(?!TASK |RUNNING HANDLER |\[ERROR\]|\d)[^\n]*\brefused dock\.applications\b', count: 1}
+cleanup:
+  - >-
+    n=$(defaults export com.apple.dock - | plutil -extract persistent-apps raw -o - -);
+    got=$(i=0; while [ "$i" -lt "${n:-0}" ]; do
+    defaults export com.apple.dock - | plutil -extract "persistent-apps.$i.tile-data.bundle-identifier" raw -o - -;
+    i=$((i + 1)); done | paste -sd ' ' -);
+    echo "Dock bundle ids: $got";
+    defaults import com.apple.dock .local/dock-apps-journey/dock-before.plist || { echo "could not restore the saved Dock"; exit 1; };
+    killall Dock 2>/dev/null;
+    test "$got" = "com.apple.Terminal com.apple.Safari"

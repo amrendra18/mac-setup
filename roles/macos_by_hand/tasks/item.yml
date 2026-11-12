@@ -1,0 +1,15 @@
+---
+- name: Open the page for {{ macos_by_hand_item.id }}
+  ansible.builtin.command:
+    argv: "{{ [macos_by_hand_open] + ([macos_by_hand_item.link] if macos_by_hand_item.link else ['-b', 'com.apple.systempreferences']) }}"
+  changed_when: false
+
+- name: Say what to choose for {{ macos_by_hand_item.id }}
+  ansible.builtin.debug:
+    msg:
+      - "In {{ macos_by_hand_item.where }}"
+      - "{{ macos_by_hand_item.choose }}"
+
+- name: Wait while you choose {{ macos_by_hand_item.id }}
+  ansible.builtin.pause:
+    prompt: Press Return when done

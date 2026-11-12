@@ -13,7 +13,7 @@
       notify: "{{ macos_defaults_restarts[macos_defaults_write.takes_effect] | default([]) if macos_defaults_restart else [] }}"
   rescue:
     - name: "Record the refusal of {{ macos_defaults_write.id }}"
-      ansible.builtin.set_fact:
-        macos_defaults_refused: >-
-          {{ macos_defaults_refused | default([])
-          + [{'account': macos_defaults_account, 'id': macos_defaults_write.id, 'message': ansible_failed_result.msg}] }}
+      ansible.builtin.include_tasks: refused.yml
+      vars:
+        macos_defaults_refused_account: "{{ macos_defaults_account }}"
+        macos_defaults_refused_id: "{{ macos_defaults_write.id }}"

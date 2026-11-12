@@ -1,0 +1,27 @@
+summary: List mode prints one line for each of 3 click-only settings in the profile, calls open 0 times, and changes no Dock or Finder key.
+level: fast
+playbook: playbooks/by-hand.yml
+setup:
+  - rm -rf .local/by-hand-journey && mkdir -p .local/by-hand-journey
+  - printf '#!/bin/sh\necho "$@" >>"$0.log"\n' >.local/by-hand-journey/open && chmod 755 .local/by-hand-journey/open
+  - for d in com.apple.dock com.apple.finder; do defaults export "$d" - >".local/by-hand-journey/$d-before.plist" || exit 1; done
+profile:
+  default_settings:
+    notifications.per_app: by_hand
+    appearance.icon_style: dark
+  machine_settings:
+    network.bluetooth_power: false
+runs:
+  - name: list
+    args: [-e, by_hand_list=true, -e, "by_hand_open={{ playbook_dir }}/../.local/by-hand-journey/open"]
+    exit: 0
+    recap: {changed: 0, failed: 0}
+    output:
+      - {pattern: "^ +msg: '?would open ", count: 3}
+      - {pattern: "would open System Settings for network\\.bluetooth_power \\(Turn Bluetooth", count: 1}
+cleanup:
+  - test ! -e .local/by-hand-journey/open.log || { echo "list mode called open with $(head -n 1 .local/by-hand-journey/open.log)"; exit 1; }
+  - >-
+    for d in com.apple.dock com.apple.finder; do defaults export "$d" - >".local/by-hand-journey/$d-after.plist"
+    && cmp -s ".local/by-hand-journey/$d-before.plist" ".local/by-hand-journey/$d-after.plist"
+    || { echo "$d changed during the runs"; exit 1; }; done

@@ -1,0 +1,4 @@
+---
+# expect: machine_settings, sharing.remote_login
+machine_settings:
+  sharing.remote_login: false

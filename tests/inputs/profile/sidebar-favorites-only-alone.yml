@@ -1,0 +1,7 @@
+---
+# expect: account setuptest1, finder.sidebar_favorites_only
+accounts:
+  - name: setuptest1
+    full_name: Setup Test One
+    settings:
+      finder.sidebar_favorites_only: true

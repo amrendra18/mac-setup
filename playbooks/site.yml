@@ -8,17 +8,56 @@
       tags: [always]
     - role: macos_defaults
       vars:
-        macos_defaults_writes: "{{ profile_defaults_writes }}"
+        macos_defaults_writes: "{{ profile_own_work.writes }}"
         macos_defaults_account: "{{ profile_running_account }}"
+    - role: macos_dock_apps
+      vars:
+        macos_dock_apps_items: "{{ profile_own_work.dock_apps }}"
+        macos_dock_apps_account: "{{ profile_running_account }}"
+    - role: macos_wallpaper
+      vars:
+        macos_wallpaper_items: "{{ profile_own_work.wallpaper }}"
+        macos_wallpaper_account: "{{ profile_running_account }}"
+  tasks:
+    - name: Build the Finder sidebar helper
+      ansible.builtin.include_role:
+        name: macos_finder_sidebar
+        tasks_from: build
+      when: ([profile_own_work] + profile_other_work) | map(attribute='finder_sidebar') | select | list | length > 0
+
+    - name: Set this account's Finder sidebar
+      ansible.builtin.include_role:
+        name: macos_finder_sidebar
+      vars:
+        macos_finder_sidebar_items: "{{ profile_own_work.finder_sidebar }}"
+        macos_finder_sidebar_account: "{{ profile_running_account }}"
 
 - name: Machine and other accounts
   hosts: macs
   become: true
   gather_facts: false
+  vars:
+    site_other_work: >-
+      {{ profile_other_work | rejectattr('account', 'in',
+      macos_accounts_results | default([]) | selectattr('state', 'eq', 'would_create') | map(attribute='name') | list) }}
   tasks:
     - name: Create or adopt the listed accounts
       ansible.builtin.include_role:
         name: macos_accounts
+
+    - name: Write the machine settings
+      ansible.builtin.include_role:
+        name: macos_defaults
+      vars:
+        macos_defaults_writes: "{{ profile_machine_writes }}"
+        macos_defaults_account: machine
+        macos_defaults_restart: false
+
+    - name: Set the machine settings that need a command
+      ansible.builtin.include_role:
+        name: macos_commands
+      vars:
+        macos_commands_items: "{{ profile_commands }}"
 
     - name: Write each other account's settings as that account
       ansible.builtin.include_role:
@@ -29,9 +68,49 @@
         macos_defaults_writes: "{{ other_account.writes }}"
         macos_defaults_account: "{{ other_account.account }}"
         macos_defaults_restart: false
-      loop: >-
-        {{ profile_other_account_writes | rejectattr('account', 'in',
-        macos_accounts_results | default([]) | selectattr('state', 'eq', 'would_create') | map(attribute='name') | list) }}
+      loop: "{{ site_other_work }}"
+      loop_control:
+        loop_var: other_account
+        label: "{{ other_account.account }}"
+
+    - name: Set each other account's Dock apps as that account
+      ansible.builtin.include_role:
+        name: macos_dock_apps
+        apply:
+          become_user: "{{ other_account.account }}"
+      vars:
+        macos_dock_apps_items: "{{ other_account.dock_apps }}"
+        macos_dock_apps_account: "{{ other_account.account }}"
+        macos_dock_apps_restart: false
+      loop: "{{ site_other_work | selectattr('dock_apps') }}"
+      loop_control:
+        loop_var: other_account
+        label: "{{ other_account.account }}"
+
+    - name: Set each other account's wallpaper as that account
+      ansible.builtin.include_role:
+        name: macos_wallpaper
+        apply:
+          become_user: "{{ other_account.account }}"
+      vars:
+        macos_wallpaper_items: "{{ other_account.wallpaper }}"
+        macos_wallpaper_account: "{{ other_account.account }}"
+        macos_wallpaper_other_account: true
+      loop: "{{ site_other_work | selectattr('wallpaper') }}"
+      loop_control:
+        loop_var: other_account
+        label: "{{ other_account.account }}"
+
+    - name: Set each other account's Finder sidebar as that account
+      ansible.builtin.include_role:
+        name: macos_finder_sidebar
+        apply:
+          become_user: "{{ other_account.account }}"
+      vars:
+        macos_finder_sidebar_items: "{{ other_account.finder_sidebar }}"
+        macos_finder_sidebar_account: "{{ other_account.account }}"
+        macos_finder_sidebar_restart: false
+      loop: "{{ site_other_work | selectattr('finder_sidebar') }}"
       loop_control:
         loop_var: other_account
         label: "{{ other_account.account }}"

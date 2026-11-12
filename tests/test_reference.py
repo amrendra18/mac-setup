@@ -13,7 +13,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-ENTRY_COUNT = 283
+ENTRY_COUNT = 287
 SCRIPT = ROOT / "scripts/render-template"
 _loader = importlib.machinery.SourceFileLoader("render_template", str(SCRIPT))
 template = importlib.util.module_from_spec(
@@ -35,7 +35,15 @@ FIELDS = {
     "not_yet_reason",
 }
 ROUTE_FIELDS = {"defaults": {"writes"}, "command": {"command"}, "by_hand": {"link"}}
-ROUTES = ("defaults", "command", "dock_apps", "wallpaper", "by_hand", "not_yet")
+ROUTES = (
+    "defaults",
+    "command",
+    "dock_apps",
+    "wallpaper",
+    "finder_sidebar",
+    "by_hand",
+    "not_yet",
+)
 SCOPES = {"user", "machine"}
 TAKES_EFFECT = {"live", "dock", "finder", "systemuiserver", "relaunch", "logout"}
 NEEDS = {"full_disk_access", "click"}
@@ -47,6 +55,8 @@ VALUE_FIELDS = {
     "float": {"type", "min", "max"},
     "text": {"type", "pattern"},
     "bundle_ids": {"type"},
+    "paths": {"type"},
+    "list": {"type", "choices"},
 }
 SETTING_ID = re.compile(r"[a-z][a-z0-9_]*(\.[a-z0-9_]+)+")
 VERSION = re.compile(r"\d+(\.\d+)*")
@@ -86,7 +96,7 @@ def _values_problems(values):
         return []
     if not isinstance(values, dict) or values.get("type") not in VALUE_FIELDS:
         return [
-            "values: must be a list of choices or {type: bool, int, float, text or bundle_ids}"
+            "values: must be a list of choices or {type: bool, int, float, text, bundle_ids, paths or list}"
         ]
     kind = values["type"]
     if set(values) != VALUE_FIELDS[kind]:
@@ -103,6 +113,15 @@ def _values_problems(values):
         and values["min"] <= values["max"]
     ):
         return ["values: float needs numbers with min <= max"]
+    if kind == "list":
+        choices = values["choices"]
+        if (
+            not isinstance(choices, list)
+            or not choices
+            or not all(_line(choice) for choice in choices)
+            or len(set(choices)) != len(choices)
+        ):
+            return ["values: list needs choices, a list of different words"]
     if kind == "text":
         try:
             re.compile(values["pattern"])
@@ -243,11 +262,13 @@ def entry_problems(entry):
         problems.append('not_yet_reason must be "" outside route not_yet')
     values = entry["values"]
     problems += _values_problems(values)
-    is_bundle_ids = isinstance(values, dict) and values.get("type") == "bundle_ids"
-    if is_bundle_ids != (route == "dock_apps"):
+    kind = values.get("type") if isinstance(values, dict) else None
+    if (kind == "bundle_ids") != (route == "dock_apps"):
         problems.append(
             "values: {type: bundle_ids} is for route dock_apps, and only there"
         )
+    if kind in ("paths", "list") and route != "finder_sidebar":
+        problems.append(f"values: {{type: {kind}}} is only for route finder_sidebar")
     if route == "by_hand":
         if not _line(entry["where"]):
             problems.append("where must name the System Settings page")
@@ -350,6 +371,22 @@ FIXTURES = {
             route="dock_apps", values={"type": "bundle_ids"}, takes_effect="dock"
         ),
         "beta.backdrop": fixture(route="wallpaper", values=["black"], needs=["click"]),
+        "beta.places": fixture(route="finder_sidebar", values={"type": "paths"}),
+        "beta.hidden": fixture(
+            route="finder_sidebar",
+            values={"type": "list", "choices": ["recents", "trash"]},
+        ),
+        "beta.switch": fixture(
+            values=["on", "off"],
+            writes=[
+                {
+                    "domain": "com.example.test",
+                    "key": "Switch",
+                    "type": "int",
+                    "map": {"on": 1, "off": None},
+                }
+            ],
+        ),
         "beta.privacy_page": fixture(
             route="by_hand",
             where="System Settings > Privacy & Security > Screen Recording",
@@ -434,9 +471,27 @@ BROKEN = [
         "values: must be",
     ),
     (
+        "list without choices",
+        lambda e: (
+            e.pop("writes"),
+            e.update(route="finder_sidebar", values={"type": "list", "choices": []}),
+        ),
+        "values: list needs choices",
+    ),
+    (
         "bundle ids off dock_apps",
         lambda e: e.update(values={"type": "bundle_ids"}),
         "bundle_ids} is for route dock_apps",
+    ),
+    (
+        "paths off finder_sidebar",
+        lambda e: e.update(values={"type": "paths"}),
+        "{type: paths} is only for route finder_sidebar",
+    ),
+    (
+        "list off finder_sidebar",
+        lambda e: e.update(values={"type": "list", "choices": ["trash"]}),
+        "{type: list} is only for route finder_sidebar",
     ),
     (
         "writes on a command",
@@ -662,8 +717,11 @@ class FixtureReference(unittest.TestCase):
                 ("beta.backdrop", "black"),
                 ("beta.edge", "bottom"),
                 ("beta.flag", "true"),
+                ("beta.hidden", "[]"),
+                ("beta.places", "[]"),
                 ("beta.ratio", "1.5"),
                 ("beta.size", "16"),
+                ("beta.switch", "'on'"),
             ],
         )
         self.assertEqual(
@@ -678,7 +736,10 @@ class FixtureReference(unittest.TestCase):
         self.assertEqual(_listed(click_only), [("beta.privacy_page", "")])
         self.assertEqual(_listed(not_yet), [("alpha.gesture", "")])
         for expected in [
-            "  #   Values: left, bottom, off",
+            '  #   Values: left, bottom, "off"',
+            '  #   Values: "on", "off"',
+            "  #   Values: a list of any of recents, trash",
+            '  #   Values: a list of folder paths that start with / or "~", other than / itself, in order',
             "  #   macOS default: bottom",
             "  #   Takes effect: when the Dock restarts",
             "  #   Needs: Full Disk Access for the terminal app",
@@ -700,7 +761,7 @@ class FixtureReference(unittest.TestCase):
         self.assertEqual(profile["default_settings"]["beta.edge"], "bottom")
         self.assertIs(profile["machine_settings"]["alpha.remote"], False)
         self.assertEqual(
-            len(profile["default_settings"]) + len(profile["machine_settings"]), 10
+            len(profile["default_settings"]) + len(profile["machine_settings"]), 13
         )
 
 
@@ -734,6 +795,29 @@ class Reference(unittest.TestCase):
                     self.assertIsNone(
                         re.search(entry["command"]["parse"], "exit: 0\n", re.MULTILINE)
                     )
+
+    def test_sidebar_ids_name_the_module_options(self):
+        loader = importlib.machinery.SourceFileLoader(
+            "macos_finder_sidebar",
+            str(ROOT / "roles/macos_finder_sidebar/library/macos_finder_sidebar.py"),
+        )
+        module = importlib.util.module_from_spec(
+            importlib.util.spec_from_loader(loader.name, loader)
+        )
+        loader.exec_module(module)
+        options = yaml.safe_load(module.DOCUMENTATION)["options"]
+        sidebar = {
+            setting_id: entry
+            for _, setting_id, entry in self.entries
+            if entry["route"] == "finder_sidebar"
+        }
+        self.assertEqual(
+            {setting_id.removeprefix("finder.sidebar_") for setting_id in sidebar},
+            set(options) - {"helper"},
+        )
+        self.assertEqual(
+            sidebar["finder.sidebar_hide"]["values"]["choices"], list(module.HIDE)
+        )
 
     def test_reference_has_every_researched_setting(self):
         routes = Counter(entry.get("route") for _, _, entry in self.entries)

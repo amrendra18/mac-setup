@@ -25,7 +25,7 @@ profile = importlib.util.module_from_spec(_rules)
 _rules.loader.exec_module(profile)
 SETTINGS = Path("settings/macos")
 TEMPLATE = Path("inventory/example/TEMPLATE.yml")
-SETTABLE = ("defaults", "command", "dock_apps", "wallpaper")
+SETTABLE = ("defaults", "command", "dock_apps", "wallpaper", "finder_sidebar")
 TAKES_EFFECT = {
     "live": "at once",
     "dock": "when the Dock restarts",
@@ -93,7 +93,9 @@ def example(values, default):
     kind = values["type"]
     if kind in ("int", "float"):
         return values["min"]
-    return {"bool": False, "text": "unset", "bundle_ids": []}[kind]
+    return {"bool": False, "text": "unset", "bundle_ids": [], "paths": [], "list": []}[
+        kind
+    ]
 
 
 def _text(value):
@@ -110,16 +112,21 @@ def _flow(value):
 
 def describe(values):
     if isinstance(values, list):
-        return ", ".join(_text(choice) for choice in values)
+        return ", ".join(map(profile._choice_text, values))
     kind = values["type"]
     if kind in ("int", "float"):
         number = "a whole number" if kind == "int" else "a number"
         return f"{number} from {values['min']} to {values['max']}"
     if kind == "text":
         return f"text that matches {values['pattern']}"
+    if kind == "list":
+        return "a list of any of " + ", ".join(
+            map(profile._choice_text, values["choices"])
+        )
     return {
         "bool": "true or false",
         "bundle_ids": "a list of app bundle ids, in Dock order",
+        "paths": 'a list of folder paths that start with / or "~", other than / itself, in order',
     }[kind]
 
 
@@ -133,7 +140,11 @@ def _proven(proven_on):
 
 def _facts(entry):
     if entry["route"] == "by_hand":
-        return [("Scope", SCOPE_WORDS[entry["scope"]]), ("Where", entry["where"])]
+        return [
+            ("Scope", SCOPE_WORDS[entry["scope"]]),
+            ("Values", describe(entry["values"])),
+            ("Where", entry["where"]),
+        ]
     if entry["route"] == "not_yet":
         return [
             ("Scope", SCOPE_WORDS[entry["scope"]]),
@@ -206,7 +217,8 @@ def render(settings):
             lambda e: e["scope"] == "machine" and e["route"] in SETTABLE,
         ),
         (
-            "# Click-only settings. No script can set these; change them by hand in System Settings.",
+            "# Click-only settings. No script can set these. List one under default_settings or"
+            "\n# machine_settings, as its scope says, and playbooks/by-hand.yml walks you through it.",
             None,
             "# ",
             lambda e: e["route"] == "by_hand",

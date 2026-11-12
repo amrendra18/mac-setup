@@ -334,6 +334,79 @@ finder.view:
     View Options > Use as Defaults
   proven_on: {}
   not_yet_reason: ""
+finder.search_view:
+  summary: View style for the results of a Finder search.
+  scope: user
+  route: defaults
+  values: [icon, list, column, gallery]
+  macos_default: not measured
+  writes:
+    - domain: com.apple.finder
+      key: FXPreferredSearchViewStyle
+      type: string
+      map: {icon: icnv, list: Nlsv, column: clmv, gallery: Flwv}
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > View > as Icons, List, Columns, Gallery, while
+    search results show
+  proven_on: {}
+  not_yet_reason: ""
+  notes: 'The key name appears in the Finder program on macOS
+    15.6.1. Finder also keeps FXPreferredSearchViewStyleVersion,
+    which this setting does not write. Guess: Finder may ignore
+    the key until that version key is present.'
+finder.sidebar_favorites:
+  summary: Folders that come first in the Favorites section of
+    the Finder sidebar, in this order.
+  scope: user
+  route: finder_sidebar
+  values: {type: paths}
+  macos_default: not measured
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > Settings > Sidebar, or drag folders in the
+    sidebar
+  proven_on: {}
+  not_yet_reason: ""
+  notes: '"~" means the home folder of each account. Other favorite
+    folders stay after the listed ones unless finder.sidebar_favorites_only
+    is true. Finder refuses / as a favorite.'
+finder.sidebar_favorites_only:
+  summary: Remove every favorite folder that finder.sidebar_favorites
+    does not list.
+  scope: user
+  route: finder_sidebar
+  values: {type: bool}
+  macos_default: false
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > Settings > Sidebar
+  proven_on: {}
+  not_yet_reason: ""
+  notes: Works only together with finder.sidebar_favorites. Recents,
+    AirDrop and iCloud items stay unless finder.sidebar_hide names
+    them.
+finder.sidebar_hide:
+  summary: Items to remove from the Finder sidebar.
+  scope: user
+  route: finder_sidebar
+  values:
+    type: list
+    choices: [recents, shared, airdrop, trash, icloud, home_in_locations]
+  macos_default: not measured
+  takes_effect: finder
+  needs: []
+  lockout_risk: false
+  where: Finder > Settings > Sidebar
+  proven_on: {}
+  not_yet_reason: ""
+  notes: Finder ignores the hidden mark on a sidebar item, so mac-setup
+    removes the item. home_in_locations is the home folder in the
+    Locations section. Guess, not measured, how Finder stores recents,
+    shared, airdrop, trash and icloud in the sidebar lists.
 finder.warn_empty_trash:
   summary: Warn before emptying the Trash.
   scope: user

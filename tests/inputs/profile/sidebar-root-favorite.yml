@@ -1,0 +1,4 @@
+---
+# expect: finder.sidebar_favorites
+default_settings:
+  finder.sidebar_favorites: [/Applications, /]

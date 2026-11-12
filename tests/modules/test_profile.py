@@ -43,7 +43,11 @@ def entry(**fields):
         "values": {"type": "bool"},
         "writes": [{"domain": "com.example.test", "key": "Flag", "type": "bool"}],
         "takes_effect": "live",
+        "needs": [],
         "lockout_risk": False,
+        "summary": "A made-up setting.",
+        "where": "System Settings > Example",
+        "link": "",
     }
     return {**base, **fields}
 
@@ -57,6 +61,49 @@ TEST_FILES = {
         "test.label": entry(values={"type": "text", "pattern": "[A-Z][a-z]+"}),
         "test.logout": entry(takes_effect="logout"),
         "test.click": entry(route="by_hand", writes=[]),
+        "test.machine_click": entry(
+            scope="machine",
+            route="by_hand",
+            values=["by_hand"],
+            where="System Settings > Bluetooth",
+            link="x-apple.systempreferences:com.example.bluetooth",
+            writes=[],
+        ),
+        "test.command": entry(
+            scope="machine",
+            route="command",
+            command={
+                "read": ["/usr/bin/example", "-get"],
+                "parse": r"^(?P<value>[01])$",
+                "map": {True: "1", False: "0"},
+                "set": {
+                    True: [["/usr/bin/example", "on"]],
+                    False: [["/usr/bin/example", "off"]],
+                },
+            },
+            writes=[],
+        ),
+        "test.switch": entry(
+            values=["on", "off"],
+            writes=[
+                {
+                    "domain": "com.example.test",
+                    "key": "Switch",
+                    "type": "int",
+                    "map": {"on": 1, "off": None},
+                }
+            ],
+        ),
+        "test.backdrop": entry(route="wallpaper", values=["black"], writes=[]),
+        "finder.sidebar_favorites": entry(
+            route="finder_sidebar", values={"type": "paths"}, writes=[]
+        ),
+        "finder.sidebar_favorites_only": entry(route="finder_sidebar", writes=[]),
+        "finder.sidebar_hide": entry(
+            route="finder_sidebar",
+            values={"type": "list", "choices": ["recents", "trash"]},
+            writes=[],
+        ),
         "test.later": entry(
             route="not_yet", not_yet_reason="the value is a list", writes=[]
         ),
@@ -310,6 +357,102 @@ class ProfileProblems(unittest.TestCase):
             subjects(profile_problems(profile, FILES)), ["Accounts", "default_setting"]
         )
 
+    def test_paths_and_lists(self):
+        for setting_id, value, ok in [
+            ("finder.sidebar_favorites", ["/Applications", "~", "~/Desktop"], True),
+            ("finder.sidebar_favorites", [], True),
+            ("finder.sidebar_favorites", ["Desktop"], False),
+            ("finder.sidebar_favorites", ["~sam"], False),
+            ("finder.sidebar_favorites", ["/"], False),
+            ("finder.sidebar_favorites", ["//"], False),
+            ("finder.sidebar_favorites", ["/."], False),
+            ("finder.sidebar_favorites", ["/Applications", "/Applications"], False),
+            ("finder.sidebar_favorites", "/Applications", False),
+            ("finder.sidebar_hide", ["recents", "trash"], True),
+            ("finder.sidebar_hide", [], True),
+            ("finder.sidebar_hide", ["airdrop"], False),
+            ("finder.sidebar_hide", ["trash", "trash"], False),
+            ("finder.sidebar_hide", "trash", False),
+        ]:
+            with self.subTest(setting_id=setting_id, value=value):
+                problems = profile_problems(
+                    {"default_settings": {setting_id: value}}, TEST_FILES
+                )
+                self.assertEqual(problems == [], ok)
+
+    def test_root_as_a_favorite_is_one_problem_line(self):
+        problems = profile_problems(
+            {"default_settings": {"finder.sidebar_favorites": ["/Applications", "/"]}},
+            TEST_FILES,
+        )
+        self.assertEqual(
+            problems,
+            [
+                "finder.sidebar_favorites: ['/Applications', '/'] is not allowed, "
+                'use a list of different folder paths that start with / or "~", '
+                "other than / itself"
+            ],
+        )
+
+    def test_favorites_only_false_alone_is_fine(self):
+        profile = {"default_settings": {"finder.sidebar_favorites_only": False}}
+        self.assertEqual(profile_problems(profile, TEST_FILES), [])
+
+    def test_favorites_only_needs_favorites_in_the_same_settings(self):
+        alone = {"finder.sidebar_favorites_only": True}
+        both = {**alone, "finder.sidebar_favorites": ["~"]}
+        for profile, expected in [
+            (
+                {"default_settings": alone},
+                [
+                    "finder.sidebar_favorites_only: needs finder.sidebar_favorites "
+                    "in the same settings"
+                ],
+            ),
+            ({"default_settings": both}, []),
+            (
+                {"accounts": [account("setuptest1", settings=alone)]},
+                [
+                    "account setuptest1, finder.sidebar_favorites_only: needs "
+                    "finder.sidebar_favorites in the same settings"
+                ],
+            ),
+            (
+                {
+                    "default_settings": {"finder.sidebar_favorites": ["~"]},
+                    "accounts": [account("setuptest1", settings=alone)],
+                },
+                [],
+            ),
+        ]:
+            with self.subTest(profile=profile):
+                self.assertEqual(profile_problems(profile, TEST_FILES), expected)
+
+    def test_unset_only_for_defaults(self):
+        problems = profile_problems(
+            {"default_settings": {"test.apps": "unset", "test.flag": "unset"}},
+            TEST_FILES,
+        )
+        self.assertEqual(subjects(problems), ["test.apps"])
+        self.assertIn("unset works only for settings stored with defaults", problems[0])
+
+    def test_a_bare_on_or_off_is_told_to_quote(self):
+        problems = profile_problems(
+            {"default_settings": {"test.switch": False}}, TEST_FILES
+        )
+        self.assertEqual(
+            problems,
+            ['test.switch: False is not allowed, use one of "on", "off" (quote them)'],
+        )
+        problems = profile_problems(
+            {"default_settings": {"dock.position": True}}, FILES
+        )
+        self.assertNotIn("quote", problems[0])
+
+    def test_run_switches_are_allowed(self):
+        profile = {"by_hand_list": True, "by_hand_open": "/usr/bin/true"}
+        self.assertEqual(profile_problems(profile, FILES), [])
+
     def test_repeated_reference_id_stops_the_run(self):
         files = {"a.yml": {"test.flag": entry()}, "b.yml": {"test.flag": entry()}}
         self.assertEqual(subjects(profile_problems({}, files)), ["test.flag"])
@@ -319,7 +462,7 @@ class ProfileWork(unittest.TestCase):
     def test_writes_for_the_running_account(self):
         work = profile_work({"default_settings": VALID}, FILES, "runner")
         self.assertEqual(
-            work["defaults_writes"],
+            work["own"]["writes"],
             [
                 {
                     "id": "dock.position",
@@ -357,13 +500,16 @@ class ProfileWork(unittest.TestCase):
             ],
         )
         self.assertEqual(work["accounts"], [])
-        self.assertEqual(work["other_account_writes"], [])
+        self.assertEqual(work["others"], [])
+        self.assertEqual(work["machine_writes"], [])
+        self.assertEqual(work["commands"], [])
+        self.assertEqual(work["by_hand"], [])
 
     def test_unset_deletes_the_key(self):
         work = profile_work(
             {"default_settings": {"dock.show_recents": "unset"}}, FILES, "runner"
         )
-        [write] = work["defaults_writes"]
+        [write] = work["own"]["writes"]
         self.assertEqual((write["state"], write["value"]), ("absent", None))
 
     def test_maps_host_and_several_writes(self):
@@ -373,7 +519,7 @@ class ProfileWork(unittest.TestCase):
         self.assertEqual(
             [
                 (w["id"], w["key"], w["type"], w["value"], w["host"], w["dict_mode"])
-                for w in work["defaults_writes"]
+                for w in work["own"]["writes"]
             ],
             [
                 ("test.mapped", "Size", "int", 3, "", "replace"),
@@ -396,11 +542,11 @@ class ProfileWork(unittest.TestCase):
             return {w["id"]: w["value"] for w in writes}
 
         self.assertEqual(
-            values(work["defaults_writes"]),
+            values(work["own"]["writes"]),
             {"dock.position": "left", "dock.tile_size": 48},
         )
         self.assertEqual(
-            [(o["account"], values(o["writes"])) for o in work["other_account_writes"]],
+            [(o["account"], values(o["writes"])) for o in work["others"]],
             [
                 ("setuptest1", {"dock.position": "bottom", "dock.tile_size": 32}),
                 ("setuptest2", {"dock.position": "left", "dock.tile_size": 32}),
@@ -422,6 +568,86 @@ class ProfileWork(unittest.TestCase):
                 },
             ],
         )
+
+    def test_a_null_in_the_map_deletes_the_key(self):
+        work = profile_work(
+            {"default_settings": {"test.switch": "off"}}, TEST_FILES, "runner"
+        )
+        [write] = work["own"]["writes"]
+        self.assertEqual((write["state"], write["value"]), ("absent", None))
+
+    def test_routes_build_their_work_items(self):
+        profile = {
+            "default_settings": {
+                "test.apps": ["com.apple.Terminal"],
+                "test.backdrop": "black",
+                "finder.sidebar_favorites": ["~"],
+                "test.click": True,
+            },
+            "accounts": [
+                account("setuptest1", settings={"finder.sidebar_hide": ["trash"]}),
+            ],
+            "machine_settings": {
+                "test.machine": True,
+                "test.command": False,
+                "test.machine_click": "by_hand",
+            },
+        }
+        work = profile_work(profile, TEST_FILES, "runner")
+        own = work["own"]
+        self.assertEqual(own["dock_apps"], {"apps": ["com.apple.Terminal"]})
+        self.assertEqual(own["wallpaper"], {"color": "black"})
+        self.assertEqual(
+            own["finder_sidebar"],
+            {"ids": ["finder.sidebar_favorites"], "favorites": ["~"]},
+        )
+        [other] = work["others"]
+        self.assertEqual(other["account"], "setuptest1")
+        self.assertEqual(
+            other["finder_sidebar"],
+            {
+                "ids": ["finder.sidebar_favorites", "finder.sidebar_hide"],
+                "favorites": ["~"],
+                "hide": ["trash"],
+            },
+        )
+        self.assertEqual(
+            [(w["id"], w["domain"]) for w in work["machine_writes"]],
+            [("test.machine", "com.example.test")],
+        )
+        self.assertEqual(
+            work["commands"],
+            [
+                {
+                    "id": "test.command",
+                    "read": ["/usr/bin/example", "-get"],
+                    "parse": r"^(?P<value>[01])$",
+                    "map": {True: "1", False: "0"},
+                    "set": {
+                        True: [["/usr/bin/example", "on"]],
+                        False: [["/usr/bin/example", "off"]],
+                    },
+                    "value": False,
+                }
+            ],
+        )
+        self.assertEqual(
+            [(i["account"], i["id"], i["choose"]) for i in work["by_hand"]],
+            [
+                ("setuptest1", "test.click", "A made-up setting: on"),
+                ("runner", "test.click", "A made-up setting: on"),
+                (
+                    "machine",
+                    "test.machine_click",
+                    "A made-up setting: the way you want",
+                ),
+            ],
+        )
+        self.assertEqual(
+            work["by_hand"][2]["link"],
+            "x-apple.systempreferences:com.example.bluetooth",
+        )
+        self.assertEqual(work["counts"]["need_click"], 3)
 
     def test_counts(self):
         profile = {
@@ -467,6 +693,7 @@ class ProfileSummary(unittest.TestCase):
                     "secure_token": False,
                 },
             ],
+            [],
         )
         self.assertEqual(
             summary["refused"],
@@ -479,7 +706,9 @@ class ProfileSummary(unittest.TestCase):
         self.assertIn("setuptest1", summary["notes"][0])
         self.assertIn("setuptest2", summary["notes"][1])
         self.assertIn(" 3 settings", summary["notes"][2])
-        self.assertIn("1 setting ", summary["notes"][3])
+        self.assertEqual(
+            summary["notes"][3], "1 setting needs a click: run playbooks/by-hand.yml"
+        )
 
     def test_check_run_names_each_account_it_skipped(self):
         summary = profile_summary(
@@ -499,6 +728,7 @@ class ProfileSummary(unittest.TestCase):
                     "secure_token": True,
                 },
             ],
+            [],
         )
         self.assertEqual(summary["refused"], [])
         self.assertEqual(len(summary["notes"]), 1)
@@ -506,8 +736,46 @@ class ProfileSummary(unittest.TestCase):
         self.assertIn("skipped its settings", summary["notes"][0])
 
     def test_clean_run_has_no_refused_lines(self):
-        summary = profile_summary({"after_logout": 0, "need_click": 0}, [], [])
+        summary = profile_summary({"after_logout": 0, "need_click": 0}, [], [], [])
         self.assertEqual(summary, {"notes": [], "refused": []})
+
+    def test_a_missing_admin_password_is_named_as_admin_rights(self):
+        summary = profile_summary(
+            {"after_logout": 0, "need_click": 0},
+            [
+                {
+                    "account": "machine",
+                    "id": "power.display_sleep_minutes",
+                    "message": "Task failed: Premature end of stream waiting for "
+                    "become success.\n>>> Standard Error\nsudo: a password is required",
+                }
+            ],
+            [],
+            [],
+        )
+        self.assertEqual(
+            summary["refused"],
+            [
+                "refused power.display_sleep_minutes for machine: "
+                "needs admin rights: run with -K"
+            ],
+        )
+
+    def test_a_wallpaper_waiting_for_another_account_is_a_note(self):
+        summary = profile_summary(
+            {"after_logout": 0, "need_click": 2}, [], [], ["setuptest1"]
+        )
+        self.assertEqual(
+            summary,
+            {
+                "notes": [
+                    "the desktop picture for setuptest1 is set at its next run "
+                    "while it is signed in",
+                    "2 settings need a click: run playbooks/by-hand.yml",
+                ],
+                "refused": [],
+            },
+        )
 
 
 if __name__ == "__main__":

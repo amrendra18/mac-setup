@@ -759,7 +759,7 @@ sharing.remote_login:
       true:
         - [/usr/sbin/systemsetup, -setremotelogin, 'on']
       false:
-        - [/usr/sbin/systemsetup, -setremotelogin, 'off']
+        - [/usr/sbin/systemsetup, -f, -setremotelogin, 'off']
   takes_effect: live
   needs: [full_disk_access]
   lockout_risk: true
@@ -767,7 +767,8 @@ sharing.remote_login:
   proven_on: {}
   not_yet_reason: ""
   notes: systemsetup fails unless the terminal has Full Disk Access.
-    The lockout guard applies.
+    The lockout guard applies. -f stops systemsetup asking to confirm
+    the off step.
 sharing.remote_management:
   summary: Allow Apple Remote Desktop to manage this Mac (Remote
     Management).
@@ -808,7 +809,7 @@ sharing.screen_sharing:
   proven_on: {}
   not_yet_reason: ""
   notes: Medium confidence route; the safer path is the Sharing
-    pane.
+    pane. Turning it off by script is not yet measured.
 time.server:
   summary: Network time server used to set the clock.
   scope: machine

@@ -521,6 +521,8 @@ def drive(journey, run, evidence, profile_file, password_file):
         for k, v in run.recap.items()
         if recap.get(k) != v
     ]
+    if "<< error" in done.stdout:
+        problems.append("the output holds a template error (<< error)")
     for output in run.output:
         found = len(re.findall(output.pattern, done.stdout, re.M))
         if found != output.count:

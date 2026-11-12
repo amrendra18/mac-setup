@@ -1,10 +1,18 @@
 # mac-setup
 
-Status: milestone M2. `scripts/bootstrap` installs mac-setup. The settings reference in `settings/macos/` describes 283 settings, and 5 of them are proven on macOS 27.2.1. Today a run creates the accounts the profile lists and writes account settings that macOS keeps as preferences, for the account that runs it and for each listed account. Of those, only the 3 Dock settings (position, tile size and recents) are proven. Machine settings, the click-through and the other settings are planned. The Plan section names the milestone that builds each one.
+Status: milestone M2. `scripts/bootstrap` installs mac-setup. The settings reference in `settings/macos/` describes 287 settings. The playbooks wire 6 of its routes: preferences (`defaults`), command tools (`command`), Dock apps (`dock_apps`), the desktop picture (`wallpaper`), the Finder sidebar (`finder_sidebar`) and the click-through (`by_hand`). The 36 settings on route `not_yet` have no way to apply them yet. Today a run does these things:
+
+1. It creates the accounts the profile lists.
+2. It writes account settings that macOS keeps as preferences, for the account that runs it and for each listed account.
+3. It writes machine preferences as root, and sets machine settings through command tools such as `pmset` and `systemsetup`.
+4. It sets each account's Dock apps, a solid black desktop, and the Finder sidebar's favorites and hidden items.
+5. `playbooks/by-hand.yml` walks you through the click-only settings in the profile.
+
+6 settings are proven on macOS 27.2.1: the 3 Dock settings (position, tile size and recents), the Dock apps, the black desktop and Wi-Fi power. Every other setting on a wired route is built and unit-tested but not yet proven on a Mac. The Plan section names the milestone that proves it.
 
 mac-setup sets up a Mac from one profile file. You write down the settings you want once, for the Mac and for each account on it. One command then applies them, and running it again changes nothing.
 
-Privacy permissions (camera, microphone, screen recording, full disk access and similar) cannot be set by any script. Apple lets only a person grant them. For these, mac-setup opens the exact System Settings page, tells you what to choose, waits while you click, and checks the result afterwards where macOS allows it.
+Privacy permissions (camera, microphone, screen recording, full disk access and similar) cannot be set by any script. Apple lets only a person grant them. For these, mac-setup opens the exact System Settings page, tells you what to choose, and waits while you click.
 
 ## Who it is for
 
@@ -14,7 +22,7 @@ Today that person clicks through System Settings by hand, once per Mac and once 
 
 ## What a run looks like
 
-This section describes the first release. Today a run applies only account settings, and only the 3 Dock settings among them are proven. The Install section below gives the steps that work today.
+This section describes the first release. Today a run applies every kind of setting the Status line lists, and only 6 settings are proven. The Install section below gives the steps that work today.
 
 ### First run on a fresh Mac
 
@@ -33,7 +41,7 @@ Run the same command. Settings that already match print as `ok` and the recap sh
 
 ### Previewing a change
 
-Add `--check` to see what would change without changing anything. Each setting that would change prints as `changed` with its new value. The preview does not print the old value. To see a current value, run `defaults read DOMAIN KEY` with the domain and key from the settings reference.
+Add `--check` to see what would change without changing any setting. When the profile lists a Finder sidebar setting, the preview still builds the sidebar helper into `.local/finder-sidebar/`, because it needs the helper to read the sidebar. Each setting that would change prints as `changed` with its new value. The preview does not print the old value. To see a current value, run `defaults read DOMAIN KEY` with the domain and key from the settings reference.
 
 ### Other accounts
 
@@ -43,7 +51,7 @@ mac-setup never deletes an account. To remove one, use System Settings > Users &
 
 ### Click-only settings
 
-Run `.local/venv/bin/ansible-playbook playbooks/by-hand.yml` while you sit at the Mac. For each click-only setting in your profile it opens the System Settings page, prints what to choose, and waits until you press Return. It changes nothing itself.
+List click-only settings in the profile like any other, for example `network.bluetooth_power: false` under `machine_settings`. Then run `.local/venv/bin/ansible-playbook playbooks/by-hand.yml` while you sit at the Mac. For each click-only setting of your account and of the machine, it opens the System Settings page, prints what to choose (for example "Turn Bluetooth on or off: off"), and waits until you press Return. It changes nothing itself. Add `-e by_hand_list=true` to list the pages without opening them. Another account's click-only settings appear when that person runs the playbook while signed in.
 
 ### Changing a setting back
 
@@ -53,7 +61,7 @@ Edit the profile and run again. Write the old value, or write `unset` to return 
 
 1. A mistake in the profile (an unknown setting, a value that is not allowed, a machine setting placed under an account) stops the run before anything changes. Exit code 2 and one line per problem tell you what to fix.
 2. A setting macOS refuses at write time, for example because a stored value has another type, does not stop the run. The other settings still apply, the Dock still restarts if needed, and the summary names each refused setting. The run then ends with exit code 2.
-3. A run from an account without admin rights fails at the machine and other-accounts part. Your own account's settings still apply first.
+3. A run from an account without admin rights, or without `-K`, fails at the machine and other-accounts part. Your own account's settings still apply first. The summary names each setting it could not set there with "needs admin rights: run with -K".
 4. A setting that could cut a remote connection, such as turning Remote Login off, is refused unless the profile sets `allow_lockout_risk: true`.
 
 ## Scope
@@ -147,7 +155,23 @@ If a download does not match its pinned SHA-256 hash, the bootstrap deletes that
    test -d .local/inventory || cp -R inventory/example .local/inventory
    ```
 
-   The profile is `.local/inventory/host_vars/example-mac/accounts.yml`. Its `default_settings` hold 3 Dock settings for every account. Change a value there if you want another one. For example, `dock.position: bottom` moves the Dock to the bottom. `inventory/example/TEMPLATE.yml` lists every setting with the values it takes. The value `unset` deletes the setting, so macOS uses its own default.
+   The profile is `.local/inventory/host_vars/example-mac/accounts.yml`. Its `default_settings` hold 3 Dock settings for every account. Change a value there if you want another one. For example, `dock.position: bottom` moves the Dock to the bottom. `inventory/example/TEMPLATE.yml` lists every setting with the values it takes. The value `unset` deletes a setting stored as a preference, so macOS uses its own default.
+
+   Quote a value such as `"on"`, `"off"`, `"yes"` or `"no"`. Without quotes, YAML reads it as true or false, and the profile check refuses it with a line that says to quote it.
+
+   Some settings need more than a preference line. Each example below goes under `default_settings` or an account's `settings`, except the last, which goes under `machine_settings`:
+
+   ```yaml
+   dock.applications: [com.apple.Terminal, com.apple.Safari]
+   desktop.wallpaper: black
+   finder.sidebar_favorites: [/Applications, "~", ~/Desktop]
+   finder.sidebar_favorites_only: true
+   finder.sidebar_hide: [recents, airdrop]
+   # under machine_settings:
+   power.display_sleep_minutes: 10
+   ```
+
+   `dock.applications` keeps only the listed apps, by bundle id and in order. `desktop.wallpaper` needs the account signed in at the screen. For another account, the summary says its desktop picture is set at its next run while it is signed in. `finder.sidebar_favorites` puts the listed folders first in Finder's sidebar, and `"~"` means each account's home folder. The first run that sets the sidebar compiles a small helper with the Command Line Tools into `.local/finder-sidebar/`. To add Desktop, Documents or Downloads, the helper first lists the folder, so macOS asks once whether Terminal may use it. Click Allow, and the folder is added; later runs do not ask again. If you click Don't Allow, the run names the folder as refused.
 
    Its `accounts` list is empty. To create a standard account, or to give an existing one its own settings, add an entry:
 
@@ -170,7 +194,7 @@ If a download does not match its pinned SHA-256 hash, the bootstrap deletes that
    .local/venv/bin/ansible-playbook playbooks/site.yml -K
    ```
 
-   `-K` makes Ansible ask for your admin password once (`BECOME password:`). The run's second part uses it to create accounts and to write other accounts' settings as those accounts. With an empty `accounts` list nothing uses it, but Ansible still asks. For each listed account that does not exist yet, the apply also asks that account's new password once, with typing hidden. The preview creates nothing and asks no account password.
+   `-K` makes Ansible ask for your admin password once (`BECOME password:`). The run's second part uses it to create accounts, to write machine settings, and to write other accounts' settings as those accounts. With no machine settings and an empty `accounts` list nothing uses it, but Ansible still asks. For each listed account that does not exist yet, the apply also asks that account's new password once, with typing hidden. The preview creates nothing and asks no account password.
 
    With the example profile as copied, the preview ends with `changed=3` in its recap line and writes nothing. The first apply ends with `changed=4`: 3 settings and 1 Dock restart. The Dock moves to the left, gets smaller and hides recent apps. The second apply ends with `changed=0`.
 
@@ -206,9 +230,10 @@ Every download uses HTTPS. The bootstrap never reads the package index at `pypi.
 | 5 | `.local/collections/` | The community.general collection | 26,292 KiB |
 | 6 | `.local/ansible-home/` | Ansible's own settings and temporary files | 4 KiB |
 | 7 | `.local/logs/` | `ansible.log`, the log of every run | 4 KiB |
-| 8 | `~/.local/share/uv/python/` | Python 3.13.15 in `cpython-3.13.15-macos-aarch64-none`, the link `cpython-3.13-macos-aarch64-none`, and uv's files `.gitignore`, `.lock` and `.temp` | 72,520 KiB |
+| 8 | `.local/finder-sidebar/` | The compiled Finder sidebar helper, written by the first run or preview that includes a sidebar setting | not measured |
+| 9 | `~/.local/share/uv/python/` | Python 3.13.15 in `cpython-3.13.15-macos-aarch64-none`, the link `cpython-3.13-macos-aarch64-none`, and uv's files `.gitignore`, `.lock` and `.temp` | 72,520 KiB |
 
-Rows 1 to 7 sit inside the checkout, and git ignores `.local/`. Your profile goes in `.local/inventory/` and test evidence in `.local/verify/`, in the same ignored folder.
+Rows 1 to 8 sit inside the checkout, and git ignores `.local/`. Your profile goes in `.local/inventory/` and test evidence in `.local/verify/`, in the same ignored folder.
 
 Nothing else in your home folder changes. uv adds no link in `~/.local/bin` and keeps no cache or settings. The checkout's `ansible.cfg` keeps Ansible's files in `.local/`, so no `~/.ansible` folder appears.
 
