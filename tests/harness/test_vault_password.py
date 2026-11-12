@@ -32,20 +32,22 @@ class VaultPassword(unittest.TestCase):
             timeout=30,
         )
 
-    def test_help_prints_one_usage_line(self):
+    def test_help_prints_usage_and_exit_codes(self):
         for flag in ("--help", "-h"):
             with self.subTest(flag=flag):
                 out = self.run_script(flag)
                 self.assertEqual(out.returncode, 0, out.stderr)
-                self.assertTrue(out.stdout.startswith("usage: scripts/vault-password "))
-                self.assertEqual(out.stdout.count("\n"), 1)
+                self.assertTrue(
+                    out.stdout.startswith("usage: scripts/vault-password\n")
+                )
+                self.assertIn("\nexit codes: ", out.stdout)
                 self.assertNotIn(SECRET.strip(), out.stdout)
 
     def test_bad_argument_exits_2(self):
         out = self.run_script("--vault-id")
         self.assertEqual(out.returncode, 2)
         self.assertEqual(out.stdout, "")
-        self.assertTrue(out.stderr.startswith("usage: scripts/vault-password "))
+        self.assertTrue(out.stderr.startswith("usage: scripts/vault-password\n"))
 
     def test_pipe_gets_the_password(self):
         out = self.run_script()

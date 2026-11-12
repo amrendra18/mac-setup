@@ -4,7 +4,9 @@
 # This file lists every setting mac-setup knows. To use one, copy its line into
 # the same section of your profile and remove the "# " in front of it. The value
 # after the colon is an example. To give one account its own value, put the line
-# under that account's settings. For a setting stored as a preference, the value unset returns it to the macOS default.
+# under that account's settings. For a setting stored as a preference, the value unset
+# returns it to the macOS default. "Proven on" means a test wrote the value on that macOS
+# version and read it back. It does not mean someone checked what System Settings shows.
 # The notes quote research made before mac-setup applied the setting, and "Guess" marks a
 # fact nobody measured yet.
 

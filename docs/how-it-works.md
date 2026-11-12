@@ -21,11 +21,12 @@ Nothing runs in the background. You start `ansible-playbook` in Terminal. It run
 
 Play 1, "This account", runs as you without admin rights:
 
-1. The `profile` role checks the whole profile against the reference and the catalog. A problem stops the run here, before any change.
-2. `macos_defaults` writes your account's preferences.
-3. `macos_dock_apps` sets your Dock's app list.
-4. `macos_wallpaper` sets your desktop picture.
-5. `macos_finder_sidebar` builds its helper when any account needs it, then sets your Finder sidebar.
+1. When the profile lists more than one Mac, the `profile` role reads this Mac's local hostname with `scutil --get LocalHostName`. It stops with one line when no entry has that name, and ends every other entry, so play 2 skips them too. The compare is case-sensitive.
+2. The `profile` role checks the whole profile against the reference and the catalog. A problem stops the run here, before any change.
+3. `macos_defaults` writes your account's preferences.
+4. `macos_dock_apps` sets your Dock's app list.
+5. `macos_wallpaper` sets your desktop picture.
+6. `macos_finder_sidebar` builds its helper when any account needs it, then sets your Finder sidebar.
 
 Play 2, "Machine and other accounts", runs with admin rights:
 
@@ -163,7 +164,7 @@ An upgrade replaces the old copy whole. The run copies the new app next to the o
 3. **Admin work sits in one place.** Only play 2 of `playbooks/site.yml` uses admin rights.
 4. **Small, data-driven code.** One role writes every simple preference from the reference. A custom module exists only where no existing module can do the job.
 5. **Pinned and checked downloads.** See [How downloads are checked](#how-downloads-are-checked).
-6. **Private data stays local.** Real machine names, account names and profiles live in `.local/`, which git ignores. Passwords are typed at a prompt and never written to a file.
+6. **Private data stays local.** Real machine names, account names and profiles live in `.local/` or `~/.dot/`, outside the tracked files. Account passwords are typed at a prompt and never written to a file. The only secret stored in plain text is the vault password, in a file only you can read. The VirusTotal key sits in an encrypted vault that this password opens.
 7. **Proven on the real Mac.** A setting counts as proven on a macOS version only after it was applied and read back on a Mac running that version.
 
 ## Scope
@@ -208,7 +209,7 @@ Homebrew, dotfiles, turning FileVault on with a secure token (the right to unloc
 
 Two scripts test mac-setup. [CONTRIBUTING.md](../CONTRIBUTING.md) says when to run each.
 
-1. `scripts/check` runs on any Mac and changes no settings. It lints the YAML files, checks playbook syntax, runs the unit tests, and runs every broken test profile in `tests/inputs/`. Each broken profile must stop in the profile check with exit code 2. It also checks the structure rules (no `sudo` in a role, `become` only in play 2 of `playbooks/site.yml`, and no task that touches the privacy database or System Integrity Protection) and scans the files for private words and secrets. `scripts/check full` adds the reference test, a format check and ansible-lint.
+1. `scripts/check` runs on any Mac and changes no settings. It lints the YAML files, checks playbook syntax, runs the unit tests and every broken test profile in `tests/inputs/`, plus the two-Mac inventory `tests/two-macs/hosts.yml`, whose entries match no Mac. Each must stop in the profile check with exit code 2. It also checks the structure rules (no `sudo` in a role, `become` only in play 2 of `playbooks/site.yml`, and no task that touches the privacy database or System Integrity Protection) and scans the files for private words and secrets. `scripts/check full` adds the reference test, a format check and ansible-lint.
 2. `scripts/verify` is the harness that proves features on a real Mac. Each feature has a journey in `verify/journeys/`, a YAML file that lists playbook runs and the values to read back afterwards. The harness runs the real playbook, reads the stored values with `defaults export`, and keeps the evidence in `.local/verify/UTCTIME/`. It changes the real settings of the account that runs it, and the `accounts` journey creates the standard account `setuptest1`.
 
 The [verification map](../verify/features/README.md) describes the harness in full. It gives the harness's steps, its evidence, the journey file format and one page per feature.
@@ -226,4 +227,4 @@ The [verification map](../verify/features/README.md) describes the harness in fu
 | 7 | M6 | Dock apps and a black desktop | The Dock holds only the listed apps, and the desktop is black. |
 | 8 | M7 | the remaining settings | Every setting has a way to apply it or a written reason why none is safe. |
 | 9 | M8 | the new-Mac journey | A fresh admin account follows the README end to end with one command. |
-| 10 | M9 | the next items | Dotfiles, FileVault, MDM, undo and SSH runs, each planned and approved first. Apps moved ahead and are in use. |
+| 10 | M9 | the next items | Dotfiles, FileVault, MDM, undo and SSH runs, each planned and approved first. |

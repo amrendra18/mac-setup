@@ -45,7 +45,7 @@ scripts/check full
 1. yamllint on every YAML file.
 2. The playbook syntax check.
 3. The unit tests in `tests/modules/` and `tests/harness/`.
-4. Every broken test profile in `tests/inputs/`. Each one must stop in the profile check with exit code 2 and `changed=0`.
+4. Every broken test profile in `tests/inputs/`, and the two-Mac inventory `tests/two-macs/hosts.yml`. Each one must stop in the profile check with exit code 2 and `changed=0`.
 5. The structure rules: no `sudo` in a role, `become` only in play 2 of `playbooks/site.yml`, and no task that touches the privacy database or System Integrity Protection.
 6. The private-word scan.
 7. The Gitleaks secret scan.
@@ -79,4 +79,4 @@ The [verification map](verify/features/README.md) lists every feature, the journ
 3. `scripts/app-catalog ID` prints a vendor's current version, URL and SHA-256 for one app, for review. It never edits the catalog.
 4. `scripts/collection-age` checks the Ansible collection pins in `requirements/collections.txt` against Galaxy's publish dates, and fails on a pin younger than 21 days. It needs the network.
 
-Every script in `scripts/` answers `--help` with its usage. All but `scripts/vault-password` also list their exit codes.
+Every script in `scripts/` answers `--help` with its usage and exit codes.

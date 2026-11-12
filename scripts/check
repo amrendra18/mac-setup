@@ -11,8 +11,9 @@ usage() {
   cat <<'EOF'
 usage: scripts/check [fast|full]
 
-fast  yamllint, playbook syntax, Python unit tests in tests/modules/ and tests/harness/, every broken
-      test input in tests/inputs/ (each must stop in the profile check with exit 2
+fast  yamllint, playbook syntax, Python unit tests in tests/modules/ and
+      tests/harness/, every broken test input in tests/inputs/ and
+      tests/two-macs/hosts.yml (each must stop in the profile check with exit 2
       and changed=0, run with --check, and print one problem line per
       "# expect: SUBJECT" line in the input, each line starting "SUBJECT: "),
       the structure rules, the private-word scan and gitleaks. It changes no

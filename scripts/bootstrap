@@ -10,9 +10,9 @@ in this checkout, and Python itself into ~/.local/share/uv/python/. Each
 download must match its pinned SHA-256 hash. A second run downloads nothing.
 It takes no options.
 
-exit codes: 0 installed, 1 not an Apple Silicon Mac, a download did not
-match its hash, or another step failed, 2 usage error, any other code from the command that failed
-(such as curl when the network is down)
+exit codes: 0 installed; 1 not an Apple Silicon Mac, a download did not
+match its hash, or a check failed; 2 usage error; any other code comes from
+the command that failed, such as curl when the network is down
 EOF
 }
 

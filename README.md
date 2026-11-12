@@ -176,7 +176,7 @@ macs:
       ansible_python_interpreter: "{{ ansible_playbook_python }}"
 ```
 
-To see a Mac's local hostname, run `scutil --get LocalHostName`. To change it, use System Settings > General > Sharing, then rename that Mac's entry and folder to match. A profile with one Mac skips this check.
+To see a Mac's local hostname, run `scutil --get LocalHostName`. To change it, use System Settings > General > Sharing, then rename that Mac's entry and folder to match. The names must match in capital and small letters too. A profile with one Mac skips this check.
 
 ## Apps
 
