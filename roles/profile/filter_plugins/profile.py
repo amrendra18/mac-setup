@@ -230,7 +230,7 @@ def _misread(choice):
     return isinstance(choice, str) and not isinstance(yaml.safe_load(choice), str)
 
 
-def _choice_text(choice):
+def choice_text(choice):
     if _misread(choice):
         return f'"{choice}"'
     return str(choice).lower() if isinstance(choice, bool) else str(choice)
@@ -240,15 +240,15 @@ def _kind(spec):
     return spec["type"] if isinstance(spec, dict) else None
 
 
-def _allowed(spec, value):
+def allowed(spec, value):
     if isinstance(spec, list):
         return value in spec
     return VALUE_KINDS[spec["type"]][0](spec, value)
 
 
-def _describe(spec):
+def describe(spec):
     if isinstance(spec, list):
-        return "one of " + ", ".join(map(_choice_text, spec))
+        return "one of " + ", ".join(map(choice_text, spec))
     return VALUE_KINDS[spec["type"]][1](spec)
 
 
@@ -301,21 +301,21 @@ def _setting_problems(prefix, settings, scope, reference, allow_lockout_risk, ca
         elif value == UNSET and entry["route"] != "defaults":
             problems.append(
                 f"{subject}: unset works only for settings stored with defaults, "
-                f"use {_describe(entry['values'])}"
+                f"use {describe(entry['values'])}"
             )
         elif value == UNSET and _kind(entry["values"]) in UNSET_REFUSALS:
             problems.append(
                 f"{subject}: unset {UNSET_REFUSALS[_kind(entry['values'])]}, "
-                f"use {_describe(entry['values'])}"
+                f"use {describe(entry['values'])}"
             )
-        elif value != UNSET and not _allowed(entry["values"], value):
+        elif value != UNSET and not allowed(entry["values"], value):
             quote = isinstance(entry["values"], list) and any(
                 _misread(choice) and yaml.safe_load(choice) == value
                 for choice in entry["values"]
             )
             problems.append(
                 f"{subject}: {value!r} is not allowed, "
-                f"use {_describe(entry['values'])}" + (" (quote them)" if quote else "")
+                f"use {describe(entry['values'])}" + (" (quote them)" if quote else "")
             )
         elif entry["values"] == {"type": "catalog_ids"} and (
             app_problems := _app_id_problems(value, catalog)
@@ -583,6 +583,7 @@ def _command(setting_id, value, command):
         "read": command["read"],
         "parse": command["parse"],
         "map": command.get("map", {}),
+        "refuse": command.get("refuse", {}),
         "set": command["set"],
         "value": value,
     }

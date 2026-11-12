@@ -201,7 +201,7 @@ def _command_problems(command, values):
         return ["command: needs read, parse and set"]
     problems = [
         f"command: unknown field {name}"
-        for name in sorted(set(command) - {"read", "parse", "map", "set"})
+        for name in sorted(set(command) - {"read", "parse", "map", "refuse", "set"})
     ]
     if not _argv(command["read"]):
         problems.append("command: read must be one argv list")
@@ -212,6 +212,16 @@ def _command_problems(command, values):
         problems.append("command: parse is not a regular expression")
     if not isinstance(command.get("map", {}), dict):
         problems.append("command: map must be a mapping")
+    refuse = command.get("refuse", {})
+    if not isinstance(refuse, dict) or not all(
+        isinstance(reason, str) and reason for reason in refuse.values()
+    ):
+        problems.append("command: refuse maps each pattern to a reason")
+    else:
+        try:
+            list(map(re.compile, refuse))
+        except (re.error, TypeError):
+            problems.append("command: a refuse pattern is not a regular expression")
     if isinstance(values, list) or values.get("type") == "bool":
         choices = values if isinstance(values, list) else [True, False]
         steps = command["set"]
@@ -817,6 +827,14 @@ BROKEN = [
         ),
         'set must be argv lists with a "{value}" item',
     ),
+    (
+        "refuse without reason",
+        lambda e: (
+            e.pop("writes"),
+            e.update(route="command", command={**COMMAND_BOOL, "refuse": {"^x": ""}}),
+        ),
+        "refuse maps each pattern to a reason",
+    ),
 ]
 
 
@@ -1091,16 +1109,22 @@ class Reference(unittest.TestCase):
             with self.subTest(setting_id):
                 found = re.search(commands[setting_id]["parse"], text, re.MULTILINE)
                 self.assertEqual(found and found.group("value"), expected)
+                for refusal in commands[setting_id].get("refuse", {}):
+                    self.assertIsNone(re.search(refusal, text, re.MULTILINE))
 
-    def test_no_parse_matches_an_exit_line_alone(self):
+    def test_no_parse_or_refuse_matches_an_exit_line_alone(self):
         for _, setting_id, entry in self.entries:
-            if entry["route"] == "command" and not entry["command"]["parse"].startswith(
-                "^exit"
-            ):
+            if entry["route"] != "command":
+                continue
+            command = entry["command"]
+            if not command["parse"].startswith("^exit"):
                 with self.subTest(setting_id):
                     self.assertIsNone(
-                        re.search(entry["command"]["parse"], "exit: 0\n", re.MULTILINE)
+                        re.search(command["parse"], "exit: 0\n", re.MULTILINE)
                     )
+            for pattern in command.get("refuse", {}):
+                with self.subTest(setting_id, refuse=pattern):
+                    self.assertIsNone(re.search(pattern, "exit: 0\n", re.MULTILINE))
 
     def test_hotkey_numbers_are_in_one_entry_each(self):
         owners = Counter(

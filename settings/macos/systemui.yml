@@ -1195,6 +1195,7 @@ sound.output_volume:
   command:
     read: [/usr/bin/osascript, -e, get volume settings]
     parse: '^output volume:(?P<value>\d+),'
+    refuse: {'^output volume:missing value,': this output has no volume control}
     set:
       - [/usr/bin/osascript, -e, on run argv, -e, set volume output volume (item 1 of argv as integer), -e, end run, '{value}']
   takes_effect: live

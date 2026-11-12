@@ -6,6 +6,7 @@
         read: "{{ macos_commands_item.read }}"
         parse: "{{ macos_commands_item.parse }}"
         map: "{{ macos_commands_item.map }}"
+        refuse: "{{ macos_commands_item.refuse }}"
         set: "{{ macos_commands_item.set }}"
         value: "{{ macos_commands_item.value }}"
   rescue:

@@ -77,7 +77,7 @@ input.dictation:
   link: x-apple.systempreferences:com.apple.Keyboard-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: takes_effect not measured. Turning Dictation on shows
+  notes: When a change takes effect is not measured. Turning Dictation on shows
     a consent dialog and may download a language model, so a person
     turns it on in the pane.
 input.double_click_speed:
@@ -411,7 +411,7 @@ input.mouse_scroll_speed:
   where: System Settings > Accessibility
   proven_on: {}
   not_yet_reason: ""
-  notes: takes_effect not measured.
+  notes: When a change takes effect is not measured.
 input.mouse_secondary_click:
   summary: 'Right-click on a Magic Mouse: off, right side or left
     side.'
@@ -618,7 +618,7 @@ input.quiet_click:
   where: System Settings > Trackpad
   proven_on: {}
   not_yet_reason: ""
-  notes: takes_effect not measured. Force Touch trackpads only.
+  notes: When a change takes effect is not measured. Force Touch trackpads only.
 input.repeat_delay:
   summary: Wait before a held key starts repeating. Smaller is
     shorter; the slider runs from 120 to 15.
@@ -873,10 +873,9 @@ input.text_replacements:
   not_yet_reason: macOS keeps the list in a database that iCloud
     syncs, and no supported command writes it. Add replacements
     in System Settings > Keyboard > Text Replacements.
-  notes: 'takes_effect not measured. The live list is a Core Data
-    SQLite file. You can open the pane, or drag a .plist of
-    replacements from Finder into the list. A read-only check
-    counts rows with sqlite3 -readonly. Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension'
+  notes: 'When a change takes effect is not measured. The live list
+    is a Core Data SQLite file. You can open the pane, or drag a
+    .plist of replacements from Finder into the list. Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension'
 input.three_finger_drag:
   summary: Drag windows and items with three fingers.
   scope: user

@@ -109,7 +109,7 @@ dock.position:
 | # | Route | Extra field | How mac-setup applies it |
 | --- | --- | --- | --- |
 | 1 | `defaults` | `writes`, each with `domain`, `key` and `type`, and optional `host: currentHost`, `map` and `dict_mode` | Writes a preference. A machine-scope domain must be a path that starts with `/`. |
-| 2 | `command` | `command`, with `read`, `parse`, `set` and an optional `map` | Runs a command tool. [The command read](../settings/macos/README.md) explains how `parse` matches the output. |
+| 2 | `command` | `command`, with `read`, `parse`, `set`, and an optional `map` and `refuse` | Runs a command tool. [The command read](../settings/macos/README.md) explains how `parse` matches the output. |
 | 3 | `dock_apps` | none | Sets the Dock's app list. Values are `bundle_ids`. |
 | 4 | `wallpaper` | none | Sets the desktop picture. |
 | 5 | `finder_sidebar` | none | Sets the Finder sidebar. Values are `paths`, `bool` or a `list`. |

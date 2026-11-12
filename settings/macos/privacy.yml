@@ -306,7 +306,7 @@ privacy.location_apps:
   proven_on: {}
   not_yet_reason: macOS lets only a person grant this permission
     in System Settings; mac-setup cannot set it.
-  notes: 'takes_effect not measured. Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_LocationServices'
+  notes: 'When a change takes effect is not measured. Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_LocationServices'
 privacy.location_menu_icon:
   summary: Show the location icon when system services use location.
   scope: machine
@@ -357,7 +357,7 @@ privacy.location_system_services:
   proven_on: {}
   not_yet_reason: macOS lets only a person grant this permission
     in System Settings; mac-setup cannot set it.
-  notes: 'takes_effect not measured. Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_SystemServices'
+  notes: 'When a change takes effect is not measured. Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_SystemServices'
 privacy.media_library:
   summary: Apps allowed to read the Music and Apple TV libraries.
   scope: user
@@ -480,7 +480,7 @@ privacy.share_mac_analytics:
   where: System Settings > Privacy & Security > Analytics & Improvements
   proven_on: {}
   not_yet_reason: ""
-  notes: takes_effect not measured.
+  notes: When a change takes effect is not measured.
 privacy.share_with_app_developers:
   summary: Send crash data to the developers of the apps that
     crashed.
@@ -498,7 +498,7 @@ privacy.share_with_app_developers:
   where: System Settings > Privacy & Security > Analytics & Improvements
   proven_on: {}
   not_yet_reason: ""
-  notes: takes_effect not measured.
+  notes: When a change takes effect is not measured.
 privacy.speech_recognition:
   summary: Apps allowed to send speech to Apple for recognition.
   scope: user

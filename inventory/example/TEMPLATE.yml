@@ -976,7 +976,7 @@ default_settings:
   #   Takes effect: at the next login
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: takes_effect not measured.
+  #   Note: When a change takes effect is not measured.
 
   # input.mouse_secondary_click: 'off'
   #   Right-click on a Magic Mouse: off, right side or left side.
@@ -1069,7 +1069,7 @@ default_settings:
   #   Takes effect: at the next login
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: takes_effect not measured. Force Touch trackpads only.
+  #   Note: When a change takes effect is not measured. Force Touch trackpads only.
 
   # input.repeat_delay: 10
   #   Wait before a held key starts repeating. Smaller is shorter; the slider runs from 120 to 15.
@@ -2070,7 +2070,7 @@ machine_settings:
   #   Takes effect: at the next login
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: takes_effect not measured.
+  #   Note: When a change takes effect is not measured.
 
   # privacy.share_with_app_developers: false
   #   Send crash data to the developers of the apps that crashed.
@@ -2079,7 +2079,7 @@ machine_settings:
   #   Takes effect: at the next login
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: takes_effect not measured.
+  #   Note: When a change takes effect is not measured.
 
   # Area: systemui
 
@@ -2133,7 +2133,7 @@ machine_settings:
 #   Scope: machine setting, needs admin
 #   Values: true or false
 #   Where: System Settings > Privacy & Security > FileVault
-#   Note: takes_effect not measured.
+#   Note: When a change takes effect is not measured.
 
 # security.gatekeeper
 #   Check apps before they open (Gatekeeper).
@@ -2155,8 +2155,8 @@ machine_settings:
 #   Scope: machine setting, needs admin
 #   Values: true or false
 #   Where: System Settings > General > Sharing > File Sharing
-#   Note: takes_effect not measured. Turning it on also needs shared folders, so on is a click. A
-#     command sets off, but on needs a click, so the whole setting is by hand.
+#   Note: When a change takes effect is not measured. Turning it on also needs shared folders, so on
+#     is a click. A command sets off, but on needs a click, so the whole setting is by hand.
 
 # sharing.internet_sharing
 #   Share this Mac's internet connection with other devices.
@@ -2197,8 +2197,8 @@ machine_settings:
 #   Scope: account setting
 #   Values: "off", "on"
 #   Where: System Settings > Keyboard
-#   Note: takes_effect not measured. Turning Dictation on shows a consent dialog and may download a
-#     language model, so a person turns it on in the pane.
+#   Note: When a change takes effect is not measured. Turning Dictation on shows a consent dialog
+#     and may download a language model, so a person turns it on in the pane.
 
 # Area: privacy
 
@@ -2428,9 +2428,8 @@ machine_settings:
 #   Scope: account setting
 #   Not yet because: macOS keeps the list in a database that iCloud syncs, and no supported command
 #     writes it. Add replacements in System Settings > Keyboard > Text Replacements.
-#   Note: takes_effect not measured. The live list is a Core Data SQLite file. You can open the
-#     pane, or drag a .plist of replacements from Finder into the list. A read-only check counts
-#     rows with sqlite3 -readonly. Page:
+#   Note: When a change takes effect is not measured. The live list is a Core Data SQLite file. You
+#     can open the pane, or drag a .plist of replacements from Finder into the list. Page:
 #     x-apple.systempreferences:com.apple.Keyboard-Settings.extension
 
 # Area: privacy
@@ -2593,7 +2592,7 @@ machine_settings:
 #   Scope: machine setting, needs admin
 #   Not yet because: macOS lets only a person grant this permission in System Settings; mac-setup
 #     cannot set it.
-#   Note: takes_effect not measured. Page:
+#   Note: When a change takes effect is not measured. Page:
 #     x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_LocationServices
 
 # privacy.location_system_services
@@ -2601,7 +2600,7 @@ machine_settings:
 #   Scope: machine setting, needs admin
 #   Not yet because: macOS lets only a person grant this permission in System Settings; mac-setup
 #     cannot set it.
-#   Note: takes_effect not measured. Page:
+#   Note: When a change takes effect is not measured. Page:
 #     x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_SystemServices
 
 # privacy.media_library

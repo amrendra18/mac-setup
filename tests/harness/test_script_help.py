@@ -7,15 +7,6 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS = sorted(
-    ROOT / name
-    for name in subprocess.run(
-        ["git", "-C", str(ROOT), "ls-files", "scripts"],
-        capture_output=True,
-        text=True,
-        check=True,
-    ).stdout.split()
-)
 INSTALL_TOOLS = ("curl", "tar", "uname")
 
 
@@ -23,6 +14,14 @@ def git_lines(*args):
     return subprocess.run(
         ["git", "-C", str(ROOT), *args], capture_output=True, text=True, check=True
     ).stdout.splitlines()
+
+
+SCRIPTS = sorted(
+    ROOT / name
+    for name in git_lines(
+        "ls-files", "--cached", "--others", "--exclude-standard", "scripts"
+    )
+)
 
 
 def checkout_state():

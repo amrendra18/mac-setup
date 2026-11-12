@@ -141,7 +141,9 @@ def computer_name(name):
 
 
 def ensure(tool, entry, value, check_mode=False):
-    return ensure_setting(tool, value=value, check_mode=check_mode, **entry)
+    return ensure_setting(
+        tool, value=value, check_mode=check_mode, **{"refuse": {}, **entry}
+    )
 
 
 class EqualValue(unittest.TestCase):
@@ -256,11 +258,12 @@ class ParseFailure(unittest.TestCase):
             "read": command["read"],
             "parse": command["parse"],
             "mapping": {},
+            "refuse": command["refuse"],
             "set_spec": command["set"],
         }
         with self.assertRaises(SettingError) as raised:
             ensure(tool, entry, 50)
-        self.assertIn("output volume:missing value", str(raised.exception))
+        self.assertEqual(str(raised.exception), "this output has no volume control")
         self.assertEqual(tool.sets(), [])
 
     def test_pattern_without_value_group_fails(self):

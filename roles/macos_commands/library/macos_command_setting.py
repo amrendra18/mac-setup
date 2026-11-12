@@ -13,11 +13,13 @@ description:
   - The value found is compared with the wanted value, after map turns the wanted public value into the text the read prints.
   - Only on a difference it runs the set argv lists in order, then reads again and fails unless the read shows the wanted value.
   - A known refusal line in any command's output, such as systemsetup's "You need administrator access", is a failure with that line, whatever the exit code.
+  - A read whose text matches a pattern in refuse is a failure with that pattern's reason, before parse runs.
   - Arguments go to the tool as a list, never through a shell.
 options:
   read: {description: Argv that prints the current state., type: list, elements: str, required: true}
   parse: {description: Regular expression with one named group "value"., type: str, required: true}
   map: {description: Public value to the text the read prints., type: dict, default: {}}
+  refuse: {description: Regular expression to the plain reason the read refuses the setting., type: dict, default: {}}
   set: {description: Public value to a list of argv lists, or a list of argv lists where the item "{value}" becomes the value., type: raw, required: true}
   value: {description: The wanted public value., type: raw, required: true}
 """
@@ -43,12 +45,15 @@ def run(runner, argv):
     return rc, out, err
 
 
-def read_state(runner, argv, pattern):
+def read_state(runner, argv, pattern, refusals):
     rc, out, err = run(runner, argv)
     shown = f"{out}{err}"
     if shown and not shown.endswith("\n"):
         shown += "\n"
     shown += f"exit: {rc}\n"
+    for refusal, reason in refusals.items():
+        if refusal.search(shown):
+            raise SettingError(reason)
     found = pattern.search(shown)
     if not found:
         raise SettingError(
@@ -70,17 +75,21 @@ def set_commands(set_spec, value):
     ]
 
 
-def ensure_setting(runner, read, parse, mapping, set_spec, value, check_mode):
+def ensure_setting(runner, read, parse, mapping, refuse, set_spec, value, check_mode):
     try:
         pattern = re.compile(parse, re.MULTILINE)
+        refusals = {
+            re.compile(refusal, re.MULTILINE): reason
+            for refusal, reason in refuse.items()
+        }
     except re.error as error:
-        raise SettingError(f"parse {parse!r} is not a valid pattern: {error}")
+        raise SettingError(f"{error.pattern!r} is not a valid pattern: {error}")
     if "value" not in pattern.groupindex:
         raise SettingError(f"parse {parse!r} has no group named value")
     shows = {text(key): text(shown) for key, shown in mapping.items()}
     public = {shown: key for key, shown in shows.items()}
     wanted = shows.get(text(value), text(value))
-    current = read_state(runner, read, pattern)
+    current = read_state(runner, read, pattern, refusals)
     if current == wanted:
         return {"changed": False}
     commands = set_commands(set_spec, value)
@@ -93,7 +102,7 @@ def ensure_setting(runner, read, parse, mapping, set_spec, value, check_mode):
             rc, out, err = run(runner, argv)
             if rc != 0:
                 raise SettingError(f"{' '.join(argv)} exited {rc}: {out}{err}")
-        after = read_state(runner, read, pattern)
+        after = read_state(runner, read, pattern, refusals)
         if after != wanted:
             raise SettingError(
                 f"after the set, {' '.join(read)} shows {public.get(after, after)}, not {text(value)}"
@@ -107,6 +116,7 @@ def main():
             "read": {"type": "list", "elements": "str", "required": True},
             "parse": {"type": "str", "required": True},
             "map": {"type": "dict", "default": {}},
+            "refuse": {"type": "dict", "default": {}},
             "set": {"type": "raw", "required": True},
             "value": {"type": "raw", "required": True},
         },
@@ -119,6 +129,7 @@ def main():
             params["read"],
             params["parse"],
             params["map"],
+            params["refuse"],
             params["set"],
             params["value"],
             module.check_mode,

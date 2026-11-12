@@ -697,6 +697,7 @@ class ProfileWork(unittest.TestCase):
                     "read": ["/usr/bin/example", "-get"],
                     "parse": r"^(?P<value>[01])$",
                     "map": {True: "1", False: "0"},
+                    "refuse": {},
                     "set": {
                         True: [["/usr/bin/example", "on"]],
                         False: [["/usr/bin/example", "off"]],

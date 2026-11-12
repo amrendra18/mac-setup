@@ -394,7 +394,7 @@ security.filevault:
   link: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: takes_effect not measured.
+  notes: When a change takes effect is not measured.
 security.firewall:
   summary: Turn on the macOS firewall for incoming connections.
   scope: machine
@@ -658,7 +658,7 @@ sharing.file_sharing:
   link: x-apple.systempreferences:com.apple.Sharing-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: takes_effect not measured. Turning it on also needs shared
+  notes: When a change takes effect is not measured. Turning it on also needs shared
     folders, so on is a click. A command sets off, but on needs
     a click, so the whole setting is by hand.
 sharing.internet_sharing:
