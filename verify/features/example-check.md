@@ -10,7 +10,7 @@ The example profile in `inventory/example/` loads together with every reference 
 
 ## How to get to it (user POV)
 
-- Copy the example profile, as the README's Install step 3 says.
+- Copy the example profile, as step 3 of the README's Quick start says.
 - Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check`.
 
 ## Driving it with scripts/verify

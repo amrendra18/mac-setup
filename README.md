@@ -1,142 +1,44 @@
 # mac-setup
 
-Status: milestone M2. `scripts/bootstrap` installs mac-setup. The settings reference in `settings/macos/` describes 288 settings. The playbooks wire 7 of its routes: preferences (`defaults`), command tools (`command`), Dock apps (`dock_apps`), the desktop picture (`wallpaper`), the Finder sidebar (`finder_sidebar`), app installs (`apps`) and the click-through (`by_hand`). The 36 settings on route `not_yet` have no way to apply them yet. Today a run does these things:
+mac-setup sets up a Mac from one file that you write, usually right after a fresh macOS install. In that file you list the settings you want for the Mac and for each account on it, and the apps to install. One command makes the Mac match the file, and running the command again changes nothing.
 
-1. It creates the accounts the profile lists.
-2. It writes account settings that macOS keeps as preferences, for the account that runs it and for each listed account.
-3. It writes machine preferences as root, and sets machine settings through command tools such as `pmset` and `systemsetup`.
-4. It installs the apps the profile lists from the catalog in `apps/macos.yml`, after it checks each download.
-5. It sets each account's Dock apps, a solid black desktop, and the Finder sidebar's favorites and hidden items.
-6. `playbooks/by-hand.yml` walks you through the click-only settings in the profile.
+mac-setup is built on Ansible, a free tool that applies a list of settings to a computer. You do not need to know Ansible. The steps below install a private copy of it in the mac-setup folder, and Python in `~/.local/share/uv/python/`.
 
-39 settings are proven on macOS 27.2.1: 17 Dock, hot corner, Mission Control, Stage Manager, widget and window settings, 6 Finder settings, 13 appearance, menu bar, notification, Siri and Spotlight settings, the Dock apps, the black desktop and Wi-Fi power. Every other setting on a wired route is built and unit-tested but not yet proven on a Mac. The Plan section names the milestone that proves it.
+## What you get after one run
 
-mac-setup sets up a Mac from one profile file. You write down the settings you want once, for the Mac and for each account on it. One command then applies them, and running it again changes nothing.
+The example file that ships with mac-setup makes these main changes, among others. You can keep, change, or remove each one.
 
-Privacy permissions (camera, microphone, screen recording, full disk access and similar) cannot be set by any script. Apple lets only a person grant them. For these, mac-setup opens the exact System Settings page, tells you what to choose, and waits while you click.
+1. **Dock.** It sits on the left at icon size 32, holds only Terminal, and hides the section of recent apps.
+2. **Desktop.** A solid black desktop picture.
+3. **Finder.** List view, hidden files shown, and a sidebar with Applications, your home folder, Desktop and Downloads. Recents, Shared, AirDrop, Trash and iCloud leave the sidebar.
+4. **Look and menu bar.** Dark mode with an orange accent, and a 24-hour clock with seconds.
+5. **Machine settings.** Firewall on, Wi-Fi on, display sleep after 10 minutes, system sleep after 30 minutes, and the time zone you choose.
+6. **Accounts.** mac-setup creates each extra account you list, admin or standard, with its own settings. The example lists none.
+7. **Apps.** Apps you pick from a short list, such as Firefox or Sublime Text, each checked before it is copied to `/Applications`. The example installs none.
+8. **A guided walk through the clicks.** Apple lets only a person grant privacy permissions, such as camera or screen recording. For those settings, mac-setup opens the right System Settings page and tells you what to choose. The example turns Location Services off this way.
 
-## Who it is for
+mac-setup knows 288 macOS settings. A run sets 212 of them, 40 need your click, and 36 it cannot set yet. A setting counts as proven on a macOS version once a test applied it on a real Mac and read it back. 39 settings are proven on macOS 27.2.1:
 
-mac-setup is for the person who owns a Mac and sets it up, usually right after a fresh install, when only the first admin account exists. That person may also want other accounts on the same Mac, admin or standard, each with its own look.
+1. 17 Dock, hot corner, Mission Control, Stage Manager, widget and window settings.
+2. 6 Finder settings.
+3. 13 appearance, menu bar, notification, Siri and Spotlight settings.
+4. The Dock apps, the black desktop and Wi-Fi power.
 
-Today that person clicks through System Settings by hand, once per Mac and once per account, and has no record of what they chose. mac-setup replaces the clicking with a file they can read, review and reuse.
+The code for the other settings has unit tests, but no test has applied them on a real Mac yet.
 
-## What a run looks like
+## Quick start
 
-This section describes the first release. Today a run applies every kind of setting the Status line lists, and 39 settings are proven. The Install section below gives the steps that work today.
+You need an Apple Silicon Mac, because every pinned download is an arm64 build. Sign in to an admin account. The bootstrap itself needs no admin password.
 
-### First run on a fresh Mac
+You also need a GitHub SSH key that can read this repository. Follow GitHub's guides "Generating a new SSH key" and "Adding a new SSH key to your GitHub account". Then test the key with `ssh -T git@github.com`. It works when it prints "You've successfully authenticated", even though it exits 1.
 
-1. You sign in to the Mac's first admin account and open Terminal.
-2. You check that Apple's Command Line Tools are installed with `xcode-select -p`. If they are missing, `xcode-select --install` opens a dialog, and you click Install. The tools provide `git` and `curl`.
-3. You clone this repository and run `scripts/bootstrap`. It downloads pinned copies of uv (a Python installer), Python 3.13.15, Ansible and one Ansible collection, checks each against a SHA-256 hash, and installs them inside the checkout and your home folder. It needs no admin password.
-4. You copy the example profile to the private folder `.local/inventory/` with `test -d .local/inventory || cp -R inventory/example .local/inventory`, then edit the account names. The `test -d` part skips the copy when the folder exists, so running the line again keeps your edits and adds no nested copy.
-5. You run `.local/venv/bin/ansible-playbook playbooks/site.yml -K`.
-6. Ansible asks for your admin password once (`BECOME password:`). For each account in the profile that does not exist yet, it asks that account's new password once, with typing hidden.
-7. You watch the settings change. The Dock moves, Finder changes, and so on. Each line of output names a setting and whether it changed.
-8. The run ends with a short summary. It says how many settings show only after you log out and back in, how many need a click (run `playbooks/by-hand.yml` for those), which settings macOS refused and why, and which new accounts lack a secure token. The recap line shows `failed=0` when everything worked.
-
-### Running it again
-
-Run the same command. Settings that already match print as `ok` and the recap shows `changed=0`. No account password is asked, because the accounts exist. If you changed a setting by hand in System Settings, the profile wins and the run sets it back, reported as `changed`.
-
-### Previewing a change
-
-Add `--check` to see what would change without changing any setting. When the profile lists a Finder sidebar setting, the preview still builds the sidebar helper into `.local/finder-sidebar/`, because it needs the helper to read the sidebar. Each setting that would change prints as `changed` with its new value. The preview does not print the old value. To see a current value, run `defaults read DOMAIN KEY` with the domain and key from the settings reference.
-
-### Other accounts
-
-Each account in the profile gets its own settings. mac-setup writes them as that account, so they land in that account's own preferences. They take effect the next time that person signs in. mac-setup adopts an account that exists already and keeps its password and admin rights unchanged.
-
-mac-setup never deletes an account. To remove one, use System Settings > Users & Groups in an admin account.
-
-### Click-only settings
-
-List click-only settings in the profile like any other, for example `network.bluetooth_power: false` under `machine_settings`. Then run `.local/venv/bin/ansible-playbook playbooks/by-hand.yml` while you sit at the Mac. For each click-only setting of your account and of the machine, it opens the System Settings page, prints what to choose (for example "Turn Bluetooth on or off: off"), and waits until you press Return. It changes nothing itself. Add `-e by_hand_list=true` to list the pages without opening them. Another account's click-only settings appear when that person runs the playbook while signed in.
-
-### Changing a setting back
-
-Edit the profile and run again. Write the old value, or write `unset` to return the setting to the macOS default. Deleting a line only stops mac-setup managing that setting; it leaves the Mac as it is. The log of every run sits in `.local/logs/`.
-
-### When something goes wrong
-
-1. A mistake in the profile (an unknown setting, a value that is not allowed, a machine setting placed under an account) stops the run before anything changes. Exit code 2 and one line per problem tell you what to fix.
-2. A setting macOS refuses at write time, for example because a stored value has another type, does not stop the run. The other settings still apply, the Dock still restarts if needed, and the summary names each refused setting. The run then ends with exit code 2.
-3. A run from an account without admin rights, or without `-K`, fails at the machine and other-accounts part. Your own account's settings still apply first. The summary names each setting it could not set there with "needs admin rights: run with -K".
-4. A setting that could cut a remote connection, such as turning Remote Login off, is refused unless the profile sets `allow_lockout_risk: true`.
-
-## Scope
-
-### In the first release
-
-1. Machine settings that need admin rights, such as power, firewall, sharing services, time zone, computer name, and the other admin-only preferences.
-2. Each account's own settings, such as Dock, Finder, keyboard, trackpad, mouse, menu bar, appearance, and the other per-account preferences.
-3. Creating the accounts listed in the profile, admin or standard, with passwords typed at run time and never stored.
-4. The Dock's app list. Apple's own apps can leave the Dock; they are never deleted.
-5. A solid black desktop, or a click-only step if macOS offers no script path for it.
-6. The guided click-through for privacy permissions and click-only System Settings panes.
-7. A generated template, `inventory/example/TEMPLATE.yml`, that lists every known setting with its allowed values, whether it needs admin rights, when it takes effect, and whether it is proven on the current macOS.
-
-### Next, right after the first release
-
-Homebrew, dotfiles, turning FileVault on (with secure tokens for the accounts mac-setup creates), MDM profiles, an undo command, and running mac-setup from another machine over SSH.
-
-### Not planned
-
-1. Granting privacy permissions by script, editing the privacy database, or working around a consent prompt.
-2. Deleting accounts or apps. The one exception: an app upgrade replaces the old copy of that app.
-3. macOS updates.
-4. Linux and Windows for now. The layout leaves room for them. Each system gets its own settings folder and roles, with the same profile shape.
-
-## Requirements and success checks
-
-| # | Requirement | How it is checked |
-| --- | --- | --- |
-| 1 | A newcomer can install and run mac-setup from this README alone on a fresh Mac. | A pass from a new clone on a real Mac finds 0 gaps. |
-| 2 | A second run changes nothing. | Every journey's second run shows `changed=0 failed=0`. |
-| 3 | A profile mistake changes nothing. | Each deliberately broken test profile stops with exit 2 and 0 settings written. |
-| 4 | A refused setting does not stop the others. | A test seeds a wrong stored type, and the run ends with exit 2, one line for that setting, and the other settings written. |
-| 5 | Each account gets its own settings. | Settings written for a test account read back as that account and leave the running account unchanged. |
-| 6 | No password is ever stored or logged. | A test run with a random password finds 0 copies of it in the logs and the evidence folder. |
-| 7 | No machine or account name is tracked in git. | The gate scans tracked files against a private word list kept outside git. |
-| 8 | Every researched setting is listed. | A test checks every entry in the reference, and checks that the template lists each one. |
-| 9 | A full-size profile runs fast enough to iterate. | Measured once on the target Mac, a 170-setting test profile runs its preview and its second apply in under 60 s each. |
-
-## Principles
-
-1. **The profile is the source of truth.** A run makes the Mac match the profile. There is no hidden state and no receipt file.
-2. **Check before writing.** The whole profile is checked before the first change. A bad profile changes nothing.
-3. **Admin work sits in one place.** The playbook has two plays. Only the second one uses admin rights, so a reader can see every admin step in one place.
-4. **Small, data-driven code.** One role writes every simple preference from the reference. A custom module exists only where no existing module can do the job, reads before it writes, and supports `--check`.
-5. **Pinned and checked downloads.** Every download has a fixed version and a SHA-256 hash, and is at least 21 days old when pinned. The one exception is an app whose vendor publishes only a latest download, such as Google Chrome: it has no fixed hash or age, and every other check, the vendor's signature and VirusTotal included, still applies.
-6. **Private data stays local.** Real machine names, account names and profiles live in `.local/`, which git ignores. Passwords are typed at a prompt and never written to a file.
-7. **Proven on the real Mac.** A setting counts as proven on a macOS version only after it was applied and read back on a Mac running that version.
-
-## How it works
-
-### What runs
-
-Nothing runs in the background. You start `ansible-playbook` in Terminal, it runs on the same Mac (a local connection), and it exits when done. Ansible starts a short-lived Python process for each step. Admin steps run through `sudo`, using the password you typed at the start of the run.
-
-### The parts
-
-1. **The settings reference**, `settings/macos/*.yml`, one file per area. Each entry describes one setting with what it does, its allowed values, whether it belongs to an account or the machine, how it is stored, when it takes effect, and anything a person must do by hand.
-2. **The profile**, your copy of `inventory/example/` in `.local/inventory/`. It holds `default_settings` (for every account), an `accounts` list (each with optional settings of its own), and `machine_settings`. It holds no password. A profile may list several Macs, each entry's `hosts.yml` key and `host_vars/` folder named after that Mac's local hostname. A run applies only the entry named after the Mac it runs on, and stops before any change when no entry matches.
-3. **The playbook**, `playbooks/site.yml`. Play 1 runs as you, checks the profile, and sets your account's settings. Play 2 runs with admin rights and creates accounts, sets machine settings, and sets every other account's settings as that account.
-4. **The click-through**, `playbooks/by-hand.yml`, for settings only a person can change.
-5. **The template**, `inventory/example/TEMPLATE.yml`, generated from the reference by `scripts/render-template`.
-
-### Install
-
-You need an Apple Silicon Mac, because every pinned download is an arm64 build. You also need Apple's Command Line Tools and a GitHub SSH key that can read this repository. The install needs no admin password.
-
-1. Check for the Command Line Tools. If this prints an error, run `xcode-select --install` and click Install.
+1. Open Terminal and check for Apple's Command Line Tools, which provide `git`. If this prints an error, run `xcode-select --install` and click Install.
 
    ```sh
    xcode-select -p
    ```
 
-2. Clone the repository and run the bootstrap.
+2. Download mac-setup and install its tools.
 
    ```sh
    git clone git@github.com:amrendra18/mac-setup.git ~/mac-setup
@@ -144,132 +46,203 @@ You need an Apple Silicon Mac, because every pinned download is an arm64 build. 
    scripts/bootstrap
    ```
 
-The bootstrap prints `OK` and a file name for each of its 11 pinned downloads. They are uv, 9 Python packages and one Ansible collection. uv prints its own lines for Python. The bootstrap then prints `ansible-playbook [core 2.21.5]` and the copy, preview and apply commands from steps 3 and 4 below.
+   The bootstrap downloads fixed versions of Python, Ansible and their parts, and checks each download against a known fingerprint (its SHA-256 hash). It prints `OK` and a file name for each of its 11 downloads, and uv prints its own lines for Python. It ends with the Ansible version, `ansible-playbook [core 2.21.5]`, and the commands for steps 3 to 5. If a download does not match, the bootstrap deletes it, names it, and exits with code 1. A network failure also stops it. In both cases, run `scripts/bootstrap` again. A second run downloads nothing and changes nothing. `scripts/bootstrap --help` prints its usage and runs nothing.
 
-Run `scripts/bootstrap` again at any time. A second run downloads nothing and changes nothing. On a macOS 15.6.1 virtual machine, a first run took 11.2 s and a second run 1.1 s. On a Mac mini with macOS 27.2.1, a first run took 11 s.
-
-If a download does not match its pinned SHA-256 hash, the bootstrap deletes that file, names it, and exits with code 1. A network failure also stops the bootstrap with a non-zero code. In both cases, run `scripts/bootstrap` again.
-
-3. Copy the example profile to the private folder `.local/inventory/`. The `test -d` part skips the copy when the folder exists, so running the line again keeps your edits.
+3. Copy the example profile to your private folder. The profile is the set of files that hold your settings. Git ignores the `.local/` folder, so your profile stays on your Mac. The `test -d` part skips the copy when the folder exists, so running the line again keeps your edits.
 
    ```sh
    test -d .local/inventory || cp -R inventory/example .local/inventory
    ```
 
-   You can keep the profile outside the checkout instead, in `~/.dot/mac-setup/inventory/`. Copy the example there, and add `-i ~/.dot/mac-setup/inventory` to every `ansible-playbook` command:
+   Then open `.local/inventory/host_vars/example-mac/machine.yml` with `open -e` (TextEdit). Set `time.zone` to your own zone, such as `Europe/Berlin`. The example uses `Etc/UTC`. To see your Mac's current zone, run `readlink /etc/localtime`. The zone is the part after `zoneinfo/`.
 
-   ```sh
-   test -d ~/.dot/mac-setup/inventory || { mkdir -p ~/.dot/mac-setup && cp -R inventory/example ~/.dot/mac-setup/inventory; }
-   ```
-
-   The profile is `.local/inventory/host_vars/example-mac/accounts.yml`, or the same path under `~/.dot/mac-setup/inventory/`. Its `default_settings` hold the settings for every account, and `machine.yml` beside it holds the machine settings. Set `time.zone` in `machine.yml` to your own zone first; the example uses `Etc/UTC`. Change a value there if you want another one. For example, `dock.position: bottom` moves the Dock to the bottom. `inventory/example/TEMPLATE.yml` lists every setting with the values it takes. The value `unset` deletes a setting stored as a preference, so macOS uses its own default.
-
-   Quote a value such as `"on"`, `"off"`, `"yes"` or `"no"`. Without quotes, YAML reads it as true or false, and the profile check refuses it with a line that says to quote it.
-
-   Some settings need more than a preference line. Each example below goes under `default_settings` or an account's `settings`, except the last, which goes under `machine_settings`:
-
-   ```yaml
-   dock.applications: [com.apple.Terminal, com.apple.Safari]
-   desktop.wallpaper: black
-   finder.sidebar_favorites: [/Applications, "~", ~/Desktop]
-   finder.sidebar_favorites_only: true
-   finder.sidebar_hide: [recents, airdrop]
-   # under machine_settings:
-   power.display_sleep_minutes: 10
-   ```
-
-   `dock.applications` keeps only the listed apps, by bundle id and in order. An app that the same run installs joins the Dock on the next run, because the Dock is set before the installs. `desktop.wallpaper` needs the account signed in at the screen. For another account, the summary says its desktop picture is set at its next run while it is signed in. `finder.sidebar_favorites` puts the listed folders first in Finder's sidebar, and `"~"` means each account's home folder. The first run that sets the sidebar compiles a small helper with the Command Line Tools into `.local/finder-sidebar/`. To add Desktop, Documents or Downloads, the helper first lists the folder, so macOS asks once whether Terminal may use it. Click Allow, and the folder is added; later runs do not ask again. If you click Don't Allow, the run names the folder as refused.
-
-   Its `accounts` list is empty. To create a standard account, or to give an existing one its own settings, add an entry:
-
-   ```yaml
-   accounts:
-     - name: sam
-       full_name: Sam Example
-       admin: false
-       settings:
-         dock.position: bottom
-   ```
-
-   `settings` is optional. It adds to or overrides `default_settings` for that account only. An account that exists already is adopted: its password and admin rights stay as they are, and a different `admin` value is reported as refused.
-
-4. Preview the change, apply it, and apply it again.
+4. Preview the changes. Your settings stay as they are.
 
    ```sh
    .local/venv/bin/ansible-playbook playbooks/site.yml -K --check
-   .local/venv/bin/ansible-playbook playbooks/site.yml -K
+   ```
+
+   `-K` makes Ansible ask once for your admin password, shown as `BECOME password:`. Each setting that would change prints a `changed` line. The preview creates no account and asks no account password.
+
+5. Apply the changes, then run the same command once more.
+
+   ```sh
    .local/venv/bin/ansible-playbook playbooks/site.yml -K
    ```
 
-   `-K` makes Ansible ask for your admin password once (`BECOME password:`). The run's second part uses it to create accounts, to write machine settings, and to write other accounts' settings as those accounts. For each listed account that does not exist yet, the apply also asks that account's new password once, with typing hidden. The preview creates nothing and asks no account password.
+   macOS may ask whether Terminal may use your Desktop and Downloads folders. Click Allow. You see the Dock and Finder change. The run ends with a short summary. It says how many settings show only after you log out and back in, and how many need a click in System Settings. The last line, called the recap, shows `failed=0` when everything worked. In the second run, every setting prints `ok` and the recap shows `changed=0`, because the Mac already matches. It asks no account password, because the accounts exist.
 
-   With the example profile as copied, the preview lists each setting that differs from your Mac and writes nothing. The first apply sets them and restarts the Dock and Finder once, and its summary says how many settings show only after you log out and back in, and how many need a click in System Settings (run `playbooks/by-hand.yml` for those). The second apply ends with `changed=0`.
+If the profile lists accounts that do not exist yet, the run asks each new account's password once, with typing hidden. mac-setup never stores a password.
 
-   When another account, or the login window, owns the screen, the run skips the Dock restart. A restart then would leave that account's Dock stopped until it logs out and back in. The Dock then changes at that account's next sign-in.
+### If a run stops or refuses a setting
 
-   Without step 3's copy there is no profile. The run then warns that no host matched, changes nothing and still exits 0.
+1. A mistake in the profile, such as an unknown setting or a value that is not allowed, stops the run before anything changes. The run prints one line per problem and ends with exit code 2.
+2. If macOS refuses one setting, the other settings still apply. The run ends with one `refused` line per setting and exit code 2.
+3. Without `-K`, or from an account without admin rights, your own account's settings still apply first. The summary then names each machine or other-account setting it could not set, with "needs admin rights: run with -K".
+4. If you skipped step 3, there is no profile. The run warns that no host (Ansible's word for a Mac) matched, changes nothing, and exits 0.
 
-   Each new account adds 1 to the apply's `changed` count, and each setting written for another account adds 1 more. Those settings show at that account's next sign-in. A new account has no secure token, so with FileVault on it cannot unlock the Mac at startup; the run's summary names each such account.
+Every run writes its log to `.local/logs/ansible.log`.
 
-   A setting macOS refuses at write time, such as a stored value of another type, does not stop the others. The run's last task then fails with one `refused` line per setting, and the run ends with exit code 2.
+## Choose your settings
 
-### Apps
+Your settings live in two files in `.local/inventory/host_vars/example-mac/`.
 
-mac-setup installs apps from a small catalog, `apps/macos.yml`. Each entry names the vendor's download URL and the only host it may come from. An entry may name one more host that a redirect may go to, such as `release-assets.githubusercontent.com`, GitHub's file host. It also names the pinned SHA-256 hash, the vendor's release date, the vendor's Apple Team ID (the ID of the developer certificate that signs the app), the bundle id and the lowest version accepted. Today the catalog holds `google_chrome`, `sublime_text`, `little_snitch`, `proton_pass`, `ente_auth`, `utm`, `firefox` and `micro_snitch`. `ente_auth` is Ente's two-factor code app. To install some of them, list their ids under `machine_settings`:
+1. `accounts.yml` holds `default_settings`, the settings every account gets, and the `accounts` list.
+2. `machine.yml` holds `machine_settings`, the settings for the whole Mac. These need your admin password.
+
+The template, `inventory/example/TEMPLATE.yml`, lists all 288 settings in four sections: account settings, machine settings, "Click-only settings" and "Not yet supported". Each setting shows whether it belongs to an account or to the machine. The first three sections also give the allowed values, and the first two say when a setting takes effect. To use a setting, copy its line from the template into the same section of your profile, and remove the `# ` in front.
+
+For example, this line in `default_settings` moves the Dock to the bottom of the screen:
+
+```yaml
+dock.position: bottom
+```
+
+Put quotes around the words `"on"`, `"off"`, `"yes"` and `"no"`. Without quotes, the file format (YAML) reads them as true or false, and the profile check asks you to quote them.
+
+### Dock apps, desktop and Finder sidebar
+
+These settings take a list or a word instead of a single preference:
+
+```yaml
+dock.applications: [com.apple.Terminal, com.apple.Safari]
+desktop.wallpaper: black
+finder.sidebar_favorites: [/Applications, "~", ~/Desktop]
+finder.sidebar_favorites_only: true
+finder.sidebar_hide: [recents, airdrop]
+```
+
+1. `dock.applications` keeps only the listed apps in the Dock, in that order. You name each app by its bundle id, the app's unique name such as `com.apple.Safari`. To find one, run `osascript -e 'id of app "Safari"'` with the app's name. An app that the same run installs joins the Dock on the next run.
+2. `desktop.wallpaper` needs the account signed in at the screen. For another account, the summary says its picture is set at its next run while that account is signed in.
+3. `finder.sidebar_favorites` puts the listed folders first in Finder's sidebar. `"~"` means each account's home folder. `finder.sidebar_favorites_only: true` also removes every favorite the list does not name. The first time you add Desktop, Documents or Downloads, macOS asks whether Terminal may use that folder. Click Allow. Terminal keeps that right, so later runs do not ask again. You can take it back in System Settings > Privacy & Security > Files and Folders. If you click Don't Allow, the run names that folder as refused.
+
+### Other accounts
+
+To create an account, or to give an existing account its own settings, add an entry to the `accounts` list in `accounts.yml`:
+
+```yaml
+accounts:
+  - name: sam
+    full_name: Sam Example
+    admin: false
+    settings:
+      dock.position: bottom
+```
+
+`settings` is optional. It adds to or replaces `default_settings` for that account only. Those settings take effect the next time that person signs in.
+
+If the account exists already, mac-setup keeps its password and admin rights as they are. A different `admin` value in the profile is reported as refused and changes nothing. mac-setup never deletes an account. To remove one, use System Settings > Users & Groups.
+
+A new account has no secure token, the macOS right that lets an account unlock an encrypted disk at startup. So with FileVault on, that account cannot unlock the Mac. The run's summary names each such account.
+
+### Settings only a person can click
+
+The template lists these settings under "Click-only settings". List one in the profile like any other, for example `network.bluetooth_power: false` under `machine_settings`. Then, while you sit at the Mac, run:
+
+```sh
+.local/venv/bin/ansible-playbook playbooks/by-hand.yml
+```
+
+For each click-only setting of your account and of the machine, it opens the System Settings page, prints what to choose (such as "Turn Bluetooth on or off: off"), and waits until you press Return. It changes nothing itself. Add `-e by_hand_list=true` to list the pages without opening them. Another account's click-only settings appear when that person runs the playbook while signed in.
+
+### Change a setting back
+
+Write the old value in the profile and run again. For a setting stored as a preference, write `unset` to return it to the macOS default. The profile check refuses `unset` for any other setting. Deleting a line only stops mac-setup managing that setting, and leaves the Mac as it is.
+
+If you change a setting by hand in System Settings, the next run sets it back to the profile's value.
+
+A setting that could cut a remote connection, such as turning Remote Login off, is refused unless you allow it. To allow it, add the line `allow_lockout_risk: true` at the top of `machine.yml`, outside `machine_settings`.
+
+### Keep the profile outside the checkout
+
+You can keep the profile in `~/.dot/mac-setup/inventory/` instead of `.local/inventory/`. Copy the example there, then add `-i ~/.dot/mac-setup/inventory` to every `ansible-playbook` command.
+
+```sh
+test -d ~/.dot/mac-setup/inventory || { mkdir -p ~/.dot/mac-setup && cp -R inventory/example ~/.dot/mac-setup/inventory; }
+```
+
+### Several Macs in one profile
+
+One profile can hold several Macs. Each Mac gets its own entry in `hosts.yml` and its own folder in `host_vars/`, both named after the Mac's local hostname, such as `office-mac`. A run reads this Mac's local hostname with `scutil --get LocalHostName` and applies only the entry with that name. If no entry matches, the run stops before any change and prints the hostname it found.
+
+```yaml
+macs:
+  hosts:
+    office-mac:
+      ansible_connection: local
+      ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    studio-mac:
+      ansible_connection: local
+      ansible_python_interpreter: "{{ ansible_playbook_python }}"
+```
+
+To see a Mac's local hostname, run `scutil --get LocalHostName`. To change it, use System Settings > General > Sharing, then rename that Mac's entry and folder to match. A profile with one Mac skips this check.
+
+## Apps
+
+mac-setup installs apps from a short list in `apps/macos.yml`, called the catalog. To install some, list their ids under `machine_settings`:
 
 ```yaml
 machine_settings:
   apps.install: [sublime_text, google_chrome]
 ```
 
-The profile check refuses an id that is not in the catalog, and an id listed twice, with one line each.
+The profile check refuses an id that is not in the catalog, and an id listed twice. Before the first app install, set up the VirusTotal key as [Secrets](#secrets) says.
 
-An app already in `/Applications` at the catalog's version or newer is left alone, and nothing is downloaded. Otherwise the run checks each app in this order, and the first failed check refuses it:
+| # | Id | App | Download host | What it needs once installed |
+| --- | --- | --- | --- | --- |
+| 1 | `google_chrome` | Google Chrome | `dl.google.com` | Nothing. Chrome updates itself. |
+| 2 | `firefox` | Firefox | `archive.mozilla.org` | Nothing. Firefox updates itself. |
+| 3 | `sublime_text` | Sublime Text | `download.sublimetext.com` | Nothing. |
+| 4 | `little_snitch` | Little Snitch | `www.obdev.at` | A license, and your approval of its network filter in System Settings. |
+| 5 | `micro_snitch` | Micro Snitch | `www.obdev.at` | A license. |
+| 6 | `proton_pass` | Proton Pass | `proton.me` | A sign-in to your Proton account. |
+| 7 | `ente_auth` | Ente Auth, Ente's two-factor code app | `github.com`, then `release-assets.githubusercontent.com` | A sign-in to your Ente account. |
+| 8 | `utm` | UTM, an app that runs virtual machines | `github.com`, then `release-assets.githubusercontent.com` | A virtual machine may ask you to allow access the first time it runs. |
 
-1. **Catalog entry.** Every field is present and well formed.
-2. **Age.** A pinned build must be at least 21 days old by its release date.
-3. **HTTPS and host.** The URL uses HTTPS on the entry's host. Every redirect uses HTTPS on that host or on the entry's one redirect host.
-4. **SHA-256.** The download must match the pinned hash. Downloads are kept in `.local/downloads/` by hash, so a second run downloads nothing.
-5. **VirusTotal.** The run sends only the file's SHA-256 to `www.virustotal.com`, never the file. Any engine that reports the file as malicious or suspicious refuses it. So does a file VirusTotal does not know, a file no engine has scanned, and a missing key.
-6. **Unpack.** A disk image is mounted read-only and hidden from Finder. A zip is unpacked with `ditto`. The app must be inside.
-7. **Signature.** `codesign --verify --deep --strict` must pass.
-8. **Gatekeeper.** `spctl --assess` must pass, which also confirms that Apple notarized the build.
-9. **Team ID.** The signing Team ID must equal the catalog's.
-10. **Bundle id and version.** Both must match the catalog, and the version must be at least the catalog's.
+Before mac-setup copies an app, it checks the download. The download must come over HTTPS from the host the catalog names, be at least 21 days old, and match its pinned fingerprint. VirusTotal, a free malware scanning service, must know the file and report it clean. Apple's signature and notarization (Apple's malware scan of the build) checks must pass. The developer's Team ID (Apple's id for the company that signed the app) must match the catalog. If any check fails, that app is not installed, the other apps still install, and the run ends with exit code 2.
 
-The install fails closed. A refused app is not copied, the other apps still install, and the run ends with one `refused` line per app and exit code 2. A preview with `--check` runs every check, so it also downloads and asks VirusTotal, and it installs nothing.
+Google serves only its latest Chrome build, so `google_chrome` has no pinned fingerprint and no age check. Every other check still applies to it.
 
-Google serves only its latest Chrome build, so `google_chrome` has no pinned hash and no age check. The signature, Gatekeeper, Team ID and VirusTotal checks still apply. Chrome updates itself after the install. Little Snitch needs a license, and a one-time approval of its network filter in System Settings, which only a person can give. Micro Snitch needs a license. Proton Pass and Ente Auth each need a sign-in to the vendor's account. A UTM virtual machine may ask a person to allow access the first time it runs. Firefox updates itself after the install.
+A preview with `--check` runs every check too. So it downloads each listed app and asks VirusTotal, but installs nothing.
 
-VirusTotal's verdict for each file is stored in `.local/downloads/SHA256.virustotal.json`, where SHA256 is the file's hash. A later run reads the stored verdict and asks VirusTotal nothing, so it needs no key. A stored `flagged` verdict keeps refusing that file. The run makes at most 4 lookups per minute, the free API key's limit, and waits when it reaches that rate.
+An app that is already in `/Applications` at the catalog's version or newer is left alone. An upgrade replaces the old copy of that app. mac-setup deletes no other app and never touches Apple's own apps. [How it works](docs/how-it-works.md#how-downloads-are-checked) lists every check in order.
 
-An upgrade replaces the old copy whole. The run copies the new app next to the old one, swaps the two, and then deletes the old copy. mac-setup deletes no other app, and never touches Apple's own apps.
+## Secrets
 
-An app install contacts the catalog entry's host (`dl.google.com`, `download.sublimetext.com`, `www.obdev.at`, `proton.me`, `github.com` or `archive.mozilla.org`), its redirect host (`release-assets.githubusercontent.com` for `ente_auth` and `utm`), and `www.virustotal.com`. `scripts/app-catalog ID` prints a vendor's current version, URL and SHA-256 for review; it never edits the catalog.
+The app checks need a VirusTotal API key, a password-like code that a free VirusTotal account shows on its API key page, under the account menu. It is the only secret mac-setup reads. You keep it in an Ansible vault, an encrypted file that only your vault password opens. The key never goes in the repository.
 
-### Secrets
-
-The VirusTotal API key is the one secret mac-setup reads. Keep it in an encrypted Ansible vault file in your private profile, and never in the repository. A free VirusTotal account gives you a key.
-
-1. Make the vault password file. The first line makes the folder, and the second writes a random password readable only by you. Keep a copy of the password in your password manager; without it, nobody can open the vault file.
+1. Make the vault password file. The first line makes the folder. The second writes a random password that only you can read. Keep a copy of the password in your password manager, because without it nobody can open the vault. Show it with `cat ~/.dot/mac-setup/vault-password`.
 
    ```sh
    mkdir -p ~/.dot/mac-setup && chmod 700 ~/.dot/mac-setup
    (umask 077 && openssl rand -hex 32 > ~/.dot/mac-setup/vault-password)
    ```
 
-2. Create the vault file in your profile's `group_vars/all/` folder, so every machine in the profile can read it. Use the profile folder you chose in Install step 3, here `.local/inventory/`. Its name ends in `.vault.yml`, which marks it as encrypted. The command opens an editor; add one line, `virustotal_api_key: YOUR_KEY`, then save and close.
+2. Create the vault file in your profile's `group_vars/all/` folder. If you keep the profile in `~/.dot/mac-setup/inventory/`, use that path instead of `.local/inventory/`. The command opens the nano editor. Add one line, `virustotal_api_key: YOUR_KEY`. Press Control-O and Return to save, then Control-X to close.
 
    ```sh
    mkdir -p .local/inventory/group_vars/all
-   .local/venv/bin/ansible-vault create .local/inventory/group_vars/all/secrets.vault.yml
+   EDITOR=nano .local/venv/bin/ansible-vault create .local/inventory/group_vars/all/secrets.vault.yml
    ```
 
-3. Run the playbook as before. `ansible.cfg` names `scripts/vault-password`, which prints the password from `~/.dot/mac-setup/vault-password`, so nothing is typed at run time. Set `DOT_HOME` to use another folder than `~/.dot`.
+3. Run the playbook as before. `ansible.cfg` points Ansible at `scripts/vault-password`, which reads the password from `~/.dot/mac-setup/vault-password`, so you type nothing extra. Set `DOT_HOME` to use a folder other than `~/.dot`. Run by hand in Terminal, the script refuses to print the password.
 
-`scripts/vault-password` uses the file only when you own it and its mode is 600. Otherwise it prints a warning, and the vault file cannot be opened. Without the password file, a run that reads no vault file works as before, and a run that needs the key stops with `Decryption failed`. Run `.local/venv/bin/ansible-vault edit` with the same path to change the key.
+The password file must be yours and readable only by you (mode 600). Otherwise mac-setup prints a warning, and the vault cannot be opened. Without a usable password file, a run that needs the key stops with `Decryption failed`. A run with no vault works as before. To change the key later, run `EDITOR=nano .local/venv/bin/ansible-vault edit` with the same path.
 
-### Hosts the install contacts
+mac-setup sends VirusTotal only the file's fingerprint, never the file. It stores each verdict in `.local/downloads/`, so a later run asks VirusTotal nothing and needs no key.
+
+## What mac-setup changes on your Mac
+
+Nothing runs in the background. You start each run in Terminal, it works on the same Mac, and it exits when done.
+
+mac-setup changes the settings in your profile, creates the accounts you list (each with a home folder in `/Users/`), and installs the apps you list. A run restarts the Dock, Finder or the menu bar when a setting needs it, so open Finder windows may close. It never does these things:
+
+1. It never grants privacy permissions, edits the privacy database, or works around a consent prompt.
+2. It never deletes an account or an app. The one exception is an app upgrade, which replaces the old copy of that app.
+3. It never installs macOS updates.
+
+### Hosts the clone and the bootstrap contact
 
 | # | Host | What comes from it |
 | --- | --- | --- |
@@ -280,9 +253,9 @@ The VirusTotal API key is the one secret mac-setup reads. Keep it in an encrypte
 | 5 | `galaxy.ansible.com` | The community.general 13.5.0 collection pinned in `requirements/collections.txt` |
 | 6 | `ansible-galaxy-ng.s3.dualstack.us-east-1.amazonaws.com` | Galaxy's file host. `galaxy.ansible.com` redirects the collection download here. |
 
-Every download uses HTTPS. The bootstrap never reads the package index at `pypi.org`. Running the playbook contacts no host, unless the profile lists apps. The Apps section names the hosts an app install contacts.
+uv is a tool that installs Python. Every download uses HTTPS. The bootstrap never reads the package index at `pypi.org`. A run contacts no host unless the profile lists apps. An app install contacts the app's host (see the [Apps](#apps) table) and `www.virustotal.com`.
 
-### Folders the install writes
+### Folders mac-setup writes
 
 | # | Place | What it holds | Size measured |
 | --- | --- | --- | --- |
@@ -295,14 +268,16 @@ Every download uses HTTPS. The bootstrap never reads the package index at `pypi.
 | 7 | `.local/logs/` | `ansible.log`, the log of every run | 4 KiB |
 | 8 | `.local/finder-sidebar/` | The compiled Finder sidebar helper, written by the first run or preview that includes a sidebar setting | not measured |
 | 9 | `~/.local/share/uv/python/` | Python 3.13.15 in `cpython-3.13.15-macos-aarch64-none`, the link `cpython-3.13-macos-aarch64-none`, and uv's files `.gitignore`, `.lock` and `.temp` | 72,520 KiB |
+| 10 | `~/.dot/mac-setup/` | Your vault password file and, if you choose, your profile. You write them in the Secrets steps. | not measured |
+| 11 | `/Applications/` | Each app in `apps.install`. An upgrade replaces the old copy. | not measured |
 
-Rows 1 to 8 sit inside the checkout, and git ignores `.local/`. Your profile goes in `.local/inventory/` and test evidence in `.local/verify/`, in the same ignored folder.
+Rows 1 to 8 sit inside the checkout, and git ignores `.local/`. Your profile in `.local/inventory/` sits in the same ignored folder. Step 1 may install Apple's Command Line Tools in `/Library/Developer/CommandLineTools`. mac-setup never removes them.
 
-Nothing else in your home folder changes. uv adds no link in `~/.local/bin` and keeps no cache or settings. The checkout's `ansible.cfg` keeps Ansible's files in `.local/`, so no `~/.ansible` folder appears.
+The bootstrap changes nothing else in your home folder. uv adds no link in `~/.local/bin` and keeps no cache or settings. Ansible keeps its files in `.local/`, so no `~/.ansible` folder appears.
 
-### Removing mac-setup
+### Remove mac-setup
 
-Removing mac-setup leaves your Mac's settings and the apps it installed as they are. Deleting the checkout also deletes your profile in `.local/inventory/`, so copy it elsewhere first if you want to keep it.
+Removing mac-setup leaves your Mac's settings and the apps it installed as they are. Deleting the checkout also deletes your profile in `.local/inventory/`, so copy the profile elsewhere first if you want to keep it.
 
 ```sh
 cd ~/mac-setup
@@ -312,45 +287,10 @@ cd ~ && rm -rf ~/mac-setup
 
 The second line removes Python 3.13.15 and its `cpython-3.13` link from `~/.local/share/uv/python`. If another tool on your Mac uses that same Python, skip that line. uv leaves its three small files in that folder. If nothing else on your Mac uses uv, `rm -rf ~/.local/share/uv` removes them as well.
 
-### Checks for contributors
+## Learn more
 
-`scripts/check fast` runs the quick checks (YAML lint, playbook syntax, unit tests, the profile checks against broken test profiles, the structure rules, the private-word scan and a secret scan). `scripts/check full` adds the reference test, which also checks that the template matches the reference, a `black --check` format check of the Python files, and ansible-lint. `scripts/verify` proves features on a real Mac and keeps evidence in `.local/verify/`. The maintainer refreshes the example profile from their own profile with `scripts/sync-example`, which keeps personal values out and stops on a free-text setting it has no neutral value for.
-
-Besides `scripts/bootstrap`, the checks need three things:
-
-1. The dev tools pinned in `requirements/dev.txt` (yamllint, ansible-lint, black and their dependencies) in `.local/venv`. These two commands download each pinned file from its direct link in `requirements/dev-urls.txt`, check its SHA-256 hash, and install it without the PyPI index:
-
-   ```sh
-   mkdir -p .local/wheels && (cd .local/wheels && xargs -n 1 curl --fail --silent --show-error --location --remote-name <../../requirements/dev-urls.txt)
-   .local/venv/bin/python -I -m pip install --isolated --no-index --find-links .local/wheels --no-deps --require-hashes --only-binary :all: -r requirements/dev.txt
-   ```
-
-2. The Gitleaks secret scanner, in `.local/bin/gitleaks` or on your PATH. The `first-commit-setup` command below puts it in `.local/bin/`.
-3. The file `.local/private-words.txt`, with one private word per line, such as your machine and account names. Git ignores it. The private-word scan fails when a file in the repository contains one of these words.
-
-Commits and pushes run pre-commit hooks from [first-commit](https://github.com/amrendra18/first-commit), pinned in `.pre-commit-config.yaml`. They check signing, secrets and private values. In a new clone, install pre-commit (`pipx install --python python3.13 pre-commit` or `brew install pre-commit`), then run:
-
-```sh
-pre-commit install
-pre-commit run first-commit-setup --hook-stage manual
-```
-
-The second command sets the clone's Git identity and SSH signing and installs the Gitleaks scanner. Check a clone with `pre-commit run first-commit-check --hook-stage manual --all-files`.
-
-## Plan
-
-| # | Milestone | Done when |
-| --- | --- | --- |
-| 1 | M0: install from this README and one visible Dock change | A fresh clone installs, one run puts the Dock on the left at size 32 with recents hidden, and a second run shows `changed=0`. |
-| 2 | M1: each account gets its own settings | A test account is created and gets its own settings; existing accounts are adopted with 0 changes; a refused setting no longer stops the run; a 170-setting profile is timed. |
-| 3 | M2: the full settings reference and the template | All researched settings load, and the template lists each one. |
-| 4 | M3: account settings by area | Dock, Finder, input, system UI and privacy preferences apply and read back. |
-| 5 | M4: machine settings | Admin settings and command-line tools apply and read back. |
-| 6 | M5: guided click-through | Each click-only page opens with what to choose and 0 preference writes. |
-| 7 | M6: Dock apps and a black desktop | The Dock holds only the listed apps, and the desktop is black. |
-| 8 | M7: the remaining settings | Every setting has a way to apply it or a written reason why none is safe. |
-| 9 | M8: the new-Mac journey | A fresh admin account follows this README end to end with one command. |
-| 10 | M9: the next items | Apps, dotfiles, FileVault, MDM, undo and SSH runs, each planned and approved first. |
+1. [How mac-setup works](docs/how-it-works.md) explains the parts, the settings reference, the download checks, the design rules and the tests.
+2. [Contributing](CONTRIBUTING.md) covers the checks, the developer tools, the commit hooks and the test runs on a real Mac.
 
 ## License
 
