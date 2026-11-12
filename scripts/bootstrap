@@ -1,6 +1,27 @@
 #!/bin/bash
 set -euo pipefail
 
+usage() {
+  cat <<'EOF'
+usage: scripts/bootstrap
+
+Installs uv, Python, Ansible and the community.general collection into .local/
+in this checkout, and Python itself into ~/.local/share/uv/python/. Each
+download must match its pinned SHA-256 hash. A second run downloads nothing.
+It takes no options.
+
+exit codes: 0 installed, 1 not an Apple Silicon Mac, a download did not
+match its hash, or another step failed, 2 usage error, any other code from the command that failed
+(such as curl when the network is down)
+EOF
+}
+
+case "$#:${1:-}" in
+  0:) ;;
+  1:-h | 1:--help) usage; exit 0 ;;
+  *) usage >&2; exit 2 ;;
+esac
+
 uv_version=0.13.4
 uv_sha256=e0b1d4743ce64c55d9f0f4a444afa6b81125680070ee04e853fcd0f6c1ebf8f1
 python_version=3.13.15
