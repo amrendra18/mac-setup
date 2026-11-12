@@ -80,24 +80,6 @@ ente_auth:
     pattern: '"tag_name": *"auth-v([0-9.]+)"'
     url: https://github.com/ente/ente/releases/download/auth-v{}/ente-auth-v{}.dmg
 
-ente_photos:
-  name: Ente Photos
-  url: https://github.com/ente/photos-desktop/releases/download/v1.7.30/ente-1.7.30-universal.dmg
-  host: github.com
-  redirect_host: release-assets.githubusercontent.com
-  sha256: c889ee351d8032accc153878b06570a6503e24e48d03b0ea10b262618270fe52
-  published: "2026-10-06"
-  team_id: 6Z68YJY9Q2
-  bundle_id: io.ente.bhari-frame
-  container: dmg
-  app: ente.app
-  version: "1.7.30"
-  note: Sign in with an Ente account after the install.
-  latest:
-    page: https://api.github.com/repos/ente/photos-desktop/releases/latest
-    pattern: '"tag_name": *"v([0-9.]+)"'
-    url: https://github.com/ente/photos-desktop/releases/download/v{}/ente-{}-universal.dmg
-
 utm:
   name: UTM
   url: https://github.com/utmapp/UTM/releases/download/v5.0.8/UTM.dmg

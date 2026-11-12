@@ -406,7 +406,6 @@ class ParsesTheCatalog(unittest.TestCase):
             sorted(catalog),
             [
                 "ente_auth",
-                "ente_photos",
                 "firefox",
                 "google_chrome",
                 "little_snitch",
