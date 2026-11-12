@@ -29,8 +29,7 @@ input.app_expose_gesture:
     off writes only its Dock key and leaves the finger keys alone.
     That the Dock key alone turns the gesture off is not tested.
     When both gestures are on, they use the same number of fingers,
-    and the profile check refuses a pair that disagrees. A test
-    Mac had no showAppExposeGestureEnabled key (measured). Research
+    and the profile check refuses a pair that disagrees. Research
     note on when it takes effect: Dock restart; not tested.'
 input.auto_capitalize:
   summary: Capitalize the first word of a sentence automatically.
@@ -204,11 +203,10 @@ input.input_sources:
   notes: 'The list replaces the whole AppleEnabledInputSources array
     in com.apple.HIToolbox, so list at least one keyboard layout.
     emoji_and_symbols is the Emoji & Symbols viewer, which macOS
-    turns on by itself. The canadian and emoji_and_symbols items
-    match what a test Mac with macOS 15 stores (measured). The other
-    layout numbers come from community lists. Input methods that
-    type other scripts are not offered yet. Research note on when it takes
-    effect: logout; list writes are reported fragile. Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension'
+    turns on by itself. The layout numbers come from community
+    lists. Input methods that type other scripts are not offered
+    yet. Research note on when it takes effect: logout; list writes
+    are reported fragile. Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension'
 input.key_repeat:
   summary: How fast a held key repeats. Smaller is faster; the
     slider runs from 120 to 2.
@@ -278,8 +276,6 @@ input.keyboard_shortcuts:
     Each action writes its own numbered entry in AppleSymbolicHotKeys
     in com.apple.symbolichotkeys, and the other entries stay as they
     are. The action numbers and key codes come from community lists.
-    A test Mac with macOS 15 stores an entry that is off as {enabled:
-    false}, and Control-Space as the numbers 32, 49 and 262144 (measured).
     The Mission Control keys are in mission_control.shortcuts. Research
     note on when it takes effect: logout, or activateSettings -u
     (reported, not tested). Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension'
@@ -374,9 +370,8 @@ input.modifier_keys:
     a key is remapped, so a profile cannot name it ahead of time.
   notes: 'Stored per keyboard under -currentHost NSGlobalDomain
     as com.apple.keyboard.modifiermapping.<vendor>-<product>-0.
-    The device IDs differ per keyboard, so a profile cannot name
-    the key ahead of time. Research note on when it takes effect:
-    immediate for the UI; defaults write needs logout (reported).
+    Research note on when it takes effect: immediate for the UI;
+    defaults write needs logout (reported).
     Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension'
 input.mouse_mission_control:
   summary: Double-tap a Magic Mouse with two fingers to open Mission
@@ -879,8 +874,7 @@ input.text_replacements:
     syncs, and no supported command writes it. Add replacements
     in System Settings > Keyboard > Text Replacements.
   notes: 'takes_effect not measured. The live list is a Core Data
-    SQLite file synced through iCloud, and no supported write
-    command exists. You can open the pane, or drag a .plist of
+    SQLite file. You can open the pane, or drag a .plist of
     replacements from Finder into the list. A read-only check
     counts rows with sqlite3 -readonly. Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension'
 input.three_finger_drag:

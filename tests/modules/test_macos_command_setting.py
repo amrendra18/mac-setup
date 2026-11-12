@@ -2,6 +2,8 @@ import sys
 import unittest
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "roles/macos_commands/library"))
 
@@ -241,6 +243,24 @@ class ParseFailure(unittest.TestCase):
         with self.assertRaises(SettingError) as raised:
             ensure(tool, entry, 15)
         self.assertIn("No such setting", str(raised.exception))
+        self.assertEqual(tool.sets(), [])
+
+    def test_output_with_no_volume_control_is_refused(self):
+        reference = yaml.safe_load((ROOT / "settings/macos/systemui.yml").read_text())
+        command = reference["sound.output_volume"]["command"]
+        shown = "output volume:missing value, input volume:missing value, alert volume:100, output muted:missing value\n"
+        tool = FakeTool(
+            command["read"], shown, lambda state: (0, state, ""), lambda *_: None
+        )
+        entry = {
+            "read": command["read"],
+            "parse": command["parse"],
+            "mapping": {},
+            "set_spec": command["set"],
+        }
+        with self.assertRaises(SettingError) as raised:
+            ensure(tool, entry, 50)
+        self.assertIn("output volume:missing value", str(raised.exception))
         self.assertEqual(tool.sets(), [])
 
     def test_pattern_without_value_group_fails(self):

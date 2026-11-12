@@ -120,7 +120,7 @@ def main():
         argument_spec={
             "domain": {"type": "str", "required": True},
             "host": {"type": "str", "default": ""},
-            "key": {"type": "str", "required": True, "no_log": False},
+            "key": {"type": "str", "required": True},
             "value": {"type": "raw"},
             "state": {
                 "type": "str",

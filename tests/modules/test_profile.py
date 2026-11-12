@@ -909,6 +909,7 @@ class RemainingStores(unittest.TestCase):
                     "spotlight_search": "command+option+space",
                     "screenshot_options": False,
                     "finder_search_window": True,
+                    "previous_input_source": "control+space",
                 },
                 "mission_control.shortcuts": {
                     "mission_control": "control+up",
@@ -941,6 +942,7 @@ class RemainingStores(unittest.TestCase):
                 "64": hotkey([32, 49, 1572864]),
                 "184": {"enabled": False},
                 "65": {"enabled": True},
+                "60": hotkey([32, 49, 262144]),
             },
         )
         self.assertEqual(

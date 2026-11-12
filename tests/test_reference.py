@@ -921,8 +921,8 @@ class FixtureReference(unittest.TestCase):
         for expected in [
             '  #   Values: left, bottom, "off"',
             '  #   Values: "on", "off"',
-            "  #   Values: a list of any of recents, trash",
-            "  #   Values: a list of 1 or more of first, second",
+            "  #   Values: a list of different items from recents, trash",
+            "  #   Values: a list of 1 or more different items from first, second",
             "  #   Values: a list of app ids from apps/macos.yml",
             '  #   Values: a list of folder paths that start with / or "~", other than / itself, in order',
             "  #   macOS default: bottom",

@@ -1139,10 +1139,9 @@ sound.alert_volume:
   not_yet_reason: ""
   notes: 'The command runs in the session of the account that runs
     mac-setup. Another listed account gets it when that account runs
-    mac-setup itself while signed in. This works without an Automation
-    prompt (reported, not tested).
-    The volume is stored as com.apple.sound.beep.volume in NSGlobalDomain,
-    a number from 0 to 1 (not measured).'
+    mac-setup itself while signed in. On macOS 27.2.1, a test
+    run from the running account set the volume with no Automation
+    prompt (measured).'
 sound.flash_screen:
   summary: Flash the screen when an alert sound plays.
   scope: user
@@ -1206,10 +1205,11 @@ sound.output_volume:
   not_yet_reason: ""
   notes: 'The command runs in the session of the account that runs
     mac-setup. Another listed account gets it when that account runs
-    mac-setup itself while signed in. This works without an Automation
-    prompt (reported, not tested).
+    mac-setup itself while signed in. On macOS 27.2.1, a test
+    run from the running account set the volume with no Automation
+    prompt (measured).
     Volume is state people change all day, so a profile may be better
-    without it. A test Mac showed output volume 0, muted (measured).
+    without it.
     An output with no volume control reads missing value, and the
     run refuses the setting. Whether a set also unmutes is not tested.'
 sound.startup_sound:

@@ -130,7 +130,7 @@ accounts:
       dock.position: bottom
 ```
 
-`settings` is optional. It adds to or replaces `default_settings` for that account only. Those settings take effect the next time that person signs in.
+`settings` is optional. It adds to or replaces `default_settings` for that account only. Those settings take effect the next time that person signs in. The volumes (`sound.output_volume` and `sound.alert_volume`) run only in an account's own session, so for another account the summary says that person must sign in and run mac-setup there.
 
 If the account exists already, mac-setup keeps its password and admin rights as they are. A different `admin` value in the profile is reported as refused and changes nothing. mac-setup never deletes an account. To remove one, use System Settings > Users & Groups.
 
@@ -150,7 +150,7 @@ For each click-only setting of your account and of the machine, it opens the Sys
 
 Write the old value in the profile and run again. For a setting stored as a preference, write `unset` to return it to the macOS default. The profile check refuses `unset` for any other setting. It also refuses `unset` for `input.keyboard_shortcuts` and `mission_control.shortcuts`, because it would reset every shortcut, and for `input.input_sources`, because it would leave the account with no input source. Deleting a line only stops mac-setup managing that setting, and leaves the Mac as it is.
 
-If you change a setting by hand in System Settings, the next run sets it back to the profile's value.
+If you change a setting by hand in System Settings, the next run sets it back to the profile's value. The exception is a trackpad choice that leaves shared swipe keys alone: `off` for `input.mission_control_gesture` and `input.app_expose_gesture`, `off` and `two_finger` for `input.swipe_between_pages`, and `off` and `four_finger` for `input.swipe_full_screen_apps`. A by-hand change to those keys stays.
 
 A setting that could cut a remote connection, such as turning Remote Login off, is refused unless you allow it. To allow it, add the line `allow_lockout_risk: true` at the top of `machine.yml`, outside `machine_settings`.
 

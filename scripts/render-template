@@ -128,13 +128,7 @@ def describe(values):
         return f"{number} from {values['min']} to {values['max']}"
     if kind == "text":
         return f"text that matches {values['pattern']}"
-    if kind == "list":
-        return (
-            f"a list of {values['min']} or more of "
-            if "min" in values
-            else "a list of any of "
-        ) + ", ".join(map(profile._choice_text, values["choices"]))
-    if kind == "hotkeys":
+    if kind in ("list", "hotkeys"):
         return profile._describe(values)
     return {
         "bool": "true or false",
