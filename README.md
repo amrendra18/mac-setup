@@ -71,7 +71,7 @@ You also need a GitHub SSH key that can read this repository. Follow GitHub's gu
    .local/venv/bin/ansible-playbook playbooks/site.yml -K
    ```
 
-   macOS may ask whether Terminal may use your Desktop and Downloads folders. Click Allow. You see the Dock and Finder change. The run ends with a short summary. It says how many settings show only after you log out and back in, and how many need a click in System Settings. The last line, called the recap, shows `failed=0` when everything worked. In the second run, every setting prints `ok` and the recap shows `changed=0`, because the Mac already matches. It asks no account password, because the accounts exist.
+   macOS may ask whether Terminal may use your Desktop and Downloads folders. Click Allow. You see the Dock and Finder change. The run ends with a short summary. It says how many settings show only after you log out and back in, and how many need a click in System Settings. It also counts the settings whose timing is not measured, which may need a logout or an app restart to show. The last line, called the recap, shows `failed=0` when everything worked. In the second run, every setting prints `ok` and the recap shows `changed=0`, because the Mac already matches. It asks no account password, because the accounts exist.
 
 If the profile lists accounts that do not exist yet, the run asks each new account's password once, with typing hidden. mac-setup never stores a password.
 

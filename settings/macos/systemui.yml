@@ -10,7 +10,7 @@ appearance.accent_color:
       key: AppleAccentColor
       type: int
       map: {multicolor: null, blue: 4, purple: 5, pink: 6, red: 0, orange: 1, yellow: 2, green: 3, graphite: -1}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Appearance
@@ -30,7 +30,7 @@ appearance.highlight_color:
       key: AppleHighlightColor
       type: string
       map: {accent: null, blue: 0.698039 0.843137 1.000000 Blue}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Appearance
@@ -45,14 +45,13 @@ appearance.icon_style:
   route: by_hand
   values: [default, dark, clear, tinted]
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Appearance
   link: x-apple.systempreferences:com.apple.Appearance-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: unknown.'
 appearance.liquid_glass:
   summary: 'Liquid Glass look: Clear or Tinted (macOS 26.1 and
     later).'
@@ -60,14 +59,13 @@ appearance.liquid_glass:
   route: by_hand
   values: [clear, tinted]
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Appearance
   link: x-apple.systempreferences:com.apple.Appearance-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: unknown.'
 appearance.scroll_bar_click:
   summary: Clicking the scroll bar jumps one page or to the spot
     clicked.
@@ -154,7 +152,7 @@ appearance.wallpaper_tinting:
       key: AppleReduceDesktopTinting
       type: bool
       map: {'on': false, 'off': true}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Appearance
@@ -177,7 +175,7 @@ battery.dim_on_battery:
         - [/usr/bin/pmset, -b, lessbright, '1']
       false:
         - [/usr/bin/pmset, -b, lessbright, '0']
-  takes_effect: live
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Battery
@@ -206,14 +204,13 @@ lock_screen.large_clock:
   route: by_hand
   values: [by_hand]
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Lock Screen
   link: x-apple.systempreferences:com.apple.Lock-Screen-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: unknown.'
 lock_screen.password_after:
   summary: Ask for the password this many seconds after sleep
     or screen saver.
@@ -239,7 +236,7 @@ lock_screen.screen_saver_after:
   macos_default: not measured
   writes:
     - {domain: com.apple.screensaver, key: idleTime, type: int, host: currentHost}
-  takes_effect: live
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Lock Screen
@@ -258,7 +255,7 @@ menu_bar.accessibility_shortcuts:
       type: int
       host: currentHost
       map: {show: 18, hide: 24}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -280,7 +277,7 @@ menu_bar.airdrop:
       type: int
       host: currentHost
       map: {show: 18, hide: 24}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -311,14 +308,13 @@ menu_bar.background:
   route: by_hand
   values: {type: bool}
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Control Center
   link: x-apple.systempreferences:com.apple.ControlCenter-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: unknown.'
 menu_bar.battery:
   summary: Show Battery in the menu bar (laptops).
   scope: user
@@ -331,7 +327,7 @@ menu_bar.battery:
       type: int
       host: currentHost
       map: {show: 18, hide: 24}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -348,7 +344,7 @@ menu_bar.battery_percentage:
   macos_default: not measured
   writes:
     - {domain: com.apple.controlcenter, key: BatteryShowPercentage, type: bool}
-  takes_effect: live
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -369,7 +365,7 @@ menu_bar.bluetooth:
       type: int
       host: currentHost
       map: {show: 18, hide: 24}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -388,7 +384,7 @@ menu_bar.clock_24_hour:
   macos_default: not measured
   writes:
     - {domain: com.apple.menuextra.clock, key: Show24Hour, type: bool}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -404,7 +400,7 @@ menu_bar.clock_am_pm:
   macos_default: not measured
   writes:
     - {domain: com.apple.menuextra.clock, key: ShowAMPM, type: bool}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -418,14 +414,13 @@ menu_bar.clock_announce:
   route: by_hand
   values: {type: bool}
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Control Center
   link: x-apple.systempreferences:com.apple.ControlCenter-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: unknown.'
 menu_bar.clock_day_of_week:
   summary: Show the day of the week in the menu bar clock.
   scope: user
@@ -434,7 +429,7 @@ menu_bar.clock_day_of_week:
   macos_default: not measured
   writes:
     - {domain: com.apple.menuextra.clock, key: ShowDayOfWeek, type: bool}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -450,7 +445,7 @@ menu_bar.clock_flash_separators:
   macos_default: not measured
   writes:
     - {domain: com.apple.menuextra.clock, key: FlashDateSeparators, type: bool}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -466,7 +461,7 @@ menu_bar.clock_seconds:
   macos_default: not measured
   writes:
     - {domain: com.apple.menuextra.clock, key: ShowSeconds, type: bool}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -485,7 +480,7 @@ menu_bar.clock_show_date:
       key: ShowDate
       type: int
       map: {when_space_allows: 0, always: 1, never: 2}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -505,7 +500,7 @@ menu_bar.clock_style:
       key: IsAnalog
       type: bool
       map: {digital: false, analog: true}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -525,7 +520,7 @@ menu_bar.display:
       type: int
       host: currentHost
       map: {always: 18, when_active: 2, never: 8}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -547,7 +542,7 @@ menu_bar.focus:
       type: int
       host: currentHost
       map: {always: 18, when_active: 2, never: 8}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -583,7 +578,7 @@ menu_bar.hearing:
       type: int
       host: currentHost
       map: {show: 18, hide: 24}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -605,7 +600,7 @@ menu_bar.keyboard_brightness:
       type: int
       host: currentHost
       map: {show: 18, hide: 24}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -627,7 +622,7 @@ menu_bar.music_recognition:
       type: int
       host: currentHost
       map: {show: 18, hide: 24}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -649,7 +644,7 @@ menu_bar.now_playing:
       type: int
       host: currentHost
       map: {always: 18, when_active: 2, never: 8}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -671,7 +666,7 @@ menu_bar.screen_mirroring:
       type: int
       host: currentHost
       map: {always: 18, when_active: 2, never: 8}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -709,7 +704,7 @@ menu_bar.sound:
       type: int
       host: currentHost
       map: {always: 18, when_active: 2, never: 8}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -726,14 +721,13 @@ menu_bar.spotlight:
   route: by_hand
   values: {type: bool}
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Control Center
   link: x-apple.systempreferences:com.apple.ControlCenter-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: unknown.'
 menu_bar.stage_manager:
   summary: Show Stage Manager in the menu bar.
   scope: user
@@ -746,7 +740,7 @@ menu_bar.stage_manager:
       type: int
       host: currentHost
       map: {show: 18, hide: 24}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -762,14 +756,13 @@ menu_bar.time_machine:
   route: by_hand
   values: [show, hide]
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Control Center
   link: x-apple.systempreferences:com.apple.ControlCenter-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: unknown.'
 menu_bar.user_switcher:
   summary: Show Fast User Switching in the menu bar.
   scope: user
@@ -782,7 +775,7 @@ menu_bar.user_switcher:
       type: int
       host: currentHost
       map: {show: 18, hide: 24}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -806,7 +799,7 @@ menu_bar.wifi:
       type: int
       host: currentHost
       map: {show: 18, hide: 24}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center
@@ -837,7 +830,7 @@ notifications.iphone_sounds:
   macos_default: not measured
   writes:
     - {domain: com.apple.ncprefs, key: play_forwarded_notifications_sounds, type: bool}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Notifications
@@ -870,7 +863,7 @@ notifications.show_previews:
       key: content_visibility
       type: int
       map: {always: 3, when_unlocked: 2, never: 1}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Notifications
@@ -888,7 +881,7 @@ notifications.summarize:
   macos_default: not measured
   writes:
     - {domain: com.apple.ncprefs, key: summarize_previews, type: bool}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Notifications
@@ -902,42 +895,39 @@ notifications.when_display_sleeping:
   route: by_hand
   values: {type: bool}
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Notifications
   link: x-apple.systempreferences:com.apple.Notifications-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: unknown.'
 notifications.when_locked:
   summary: Allow notifications when the screen is locked.
   scope: user
   route: by_hand
   values: {type: bool}
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Notifications
   link: x-apple.systempreferences:com.apple.Notifications-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: unknown.'
 notifications.when_mirroring:
   summary: Allow notifications when mirroring or sharing the display.
   scope: user
   route: by_hand
   values: {type: bool}
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Notifications
   link: x-apple.systempreferences:com.apple.Notifications-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: unknown.'
 screen_saver.choice:
   summary: Which screen saver runs.
   scope: user
@@ -959,7 +949,7 @@ screen_saver.show_clock:
   macos_default: not measured
   writes:
     - {domain: com.apple.screensaver, key: showClock, type: bool, host: currentHost}
-  takes_effect: live
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Screen Saver
@@ -987,7 +977,7 @@ siri.enabled:
   macos_default: not measured
   writes:
     - {domain: com.apple.assistant.support, key: Assistant Enabled, type: bool}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Apple Intelligence & Siri
@@ -1002,42 +992,39 @@ siri.keyboard_shortcut:
   route: by_hand
   values: [by_hand]
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Apple Intelligence & Siri
   link: x-apple.systempreferences:com.apple.Siri-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: unknown.'
 siri.language_and_voice:
   summary: Siri language and voice.
   scope: user
   route: by_hand
   values: [by_hand]
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Apple Intelligence & Siri
   link: x-apple.systempreferences:com.apple.Siri-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: unknown.'
 siri.listen_for:
   summary: Listen for 'Siri' or 'Hey Siri'.
   scope: user
   route: by_hand
   values: {type: bool}
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Apple Intelligence & Siri
   link: x-apple.systempreferences:com.apple.Siri-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: unknown.'
 siri.voice_feedback:
   summary: Siri speaks its answers out loud.
   scope: user
@@ -1049,16 +1036,14 @@ siri.voice_feedback:
       key: Use device speaker for TTS
       type: int
       map: {'on': 2, 'off': 3}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Apple Intelligence & Siri
   proven_on: {}
   not_yet_reason: ""
-  notes: 'The stored values 2 on and 3 off are a guess. defaults
-    reports the domain missing on a test Mac although the plist
-    file exists (measured). Research note on when it takes effect:
-    unknown.'
+  notes: The stored values 2 on and 3 off are a guess. defaults reports the
+    domain missing on a test Mac although the plist file exists (measured).
 sound.alert_device:
   summary: Which device plays alert sounds.
   scope: user
@@ -1111,7 +1096,7 @@ sound.alert_sound:
         sonar: /System/Library/Sounds/Ping.aiff
         sonumi: /System/Library/Sounds/Sosumi.aiff
         submerge: /System/Library/Sounds/Submarine.aiff
-  takes_effect: live
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Sound
@@ -1153,7 +1138,7 @@ sound.flash_screen:
       key: com.apple.sound.beep.flash
       type: int
       map: {'on': 1, 'off': 0}
-  takes_effect: live
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Accessibility
@@ -1247,13 +1232,12 @@ sound.ui_sounds:
       key: com.apple.sound.uiaudio.enabled
       type: int
       map: {'on': 1, 'off': 0}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Sound
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: unknown.'
 sound.volume_feedback:
   summary: Play a sound when the volume changes.
   scope: user
@@ -1265,7 +1249,7 @@ sound.volume_feedback:
       key: com.apple.sound.beep.feedback
       type: int
       map: {'on': 1, 'off': 0}
-  takes_effect: live
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Sound
@@ -1278,7 +1262,7 @@ spotlight.categories:
   route: by_hand
   values: [by_hand]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Spotlight
@@ -1293,14 +1277,13 @@ spotlight.clipboard_history:
   route: by_hand
   values: {type: bool}
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Spotlight
   link: x-apple.systempreferences:com.apple.Spotlight-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: unknown.'
 spotlight.improve_search:
   summary: Share Spotlight and Siri search data with Apple.
   scope: user
@@ -1312,14 +1295,13 @@ spotlight.improve_search:
       key: Search Queries Data Sharing Status
       type: int
       map: {'on': 1, 'off': 2}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Spotlight
   proven_on: {"27.2.1": "2026-11-12"}
   not_yet_reason: ""
-  notes: 'The stored values 1 on and 2 off are a guess. Research
-    note on when it takes effect: unknown.'
+  notes: The stored values 1 on and 2 off are a guess.
 spotlight.privacy:
   summary: Folders and disks Spotlight must not search.
   scope: machine

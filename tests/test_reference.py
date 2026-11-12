@@ -46,7 +46,15 @@ ROUTES = (
     "not_yet",
 )
 SCOPES = {"user", "machine"}
-TAKES_EFFECT = {"live", "dock", "finder", "systemuiserver", "relaunch", "logout"}
+TAKES_EFFECT = {
+    "live",
+    "dock",
+    "finder",
+    "systemuiserver",
+    "relaunch",
+    "logout",
+    "not measured",
+}
 NEEDS = {"full_disk_access", "click"}
 WRITE_TYPES = {"string", "int", "float", "bool", "array", "dict"}
 WRITE_FIELDS = {"domain", "key", "type", "host", "map", "dict_mode"}
@@ -558,7 +566,8 @@ FIXTURES = {
             route="command",
             command=COMMAND_BOOL,
             lockout_risk=True,
-            notes="takes_effect not measured",
+            takes_effect="not measured",
+            notes="Turning it off can end a remote session.",
         ),
         "alpha.software": fixture(
             scope="machine", route="apps", values={"type": "catalog_ids"}
@@ -613,6 +622,11 @@ BROKEN = [
         "takes_effect word",
         lambda e: e.update(takes_effect="unknown"),
         "takes_effect 'unknown'",
+    ),
+    (
+        "takes_effect not measured spelling",
+        lambda e: e.update(takes_effect="not_measured"),
+        "takes_effect 'not_measured'",
     ),
     ("needs word", lambda e: e.update(needs=["admin"]), "needs ['admin']"),
     (
@@ -1007,7 +1021,8 @@ class FixtureReference(unittest.TestCase):
             "  #   Proven on: macOS 27.2.1 (2026-11-12)",
             "  #   Proven on: not yet",
             "  #   Warning: can lock you out of this Mac; it needs allow_lockout_risk: true",
-            "  #   Note: takes_effect not measured",
+            "  #   Takes effect: not measured",
+            "  #   Note: Turning it off can end a remote session.",
             "#   Where: System Settings > Privacy & Security > Screen Recording",
             "#   Not yet because: The research found no store that reads back.",
             "#   Scope: machine setting, needs admin",

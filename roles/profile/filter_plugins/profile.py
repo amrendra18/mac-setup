@@ -625,9 +625,7 @@ def profile_work(profile, files, running_account):
         for group in [*settings.values(), machine]
         for setting_id in group
     )
-    own_after_logout = {
-        write["id"] for write in own["writes"] if write["takes_effect"] == "logout"
-    }
+    own_timing = {write["id"]: write["takes_effect"] for write in own["writes"]}
     return {
         "own": own,
         "others": others,
@@ -648,8 +646,9 @@ def profile_work(profile, files, running_account):
             for account in accounts
         ],
         "counts": {
-            "after_logout": len(own_after_logout)
+            "after_logout": list(own_timing.values()).count("logout")
             + sum(len(_written(other)) for other in others),
+            "timing_not_measured": list(own_timing.values()).count("not measured"),
             "need_click": len(by_hand) + clicks_elsewhere,
             "own_session": sum(len(other["commands"]) for other in others),
         },
@@ -695,6 +694,12 @@ def profile_summary(counts, refused_settings, account_results, waiting_wallpaper
     after_logout, click = counts["after_logout"], counts["need_click"]
     if after_logout:
         notes.append(f"log out and back in to see {_settings(after_logout)}")
+    unmeasured = counts["timing_not_measured"]
+    if unmeasured:
+        notes.append(
+            f"{_settings(unmeasured)} may need a logout or an app restart to show; "
+            f"{'its' if unmeasured == 1 else 'their'} timing is not measured"
+        )
     if counts["own_session"]:
         notes.append(
             f"{_settings(counts['own_session'])} for other accounts "

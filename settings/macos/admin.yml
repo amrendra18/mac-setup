@@ -74,7 +74,7 @@ login_window.fast_user_switching:
     - domain: /Library/Preferences/.GlobalPreferences
       key: MultipleSessionEnabled
       type: bool
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Control Center > Fast User Switching
@@ -387,14 +387,13 @@ security.filevault:
   route: by_hand
   values: {type: bool}
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > FileVault
   link: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: When a change takes effect is not measured.
 security.firewall:
   summary: Turn on the macOS firewall for incoming connections.
   scope: machine
@@ -595,7 +594,7 @@ sharing.airplay_receiver:
       key: AirplayRecieverEnabled
       type: bool
       host: currentHost
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > General > AirDrop & Handoff > AirPlay
@@ -615,13 +614,12 @@ sharing.bluetooth_sharing:
       key: PrefKeyServicesEnabled
       type: bool
       host: currentHost
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > General > Sharing > Bluetooth Sharing
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: Unknown.'
 sharing.content_caching:
   summary: Cache Apple downloads for other devices on the network.
   scope: machine
@@ -651,16 +649,15 @@ sharing.file_sharing:
   route: by_hand
   values: {type: bool}
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > General > Sharing > File Sharing
   link: x-apple.systempreferences:com.apple.Sharing-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: When a change takes effect is not measured. Turning it on also needs shared
-    folders, so on is a click. A command sets off, but on needs
-    a click, so the whole setting is by hand.
+  notes: Turning it on also needs shared folders, so on is a click. A command
+    sets off, but on needs a click, so the whole setting is by hand.
 sharing.internet_sharing:
   summary: Share this Mac's internet connection with other devices.
   scope: machine
@@ -686,7 +683,7 @@ sharing.media_sharing:
       key: home-sharing-enabled
       type: int
       map: {true: 1, false: 0}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > General > Sharing > Media Sharing
@@ -705,7 +702,7 @@ sharing.media_sharing_guests:
       key: public-sharing-enabled
       type: int
       map: {true: 1, false: 0}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > General > Sharing > Media Sharing >
@@ -889,7 +886,7 @@ time.zone_automatic:
   route: by_hand
   values: {type: bool}
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > General > Date & Time > Set time zone
@@ -897,9 +894,7 @@ time.zone_automatic:
   link: x-apple.systempreferences:com.apple.Date-Time-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Needs Location Services too, so the Date & Time pane
-    is the safer path. Research note on when it takes effect:
-    unknown.'
+  notes: Needs Location Services too, so the Date & Time pane is the safer path.
 updates.check_automatically:
   summary: Check for software updates automatically.
   scope: machine

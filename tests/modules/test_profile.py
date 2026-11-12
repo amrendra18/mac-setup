@@ -55,6 +55,16 @@ def entry(**fields):
     return {**base, **fields}
 
 
+def counts(**fields):
+    return {
+        "after_logout": 0,
+        "timing_not_measured": 0,
+        "need_click": 0,
+        "own_session": 0,
+        **fields,
+    }
+
+
 TEST_FILES = {
     "test.yml": {
         "test.flag": entry(),
@@ -63,6 +73,7 @@ TEST_FILES = {
         "test.ratio": entry(values={"type": "float", "min": 0.5, "max": 2}),
         "test.label": entry(values={"type": "text", "pattern": "[A-Z][a-z]+"}),
         "test.logout": entry(takes_effect="logout"),
+        "test.unmeasured": entry(takes_effect="not measured"),
         "test.click": entry(route="by_hand", writes=[]),
         "test.machine_click": entry(
             scope="machine",
@@ -724,6 +735,13 @@ class ProfileWork(unittest.TestCase):
         )
         self.assertEqual(work["counts"]["need_click"], 3)
 
+    def test_unmeasured_timing_is_not_counted_as_a_logout(self):
+        profile = {"default_settings": {"test.logout": True, "test.unmeasured": True}}
+        self.assertEqual(
+            profile_work(profile, TEST_FILES, "runner")["counts"],
+            counts(after_logout=1, timing_not_measured=1),
+        )
+
     def test_counts(self):
         profile = {
             "default_settings": {
@@ -735,14 +753,15 @@ class ProfileWork(unittest.TestCase):
         }
         work = profile_work(profile, TEST_FILES, "runner")
         self.assertEqual(
-            work["counts"], {"after_logout": 4, "need_click": 2, "own_session": 0}
+            work["counts"],
+            counts(after_logout=4, need_click=2),
         )
 
 
 class ProfileSummary(unittest.TestCase):
     def test_notes_and_refused_lines(self):
         summary = profile_summary(
-            {"after_logout": 3, "need_click": 1, "own_session": 0},
+            counts(after_logout=3, need_click=1),
             [
                 {
                     "account": "runner",
@@ -789,7 +808,7 @@ class ProfileSummary(unittest.TestCase):
 
     def test_check_run_names_each_account_it_skipped(self):
         summary = profile_summary(
-            {"after_logout": 0, "need_click": 0, "own_session": 0},
+            counts(),
             [],
             [
                 {
@@ -814,13 +833,16 @@ class ProfileSummary(unittest.TestCase):
 
     def test_clean_run_has_no_refused_lines(self):
         summary = profile_summary(
-            {"after_logout": 0, "need_click": 0, "own_session": 0}, [], [], []
+            counts(),
+            [],
+            [],
+            [],
         )
         self.assertEqual(summary, {"notes": [], "refused": []})
 
     def test_a_missing_admin_password_is_named_as_admin_rights(self):
         summary = profile_summary(
-            {"after_logout": 0, "need_click": 0, "own_session": 0},
+            counts(),
             [
                 {
                     "account": "machine",
@@ -842,7 +864,7 @@ class ProfileSummary(unittest.TestCase):
 
     def test_a_wallpaper_waiting_for_another_account_is_a_note(self):
         summary = profile_summary(
-            {"after_logout": 0, "need_click": 2, "own_session": 0},
+            counts(need_click=2),
             [],
             [],
             ["setuptest1"],
@@ -955,7 +977,7 @@ class RemainingStores(unittest.TestCase):
                 "81": hotkey([108, 37, 1048576]),
             },
         )
-        self.assertEqual({w["takes_effect"] for w in writes}, {"logout"})
+        self.assertEqual({w["takes_effect"] for w in writes}, {"not measured"})
 
     def test_input_sources(self):
         self.assertEqual(
@@ -1164,9 +1186,34 @@ class RemainingStores(unittest.TestCase):
                 parse = FILES["systemui.yml"][setting_id]["command"]["parse"]
                 self.assertEqual(re.search(parse, read, re.M).group("value"), expected)
 
+    def test_unmeasured_timing_has_its_own_line(self):
+        for unmeasured, line in [
+            (
+                1,
+                "1 setting may need a logout or an app restart to show; "
+                "its timing is not measured",
+            ),
+            (
+                3,
+                "3 settings may need a logout or an app restart to show; "
+                "their timing is not measured",
+            ),
+        ]:
+            with self.subTest(unmeasured):
+                summary = profile_summary(
+                    counts(after_logout=2, timing_not_measured=unmeasured), [], [], []
+                )
+                self.assertEqual(
+                    summary["notes"],
+                    ["log out and back in to see 2 settings", line],
+                )
+
     def test_settings_for_another_session_are_a_note(self):
         summary = profile_summary(
-            {"after_logout": 0, "need_click": 0, "own_session": 2}, [], [], []
+            counts(own_session=2),
+            [],
+            [],
+            [],
         )
         self.assertEqual(
             summary["notes"],

@@ -1,6 +1,6 @@
 # Remaining stores
 
-One run of `playbooks/site.yml` sets 6 settings that need more than one plain key, for the account that runs it. They are the system keyboard shortcuts, the Mission Control shortcuts, the list of input sources, the App Exposé gesture, the speaker volume and the alert volume. The journey also sets the Mission Control gesture, because it shares two keys with the App Exposé gesture. The Dock restarts once, so the gestures work at once. The shortcuts and input sources show after a logout. The volumes change at once. A second run changes nothing.
+One run of `playbooks/site.yml` sets 6 settings that need more than one plain key, for the account that runs it. They are the system keyboard shortcuts, the Mission Control shortcuts, the list of input sources, the App Exposé gesture, the speaker volume and the alert volume. The journey also sets the Mission Control gesture, because it shares two keys with the App Exposé gesture. The Dock restarts once, so the gestures work at once. The input sources show after a logout. No test has measured when the shortcuts appear; a logout shows them. The volumes change at once. A second run changes nothing.
 
 ## Sub-features
 
@@ -28,7 +28,7 @@ default_settings:
 - The profile check refuses the two trackpad gestures when both are on with different fingers, and refuses `unset` for the shortcuts and the input sources.
 - Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check --diff` to preview.
 - Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K` to apply, then the same command again.
-- Log out and back in to see the shortcuts and the input sources.
+- Log out and back in to see the input sources. No test has measured when the shortcuts appear. Log out and back in if you do not see them.
 
 ## Driving it with scripts/verify
 
@@ -41,7 +41,7 @@ Preconditions:
 
 - **Setup.** The journey's `saves` lists 4 trackpad and Dock keys and the whole `com.apple.symbolichotkeys` and `com.apple.HIToolbox` domains, so the harness saves them before setup. The setup stops if `.local/remaining-journey/volume.txt` is left from an earlier run whose cleanup did not finish. It saves the output volume, the alert volume and the mute state to `volume.txt`. Only then does it delete the 4 keys, `AppleSymbolicHotKeys` and `AppleEnabledInputSources`, and set both volumes to 0, so the first run changes every setting.
 - **Preview.** Check run: exit 0, `changed=9 failed=0`. That is 1 nested write for each shortcut setting (2), 1 array write for the input sources (1), 1 Dock key for the Mission Control gesture set to off (1), 3 keys for the App Exposé gesture (3), and 1 command for each volume (2): 2 + 1 + 1 + 3 + 2 = 9.
-- **Apply.** Exit 0, `changed=10 failed=0`. That is the 9 changes and 1 Dock restart. Both gestures ask for the Dock restart, and it runs once. The shortcuts and input sources take effect at logout and restart nothing. Each volume command reads the volume again after the set and fails unless it reads 50 and 75.
+- **Apply.** Exit 0, `changed=10 failed=0`. That is the 9 changes and 1 Dock restart. Both gestures ask for the Dock restart, and it runs once. The input sources take effect at logout; the shortcuts' timing is not measured. Neither restarts anything. Each volume command reads the volume again after the set and fails unless it reads 50 and 75.
 - **Apply again.** Exit 0, `changed=0 failed=0`, and no Dock restart. The volume reads show 50 and 75, so no command runs.
 - **Proof.** After the last run, the harness reads every key with `defaults export DOMAIN -` and checks its type and value:
 

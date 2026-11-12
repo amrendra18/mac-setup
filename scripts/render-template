@@ -33,6 +33,7 @@ TAKES_EFFECT = {
     "systemuiserver": "when the menu bar restarts",
     "relaunch": "when the app opens again",
     "logout": "at the next login",
+    "not measured": "not measured",
 }
 NEEDS = {
     "full_disk_access": "Full Disk Access for the terminal app",

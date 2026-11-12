@@ -1,6 +1,6 @@
 # Dock area
 
-One run of `playbooks/site.yml` writes 17 settings of the Desktop & Dock pane for the account that runs it. They are the Dock's position, size, recent apps, hiding, minimizing and open-app dots, the 4 hot corners, 2 Mission Control settings, Stage Manager's recent apps, 3 widget settings, and what happens to windows when an app quits. The Dock restarts once, so the Dock and hot corner changes show at once. The other settings show after a logout, or after an app quits and opens again. A second run changes nothing.
+One run of `playbooks/site.yml` writes 17 settings of the Desktop & Dock pane for the account that runs it. They are the Dock's position, size, recent apps, hiding, minimizing and open-app dots, the 4 hot corners, 2 Mission Control settings, Stage Manager's recent apps, 3 widget settings, and what happens to windows when an app quits. The Dock restarts once, so the Dock and hot corner changes show at once. No test has measured when the other settings appear; a logout shows them. A second run changes nothing.
 
 ## Sub-features
 
@@ -13,7 +13,7 @@ One run of `playbooks/site.yml` writes 17 settings of the Desktop & Dock pane fo
 - Put the settings under `default_settings` in the profile, for example `dock.position: left`, `hot_corners.bottom_right: quick_note` and `windows.on_quit: keep`. `inventory/example/TEMPLATE.yml` lists each one with its choices.
 - Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check` to preview.
 - Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K` to apply, then the same command again.
-- Log out and back in to see the Mission Control, Stage Manager and widget settings.
+- No test has measured when the Mission Control, Stage Manager and widget settings appear. Log out and back in if you do not see them.
 
 ## Driving it with scripts/verify
 
@@ -25,7 +25,7 @@ Preconditions:
 
 - **Setup.** The journey's `saves` lists the 17 keys, so the harness saves the type and value of each, or that it is absent, before setup. A key whose type is not boolean, integer, float or string fails the journey before setup deletes any key. The setup then deletes each key that exists, so the first run changes every setting.
 - **Preview.** Check run: exit 0, `changed=17 failed=0`. That is 1 per setting.
-- **Apply.** Exit 0, `changed=18 failed=0`. That is the 17 settings and 1 Dock restart. The handler `Restart Dock` reports `changed`. 11 settings ask for the Dock restart, and it runs once. The other 6 take effect at logout or when an app opens again, so they restart nothing.
+- **Apply.** Exit 0, `changed=18 failed=0`. That is the 17 settings and 1 Dock restart. The handler `Restart Dock` reports `changed`. 11 settings ask for the Dock restart, and it runs once. The other 6 restart nothing: 1 shows at logout, and the timing of 5 is not measured.
 - **Apply again.** Exit 0, `changed=0 failed=0`, and no Dock restart.
 - **Proof.** After the last run, the harness reads every key with `defaults export DOMAIN -` and checks its type and value:
 

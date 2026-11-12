@@ -53,7 +53,7 @@ desktop.click_wallpaper_reveals:
       key: EnableStandardClickToShowDesktop
       type: bool
       map: {always: true, stage_manager_only: false}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Desktop & Stage Manager
@@ -94,7 +94,7 @@ desktop.items_in_stage_manager:
       key: HideDesktop
       type: bool
       map: {show: false, hide: true}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: 'System Settings > Desktop & Dock > Desktop & Stage Manager
@@ -115,7 +115,7 @@ desktop.items_on_desktop:
       key: StandardHideDesktopIcons
       type: bool
       map: {show: false, hide: true}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: 'System Settings > Desktop & Dock > Desktop & Stage Manager
@@ -273,7 +273,7 @@ dock.title_bar_double_click:
       key: AppleActionOnDoubleClick
       type: string
       map: {fill: Fill, zoom: Maximize, minimize: Minimize, none: None}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Dock > Double-click
@@ -622,7 +622,7 @@ mission_control.shortcuts:
   macos_default: not measured
   writes:
     - {domain: com.apple.symbolichotkeys, key: AppleSymbolicHotKeys, type: dict, dict_mode: add}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Mission Control >
@@ -696,7 +696,7 @@ stage_manager.app_windows:
       key: AppWindowGroupingBehavior
       type: int
       map: {all_at_once: 0, one_at_a_time: 1}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Desktop & Stage Manager
@@ -714,7 +714,7 @@ stage_manager.enabled:
   macos_default: not measured
   writes:
     - {domain: com.apple.WindowManager, key: GloballyEnabled, type: bool}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Desktop & Stage Manager
@@ -737,7 +737,7 @@ stage_manager.recent_apps:
       key: AutoHide
       type: bool
       map: {show: false, hide: true}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Desktop & Stage Manager
@@ -758,7 +758,7 @@ widgets.in_stage_manager:
       key: StageManagerHideWidgets
       type: bool
       map: {show: false, hide: true}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: 'System Settings > Desktop & Dock > Widgets > Show Widgets:
@@ -776,7 +776,7 @@ widgets.iphone_widgets:
   macos_default: not measured
   writes:
     - {domain: com.apple.chronod, key: remoteWidgetsEnabled, type: bool}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Widgets > iPhone Widgets
@@ -798,7 +798,7 @@ widgets.on_desktop:
       key: StandardHideWidgets
       type: bool
       map: {show: false, hide: true}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: 'System Settings > Desktop & Dock > Widgets > Show Widgets:
@@ -819,7 +819,7 @@ widgets.style:
       key: widgetAppearance
       type: int
       map: {automatic: 0, monochrome: 1, full_color: 2}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Widgets > Widget style
@@ -839,7 +839,7 @@ windows.ask_to_keep_changes:
   macos_default: not measured
   writes:
     - {domain: NSGlobalDomain, key: NSCloseAlwaysConfirmsChanges, type: bool}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Windows > Ask to keep
@@ -857,7 +857,7 @@ windows.fill_by_menu_bar_drag:
   macos_default: not measured
   writes:
     - {domain: com.apple.WindowManager, key: EnableTopTilingByEdgeDrag, type: bool}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Windows > Drag windows
@@ -879,7 +879,7 @@ windows.on_quit:
       key: NSQuitAlwaysKeepsWindows
       type: bool
       map: {close: false, keep: true}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Windows > Close windows
@@ -900,7 +900,7 @@ windows.prefer_tabs:
       key: AppleWindowTabbingMode
       type: string
       map: {never: manual, always: always, full_screen: fullscreen}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Windows > Prefer tabs
@@ -919,7 +919,7 @@ windows.tile_by_edge_drag:
   macos_default: not measured
   writes:
     - {domain: com.apple.WindowManager, key: EnableTilingByEdgeDrag, type: bool}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Windows > Drag windows
@@ -937,7 +937,7 @@ windows.tile_margins:
   macos_default: not measured
   writes:
     - {domain: com.apple.WindowManager, key: EnableTiledWindowMargins, type: bool}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Windows > Tiled windows
@@ -955,7 +955,7 @@ windows.tile_with_option:
   macos_default: not measured
   writes:
     - {domain: com.apple.WindowManager, key: EnableTilingOptionAccelerator, type: bool}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Desktop & Dock > Windows > Hold Option

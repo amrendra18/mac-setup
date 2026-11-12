@@ -5,7 +5,7 @@ privacy.accessibility:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Accessibility
@@ -20,7 +20,7 @@ privacy.app_management:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > App Management
@@ -36,7 +36,7 @@ privacy.automation:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Automation
@@ -51,7 +51,7 @@ privacy.bluetooth:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Bluetooth
@@ -66,7 +66,7 @@ privacy.calendars:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Calendars
@@ -81,7 +81,7 @@ privacy.camera:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Camera
@@ -96,7 +96,7 @@ privacy.contacts:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Contacts
@@ -112,7 +112,7 @@ privacy.developer_tools:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Developer Tools
@@ -127,7 +127,7 @@ privacy.files_desktop:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Files & Folders
@@ -142,7 +142,7 @@ privacy.files_documents:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Files & Folders
@@ -157,7 +157,7 @@ privacy.files_downloads:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Files & Folders
@@ -172,7 +172,7 @@ privacy.files_network_volumes:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Files & Folders
@@ -188,7 +188,7 @@ privacy.files_removable_volumes:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Files & Folders
@@ -203,7 +203,7 @@ privacy.focus:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Focus
@@ -219,7 +219,7 @@ privacy.full_disk_access:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Full Disk Access
@@ -234,7 +234,7 @@ privacy.home:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Home
@@ -250,14 +250,13 @@ privacy.improve_assistive_voice:
   route: by_hand
   values: {type: bool}
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Analytics & Improvements
   link: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_Analytics
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: not checked.'
 privacy.improve_siri_dictation:
   summary: Share Siri and Dictation audio with Apple to improve
     them.
@@ -270,7 +269,7 @@ privacy.improve_siri_dictation:
       key: Siri Data Sharing Opt-In Status
       type: int
       map: {not_asked: 0, 'on': 1, 'off': 2}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Privacy & Security > Analytics & Improvements
@@ -284,7 +283,7 @@ privacy.input_monitoring:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Input Monitoring
@@ -299,14 +298,14 @@ privacy.location_apps:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Location Services
   proven_on: {}
   not_yet_reason: macOS lets only a person grant this permission
     in System Settings; mac-setup cannot set it.
-  notes: 'When a change takes effect is not measured. Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_LocationServices'
+  notes: 'Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_LocationServices'
 privacy.location_menu_icon:
   summary: Show the location icon when system services use location.
   scope: machine
@@ -317,7 +316,7 @@ privacy.location_menu_icon:
     - domain: /Library/Preferences/com.apple.locationmenu
       key: ShowSystemServices
       type: bool
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: Not recorded in the research
@@ -349,7 +348,7 @@ privacy.location_system_services:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Location Services
@@ -357,14 +356,14 @@ privacy.location_system_services:
   proven_on: {}
   not_yet_reason: macOS lets only a person grant this permission
     in System Settings; mac-setup cannot set it.
-  notes: 'When a change takes effect is not measured. Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_SystemServices'
+  notes: 'Page: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_SystemServices'
 privacy.media_library:
   summary: Apps allowed to read the Music and Apple TV libraries.
   scope: user
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Media & Apple
@@ -380,7 +379,7 @@ privacy.microphone:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Microphone
@@ -398,20 +397,19 @@ privacy.personalized_ads:
   macos_default: not measured
   writes:
     - {domain: com.apple.AdLib, key: allowApplePersonalizedAdvertising, type: bool}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Privacy & Security > Apple Advertising
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: not checked.'
 privacy.photos:
   summary: Apps allowed to read the Photos library.
   scope: user
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Photos
@@ -426,7 +424,7 @@ privacy.reminders:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Reminders
@@ -441,7 +439,7 @@ privacy.screen_recording:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Screen & System
@@ -474,13 +472,12 @@ privacy.share_mac_analytics:
     - domain: /Library/Application Support/CrashReporter/DiagnosticMessagesHistory.plist
       key: AutoSubmit
       type: bool
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Privacy & Security > Analytics & Improvements
   proven_on: {}
   not_yet_reason: ""
-  notes: When a change takes effect is not measured.
 privacy.share_with_app_developers:
   summary: Send crash data to the developers of the apps that
     crashed.
@@ -492,20 +489,19 @@ privacy.share_with_app_developers:
     - domain: /Library/Application Support/CrashReporter/DiagnosticMessagesHistory.plist
       key: ThirdPartyDataSubmit
       type: bool
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Privacy & Security > Analytics & Improvements
   proven_on: {}
   not_yet_reason: ""
-  notes: When a change takes effect is not measured.
 privacy.speech_recognition:
   summary: Apps allowed to send speech to Apple for recognition.
   scope: user
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Speech Recognition
@@ -520,7 +516,7 @@ privacy.system_audio_recording:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Privacy & Security > Screen & System

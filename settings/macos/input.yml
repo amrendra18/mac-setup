@@ -39,7 +39,7 @@ input.auto_capitalize:
   macos_default: not measured
   writes:
     - {domain: NSGlobalDomain, key: NSAutomaticCapitalizationEnabled, type: bool}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Keyboard
@@ -55,7 +55,7 @@ input.auto_correct:
   macos_default: not measured
   writes:
     - {domain: NSGlobalDomain, key: NSAutomaticSpellingCorrectionEnabled, type: bool}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Keyboard
@@ -70,16 +70,15 @@ input.dictation:
   route: by_hand
   values: ['off', 'on']
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Keyboard
   link: x-apple.systempreferences:com.apple.Keyboard-Settings.extension
   proven_on: {}
   not_yet_reason: ""
-  notes: When a change takes effect is not measured. Turning Dictation on shows
-    a consent dialog and may download a language model, so a person
-    turns it on in the pane.
+  notes: Turning Dictation on shows a consent dialog and may download a language
+    model, so a person turns it on in the pane.
 input.double_click_speed:
   summary: How quickly two clicks must follow each other to count
     as a double-click.
@@ -89,14 +88,13 @@ input.double_click_speed:
   macos_default: not measured
   writes:
     - {domain: NSGlobalDomain, key: com.apple.mouse.doubleClickThreshold, type: float}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Accessibility
   proven_on: {}
   not_yet_reason: ""
-  notes: 'The unit is seconds (inferred). Research note on when
-    it takes effect: not tested.'
+  notes: The unit is seconds (inferred).
 input.double_space_period:
   summary: Typing two spaces adds a period.
   scope: user
@@ -105,7 +103,7 @@ input.double_space_period:
   macos_default: not measured
   writes:
     - {domain: NSGlobalDomain, key: NSAutomaticPeriodSubstitutionEnabled, type: bool}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Keyboard
@@ -124,7 +122,7 @@ input.fn_key_action:
       key: AppleFnUsageType
       type: int
       map: {change_input_source: 1, show_emoji: 2, start_dictation: 3, do_nothing: 0}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Keyboard
@@ -147,14 +145,13 @@ input.force_click:
       key: ActuateDetents
       type: int
       map: {'off': 0, 'on': 1}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
   proven_on: {}
   not_yet_reason: ""
-  notes: 'ForceSuppressed (boolean, inverted) likely changes with
-    it. Research note on when it takes effect: not tested.'
+  notes: ForceSuppressed (boolean, inverted) likely changes with it.
 input.inline_predictive_text:
   summary: Show predicted words inline while typing.
   scope: user
@@ -163,7 +160,7 @@ input.inline_predictive_text:
   macos_default: not measured
   writes:
     - {domain: NSGlobalDomain, key: NSAutomaticInlinePredictionEnabled, type: bool}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Keyboard
@@ -233,7 +230,7 @@ input.keyboard_navigation:
       key: AppleKeyboardUIMode
       type: int
       map: {'off': 0, 'on': 2}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Keyboard
@@ -265,7 +262,7 @@ input.keyboard_shortcuts:
   macos_default: not measured
   writes:
     - {domain: com.apple.symbolichotkeys, key: AppleSymbolicHotKeys, type: dict, dict_mode: add}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Keyboard
@@ -311,15 +308,14 @@ input.look_up_gesture:
       key: TrackpadThreeFingerTapGesture
       type: int
       map: {'off': 0, force_click: 0, three_finger_tap: 2}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
   proven_on: {}
   not_yet_reason: ""
-  notes: 'One menu in System Settings sets two keys. The values
-    found on a test Mac do not fit the map, so the map is unproven.
-    Research note on when it takes effect: not tested.'
+  notes: One menu in System Settings sets two keys. The values found on a test
+    Mac do not fit the map, so the map is unproven.
 input.mission_control_gesture:
   summary: Gesture to open Mission Control (swipe up).
   scope: user
@@ -389,13 +385,12 @@ input.mouse_mission_control:
       key: MouseTwoFingerDoubleTapGesture
       type: int
       map: {'off': 0, 'on': 3}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Mouse
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: not tested.'
 input.mouse_scroll_speed:
   summary: How fast content scrolls with a mouse wheel or Magic
     Mouse.
@@ -405,13 +400,12 @@ input.mouse_scroll_speed:
   macos_default: not measured
   writes:
     - {domain: NSGlobalDomain, key: com.apple.scrollwheel.scaling, type: float}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Accessibility
   proven_on: {}
   not_yet_reason: ""
-  notes: When a change takes effect is not measured.
 input.mouse_secondary_click:
   summary: 'Right-click on a Magic Mouse: off, right side or left
     side.'
@@ -428,7 +422,7 @@ input.mouse_secondary_click:
       key: MouseButtonMode
       type: string
       map: {'off': OneButton, right: TwoButton, left: TwoButtonSwapped}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Mouse
@@ -451,13 +445,12 @@ input.mouse_smart_zoom:
       key: MouseOneFingerDoubleTapGesture
       type: int
       map: {'off': 0, 'on': 1}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Mouse
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: not tested.'
 input.mouse_speed:
   summary: How fast the pointer moves when using a mouse.
   scope: user
@@ -466,7 +459,7 @@ input.mouse_speed:
   macos_default: not measured
   writes:
     - {domain: NSGlobalDomain, key: com.apple.mouse.scaling, type: float}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Mouse
@@ -483,13 +476,12 @@ input.mouse_swipe_between_pages:
   macos_default: not measured
   writes:
     - {domain: NSGlobalDomain, key: AppleEnableMouseSwipeNavigateWithScrolls, type: bool}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Mouse
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: not tested.'
 input.mouse_swipe_full_screen_apps:
   summary: Swipe left or right with two fingers on a Magic Mouse
     to change full-screen apps.
@@ -506,13 +498,12 @@ input.mouse_swipe_full_screen_apps:
       key: MouseTwoFingerHorizSwipeGesture
       type: int
       map: {'off': 0, 'on': 2}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Mouse
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: not tested.'
 input.natural_scrolling:
   summary: Content moves the same way as your fingers (natural
     scrolling).
@@ -547,13 +538,12 @@ input.notification_center_gesture:
       key: TrackpadTwoFingerFromRightEdgeSwipeGesture
       type: int
       map: {'off': 0, 'on': 3}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: not tested.'
 input.pinch_zoom:
   summary: Pinch with two fingers to zoom in or out.
   scope: user
@@ -569,13 +559,12 @@ input.pinch_zoom:
       key: TrackpadPinch
       type: int
       map: {'off': 0, 'on': 1}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: not tested.'
 input.pointer_acceleration:
   summary: Speed the pointer up when you move the mouse faster.
   scope: user
@@ -587,7 +576,7 @@ input.pointer_acceleration:
       key: com.apple.mouse.linear
       type: bool
       map: {'on': false, 'off': true}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Mouse
@@ -612,13 +601,13 @@ input.quiet_click:
       key: ActuationStrength
       type: int
       map: {'on': 0, 'off': 1}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
   proven_on: {}
   not_yet_reason: ""
-  notes: When a change takes effect is not measured. Force Touch trackpads only.
+  notes: Force Touch trackpads only.
 input.repeat_delay:
   summary: Wait before a held key starts repeating. Smaller is
     shorter; the slider runs from 120 to 15.
@@ -651,13 +640,12 @@ input.rotate:
       key: TrackpadRotate
       type: int
       map: {'off': 0, 'on': 1}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: not tested.'
 input.secondary_click:
   summary: How to right-click on the trackpad.
   scope: user
@@ -673,15 +661,14 @@ input.secondary_click:
       key: TrackpadCornerSecondaryClick
       type: int
       map: {two_finger: 0, bottom_right: 2, bottom_left: 1, 'off': 0}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
   proven_on: {}
   not_yet_reason: ""
-  notes: 'One menu in System Settings sets two keys, plus the
-    -currentHost copy, in both trackpad domains. Research note
-    on when it takes effect: not tested.'
+  notes: One menu in System Settings sets two keys, plus the -currentHost copy,
+    in both trackpad domains.
 input.show_desktop_gesture:
   summary: Spread thumb and three fingers to show the desktop.
   scope: user
@@ -707,7 +694,7 @@ input.show_input_menu:
   macos_default: not measured
   writes:
     - {domain: com.apple.TextInputMenu, key: visible, type: bool}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Keyboard
@@ -731,7 +718,7 @@ input.smart_quotes_dashes:
       key: NSAutomaticDashSubstitutionEnabled
       type: bool
       map: {true: true, false: false}
-  takes_effect: relaunch
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Keyboard
@@ -755,13 +742,12 @@ input.smart_zoom:
       key: TrackpadTwoFingerDoubleTapGesture
       type: int
       map: {'off': 0, 'on': 1}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Research note on when it takes effect: not tested.'
 input.standard_function_keys:
   summary: Use F1, F2 and the other top-row keys as standard function
     keys.
@@ -771,7 +757,7 @@ input.standard_function_keys:
   macos_default: not measured
   writes:
     - {domain: NSGlobalDomain, key: com.apple.keyboard.fnState, type: bool}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Keyboard
@@ -794,18 +780,17 @@ input.swipe_between_pages:
       key: TrackpadThreeFingerHorizSwipeGesture
       type: int
       map: {three_finger: 1, two_or_three_finger: 1}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
   proven_on: {}
   not_yet_reason: ""
-  notes: 'One menu in System Settings sets two keys. It shares
-    TrackpadThreeFingerHorizSwipeGesture with input.swipe_full_screen_apps,
-    so off and two_finger leave that key alone, and the profile check
-    refuses a pair that claims three fingers for both. A choice that
-    leaves the key alone does not turn off a three-finger swipe already
-    on the Mac. Research note on when it takes effect: not tested.'
+  notes: One menu in System Settings sets two keys. It shares TrackpadThreeFingerHorizSwipeGesture
+    with input.swipe_full_screen_apps, so off and two_finger leave that key
+    alone, and the profile check refuses a pair that claims three fingers for
+    both. A choice that leaves the key alone does not turn off a three-finger
+    swipe already on the Mac.
 input.swipe_full_screen_apps:
   summary: Gesture to move between full-screen apps.
   scope: user
@@ -821,18 +806,17 @@ input.swipe_full_screen_apps:
       key: TrackpadFourFingerHorizSwipeGesture
       type: int
       map: {'off': 0, three_finger: 0, four_finger: 2}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
   proven_on: {}
   not_yet_reason: ""
-  notes: 'One menu in System Settings sets two keys. It shares
-    TrackpadThreeFingerHorizSwipeGesture with input.swipe_between_pages,
-    so off and four_finger leave that key alone, and the profile check
-    refuses a pair that claims three fingers for both. A choice that
-    leaves the key alone does not turn off a three-finger swipe already
-    on the Mac. Research note on when it takes effect: not tested.'
+  notes: One menu in System Settings sets two keys. It shares TrackpadThreeFingerHorizSwipeGesture
+    with input.swipe_between_pages, so off and four_finger leave that key alone,
+    and the profile check refuses a pair that claims three fingers for both.
+    A choice that leaves the key alone does not turn off a three-finger swipe
+    already on the Mac.
 input.tap_to_click:
   summary: Tap the trackpad with one finger to click.
   scope: user
@@ -865,7 +849,7 @@ input.text_replacements:
   route: not_yet
   values: [not_yet]
   macos_default: not measured
-  takes_effect: logout
+  takes_effect: not measured
   needs: [click]
   lockout_risk: false
   where: System Settings > Keyboard
@@ -873,9 +857,8 @@ input.text_replacements:
   not_yet_reason: macOS keeps the list in a database that iCloud
     syncs, and no supported command writes it. Add replacements
     in System Settings > Keyboard > Text Replacements.
-  notes: 'When a change takes effect is not measured. The live list
-    is a Core Data SQLite file. You can open the pane, or drag a
-    .plist of replacements from Finder into the list. Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension'
+  notes: 'The live list is a Core Data SQLite file. You can open the pane, or
+    drag a .plist of replacements from Finder into the list. Page: x-apple.systempreferences:com.apple.Keyboard-Settings.extension'
 input.three_finger_drag:
   summary: Drag windows and items with three fingers.
   scope: user
@@ -912,15 +895,14 @@ input.trackpad_click_pressure:
       key: FirstClickThreshold
       type: int
       map: {light: 0, medium: 1, firm: 2}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Trackpad
   proven_on: {}
   not_yet_reason: ""
-  notes: 'SecondClickThreshold (force click pressure) changes
-    with it; the two had the same values on a test Mac. Research
-    note on when it takes effect: not tested.'
+  notes: SecondClickThreshold (force click pressure) changes with it; the two
+    had the same values on a test Mac.
 input.trackpad_scroll_speed:
   summary: How fast content scrolls with two fingers on the trackpad.
   scope: user
@@ -929,14 +911,13 @@ input.trackpad_scroll_speed:
   macos_default: not measured
   writes:
     - {domain: NSGlobalDomain, key: com.apple.trackpad.scrolling, type: float}
-  takes_effect: logout
+  takes_effect: not measured
   needs: []
   lockout_risk: false
   where: System Settings > Accessibility
   proven_on: {}
   not_yet_reason: ""
-  notes: 'Key name unproven. The default 0 is a placeholder only.
-    Research note on when it takes effect: not tested.'
+  notes: Key name unproven. The default 0 is a placeholder only.
 input.trackpad_speed:
   summary: How fast the pointer moves when using the trackpad.
   scope: user

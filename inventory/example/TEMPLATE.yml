@@ -19,7 +19,7 @@ default_settings:
   #   Let nearby devices play to this Mac with AirPlay.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: Probably `killall ControlCenter`. Guess.
@@ -28,16 +28,15 @@ default_settings:
   #   Let nearby Bluetooth devices send files to this Mac.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: Research note on when it takes effect: Unknown.
 
   # sharing.media_sharing: false
   #   Share this account's music and videos with other devices (Home Sharing).
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: Probably `killall mediasharingd`. Guess.
@@ -46,7 +45,7 @@ default_settings:
   #   Let guests on the network play this account's media.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: Probably `killall mediasharingd`. Guess.
@@ -57,7 +56,7 @@ default_settings:
   #   When a click on the wallpaper moves windows aside to show the desktop.
   #   Values: always, stage_manager_only
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: macOS 26 labels the choices 'Always on Wallpaper Click' and 'Only in Stage Manager on
@@ -68,7 +67,7 @@ default_settings:
   #   Show desktop files and folders while Stage Manager is on.
   #   Values: show, hide
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: Guess: WindowManager may pick the change up live,
@@ -78,7 +77,7 @@ default_settings:
   #   Show files and folders on the desktop.
   #   Values: show, hide
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: Guess: Finder or WindowManager may need a
@@ -190,7 +189,7 @@ default_settings:
   #   What a double-click on a window title bar does.
   #   Values: fill, zoom, minimize, none
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: The stored words Fill, Maximize, Minimize and None were found in DesktopSettings.appex
@@ -320,7 +319,7 @@ default_settings:
   #     keys joined with +, such as control+up; a letter, digit or space needs shift, control,
   #     option or command
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: true turns a shortcut on with its standard keys, false turns it off, and keys such as
@@ -350,7 +349,7 @@ default_settings:
   #   Bring forward all of an app's windows, or one at a time.
   #   Values: all_at_once, one_at_a_time
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: The map from 0 and 1 to the two labels is a guess. Research note on when it takes
@@ -361,7 +360,7 @@ default_settings:
   #   Turn on Stage Manager.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Apple's macOS 26 guide says Stage Manager is dimmed unless 'Displays have separate
@@ -372,7 +371,7 @@ default_settings:
   #   Show the strip of recent apps at the screen side in Stage Manager.
   #   Values: show, hide
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: Guess: WindowManager may pick the change up live,
@@ -382,7 +381,7 @@ default_settings:
   #   Show widgets while Stage Manager is on.
   #   Values: show, hide
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: Guess: WindowManager may pick the change up live,
@@ -392,7 +391,7 @@ default_settings:
   #   Offer the iPhone's widgets in the Mac widget gallery.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: chronod also keeps effectiveRemoteWidgetsEnabled (a boolean) and
@@ -404,7 +403,7 @@ default_settings:
   #   Show widgets on the desktop.
   #   Values: show, hide
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: Guess: WindowManager may pick the change up live,
@@ -414,7 +413,7 @@ default_settings:
   #   How desktop widgets are tinted or dimmed.
   #   Values: automatic, monochrome, full_color
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Key name not yet read back on macOS 27. macOS 26 renamed the setting to 'Dim widgets on
@@ -425,7 +424,7 @@ default_settings:
   #   Ask before closing a document with unsaved changes.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: Running apps read NSGlobalDomain at launch. Quit
@@ -435,7 +434,7 @@ default_settings:
   #   Fill the screen by dragging a window to the menu bar.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: Guess: WindowManager may pick the change up live,
@@ -445,7 +444,7 @@ default_settings:
   #   Close an app's windows on quit, or keep them to reopen next time.
   #   Values: close, keep
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: Running apps read NSGlobalDomain at launch. Quit
@@ -455,7 +454,7 @@ default_settings:
   #   When apps open new documents as tabs instead of windows.
   #   Values: never, always, full_screen
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: Running apps read NSGlobalDomain at launch. Quit
@@ -465,7 +464,7 @@ default_settings:
   #   Tile a window by dragging it to the left or right screen edge.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: Guess: WindowManager may pick the change up live,
@@ -475,7 +474,7 @@ default_settings:
   #   Leave a gap between tiled windows.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: Guess: WindowManager may pick the change up live,
@@ -485,7 +484,7 @@ default_settings:
   #   Tile a window by holding Option while dragging it.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: Guess: WindowManager may pick the change up live,
@@ -811,7 +810,7 @@ default_settings:
   #   Capitalize the first word of a sentence automatically.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: each app after it relaunches; not tested.
@@ -820,7 +819,7 @@ default_settings:
   #   Correct spelling automatically while typing.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: System Settings may also write WebAutomaticSpellingCorrectionEnabled, which WebKit text
@@ -831,16 +830,16 @@ default_settings:
   #   How quickly two clicks must follow each other to count as a double-click.
   #   Values: a number from 0.0 to 5.0
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: The unit is seconds (inferred). Research note on when it takes effect: not tested.
+  #   Note: The unit is seconds (inferred).
 
   # input.double_space_period: false
   #   Typing two spaces adds a period.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: each app after it relaunches; not tested.
@@ -849,7 +848,7 @@ default_settings:
   #   What pressing the fn or Globe key does.
   #   Values: change_input_source, show_emoji, start_dictation, do_nothing
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: a restart, one source says; logout not tested.
@@ -858,17 +857,16 @@ default_settings:
   #   Force Click and haptic feedback on a Force Touch trackpad.
   #   Values: "off", "on"
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: ForceSuppressed (boolean, inverted) likely changes with it. Research note on when it
-  #     takes effect: not tested.
+  #   Note: ForceSuppressed (boolean, inverted) likely changes with it.
 
   # input.inline_predictive_text: false
   #   Show predicted words inline while typing.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Key name unproven. Research note on when it takes effect: each app after it relaunches;
@@ -901,7 +899,7 @@ default_settings:
   #   Move focus between all controls with Tab and Shift-Tab.
   #   Values: "off", "on"
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: A choice instead of true or false, because the stored value is 0 or 2. macOS 12 and
@@ -916,7 +914,7 @@ default_settings:
   #     screenshot_options) to true (on), false (off) or keys joined with +, such as control+up; a
   #     letter, digit or space needs shift, control, option or command
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: true turns a shortcut on with its standard keys, false turns it off, and keys such as
@@ -940,11 +938,11 @@ default_settings:
   #   Gesture for Look up and data detectors.
   #   Values: "off", force_click, three_finger_tap
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: One menu in System Settings sets two keys. The values found on a test Mac do not fit the
-  #     map, so the map is unproven. Research note on when it takes effect: not tested.
+  #     map, so the map is unproven.
 
   # input.mission_control_gesture: 'off'
   #   Gesture to open Mission Control (swipe up).
@@ -964,25 +962,23 @@ default_settings:
   #   Double-tap a Magic Mouse with two fingers to open Mission Control.
   #   Values: "off", "on"
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: Research note on when it takes effect: not tested.
 
   # input.mouse_scroll_speed: 0.0
   #   How fast content scrolls with a mouse wheel or Magic Mouse.
   #   Values: a number from 0.0 to 5.0
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: When a change takes effect is not measured.
 
   # input.mouse_secondary_click: 'off'
   #   Right-click on a Magic Mouse: off, right side or left side.
   #   Values: "off", right, left
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: The same key sits in two domains. TwoButtonSwapped is a guess. Research note on when it
@@ -992,16 +988,15 @@ default_settings:
   #   Double-tap a Magic Mouse with one finger to zoom.
   #   Values: "off", "on"
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: Research note on when it takes effect: not tested.
 
   # input.mouse_speed: 0.0
   #   How fast the pointer moves when using a mouse.
   #   Values: a number from 0.0 to 3.0
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: a restart, one source says; logout not tested.
@@ -1010,19 +1005,17 @@ default_settings:
   #   Scroll left or right with one finger on a Magic Mouse to change pages.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: Research note on when it takes effect: not tested.
 
   # input.mouse_swipe_full_screen_apps: 'off'
   #   Swipe left or right with two fingers on a Magic Mouse to change full-screen apps.
   #   Values: "off", "on"
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: Research note on when it takes effect: not tested.
 
   # input.natural_scrolling: false
   #   Content moves the same way as your fingers (natural scrolling).
@@ -1038,25 +1031,23 @@ default_settings:
   #   Swipe left from the right edge with two fingers to open Notification Center.
   #   Values: "off", "on"
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: Research note on when it takes effect: not tested.
 
   # input.pinch_zoom: 'off'
   #   Pinch with two fingers to zoom in or out.
   #   Values: "off", "on"
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: Research note on when it takes effect: not tested.
 
   # input.pointer_acceleration: 'off'
   #   Speed the pointer up when you move the mouse faster.
   #   Values: "off", "on"
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: The stored key is inverted (true turns acceleration off); the choices keep the plain
@@ -1066,10 +1057,10 @@ default_settings:
   #   Make trackpad clicks quieter (Quiet Click; Silent clicking on macOS 15).
   #   Values: "off", "on"
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: When a change takes effect is not measured. Force Touch trackpads only.
+  #   Note: Force Touch trackpads only.
 
   # input.repeat_delay: 10
   #   Wait before a held key starts repeating. Smaller is shorter; the slider runs from 120 to 15.
@@ -1084,20 +1075,19 @@ default_settings:
   #   Rotate items with two fingers.
   #   Values: "off", "on"
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: Research note on when it takes effect: not tested.
 
   # input.secondary_click: two_finger
   #   How to right-click on the trackpad.
   #   Values: two_finger, bottom_right, bottom_left, "off"
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: One menu in System Settings sets two keys, plus the -currentHost copy, in both trackpad
-  #     domains. Research note on when it takes effect: not tested.
+  #     domains.
 
   # input.show_desktop_gesture: false
   #   Spread thumb and three fingers to show the desktop.
@@ -1113,7 +1103,7 @@ default_settings:
   #   Show the Input menu (keyboard layout picker) in the menu bar.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: TextInputMenuAgent restart or logout; not tested.
@@ -1122,7 +1112,7 @@ default_settings:
   #   Replace straight quotes and double hyphens with curly quotes and dashes.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: One switch in System Settings sets two keys. Research note on when it takes effect: each
@@ -1132,16 +1122,15 @@ default_settings:
   #   Double-tap with two fingers to zoom.
   #   Values: "off", "on"
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: Research note on when it takes effect: not tested.
 
   # input.standard_function_keys: false
   #   Use F1, F2 and the other top-row keys as standard function keys.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: a restart, one source says; logout not tested.
@@ -1150,27 +1139,27 @@ default_settings:
   #   Gesture to go back or forward a page.
   #   Values: "off", two_finger, three_finger, two_or_three_finger
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: One menu in System Settings sets two keys. It shares
   #     TrackpadThreeFingerHorizSwipeGesture with input.swipe_full_screen_apps, so off and
   #     two_finger leave that key alone, and the profile check refuses a pair that claims three
   #     fingers for both. A choice that leaves the key alone does not turn off a three-finger swipe
-  #     already on the Mac. Research note on when it takes effect: not tested.
+  #     already on the Mac.
 
   # input.swipe_full_screen_apps: 'off'
   #   Gesture to move between full-screen apps.
   #   Values: "off", three_finger, four_finger
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: One menu in System Settings sets two keys. It shares
   #     TrackpadThreeFingerHorizSwipeGesture with input.swipe_between_pages, so off and four_finger
   #     leave that key alone, and the profile check refuses a pair that claims three fingers for
   #     both. A choice that leaves the key alone does not turn off a three-finger swipe already on
-  #     the Mac. Research note on when it takes effect: not tested.
+  #     the Mac.
 
   # input.tap_to_click: 'off'
   #   Tap the trackpad with one finger to click.
@@ -1198,21 +1187,20 @@ default_settings:
   #   How hard you press the trackpad to click.
   #   Values: light, medium, firm
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: SecondClickThreshold (force click pressure) changes with it; the two had the same values
-  #     on a test Mac. Research note on when it takes effect: not tested.
+  #     on a test Mac.
 
   # input.trackpad_scroll_speed: 0.0
   #   How fast content scrolls with two fingers on the trackpad.
   #   Values: a number from 0.0 to 3.0
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: Key name unproven. The default 0 is a placeholder only. Research note on when it takes
-  #     effect: not tested.
+  #   Note: Key name unproven. The default 0 is a placeholder only.
 
   # input.trackpad_speed: 0.0
   #   How fast the pointer moves when using the trackpad.
@@ -1240,7 +1228,7 @@ default_settings:
   #   Share Siri and Dictation audio with Apple to improve them.
   #   Values: not_asked, "on", "off"
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: not checked; assistantd may cache it (guess).
@@ -1249,10 +1237,9 @@ default_settings:
   #   Let Apple use account data to choose ads in the App Store, News and Stocks.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: Research note on when it takes effect: not checked.
 
   # Area: systemui
 
@@ -1260,7 +1247,7 @@ default_settings:
   #   Accent color for buttons, menus, and controls.
   #   Values: multicolor, blue, purple, pink, red, orange, yellow, green, graphite
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: The stored numbers are common community values, not measured. Research note on when it
@@ -1270,7 +1257,7 @@ default_settings:
   #   Color of selected text.
   #   Values: accent, blue
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Only accent and blue are offered, because only the stored string for blue was read on a
@@ -1314,7 +1301,7 @@ default_settings:
   #   Tint window backgrounds with the wallpaper color.
   #   Values: "on", "off"
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: apps relaunch (guess).
@@ -1323,7 +1310,7 @@ default_settings:
   #   Start the screen saver after this many seconds idle; 0 means never.
   #   Values: 0, 60, 120, 300, 600, 1200, 1800, 3600
   #   macOS default: not measured
-  #   Takes effect: at once
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: none reported.
@@ -1332,7 +1319,7 @@ default_settings:
   #   Show Accessibility Shortcuts in the menu bar.
   #   Values: show, hide
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: The stored values are guesses: 18 shows the item, 24 hides it (CIS Sonoma, Jamf
@@ -1343,7 +1330,7 @@ default_settings:
   #   Show AirDrop in the menu bar.
   #   Values: show, hide
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: The stored values are guesses: 18 shows the item, 24 hides it (CIS Sonoma, Jamf
@@ -1362,7 +1349,7 @@ default_settings:
   #   Show Battery in the menu bar (laptops).
   #   Values: show, hide
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: No test Mac had a battery, so none could show this row. Research note on when it takes
@@ -1372,7 +1359,7 @@ default_settings:
   #   Show the battery percentage next to the battery icon.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: at once
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: No test Mac had a battery. Which domain (plain or ByHost) is the live one is not known.
@@ -1382,7 +1369,7 @@ default_settings:
   #   Show Bluetooth in the menu bar.
   #   Values: show, hide
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: An earlier reader used the key NSStatusItem Visible Bluetooth in the plain domain. The
@@ -1393,7 +1380,7 @@ default_settings:
   #   Use a 24-hour menu bar clock.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: killall ControlCenter (guess).
@@ -1402,7 +1389,7 @@ default_settings:
   #   Show AM or PM in the menu bar clock.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: killall ControlCenter (guess).
@@ -1411,7 +1398,7 @@ default_settings:
   #   Show the day of the week in the menu bar clock.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: killall ControlCenter (guess).
@@ -1420,7 +1407,7 @@ default_settings:
   #   Flash the time separators every second.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: killall ControlCenter (guess).
@@ -1429,7 +1416,7 @@ default_settings:
   #   Show seconds in the menu bar clock.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: killall ControlCenter (guess).
@@ -1438,7 +1425,7 @@ default_settings:
   #   Show the date in the menu bar clock.
   #   Values: when_space_allows, always, never
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: The stored order is a community value; a test Mac had 0 (measured). Research note on
@@ -1448,7 +1435,7 @@ default_settings:
   #   Show the menu bar clock as digital or analog.
   #   Values: digital, analog
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: killall ControlCenter (guess).
@@ -1457,7 +1444,7 @@ default_settings:
   #   Show Display in the menu bar.
   #   Values: always, when_active, never
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: The stored values are guesses: 18 shows the item, 24 hides it (CIS Sonoma, Jamf
@@ -1468,7 +1455,7 @@ default_settings:
   #   Show Focus in the menu bar.
   #   Values: always, when_active, never
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: The stored values are guesses: 18 shows the item, 24 hides it (CIS Sonoma, Jamf
@@ -1487,7 +1474,7 @@ default_settings:
   #   Show Hearing in the menu bar.
   #   Values: show, hide
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: The stored values are guesses: 18 shows the item, 24 hides it (CIS Sonoma, Jamf
@@ -1498,7 +1485,7 @@ default_settings:
   #   Show Keyboard Brightness in the menu bar.
   #   Values: show, hide
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: The stored values are guesses: 18 shows the item, 24 hides it (CIS Sonoma, Jamf
@@ -1509,7 +1496,7 @@ default_settings:
   #   Show Music Recognition in the menu bar.
   #   Values: show, hide
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: The stored values are guesses: 18 shows the item, 24 hides it (CIS Sonoma, Jamf
@@ -1520,7 +1507,7 @@ default_settings:
   #   Show Now Playing in the menu bar.
   #   Values: always, when_active, never
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: The stored values are guesses: 18 shows the item, 24 hides it (CIS Sonoma, Jamf
@@ -1531,7 +1518,7 @@ default_settings:
   #   Show Screen Mirroring in the menu bar.
   #   Values: always, when_active, never
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: The stored values are guesses: 18 shows the item, 24 hides it (CIS Sonoma, Jamf
@@ -1551,7 +1538,7 @@ default_settings:
   #   Show Sound in the menu bar.
   #   Values: always, when_active, never
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: A test Mac had -currentHost Sound=18 and NSStatusItem Visible Sound=1 (measured), which
@@ -1562,7 +1549,7 @@ default_settings:
   #   Show Stage Manager in the menu bar.
   #   Values: show, hide
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: The stored values are guesses: 18 shows the item, 24 hides it (CIS Sonoma, Jamf
@@ -1573,7 +1560,7 @@ default_settings:
   #   Show Fast User Switching in the menu bar.
   #   Values: show, hide
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Jamf (Tahoe thread) says UserSwitcher is an integer in com.apple.controlcenter and a
@@ -1585,7 +1572,7 @@ default_settings:
   #   Show Wi-Fi in the menu bar.
   #   Values: show, hide
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: The stored values are guesses: 18 shows the item, 24 hides it (CIS Sonoma, Jamf
@@ -1596,7 +1583,7 @@ default_settings:
   #   Play sounds for notifications forwarded from iPhone.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: killall usernoted (guess).
@@ -1605,7 +1592,7 @@ default_settings:
   #   When notification previews show: always, when unlocked, or never.
   #   Values: always, when_unlocked, never
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: A test Mac had the top-level key set to 2 (measured), which fits 2 meaning when
@@ -1616,7 +1603,7 @@ default_settings:
   #   Summarize notifications with Apple Intelligence.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: killall usernoted (guess).
@@ -1625,7 +1612,7 @@ default_settings:
   #   Show a clock on the screen saver.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: at once
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: none (guess).
@@ -1634,7 +1621,7 @@ default_settings:
   #   Turn Siri on.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: when the app opens again
+  #   Takes effect: not measured
   #   Needs: a click at the Mac's screen
   #   Proven on: macOS 27.2.1 (2026-11-12)
   #   Note: Research note on when it takes effect: killall Siri (guess). Turning Siri on needs the
@@ -1644,19 +1631,18 @@ default_settings:
   #   Siri speaks its answers out loud.
   #   Values: "on", "off"
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: The stored values 2 on and 3 off are a guess. defaults reports the domain missing on a
-  #     test Mac although the plist file exists (measured). Research note on when it takes effect:
-  #     unknown.
+  #     test Mac although the plist file exists (measured).
 
   # sound.alert_sound: boop
   #   Sound macOS plays for alerts.
   #   Values: boop, breeze, bubble, crystal, funky, heroine, jump, mezzo, pebble, pluck, pong,
   #     sonar, sonumi, submerge
   #   macOS default: not measured
-  #   Takes effect: at once
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Older answers write the key in the ByHost global domain; both are read. Research note on
@@ -1677,7 +1663,7 @@ default_settings:
   #   Flash the screen when an alert sound plays.
   #   Values: "on", "off"
   #   macOS default: not measured
-  #   Takes effect: at once
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: none (guess).
@@ -1700,16 +1686,15 @@ default_settings:
   #   Play user interface sound effects.
   #   Values: "on", "off"
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: Research note on when it takes effect: unknown.
 
   # sound.volume_feedback: 'on'
   #   Play a sound when the volume changes.
   #   Values: "on", "off"
   #   macOS default: not measured
-  #   Takes effect: at once
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: none (guess).
@@ -1718,11 +1703,10 @@ default_settings:
   #   Share Spotlight and Siri search data with Apple.
   #   Values: "on", "off"
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: macOS 27.2.1 (2026-11-12)
-  #   Note: The stored values 1 on and 2 off are a guess. Research note on when it takes effect:
-  #     unknown.
+  #   Note: The stored values 1 on and 2 off are a guess.
 
 # Machine settings. They change the whole Mac and need an admin account.
 machine_settings:
@@ -1758,7 +1742,7 @@ machine_settings:
   #   Allow more than one account to stay logged in (fast user switching).
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: Logout likely needed. Guess.
@@ -2057,7 +2041,7 @@ machine_settings:
   #   Show the location icon when system services use location.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: not checked; Control Center may need a restart
@@ -2067,19 +2051,17 @@ machine_settings:
   #   Send Mac crash and usage data to Apple.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: When a change takes effect is not measured.
 
   # privacy.share_with_app_developers: false
   #   Send crash data to the developers of the apps that crashed.
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: at the next login
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
-  #   Note: When a change takes effect is not measured.
 
   # Area: systemui
 
@@ -2087,7 +2069,7 @@ machine_settings:
   #   Slightly dim the display on battery power (laptops).
   #   Values: true or false
   #   macOS default: not measured
-  #   Takes effect: at once
+  #   Takes effect: not measured
   #   Needs: nothing extra
   #   Proven on: not yet
   #   Note: Only Macs with a battery list lessbright. No test Mac had a battery, so the read's
@@ -2133,7 +2115,6 @@ machine_settings:
 #   Scope: machine setting, needs admin
 #   Values: true or false
 #   Where: System Settings > Privacy & Security > FileVault
-#   Note: When a change takes effect is not measured.
 
 # security.gatekeeper
 #   Check apps before they open (Gatekeeper).
@@ -2155,8 +2136,8 @@ machine_settings:
 #   Scope: machine setting, needs admin
 #   Values: true or false
 #   Where: System Settings > General > Sharing > File Sharing
-#   Note: When a change takes effect is not measured. Turning it on also needs shared folders, so on
-#     is a click. A command sets off, but on needs a click, so the whole setting is by hand.
+#   Note: Turning it on also needs shared folders, so on is a click. A command sets off, but on
+#     needs a click, so the whole setting is by hand.
 
 # sharing.internet_sharing
 #   Share this Mac's internet connection with other devices.
@@ -2176,8 +2157,7 @@ machine_settings:
 #   Values: true or false
 #   Where: System Settings > General > Date & Time > Set time zone automatically using your current
 #     location
-#   Note: Needs Location Services too, so the Date & Time pane is the safer path. Research note on
-#     when it takes effect: unknown.
+#   Note: Needs Location Services too, so the Date & Time pane is the safer path.
 
 # Area: dock
 
@@ -2197,8 +2177,8 @@ machine_settings:
 #   Scope: account setting
 #   Values: "off", "on"
 #   Where: System Settings > Keyboard
-#   Note: When a change takes effect is not measured. Turning Dictation on shows a consent dialog
-#     and may download a language model, so a person turns it on in the pane.
+#   Note: Turning Dictation on shows a consent dialog and may download a language model, so a person
+#     turns it on in the pane.
 
 # Area: privacy
 
@@ -2207,7 +2187,6 @@ machine_settings:
 #   Scope: account setting
 #   Values: true or false
 #   Where: System Settings > Privacy & Security > Analytics & Improvements
-#   Note: Research note on when it takes effect: not checked.
 
 # privacy.location_services
 #   Let apps and system services find where this Mac is.
@@ -2231,14 +2210,12 @@ machine_settings:
 #   Scope: account setting
 #   Values: default, dark, clear, tinted
 #   Where: System Settings > Appearance
-#   Note: Research note on when it takes effect: unknown.
 
 # appearance.liquid_glass
 #   Liquid Glass look: Clear or Tinted (macOS 26.1 and later).
 #   Scope: account setting
 #   Values: clear, tinted
 #   Where: System Settings > Appearance
-#   Note: Research note on when it takes effect: unknown.
 
 # battery.optimized_charging
 #   Optimized battery charging (laptops).
@@ -2251,7 +2228,6 @@ machine_settings:
 #   Scope: account setting
 #   Values: by_hand
 #   Where: System Settings > Lock Screen
-#   Note: Research note on when it takes effect: unknown.
 
 # lock_screen.password_after
 #   Ask for the password this many seconds after sleep or screen saver.
@@ -2265,28 +2241,24 @@ machine_settings:
 #   Scope: account setting
 #   Values: true or false
 #   Where: System Settings > Control Center
-#   Note: Research note on when it takes effect: unknown.
 
 # menu_bar.clock_announce
 #   Say the time out loud on the hour.
 #   Scope: account setting
 #   Values: true or false
 #   Where: System Settings > Control Center
-#   Note: Research note on when it takes effect: unknown.
 
 # menu_bar.spotlight
 #   Show the Spotlight icon in the menu bar.
 #   Scope: account setting
 #   Values: true or false
 #   Where: System Settings > Control Center
-#   Note: Research note on when it takes effect: unknown.
 
 # menu_bar.time_machine
 #   Show Time Machine in the menu bar.
 #   Scope: account setting
 #   Values: show, hide
 #   Where: System Settings > Control Center
-#   Note: Research note on when it takes effect: unknown.
 
 # notifications.focus
 #   Focus modes and their schedules.
@@ -2305,21 +2277,18 @@ machine_settings:
 #   Scope: account setting
 #   Values: true or false
 #   Where: System Settings > Notifications
-#   Note: Research note on when it takes effect: unknown.
 
 # notifications.when_locked
 #   Allow notifications when the screen is locked.
 #   Scope: account setting
 #   Values: true or false
 #   Where: System Settings > Notifications
-#   Note: Research note on when it takes effect: unknown.
 
 # notifications.when_mirroring
 #   Allow notifications when mirroring or sharing the display.
 #   Scope: account setting
 #   Values: true or false
 #   Where: System Settings > Notifications
-#   Note: Research note on when it takes effect: unknown.
 
 # screen_saver.choice
 #   Which screen saver runs.
@@ -2338,21 +2307,18 @@ machine_settings:
 #   Scope: account setting
 #   Values: by_hand
 #   Where: System Settings > Apple Intelligence & Siri
-#   Note: Research note on when it takes effect: unknown.
 
 # siri.language_and_voice
 #   Siri language and voice.
 #   Scope: account setting
 #   Values: by_hand
 #   Where: System Settings > Apple Intelligence & Siri
-#   Note: Research note on when it takes effect: unknown.
 
 # siri.listen_for
 #   Listen for 'Siri' or 'Hey Siri'.
 #   Scope: account setting
 #   Values: true or false
 #   Where: System Settings > Apple Intelligence & Siri
-#   Note: Research note on when it takes effect: unknown.
 
 # sound.alert_device
 #   Which device plays alert sounds.
@@ -2384,7 +2350,6 @@ machine_settings:
 #   Scope: account setting
 #   Values: true or false
 #   Where: System Settings > Spotlight
-#   Note: Research note on when it takes effect: unknown.
 
 # spotlight.privacy
 #   Folders and disks Spotlight must not search.
@@ -2428,8 +2393,8 @@ machine_settings:
 #   Scope: account setting
 #   Not yet because: macOS keeps the list in a database that iCloud syncs, and no supported command
 #     writes it. Add replacements in System Settings > Keyboard > Text Replacements.
-#   Note: When a change takes effect is not measured. The live list is a Core Data SQLite file. You
-#     can open the pane, or drag a .plist of replacements from Finder into the list. Page:
+#   Note: The live list is a Core Data SQLite file. You can open the pane, or drag a .plist of
+#     replacements from Finder into the list. Page:
 #     x-apple.systempreferences:com.apple.Keyboard-Settings.extension
 
 # Area: privacy
@@ -2592,7 +2557,7 @@ machine_settings:
 #   Scope: machine setting, needs admin
 #   Not yet because: macOS lets only a person grant this permission in System Settings; mac-setup
 #     cannot set it.
-#   Note: When a change takes effect is not measured. Page:
+#   Note: Page:
 #     x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_LocationServices
 
 # privacy.location_system_services
@@ -2600,7 +2565,7 @@ machine_settings:
 #   Scope: machine setting, needs admin
 #   Not yet because: macOS lets only a person grant this permission in System Settings; mac-setup
 #     cannot set it.
-#   Note: When a change takes effect is not measured. Page:
+#   Note: Page:
 #     x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_SystemServices
 
 # privacy.media_library
