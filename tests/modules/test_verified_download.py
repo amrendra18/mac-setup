@@ -288,6 +288,61 @@ class RefusesTheDownload(Case):
 
 
 class RefusesOnVirusTotal(Case):
+    def test_incomplete_or_malformed_statistics_never_count_as_clean(self):
+        for stats in (
+            {"timeout": 60},
+            {"failure": 60},
+            {"type-unsupported": 60},
+            {},
+            [],
+            None,
+            {**CLEAN, "undetected": "60"},
+            {**CLEAN, "malicious": -1},
+            {**CLEAN, "suspicious": False},
+            {**CLEAN, "undetected": 0.5},
+            {**CLEAN, "unexpected": 1},
+        ):
+            with self.subTest(stats=stats):
+                for path in self.downloads.glob("*.virustotal.json"):
+                    path.unlink()
+                self.refused("virustotal", web=FakeWeb(stats=stats))
+
+    def test_one_completed_clean_result_is_enough(self):
+        for kind in ("harmless", "undetected"):
+            with self.subTest(kind=kind):
+                web = FakeWeb(stats={kind: 1, "timeout": 60})
+                self.verify(web=web)
+                for path in self.downloads.glob("*.virustotal.json"):
+                    path.unlink()
+
+    def test_cached_verdict_is_checked_by_the_same_statistics_rule(self):
+        sha256 = app().sha256
+        self.downloads.mkdir(parents=True, exist_ok=True)
+        cache = self.downloads / f"{sha256}.virustotal.json"
+        for stats in ({"timeout": 60}, {}, {**CLEAN, "undetected": "60"}):
+            with self.subTest(stats=stats):
+                cache.write_text(
+                    json.dumps(
+                        {
+                            "sha256": sha256,
+                            "checked": "2026-10-01",
+                            "verdict": "clean",
+                            "engines": stats,
+                        }
+                    )
+                )
+                web = FakeWeb()
+                self.verify(web=web)
+                self.assertEqual(len(web.lookups()), 1)
+
+    def test_a_cached_clean_label_cannot_hide_flagged_statistics(self):
+        self.verify()
+        cache = self.downloads / f"{app().sha256}.virustotal.json"
+        verdict = json.loads(cache.read_text())
+        verdict["engines"]["malicious"] = 1
+        cache.write_text(json.dumps(verdict))
+        self.refused("virustotal", key="")
+
     def test_malicious(self):
         error = self.refused("virustotal", web=FakeWeb(stats={**CLEAN, "malicious": 1}))
         self.assertIn("1 engines report malicious", str(error))

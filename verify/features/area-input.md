@@ -11,8 +11,8 @@ One run of `playbooks/site.yml` writes 15 keyboard, trackpad and mouse settings 
 ## How to get to it (user POV)
 
 - Put the settings under `default_settings` in the profile, for example `input.tap_to_click: "off"`, `input.secondary_click: two_finger` and `input.show_input_menu: false`. Quote `"on"` and `"off"`, or YAML reads them as true and false. `inventory/example/TEMPLATE.yml` lists each one with its choices.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check` to preview.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K` to apply, then the same command again.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K --check` to preview.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K` to apply, then the same command again.
 - Log out and back in to see tap to click, three-finger drag and double-tap drag. No test has measured when the other settings appear. Log out and back in, or quit and reopen an app, if you do not see them.
 
 ## Driving it with scripts/verify

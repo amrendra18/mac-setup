@@ -1,0 +1,7 @@
+---
+- name: Reject an unknown account argument
+  macos_account:
+    name: exampleuser
+    full_name: Example User
+    admin: false
+    unexpected_argument_for_lint: true

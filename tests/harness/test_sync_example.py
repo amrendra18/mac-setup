@@ -4,6 +4,9 @@ import tempfile
 import importlib.util
 import sys
 import unittest
+from unittest.mock import patch
+import contextlib
+import io
 from pathlib import Path
 
 import yaml
@@ -113,6 +116,34 @@ class SyncExample(unittest.TestCase):
         self.assertEqual(
             self.script.load(folder), {"default_settings": {"dock.position": "left"}}
         )
+
+    def test_multiple_hosts_stop_before_any_output_changes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            for host, text in (
+                ("office-mac", "default_settings:\n  dock.position: left\n"),
+                ("studio-mac", "machine_settings:\n  power.system_sleep_minutes: 20\n"),
+            ):
+                path = folder / "host_vars" / host / "settings.yml"
+                path.parent.mkdir(parents=True)
+                path.write_text(text)
+            example = folder / "example"
+            example.mkdir()
+            journey = folder / "journey.yml"
+            outputs = [example / "accounts.yml", example / "machine.yml", journey]
+            for output in outputs:
+                output.write_text("profile:\n  original: true\nruns:\n")
+            before = [p.read_bytes() for p in outputs]
+            with patch.object(self.script, "EXAMPLE", example), patch.object(
+                self.script, "JOURNEY", journey
+            ):
+                with patch.object(sys, "argv", ["sync-example", str(folder)]):
+                    with contextlib.redirect_stderr(io.StringIO()) as stderr:
+                        with self.assertRaises(SystemExit) as caught:
+                            self.script.main()
+            self.assertEqual(caught.exception.code, 2)
+            self.assertIn("one host_vars directory", stderr.getvalue())
+            self.assertEqual([p.read_bytes() for p in outputs], before)
 
     def test_accounts_get_made_up_names(self):
         refused = []

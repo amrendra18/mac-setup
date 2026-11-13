@@ -1,0 +1,7 @@
+---
+- name: Reject an unknown app argument
+  macos_app:
+    id: example
+    app: {}
+    downloads: /tmp/example-downloads
+    unexpected_argument_for_lint: true

@@ -12,8 +12,8 @@ One run of `playbooks/site.yml` puts the Dock of the account that runs it on the
 ## How to get to it (user POV)
 
 - Put `dock.position`, `dock.tile_size` and `dock.show_recents` under `default_settings` in the profile.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check` to preview.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K` to apply, then the same command again.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K --check` to preview.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K` to apply, then the same command again.
 
 ## Driving it with scripts/verify
 

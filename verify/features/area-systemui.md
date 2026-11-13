@@ -11,8 +11,8 @@ One run of `playbooks/site.yml` writes 13 system UI settings of the account that
 ## How to get to it (user POV)
 
 - Put the settings under `default_settings` in the profile, for example `appearance.theme: dark`, `menu_bar.clock_24_hour: true` and `spotlight.improve_search: "off"`. Quote `"on"` and `"off"`, or YAML reads them as true and false.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check` to preview.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K` to apply, then the same command again.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K --check` to preview.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K` to apply, then the same command again.
 - Log out and back in to see the theme. No test has measured when the other settings appear. Log out and back in if you do not see them.
 
 ## Driving it with scripts/verify

@@ -1,22 +1,7 @@
 #!/usr/bin/python
-import os
-import shutil
 from pathlib import Path
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.verified_download import (
-    DITTO,
-    Clock,
-    Refused,
-    Runner,
-    Setup,
-    at_least,
-    bundle_info,
-    default_opener,
-    parse_app,
-    run_check,
-    verified_app,
-)
 
 DOCUMENTATION = r"""
 module: macos_app
@@ -35,74 +20,6 @@ options:
 """
 
 
-PS = "/bin/ps"
-
-
-def running(target, runner):
-    rc, out, err = runner.run([PS, "-axo", "comm="])
-    prefix = f"{target}/"
-    return rc == 0 and any(line.startswith(prefix) for line in out.splitlines())
-
-
-def installed_version(target):
-    if not (target / "Contents/Info.plist").is_file():
-        return None
-    return bundle_info(target)[1]
-
-
-def replace_app(item, source, target, runner):
-    staging = target.with_name(f".{target.name}.mac-setup-new")
-    old = target.with_name(f".{target.name}.mac-setup-old")
-    for leftover in (staging, old):
-        shutil.rmtree(leftover, ignore_errors=True)
-    run_check("install", item, runner, [DITTO, str(source), str(staging)])
-    if target.exists():
-        os.rename(target, old)
-    os.rename(staging, target)
-    shutil.rmtree(old, ignore_errors=True)
-
-
-def ensure_app(app, setup, applications, check_mode):
-    target = Path(applications) / app.app
-    old = installed_version(target)
-
-    def result(changed, state, new):
-        return {
-            "changed": changed,
-            "app": {
-                "id": app.id,
-                "state": state,
-                "old_version": old,
-                "new_version": new,
-            },
-            "diff": {
-                "before": f"{app.id}: {old or 'not installed'}\n",
-                "after": f"{app.id}: {new}\n",
-            },
-        }
-
-    if old is not None and at_least(app.id, old, app.version):
-        return result(False, "current", old)
-    with verified_app(app, setup) as new:
-        if check_mode:
-            return result(True, "would_install", new.version)
-        if old is not None and running(target, setup.runner):
-            raise Refused(
-                "install",
-                app.id,
-                f"{app.app} is running; quit it and run again to upgrade "
-                f"from {old} to {new.version}",
-            )
-        replace_app(app.id, new.path, target, setup.runner)
-    if installed_version(target) != new.version:
-        raise Refused(
-            "install",
-            app.id,
-            f"{target} does not hold version {new.version} after the copy",
-        )
-    return result(True, "installed", new.version)
-
-
 def main():
     module = AnsibleModule(
         argument_spec={
@@ -114,6 +31,16 @@ def main():
         },
         supports_check_mode=True,
     )
+    from ansible.module_utils.app_install import ensure_app
+    from ansible.module_utils.verified_download import (
+        Clock,
+        Refused,
+        Runner,
+        Setup,
+        default_opener,
+        parse_app,
+    )
+
     params = module.params
     setup = Setup(
         downloads=Path(params["downloads"]),

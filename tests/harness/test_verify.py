@@ -4,10 +4,14 @@ import importlib.util
 import json
 import os
 import stat
+import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
+import contextlib
+import io
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -517,6 +521,179 @@ class Harness(unittest.TestCase):
             "runs": [{"name": "a", "exit": 0}],
             **extra,
         }
+
+    def test_every_failure_after_the_save_cleans_up_and_restores(self):
+        for step in ("run_steps", "account_exists", "read_all", "drive", "check_files"):
+            for error_type in (KeyboardInterrupt, RuntimeError):
+                with self.subTest(step=step, error=error_type.__name__):
+                    shutil.rmtree(
+                        self.evidence / "inventory" / "test", ignore_errors=True
+                    )
+                    self.fake_defaults({"|com.apple.dock": dict(self.SCALARS)})
+                    self.saved.unlink(missing_ok=True)
+                    marker = self.tmp / "cleaned"
+                    marker.unlink(missing_ok=True)
+                    original = getattr(self.verify, step)
+                    error = error_type("original failure")
+                    raised = False
+
+                    def fail_once(*args, **kwargs):
+                        nonlocal raised
+                        if not raised:
+                            raised = True
+                            raise error
+                        return original(*args, **kwargs)
+
+                    data = self.scalar_journey(
+                        cleanup=[f"touch {marker}"],
+                        creates="setuptest1",
+                        create_runs=[{"name": "a", "exit": 0}],
+                        passwords=["setuptest1"],
+                    )
+                    with patch.object(
+                        self.verify, "account_exists", return_value=True
+                    ), patch.object(self.verify, step, side_effect=fail_once):
+                        with self.assertRaises(error_type) as caught:
+                            self.journey(data, [{}])
+                    self.assertIs(caught.exception, error)
+                    self.assertTrue(marker.exists())
+                    self.assertEqual(self.stored()["|com.apple.dock"], self.SCALARS)
+                    self.assertFalse(self.saved.exists())
+                    self.assertFalse((self.evidence / "test-passwords.json").exists())
+                    self.calls.unlink(missing_ok=True)
+
+    def test_cleanup_exception_keeps_the_original_error_and_still_restores(self):
+        self.fake_defaults({"|com.apple.dock": dict(self.SCALARS)})
+        run_steps = self.verify.run_steps
+
+        def broken_cleanup(kind, *args):
+            if kind == "cleanup":
+                raise OSError("cleanup broke")
+            return run_steps(kind, *args)
+
+        error = KeyboardInterrupt("original failure")
+        with patch.object(self.verify, "run_steps", side_effect=broken_cleanup):
+            with patch.object(self.verify, "drive", side_effect=error):
+                with contextlib.redirect_stderr(io.StringIO()) as stderr:
+                    with self.assertRaises(KeyboardInterrupt) as caught:
+                        self.journey(self.scalar_journey(), [{}])
+        self.assertIs(caught.exception, error)
+        self.assertIn("cleanup broke", stderr.getvalue())
+        self.assertEqual(self.stored()["|com.apple.dock"], self.SCALARS)
+        self.assertFalse(self.saved.exists())
+
+    def test_restore_exception_keeps_the_save_and_original_error(self):
+        self.fake_defaults({"|com.apple.dock": dict(self.SCALARS)})
+        error = RuntimeError("original failure")
+        with patch.object(self.verify, "drive", side_effect=error):
+            with patch.object(
+                self.verify, "restore", side_effect=OSError("restore broke")
+            ):
+                with contextlib.redirect_stderr(io.StringIO()) as stderr:
+                    with self.assertRaises(RuntimeError) as caught:
+                        self.journey(self.scalar_journey(), [{}])
+        self.assertIs(caught.exception, error)
+        self.assertTrue(self.saved.exists())
+        self.assertIn("restore broke", stderr.getvalue())
+
+    def test_cleanup_failure_is_reported_alongside_a_run_failure(self):
+        result = self.journey(
+            {"summary": "s", "runs": [{"name": "a", "exit": 0}], "cleanup": ["exit 7"]},
+            [{"exit": 2}],
+        )
+        self.assertIn("a run:", result["reason"])
+        self.assertIn("cleanup step 1 exited 7", result["reason"])
+
+    def interrupted_finish(self, step, error):
+        self.fake_defaults({"|com.apple.dock": dict(self.SCALARS)})
+        folder = self.tmp / "journeys"
+        folder.mkdir(exist_ok=True)
+        saved = self.tmp / "a-journey" / "saved.plist"
+        saved.unlink(missing_ok=True)
+        cleaned = self.tmp / "a-cleaned"
+        next_started = self.tmp / "b-started"
+        cleaned.unlink(missing_ok=True)
+        next_started.unlink(missing_ok=True)
+        data = {
+            "a": self.scalar_journey(
+                cleanup=[f"touch {cleaned}"], passwords=["setuptest1"]
+            ),
+            "b": {
+                "summary": "next journey",
+                "setup": [f"touch {next_started}"],
+                "runs": [{"name": "apply", "exit": 0}],
+            },
+        }
+        journeys = {}
+        for name, fields in data.items():
+            (folder / f"{name}.yml").write_text("")
+            journeys[name] = self.verify.parse_journey(name, fields, "test input")
+        driven = []
+
+        def drive(journey, *args):
+            driven.append(journey.name)
+            return {"problems": []}
+
+        run_steps, restore = self.verify.run_steps, self.verify.restore
+
+        def finishing_steps(kind, commands, log):
+            if step == "cleanup" and kind == "cleanup" and log.name == "a-cleanup.txt":
+                raise error
+            return run_steps(kind, commands, log)
+
+        def finishing_restore(path, log):
+            if step == "restore" and path == saved:
+                raise error
+            return restore(path, log)
+
+        cancellation = None
+        with patch.multiple(
+            self.verify,
+            JOURNEYS=folder,
+            load_journey=lambda path: journeys[path.stem],
+            new_evidence_folder=lambda: self.evidence,
+            doctor=lambda selected: [{"ok": True}],
+            git=lambda *args: None,
+            drive=drive,
+            run_steps=finishing_steps,
+            restore=finishing_restore,
+            write_summary=lambda *args: None,
+        ), patch.object(sys, "argv", ["verify", "full"]):
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(
+                io.StringIO()
+            ):
+                try:
+                    self.verify.main()
+                except BaseException as caught:
+                    cancellation = caught
+        self.assertEqual(driven, ["a"])
+        self.assertFalse(next_started.exists())
+        self.assertIs(cancellation, error)
+        self.assertFalse((self.evidence / "a-passwords.json").exists())
+        if step == "cleanup":
+            self.assertEqual(self.stored()["|com.apple.dock"], self.SCALARS)
+            self.assertFalse(saved.exists())
+        else:
+            self.assertTrue(cleaned.exists())
+            self.assertTrue(saved.exists())
+
+    def test_cancellation_in_cleanup_never_starts_the_next_journey(self):
+        for error in (
+            KeyboardInterrupt("cancelled"),
+            SystemExit(23),
+            GeneratorExit("cancelled"),
+        ):
+            with self.subTest(error=type(error).__name__):
+                self.interrupted_finish("cleanup", error)
+
+    def test_cancellation_in_restore_never_starts_the_next_journey(self):
+        for error in (
+            KeyboardInterrupt("cancelled"),
+            SystemExit(23),
+            GeneratorExit("cancelled"),
+        ):
+            with self.subTest(error=type(error).__name__):
+                self.interrupted_finish("restore", error)
 
     def test_each_saved_type_is_restored_with_its_type_and_absent_keys_deleted(self):
         self.fake_defaults({"|com.apple.dock": dict(self.SCALARS, other="kept")})

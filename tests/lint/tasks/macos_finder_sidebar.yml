@@ -1,0 +1,6 @@
+---
+- name: Reject an unknown sidebar argument
+  macos_finder_sidebar:
+    helper: /tmp/example-sidebar
+    favorites: []
+    unexpected_argument_for_lint: true

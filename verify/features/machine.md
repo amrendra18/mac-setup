@@ -20,8 +20,8 @@ One run of `playbooks/site.yml` sets the machine settings listed under `machine_
     power.restart_after_power_failure: true
   ```
 
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check --diff` to preview.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K` to apply, then the same command again.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K --check --diff` to preview.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K` to apply, then the same command again.
 
 ## Driving it with scripts/verify
 

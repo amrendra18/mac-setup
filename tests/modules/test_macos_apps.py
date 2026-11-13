@@ -4,17 +4,18 @@ import shutil
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "roles/macos_apps/module_utils"))
-sys.path.insert(0, str(ROOT / "roles/macos_apps/library"))
 
 import verified_download
 
 sys.modules["ansible.module_utils.verified_download"] = verified_download
 
-from macos_app import ensure_app
+from app_install import ensure_app
+import app_install
 from test_verified_download import KEY, FakeMac, FakeWeb, app, setup
 
 
@@ -98,6 +99,79 @@ class Install(unittest.TestCase):
         self.assertEqual(
             sorted(p.name for p in self.applications.iterdir()), ["Example.app"]
         )
+
+    def test_failed_promotion_restores_the_old_app(self):
+        self.installed("1.1", extra="kept")
+        rename = app_install.os.rename
+
+        def fail_promotion(source, target):
+            if str(source).endswith(".mac-setup-new"):
+                raise OSError("promotion failed")
+            return rename(source, target)
+
+        with patch.object(app_install.os, "rename", side_effect=fail_promotion):
+            with self.assertRaises((OSError, verified_download.Refused)):
+                self.run_app()
+        self.assertEqual(self.version_on_disk(), "1.1")
+        self.assertTrue((self.target / "Contents/kept").exists())
+
+    def test_an_interrupted_upgrade_recovers_the_backup_before_copying(self):
+        self.installed("1.1", extra="kept")
+        self.target.rename(self.target.with_name(".Example.app.mac-setup-old"))
+
+        class FailedInstall(InstallingMac):
+            def run(self, argv):
+                if argv[0] == verified_download.DITTO and argv[-1].endswith(
+                    ".mac-setup-new"
+                ):
+                    return 1, "", "copy failed"
+                return super().run(argv)
+
+        mac = FailedInstall()
+        with self.assertRaises(verified_download.Refused):
+            self.run_app(mac=mac)
+        self.assertEqual(self.version_on_disk(), "1.1")
+        self.assertTrue((self.target / "Contents/kept").exists())
+
+    def test_an_ambiguous_backup_keeps_both_apps_and_refuses(self):
+        self.installed("1.1")
+        backup = self.target.with_name(".Example.app.mac-setup-old")
+        shutil.copytree(self.target, backup)
+        with self.assertRaises(verified_download.Refused):
+            self.run_app()
+        self.assertTrue((backup / "Contents/Info.plist").is_file())
+        self.assertEqual(self.version_on_disk(), "1.1")
+
+    def test_check_mode_leaves_an_existing_backup_untouched(self):
+        self.installed("1.1")
+        backup = self.target.with_name(".Example.app.mac-setup-old")
+        self.target.rename(backup)
+        result = self.run_app(check_mode=True)
+        self.assertEqual(result["app"]["state"], "would_install")
+        self.assertFalse(self.target.exists())
+        self.assertTrue((backup / "Contents/Info.plist").is_file())
+
+    def test_recovering_a_current_backup_reports_a_change_without_downloading(self):
+        self.installed("1.2")
+        backup = self.target.with_name(".Example.app.mac-setup-old")
+        self.target.rename(backup)
+        result = self.run_app()
+        self.assertTrue(result["changed"])
+        self.assertEqual(self.version_on_disk(), "1.2")
+        self.assertEqual(self.web.requests, [])
+
+    def test_failed_installed_version_check_restores_the_old_app(self):
+        self.installed("1.1")
+        read_version = app_install.installed_version
+
+        def wrong_version(target):
+            version = read_version(target)
+            return "0.1" if version == "1.2" else version
+
+        with patch.object(app_install, "installed_version", side_effect=wrong_version):
+            with self.assertRaises(verified_download.Refused):
+                self.run_app()
+        self.assertEqual(self.version_on_disk(), "1.1")
 
     def test_equal_or_newer_app_is_left_alone_with_no_download_or_lookup(self):
         for version in ("1.2", "1.10", "2.0"):

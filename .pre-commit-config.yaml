@@ -4,7 +4,7 @@ default_install_hook_types:
   - commit-msg
   - pre-push
 repos:
-  - repo: "ssh://git@github.com/amrendra18/first-commit"
+  - repo: "https://github.com/amrendra18/first-commit"
     rev: "5c71eadc2ad761161dbb223831b761dc82ad6fb8"
     hooks:
       - id: first-commit-staged

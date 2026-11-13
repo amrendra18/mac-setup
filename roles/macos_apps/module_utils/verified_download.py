@@ -296,6 +296,33 @@ def wait_for_lookup_slot(downloads, clock):
     write_json(log, (recent + [clock.time()])[-LOOKUPS_PER_MINUTE:])
 
 
+def scan_verdict(engines):
+    categories = {
+        "malicious",
+        "suspicious",
+        "harmless",
+        "undetected",
+        "timeout",
+        "confirmed-timeout",
+        "failure",
+        "type-unsupported",
+    }
+    if (
+        not isinstance(engines, dict)
+        or not engines
+        or any(
+            kind not in categories or type(count) is not int or count < 0
+            for kind, count in engines.items()
+        )
+    ):
+        raise ValueError("invalid engine statistics")
+    if engines.get("malicious", 0) or engines.get("suspicious", 0):
+        return "flagged"
+    if engines.get("harmless", 0) + engines.get("undetected", 0) == 0:
+        raise ValueError("no engine completed a clean scan")
+    return "clean"
+
+
 def ask_virustotal(item, sha256, setup):
     key = setup.key
     if not key:
@@ -310,7 +337,7 @@ def ask_virustotal(item, sha256, setup):
             {"x-apikey": key},
         ) as response:
             stats = json.load(response)["data"]["attributes"]["last_analysis_stats"]
-        engines = {kind: int(count) for kind, count in stats.items()}
+        verdict = scan_verdict(stats)
     except Refused as error:
         detail = {
             404: f"VirusTotal does not know the file with SHA-256 {sha256}",
@@ -320,16 +347,13 @@ def ask_virustotal(item, sha256, setup):
     except (ValueError, KeyError, TypeError, AttributeError) as error:
         detail = f"unexpected API response ({type(error).__name__})"
         raise Refused("virustotal", item, detail) from None
-    if sum(engines.values()) == 0:
-        raise Refused("virustotal", item, f"no engine has scanned SHA-256 {sha256}")
-    flagged = engines.get("malicious", 0) + engines.get("suspicious", 0)
     return {
         "sha256": sha256,
         "checked": datetime.datetime.fromtimestamp(
             setup.clock.time(), datetime.timezone.utc
         ).isoformat(timespec="seconds"),
-        "engines": engines,
-        "verdict": "flagged" if flagged else "clean",
+        "engines": stats,
+        "verdict": verdict,
     }
 
 
@@ -344,6 +368,7 @@ def check_virustotal(item, sha256, setup):
             or not isinstance(verdict["checked"], str)
         ):
             raise ValueError(cache)
+        verdict["verdict"] = scan_verdict(verdict["engines"])
     except (OSError, ValueError, KeyError, TypeError):
         verdict = ask_virustotal(item, sha256, setup)
         write_json(cache, verdict)

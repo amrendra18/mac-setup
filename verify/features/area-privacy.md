@@ -13,8 +13,8 @@ The app permissions in Privacy & Security, such as Camera, Microphone and Full D
 ## How to get to it (user POV)
 
 - Put the setting under `default_settings` in the profile, as `privacy.personalized_ads: false`. `inventory/example/TEMPLATE.yml` lists it with its choices.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check` to preview.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K` to apply, then the same command again.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K --check` to preview.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K` to apply, then the same command again.
 - No test has measured when System Settings > Privacy & Security > Apple Advertising shows the change. Log out and back in if you do not see it.
 
 ## Driving it with scripts/verify

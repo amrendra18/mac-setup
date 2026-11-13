@@ -12,8 +12,8 @@ One run of `playbooks/site.yml` makes every screen of the account that runs it s
 ## How to get to it (user POV)
 
 - Put `desktop.wallpaper: black` under `default_settings` in the profile.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check --diff` to preview.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K` to apply, then the same command again.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K --check --diff` to preview.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K` to apply, then the same command again.
 
 ## Driving it with scripts/verify
 

@@ -1,5 +1,5 @@
 https://files.pythonhosted.org/packages/b5/d2/09209cd7868af83c7d4f6ad26874f9c933c0a2566c06fe8524bd0a10d810/ansible_compat-26.10.0-py3-none-any.whl
-https://files.pythonhosted.org/packages/ea/5b/baa39ad553aa62acf06d2daf97eb8e8d8df7c6d95278c8d5b2d7a3554a1d/ansible_lint-25.9.2-py3-none-any.whl
+https://files.pythonhosted.org/packages/e5/6f/d34add95c96f3d8bb37ff430fb1e334d32003d1c6ee9f034f0b8d29b459d/ansible_lint-26.10.0-py3-none-any.whl
 https://files.pythonhosted.org/packages/64/b4/17d4b0b2a2dc85a6df63d1157e028ed19f90d4cd97c36717afef2bc2f395/attrs-26.1.0-py3-none-any.whl
 https://files.pythonhosted.org/packages/85/0e/cc83b88a6b1a51fc051aa4e24663918f0bf4fa9fca98552ee93a125a6780/black-26.10.1-cp313-cp313-macosx_11_0_arm64.whl
 https://files.pythonhosted.org/packages/05/79/c1ba46e1acd235affd36ce1d3346320ddcda663c9482a9e5f34727db1d11/bracex-3.1-py3-none-any.whl

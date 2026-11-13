@@ -4,7 +4,16 @@ This page sets up a clone for development and lists the checks a change must pas
 
 ## Set up a clone
 
-Run `scripts/bootstrap` first, as the [README](README.md#quick-start) says. The checks then need three more things.
+Clone over HTTPS, then install the runtime tools:
+
+```sh
+git clone https://github.com/amrendra18/mac-setup.git ~/mac-setup
+cd ~/mac-setup
+scripts/bootstrap
+```
+
+Contributors with an existing GitHub SSH key can instead clone with `git clone git@github.com:amrendra18/mac-setup.git ~/mac-setup`.
+The checks then need three more things.
 
 1. The dev tools yamllint, ansible-lint and black, pinned in `requirements/dev.txt`. These two commands download each pinned file from its direct link in `requirements/dev-urls.txt`, check its SHA-256 hash, and install it into `.local/venv` without the PyPI index:
 
@@ -46,18 +55,23 @@ scripts/check full
 2. The playbook syntax check.
 3. The unit tests in `tests/modules/` and `tests/harness/`.
 4. Every broken test profile in `tests/inputs/`, and the two-Mac inventory `tests/two-macs/hosts.yml`. Each one must stop in the profile check with exit code 2 and `changed=0`.
-5. The structure rules: no `sudo` in a role, `become` only in the "Machine and other accounts" play of `playbooks/site.yml`, and no task that touches the privacy database or System Integrity Protection.
+5. The structure rules forbid `sudo` in roles and allow `become` only in the "Machine and other accounts" play of `playbooks/site.yml`. They also forbid changes to the privacy database or System Integrity Protection.
 6. The private-word scan.
 7. The Gitleaks secret scan.
 
 `full` runs `fast`, then `tests/test_reference.py`, a `black --check` format check of the Python files, and ansible-lint. `tests/test_reference.py` checks every entry of the settings reference (`settings/macos/*.yml`), and checks that the template matches it.
+
+The full check also tests ansible-lint itself.
+It verifies the installed version against its pin and fails if lint prints an ignored exception for the real roles.
+Lint must reject an unknown argument in each of five deliberately broken module calls.
+A temporary test app in Ansible check mode proves the helpers load without downloading or installing anything.
 
 The last line says `every check held` and the script exits 0 when every check held. It exits 1 when a check failed, and the `FAIL` line names it.
 
 ## Change one setting
 
 1. Edit the entry in `settings/macos/AREA.yml`. [The settings reference](docs/how-it-works.md#the-settings-reference) gives its fields.
-2. For a new entry, raise `ENTRY_COUNT` in `tests/test_reference.py`. Then update the counts in README.md ("What you get after one run") and in docs/how-it-works.md ("The settings reference"). `tests/test_reference.py` fails on a stale count and names the sentence. A reworded count sentence also fails; then update its pattern in `DOC_COUNTS` in that file.
+2. For a new entry, raise `ENTRY_COUNT` in `tests/test_reference.py`. Then update the counts in README.md ("Before you start") and in docs/how-it-works.md ("The settings reference"). `tests/test_reference.py` fails on a stale count and names the sentence. A reworded count sentence also fails; then update its pattern in `DOC_COUNTS` in that file.
 3. Run `scripts/render-template`.
 4. Run `scripts/check full`.
 5. On a Mac set aside for testing, run `scripts/verify fast --feature NAME`. When it proves the setting, add the macOS version and date to `proven_on`, and update the proven count in README.md.

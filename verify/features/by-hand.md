@@ -12,9 +12,9 @@ Some settings have no script path: privacy permissions and panes that only take 
 
 - Put click-only settings in the profile, for example `network.bluetooth_power: false` under `machine_settings`. `inventory/example/TEMPLATE.yml` lists them under "Click-only settings". A setting whose only value is `by_hand` means "choose what you want there".
 - Settings of another account appear when that account runs mac-setup while signed in.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K` at the Mac's screen. At its end, make each choice and press Return after each one.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check`, or `playbooks/by-hand.yml --check`, to see the pages it would open. Over SSH, both list the pages without `--check` too.
-- Run `.local/venv/bin/ansible-playbook playbooks/by-hand.yml` at the Mac's screen to walk the pages again later.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K` at the Mac's screen. At its end, make each choice and press Return after each one.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K --check`, or `playbooks/by-hand.yml --check`, to see the pages it would open. Over SSH, both list the pages without `--check` too.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/by-hand.yml` at the Mac's screen to walk the pages again later.
 
 ## Driving it with scripts/verify
 

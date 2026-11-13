@@ -12,8 +12,8 @@ One run of `playbooks/site.yml` keeps only the listed apps in the Dock of the ac
 ## How to get to it (user POV)
 
 - Put `dock.applications` under `default_settings` in the profile, or under one account's `settings`, as a list of bundle ids, for example `[com.apple.Terminal, com.apple.Safari]`.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check --diff` to preview. The diff lists the bundle ids in the Dock now and after the run.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K` to apply, then the same command again.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K --check --diff` to preview. The diff lists the bundle ids in the Dock now and after the run.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K` to apply, then the same command again.
 
 ## Driving it with scripts/verify
 
@@ -32,6 +32,8 @@ Preconditions:
 - **Proof.** The cleanup step reads `persistent-apps` with `defaults export com.apple.dock -` and `plutil` and prints `Dock bundle ids: com.apple.Terminal com.apple.Safari`. It fails the journey when the ids it read differ. After it, the harness imports the saved domain with `defaults import` and restarts the Dock when the running account owns the screen. It runs after the not-installed run, so it also proves that run changed nothing.
 
 ## Gotchas
+
+- The running account's Dock is set before apps install. Install an app first, then add its bundle id on a later run. A missing app refuses the whole Dock list and ends the run with exit code 2, while other settings and app installs continue.
 
 - The harness's `reads` compare a whole key, and each Dock tile holds values macOS sets itself, such as `GUID` and `book`. So the proof reads the bundle ids in the cleanup step, which logs the ids it found in `logs/dock-apps-cleanup.txt`.
 - The setup empties the Dock's app tiles, and the Dock shows the old tiles until it restarts. The harness always restores the saved domain, also after a failed run. The restore writes the saved Dock domain back with `defaults import`, so a Dock change made by hand during the journey is lost. Whether a key macOS added during the run is removed is not tested.

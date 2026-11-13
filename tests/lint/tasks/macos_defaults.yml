@@ -1,0 +1,8 @@
+---
+- name: Reject an unknown preference argument
+  community.general.osx_defaults:
+    domain: com.example.lint
+    key: Example
+    type: string
+    value: example
+    unexpected_argument_for_lint: true

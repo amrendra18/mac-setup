@@ -11,8 +11,8 @@ One run of `playbooks/site.yml` writes 17 settings of the Desktop & Dock pane fo
 ## How to get to it (user POV)
 
 - Put the settings under `default_settings` in the profile, for example `dock.position: left`, `hot_corners.bottom_right: quick_note` and `windows.on_quit: keep`. `inventory/example/TEMPLATE.yml` lists each one with its choices.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check` to preview.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K` to apply, then the same command again.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K --check` to preview.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K` to apply, then the same command again.
 - No test has measured when the Mission Control, Stage Manager and widget settings appear. Log out and back in if you do not see them.
 
 ## Driving it with scripts/verify

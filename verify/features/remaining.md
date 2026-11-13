@@ -26,8 +26,8 @@ default_settings:
 
 - A shortcut value is `true` (on with its standard keys), `false` (off), or keys joined with `+`, such as `control+up`. A letter, digit or space needs at least one of shift, control, option or command.
 - The profile check refuses the two trackpad gestures when both are on with different fingers, and refuses `unset` for the shortcuts and the input sources.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check --diff` to preview.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K` to apply, then the same command again.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K --check --diff` to preview.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K` to apply, then the same command again.
 - Log out and back in to see the input sources. No test has measured when the shortcuts appear. Log out and back in if you do not see them.
 
 ## Driving it with scripts/verify

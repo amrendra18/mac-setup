@@ -701,23 +701,23 @@ def run_journey(journey, evidence, profile_file):
         failure = f"an earlier restore did not finish; this run restores {os.path.relpath(saved, ROOT)}"
     else:
         failure = save(journey.saves, saved)
-    failure = failure or run_steps(
-        "setup", journey.setup, evidence / "logs" / f"{journey.name}-setup.txt"
-    )
-    runs = journey.runs
-    if journey.creates:
-        existed = account_exists(journey.creates)
-        result["case"] = "adopt" if existed else "create"
-        runs = journey.runs if existed else journey.create_runs
-    before = read_all(journey.reads)
-    (reads / f"{journey.name}-before.json").write_text(json.dumps(before, indent=2))
-    passwords = {name: secrets.token_urlsafe(24) for name in journey.passwords}
     password_file = evidence / f"{journey.name}-passwords.json"
-    if passwords:
-        fd = os.open(password_file, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-        with os.fdopen(fd, "w") as out:
-            json.dump({"account_passwords": passwords}, out)
     try:
+        failure = failure or run_steps(
+            "setup", journey.setup, evidence / "logs" / f"{journey.name}-setup.txt"
+        )
+        runs = journey.runs
+        if journey.creates:
+            existed = account_exists(journey.creates)
+            result["case"] = "adopt" if existed else "create"
+            runs = journey.runs if existed else journey.create_runs
+        before = read_all(journey.reads)
+        (reads / f"{journey.name}-before.json").write_text(json.dumps(before, indent=2))
+        passwords = {name: secrets.token_urlsafe(24) for name in journey.passwords}
+        if passwords:
+            fd = os.open(password_file, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            with os.fdopen(fd, "w") as out:
+                json.dump({"account_passwords": passwords}, out)
         for run in [] if failure else runs:
             outcome = drive(
                 journey,
@@ -730,26 +730,53 @@ def run_journey(journey, evidence, profile_file):
             if outcome["problems"]:
                 failure = f"{run.name} run: {'; '.join(outcome['problems'])}"
                 break
+        after = read_all(journey.reads)
+        (reads / f"{journey.name}-after.json").write_text(json.dumps(after, indent=2))
+        files, file_problems = check_files(journey.files)
+        if journey.files:
+            (reads / f"{journey.name}-files.json").write_text(
+                json.dumps(files, indent=2)
+            )
+        if not failure:
+            failure = "; ".join(read_problems(journey.reads, after) + file_problems)
+        if journey.creates and not account_exists(journey.creates):
+            failure = failure or f"{journey.creates} does not exist after the runs"
     finally:
-        password_file.unlink(missing_ok=True)
-    after = read_all(journey.reads)
-    (reads / f"{journey.name}-after.json").write_text(json.dumps(after, indent=2))
-    files, file_problems = check_files(journey.files)
-    if journey.files:
-        (reads / f"{journey.name}-files.json").write_text(json.dumps(files, indent=2))
-    if not failure:
-        failure = "; ".join(read_problems(journey.reads, after) + file_problems)
-    if journey.creates and not account_exists(journey.creates):
-        failure = failure or f"{journey.creates} does not exist after the runs"
-    cleanup_failure = run_steps(
-        "cleanup", journey.cleanup, evidence / "logs" / f"{journey.name}-cleanup.txt"
-    )
-    restore_failure = (
-        restore(saved, evidence / "logs" / f"{journey.name}-restore.txt")
-        if saved.exists()
-        else ""
-    )
-    failure = "; ".join(filter(None, [failure or cleanup_failure, restore_failure]))
+        original = sys.exc_info()[1]
+        finishing_failures = []
+        cancellation = None
+        for label, finish in (
+            ("password cleanup", lambda: password_file.unlink(missing_ok=True)),
+            (
+                "cleanup",
+                lambda: run_steps(
+                    "cleanup",
+                    journey.cleanup,
+                    evidence / "logs" / f"{journey.name}-cleanup.txt",
+                ),
+            ),
+            (
+                "restore",
+                lambda: (
+                    restore(saved, evidence / "logs" / f"{journey.name}-restore.txt")
+                    if saved.exists()
+                    else ""
+                ),
+            ),
+        ):
+            try:
+                problem = finish()
+            except BaseException as error:
+                problem = f"{label}: {type(error).__name__}: {error}"
+                if not isinstance(error, Exception) and cancellation is None:
+                    cancellation = error
+            if problem:
+                finishing_failures.append(problem)
+        if (original or cancellation) and finishing_failures:
+            print("; ".join(finishing_failures), file=sys.stderr)
+        failure = "; ".join(filter(None, [failure, *finishing_failures]))
+        if cancellation is not None:
+            raise cancellation
     result["passwords"] = [
         {"account": name, "copies": copies(password, [LOGS, evidence])}
         for name, password in passwords.items()

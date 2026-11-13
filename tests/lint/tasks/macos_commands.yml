@@ -1,0 +1,8 @@
+---
+- name: Reject an unknown command argument
+  macos_command_setting:
+    read: [/usr/bin/true]
+    parse: '^(?P<value>.*)$'
+    set: [[/usr/bin/true]]
+    value: example
+    unexpected_argument_for_lint: true

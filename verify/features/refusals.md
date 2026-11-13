@@ -11,7 +11,7 @@ When macOS refuses one setting at write time, the run still writes the other set
 ## How to get to it (user POV)
 
 - A key already holds a value of another type, for example `tilesize` stored as an integer.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K`. The last lines name the refused setting, and the recap shows `failed=1`.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K`. The last lines name the refused setting, and the recap shows `failed=1`.
 
 ## Driving it with scripts/verify
 

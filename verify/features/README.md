@@ -4,6 +4,9 @@ This folder is the maintained source for proving mac-setup's user-facing feature
 
 `scripts/verify` changes the real settings of the account that runs it. The `accounts` journey also creates the real standard account `setuptest1`, which only a person can delete, and other journeys write its preferences. Run it only on a Mac set aside for testing, never on a Mac whose settings matter to someone.
 
+The user commands in feature pages select the README's profile with `-i ~/.dot/mac-setup/inventory`.
+The harness writes and selects its own test inventory.
+
 ## Usage
 
 ```text

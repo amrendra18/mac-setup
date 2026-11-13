@@ -1,6 +1,6 @@
 # How mac-setup works
 
-This page explains what happens inside a run, how the settings reference is written, and how mac-setup checks what it downloads. Read the [README](../README.md) first for installing and using mac-setup. [CONTRIBUTING.md](../CONTRIBUTING.md) covers the checks and the developer tools.
+This page explains what happens inside a run, how the settings reference is written, and how mac-setup checks what it downloads. Read the [README](../README.md) first for installing and using mac-setup. [CONTRIBUTING.md](../CONTRIBUTING.md) covers the checks and the developer tools. The [installation reference](installation.md), [profile guide](profiles.md), and [troubleshooting guide](troubleshooting.md) hold the detailed user instructions.
 
 ## What runs
 
@@ -9,7 +9,7 @@ Nothing runs in the background. You start `ansible-playbook` in Terminal. It run
 ## The parts
 
 1. **The settings reference**, `settings/macos/*.yml`, one file per area. Each entry describes one setting. The section [The settings reference](#the-settings-reference) gives its fields. The permissions table, `settings/macos/permissions/table.yml`, describes each privacy permission a setting can need.
-2. **The profile**, your copy of `inventory/example/` in `.local/inventory/`. It holds `default_settings` for every account, an `accounts` list where each account may have settings of its own, and `machine_settings`. It holds no password.
+2. **The profile**, your copy of `inventory/example/`. The README keeps it in `~/.dot/mac-setup/inventory/` and selects it with `-i`. The configured default remains `.local/inventory/`. It holds `default_settings` for every account, an `accounts` list where each account may have settings of its own, and `machine_settings`. Account passwords stay out of the profile. An optional encrypted vault holds the VirusTotal API key.
 3. **The playbook**, `playbooks/site.yml`, which applies the profile in four plays.
 4. **The click-through**, for settings only a person can change. It runs at the end of `playbooks/site.yml`, and `playbooks/by-hand.yml` runs it again on its own.
 5. **The template**, `inventory/example/TEMPLATE.yml`. `scripts/render-template` writes it from the reference.
@@ -38,7 +38,7 @@ Nothing runs in the background. You start `ansible-playbook` in Terminal. It run
 
 "Machine and other accounts" runs with admin rights:
 
-1. `macos_accounts` creates each listed account, or adopts an existing one. Adopting takes the account over without changing its password or admin rights.
+1. `macos_accounts` creates each listed account, or adopts an existing one. Adopting applies settings without changing its password or admin rights. A different admin value in the profile is refused.
 2. `macos_defaults` writes the machine preferences as root.
 3. `macos_commands` sets the machine settings that need a command tool, such as `pmset` or `systemsetup`.
 4. `macos_apps` installs the listed apps.
@@ -71,13 +71,18 @@ Nothing runs in the background. You start `ansible-playbook` in Terminal. It run
 
 A custom module exists only where no existing module does the job. Each one reads before it writes and supports `--check`.
 
+`macos_app` checks arguments before loading installation code.
+The `app_install` helper reads installed apps, replaces them, and handles recovery.
+The `verified_download` helper downloads and verifies apps.
+Both helpers live in `roles/macos_apps/module_utils/`.
+
 ## Run details
 
 1. When another account, or the login window, owns the screen, the run skips the Dock restart. A restart then would leave that account's Dock stopped until it logs out and back in. The Dock changes at that account's next sign-in instead.
 2. Each new account adds 1 to the run's `changed` count, and each setting written for another account adds 1 more.
 3. A preview with `--check` still builds the Finder sidebar helper into `.local/finder-sidebar/` when the profile lists a sidebar setting, because the helper is needed to read the sidebar.
 4. A preview prints a `changed` line for each setting it would change, without the value. To see a current value, run `defaults read DOMAIN KEY` with the domain and key from the reference.
-5. `dock.applications` joins a newly installed app on the next run, because the "This account" play sets the Dock before the "Machine and other accounts" play installs apps.
+5. `dock.applications` is set before apps install for the running account. If it lists a missing app, the entire Dock list is refused and the run ends with exit code 2, while other work continues. Install the app first, then add it to the Dock list on a later run.
 
 ## The settings reference
 
@@ -176,7 +181,7 @@ An app already in `/Applications` at the catalog's version or newer is left alon
 2. **Age.** A pinned build must be at least 21 days old by its release date.
 3. **HTTPS and host.** The URL uses HTTPS on the entry's host. Every redirect uses HTTPS on that host or on the entry's one redirect host.
 4. **SHA-256.** The download must match the pinned hash. Downloads are kept in `.local/downloads/` by hash, so a second run downloads nothing.
-5. **VirusTotal.** The run sends only the file's SHA-256 to `www.virustotal.com`, never the file. Any engine that reports the file as malicious or suspicious refuses it. So does a file VirusTotal does not know, a file no engine has scanned, and a missing key.
+5. **VirusTotal.** The run sends only the file's SHA-256 to `www.virustotal.com`, never the file. The report must contain a completed clean scan. A malicious or suspicious result refuses the file. So does a file VirusTotal does not know, a report with no completed scan, and a missing key when no usable cached verdict exists.
 6. **Unpack.** A disk image is mounted read-only and hidden from Finder. A zip is unpacked with `ditto`. The app must be inside.
 7. **Signature.** `codesign --verify --deep --strict` must pass.
 8. **Gatekeeper.** `spctl --assess` must pass, which also confirms that Apple notarized the build.
@@ -187,9 +192,9 @@ An app install fails closed. A refused app is not copied, the other apps still i
 
 Google serves only its latest Chrome build, so `google_chrome` has no pinned hash and no age check. The signature, Gatekeeper, Team ID and VirusTotal checks still apply.
 
-VirusTotal's verdict for each file is stored in `.local/downloads/SHA256.virustotal.json`, where SHA256 is the file's hash. A later run reads the stored verdict and asks VirusTotal nothing, so it needs no key. A stored `flagged` verdict keeps refusing that file. The run makes at most 4 lookups per minute, the free API key's limit, and waits when it reaches that rate.
+VirusTotal's verdict for each file is stored in `.local/downloads/SHA256.virustotal.json`, where SHA256 is the file's hash. A later run with a usable stored verdict asks VirusTotal nothing, so the lookup needs no API key. Loading an encrypted vault still needs its password. A stored `flagged` verdict keeps refusing that file. The run makes at most 4 lookups per minute, the free API key's limit, and waits when it reaches that rate.
 
-An upgrade replaces the old copy whole. The run copies the new app next to the old one, swaps the two, and then deletes the old copy.
+An upgrade replaces the old copy whole. The run copies the new app next to the old one, swaps the two, and then deletes the old copy. A running app is refused until you quit it.
 
 ## Design rules
 

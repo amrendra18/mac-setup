@@ -11,7 +11,7 @@ The example profile in `inventory/example/` loads together with every reference 
 ## How to get to it (user POV)
 
 - Copy the example profile, as step 3 of the README's Quick start says.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check`.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K --check`.
 
 ## Driving it with scripts/verify
 

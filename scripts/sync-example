@@ -37,8 +37,11 @@ HEADER = "---\n# Written by scripts/sync-example from the maintainer's profile. 
 
 
 def load(folder):
+    hosts = [path for path in (folder / "host_vars").iterdir() if path.is_dir()]
+    if len(hosts) != 1:
+        raise ValueError("the profile must contain exactly one host_vars directory")
     profile = {}
-    for path in sorted(folder.glob("host_vars/*/*.yml")):
+    for path in sorted(hosts[0].glob("*.yml")):
         data = yaml.safe_load(path.read_text())
         if isinstance(data, dict):
             profile.update(data)
@@ -121,7 +124,7 @@ def dump(data):
 def main():
     parser = argparse.ArgumentParser(
         prog="scripts/sync-example",
-        description="Write inventory/example/ with the same settings as a private profile, without personal values.",
+        description="Write inventory/example/ from a private profile with exactly one host_vars directory, without personal values.",
         epilog="exit codes: 0 written, 1 a free-text setting needs a neutral value, 2 usage error, 3 not ready",
     )
     parser.add_argument(
@@ -134,7 +137,10 @@ def main():
     folder = Path(args.profile)
     if not folder.is_dir():
         parser.error(f"{folder} is not a folder")
-    profile = load(folder)
+    try:
+        profile = load(folder)
+    except (OSError, ValueError) as error:
+        parser.error(str(error))
     entries, refused = reference(), []
     accounts = {
         "default_settings": neutral_settings(

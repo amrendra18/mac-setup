@@ -12,7 +12,7 @@ One admin run of `playbooks/site.yml` adopts the accounts that already exist wit
 ## How to get to it (user POV)
 
 - List each account under `accounts` in the profile, with `name`, `full_name` and `admin`.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K`. Ansible asks the admin password once, then a hidden prompt asks the password of each account it creates.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K`. Ansible asks the admin password once, then a hidden prompt asks the password of each account it creates.
 - Run the same command again. It changes nothing and asks no account password.
 
 ## Driving it with scripts/verify

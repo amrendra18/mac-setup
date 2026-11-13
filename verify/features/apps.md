@@ -11,7 +11,7 @@ One run of `playbooks/site.yml` installs each app listed in `apps.install` under
 
 - Put `apps.install: [sublime_text]` under `machine_settings` in the profile.
 - Store `virustotal_api_key` in a vault file in the private profile, as the README's Secrets section says.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check` to preview, then the same command without `--check` to install.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K --check` to preview, then the same command without `--check` to install.
 
 ## Driving it with scripts/verify
 

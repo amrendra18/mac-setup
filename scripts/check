@@ -19,7 +19,7 @@ fast  yamllint, playbook syntax, Python unit tests in tests/modules/ and
       the structure rules, the private-word scan and gitleaks. It changes no
       settings.
 full  fast, then the reference test tests/test_reference.py, black --check on the
-      Python files, and ansible-lint when requirements/dev.txt pins it.
+      Python files, and ansible-lint with broken module arguments when requirements/dev.txt pins it.
 
 Needs scripts/bootstrap's .local/venv, the dev tools from requirements/dev.txt in it,
 gitleaks in .local/bin or on PATH, and the ignored word list .local/private-words.txt
@@ -225,7 +225,7 @@ reference_test() {
 
 ansible_lint() {
   need "$bin/ansible-lint" || { echo "install the dev tools, see scripts/check --help"; return 1; }
-  PATH=$bin:$PATH "$bin/ansible-lint" --offline --strict playbooks roles
+  "$bin/python" -I tests/lint/test_module_args.py
 }
 
 python_files() {

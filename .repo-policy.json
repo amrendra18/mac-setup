@@ -1,4 +1,16 @@
 {
   "schema_version": 1,
-  "public_emails": ["noreply@anthropic.com", "git@github.com"]
+  "public_emails": [
+    "noreply@anthropic.com",
+    "git@github.com"
+  ],
+  "public_github_owner_urls": true,
+  "private_literal_exceptions": [
+    {
+      "path": "LICENSE",
+      "line": 3,
+      "sha256": "d435bcd85a4ffb2ad3f20a42f93025200dc270df8343a41b3886ceb1ea4665d1",
+      "reason": "copyright holder"
+    }
+  ]
 }

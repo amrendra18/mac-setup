@@ -12,7 +12,7 @@ An admin run writes the settings of each other listed account as that account, i
 ## How to get to it (user POV)
 
 - Add a `settings` map to an account under `accounts` in the profile.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K`.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K`.
 - Sign in to that account and look at its Dock.
 
 ## Driving it with scripts/verify

@@ -14,8 +14,8 @@ Some settings need a privacy permission for the app that runs mac-setup. `time.z
 ## How to get to it (user POV)
 
 - Put a setting that needs a permission in the profile, such as `time.zone: GMT` under `machine_settings`, or `finder.sidebar_favorites: ["~", ~/Desktop]` under `default_settings`.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check` to see what the run would ask.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K` in Terminal at the Mac's screen, follow each step, and press Return after each one.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K --check` to see what the run would ask.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K` in Terminal at the Mac's screen, follow each step, and press Return after each one.
 
 ## Driving it with scripts/verify
 

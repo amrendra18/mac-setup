@@ -11,8 +11,8 @@ One run of `playbooks/site.yml` writes 6 Finder settings of the account that run
 ## How to get to it (user POV)
 
 - Put `finder.show_sidebar`, `finder.trash_auto_empty`, `finder.view`, `finder.show_recent_tags`, `finder.show_hidden` and `finder.new_window` under `default_settings` in the profile.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check` to preview.
-- Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K` to apply, then the same command again.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K --check` to preview.
+- Run `.local/venv/bin/ansible-playbook -i ~/.dot/mac-setup/inventory playbooks/site.yml -K` to apply, then the same command again.
 
 ## Driving it with scripts/verify
 
