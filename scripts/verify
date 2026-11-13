@@ -81,7 +81,10 @@ FIELDS = {
             "saves",
         },
     ),
-    "run": ({"name", "exit"}, {"args", "recap", "profile", "reads", "output"}),
+    "run": (
+        {"name", "exit"},
+        {"args", "recap", "profile", "reads", "output", "playbook"},
+    ),
     "read": ({"domain", "key"}, {"type", "value", "absent", "account", "host"}),
     "output": ({"pattern", "count"}, set()),
     "file": ({"path", "owner", "mode"}, set()),
@@ -134,6 +137,7 @@ class Run:
     profile: dict | None = None
     reads: list = field(default_factory=list)
     output: list = field(default_factory=list)
+    playbook: str = ""
 
 
 @dataclass
@@ -233,9 +237,10 @@ def parse_runs(items, where):
             isinstance(run.exit, int)
             and isinstance(run.args, list)
             and isinstance(run.profile, (dict, type(None)))
+            and isinstance(run.playbook, str)
         ):
             raise JourneyError(
-                f"{at}: needs an integer exit, a list of args and a mapping profile"
+                f"{at}: needs an integer exit, a list of args, a mapping profile and a text playbook"
             )
         runs.append(run)
     if not runs or len({r.name for r in runs}) != len(runs):
@@ -365,10 +370,16 @@ def doctor(journeys):
             f"pinned {version}, installed {installed.get(f'{ns}.{name}')}",
         )
     for journey in journeys:
+        playbooks = list(
+            dict.fromkeys(
+                [journey.playbook]
+                + [r.playbook for r in journey.runs + journey.create_runs if r.playbook]
+            )
+        )
         check(
             f"{journey.name} playbook",
-            (ROOT / journey.playbook).is_file(),
-            journey.playbook,
+            all((ROOT / playbook).is_file() for playbook in playbooks),
+            ", ".join(playbooks),
         )
     check(
         "sudo",
@@ -629,7 +640,7 @@ def drive(journey, run, evidence, profile_file, password_file):
         str(BIN / "ansible-playbook"),
         "-i",
         str(inventory),
-        journey.playbook,
+        run.playbook or journey.playbook,
         *run.args,
     ] + (["-e", f"@{password_file}"] if password_file else [])
     started = time.monotonic()

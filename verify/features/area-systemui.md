@@ -55,5 +55,5 @@ Preconditions:
 - The numbers for accent orange, Sound always, Fast User Switching show, previews when unlocked and Spotlight off come from community sources and one test Mac. The reads prove what is stored. Only a look at System Settings proves that macOS shows the matching choice.
 - Nothing restarts, so the menu bar clock and items may keep their old look until the account logs out and in.
 - The setup deletes `AppleInterfaceStyle`, so new windows open in light mode until the apply writes `Dark`.
-- `siri.enabled` lists `needs: [click]`, because turning Siri on needs the pane. The summary therefore says 1 setting needs a click, even when the profile turns Siri off.
+- `siri.enabled` lists `needs: [click]`, because turning Siri on needs the pane. The summary counts only click-only settings, so it says nothing about Siri.
 - The restore puts back only the 14 keys. A change made by hand to one of them during the journey is lost.

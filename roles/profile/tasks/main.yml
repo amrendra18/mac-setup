@@ -39,6 +39,7 @@
 - name: Build the work lists
   ansible.builtin.set_fact:
     profile_running_account: "{{ profile_id.stdout }}"
+    profile_run_mode: "{{ query('ansible.builtin.env', 'SSH_CONNECTION', 'SSH_CLIENT', 'SSH_TTY') | profile_mode(ansible_check_mode) }}"
     profile_own_work: "{{ profile_work.own }}"
     profile_other_work: "{{ profile_work.others }}"
     profile_machine_writes: "{{ profile_work.machine_writes }}"

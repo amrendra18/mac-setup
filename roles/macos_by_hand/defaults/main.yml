@@ -1,4 +1,4 @@
 ---
 macos_by_hand_items: []
-macos_by_hand_list: "{{ by_hand_list | default(false) }}"
+macos_by_hand_list: "{{ not profile_run_mode.ask }}"
 macos_by_hand_open: "{{ by_hand_open | default('/usr/bin/open') }}"

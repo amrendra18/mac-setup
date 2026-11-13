@@ -1,4 +1,4 @@
-summary: List mode prints one line for each of 3 click-only settings in the profile, calls open 0 times, and changes no Dock or Finder key.
+summary: by-hand.yml and site.yml with --check each list 3 click-only settings, call open 0 times, and change no Dock or Finder key.
 level: fast
 playbook: playbooks/by-hand.yml
 setup:
@@ -13,12 +13,24 @@ profile:
     network.bluetooth_power: false
 runs:
   - name: list
-    args: [-e, by_hand_list=true, -e, "by_hand_open={{ playbook_dir }}/../.local/by-hand-journey/open"]
+    args: [--check, -e, "by_hand_open={{ playbook_dir }}/../.local/by-hand-journey/open"]
     exit: 0
     recap: {changed: 0, failed: 0}
     output:
       - {pattern: "^ +msg: '?would open ", count: 3}
       - {pattern: "would open System Settings for network\\.bluetooth_power \\(Turn Bluetooth", count: 1}
+  - name: site-list
+    playbook: playbooks/site.yml
+    args: [--check, -e, "by_hand_open={{ playbook_dir }}/../.local/by-hand-journey/open"]
+    exit: 0
+    recap: {changed: 0, failed: 0}
+    output:
+      - {pattern: "^ +msg: '?would open ", count: 3}
+      - {pattern: "^TASK \\[macos_permissions : Take back each permission", count: 1}
+      - {pattern: "^TASK \\[profile : Show what happens next\\]", count: 1}
+      - {pattern: "(?s)^ +msg: '?would open .*^TASK \\[macos_permissions : Take back each permission", count: 0}
+      - {pattern: "(?s)^TASK \\[profile : Show what happens next\\].*^ +msg: '?would open ", count: 0}
+      - {pattern: "^ +- '?3 settings need a click: at the Mac", count: 1}
 cleanup:
   - test ! -e .local/by-hand-journey/open.log || { echo "list mode called open with $(head -n 1 .local/by-hand-journey/open.log)"; exit 1; }
   - >-

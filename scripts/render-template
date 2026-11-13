@@ -222,7 +222,7 @@ def render(settings):
         ),
         (
             "# Click-only settings. No script can set these. List one under default_settings or"
-            "\n# machine_settings, as its scope says, and playbooks/by-hand.yml walks you through it.",
+            "\n# machine_settings, as its scope says. A run at the Mac's screen walks you through it at the end.",
             None,
             "# ",
             lambda e: e["route"] == "by_hand",

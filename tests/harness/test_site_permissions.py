@@ -48,6 +48,7 @@ def check_run(
     open_body='echo "$@" >>"$0.log"',
     planted=PLANTED,
     play_vars=(),
+    playbook="playbooks/site.yml",
 ):
     with tempfile.TemporaryDirectory() as folder:
         work = Path(folder)
@@ -63,6 +64,7 @@ def check_run(
         switches = {
             "permissions_ls": str(work / "ls"),
             "permissions_open": str(work / "open"),
+            "by_hand_open": str(work / "open"),
             "ansible_become": False,
         }
         (work / "sidebar-helper").write_text("#!/bin/sh\nexit 99\n")
@@ -70,7 +72,7 @@ def check_run(
             yaml.safe_dump(
                 [
                     {
-                        "import_playbook": str(ROOT / "playbooks/site.yml"),
+                        "import_playbook": str(ROOT / playbook),
                         "vars": {
                             "macos_finder_sidebar_helper": str(work / "sidebar-helper"),
                             **dict(play_vars),
@@ -231,6 +233,11 @@ class StopInThisAccountOrMachinePlay(unittest.TestCase):
         )
         self.assertIn("Full Disk Access was on only for this run", done.stdout)
         self.assertRegex(done.stdout, "the run stopped early at Planted failure: ")
+        self.assertIn(
+            "msg: could not open the page; open System Settings > "
+            "Privacy & Security > Full Disk Access yourself",
+            " ".join(done.stdout.split()),
+        )
 
 
 class StopBeforeTheSettingRan(unittest.TestCase):
@@ -275,6 +282,117 @@ class FinderSidebarWithoutFolderAccess(unittest.TestCase):
             ),
             1,
         )
+
+
+CLICKS = {
+    "default_settings": {"appearance.icon_style": "dark"},
+    "machine_settings": {"network.bluetooth_power": False},
+}
+TAKE_BACK = (
+    "TASK [macos_permissions : Take back each permission this run turned on for itself]"
+)
+SUMMARY = "TASK [profile : Show what happens next]"
+LISTED_NOTE = (
+    "2 settings need a click: at the Mac's screen, "
+    "run playbooks/site.yml again or playbooks/by-hand.yml"
+)
+
+
+WALK_OPENS = [
+    "x-apple.systempreferences:com.apple.Appearance-Settings.extension",
+    "-b com.apple.systempreferences",
+]
+
+
+def between_take_back_and_summary(out):
+    return out[out.index(TAKE_BACK) : out.index(SUMMARY)]
+
+
+class ClickPagesAtTheEndOfACheckRun(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.done = check_run(CLICKS, OFF)
+        cls.out = cls.done.stdout
+
+    def test_the_run_ends_with_exit_0_and_opens_nothing(self):
+        self.assertEqual(self.done.returncode, 0, self.out + self.done.stderr)
+        self.assertEqual(self.done.opened, [])
+
+    def test_each_click_page_is_listed_after_the_take_back_and_before_the_summary(
+        self,
+    ):
+        listed = re.findall(r"(?m)^ +msg: '?would open ", self.out)
+        self.assertEqual(len(listed), 2)
+        self.assertEqual(
+            len(
+                re.findall(
+                    r"(?m)^ +msg: '?would open ",
+                    between_take_back_and_summary(self.out),
+                )
+            ),
+            2,
+        )
+
+    def test_the_summary_counts_the_listed_pages(self):
+        self.assertIn(LISTED_NOTE, " ".join(self.out.split()).replace("''", "'"))
+
+
+class ClickPagesAtTheScreen(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.done = check_run(
+            CLICKS,
+            OFF,
+            "macos_wallpaper",
+            planted=FAIL_ONLY,
+            play_vars={"macos_permissions_run_mode": AT_THE_SCREEN},
+        )
+        cls.out = cls.done.stdout
+
+    def test_each_page_opens_once(self):
+        self.assertEqual(self.done.opened, WALK_OPENS)
+        self.assertNotIn("could not open the page", self.out)
+
+    def test_each_page_is_walked_after_a_stop_and_before_the_summary(self):
+        walked = between_take_back_and_summary(self.out)
+        for setting_id in ("appearance.icon_style", "network.bluetooth_power"):
+            self.assertIn(
+                f"TASK [macos_by_hand : Wait while you choose {setting_id}]", walked
+            )
+        self.assertNotRegex(self.out, r"(?m)^ +msg: '?would open ")
+
+    def test_the_summary_reports_the_stop_and_no_click_left(self):
+        self.assertEqual(self.done.returncode, 2, self.out + self.done.stderr)
+        self.assertRegex(self.out, "the run stopped early at Planted failure: ")
+        self.assertNotIn("need a click", self.out)
+
+
+class ByHandCheckRun(unittest.TestCase):
+    def test_it_lists_each_page_and_opens_none(self):
+        done = check_run(CLICKS, OFF, playbook="playbooks/by-hand.yml")
+        self.assertEqual(done.returncode, 0, done.stdout + done.stderr)
+        self.assertEqual(len(re.findall(r"(?m)^ +msg: '?would open ", done.stdout)), 2)
+        self.assertNotIn("TASK [macos_by_hand : Wait while you choose", done.stdout)
+        self.assertEqual(done.opened, [])
+
+
+class AFailingOpenAtAClickPage(unittest.TestCase):
+    def test_the_walk_goes_on_and_the_summary_still_runs(self):
+        done = check_run(
+            CLICKS,
+            OFF,
+            open_body='echo "$@" >>"$0.log"; exit 1',
+            play_vars={"macos_permissions_run_mode": AT_THE_SCREEN},
+        )
+        self.assertEqual(done.returncode, 0, done.stdout + done.stderr)
+        self.assertEqual(done.opened, WALK_OPENS)
+        self.assertIn(SUMMARY, done.stdout)
+        self.assertEqual(recap(done.stdout)["failed"], 0)
+        for where in ("Appearance", "Bluetooth"):
+            self.assertIn(
+                f"msg: could not open the page; go to System Settings > {where} yourself",
+                " ".join(done.stdout.split()),
+            )
 
 
 if __name__ == "__main__":

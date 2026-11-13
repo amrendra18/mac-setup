@@ -6,18 +6,19 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "roles/macos_permissions/filter_plugins"))
+sys.path.insert(0, str(ROOT / "roles/profile/filter_plugins"))
 
 from permissions import (
     macos_permissions_app,
     macos_permissions_ask_lines,
     macos_permissions_list_line,
-    macos_permissions_mode,
     macos_permissions_notes,
     macos_permissions_blocked,
     macos_permissions_state,
     macos_permissions_take_back,
     macos_permissions_take_back_lines,
 )
+from profile import profile_mode
 
 TABLE = yaml.safe_load((ROOT / "settings/macos/permissions/table.yml").read_text())
 DISK = {
@@ -32,9 +33,9 @@ DESKTOP = {
     "settings": ["finder.sidebar_favorites"],
     "skips": ["finder.sidebar_favorites", "finder.sidebar_hide"],
 }
-SCREEN = macos_permissions_mode(["", "", ""], False)
-SSH = macos_permissions_mode(["192.0.2.1 50000 192.0.2.2 22", "", ""], False)
-CHECK = macos_permissions_mode(["", "", ""], True)
+SCREEN = profile_mode(["", "", ""], False)
+SSH = profile_mode(["192.0.2.1 50000 192.0.2.2 22", "", ""], False)
+CHECK = profile_mode(["", "", ""], True)
 NOT_PERMITTED = "ls: Library/Mail: Operation not permitted\n"
 
 
@@ -47,10 +48,10 @@ class Mode(unittest.TestCase):
         self.assertTrue(SCREEN["ask"])
         self.assertFalse(SSH["ask"])
         self.assertFalse(CHECK["ask"])
-        self.assertFalse(macos_permissions_mode(["", "", "/dev/ttys001"], False)["ask"])
+        self.assertFalse(profile_mode(["", "", "/dev/ttys001"], False)["ask"])
 
     def test_the_reason_names_ssh_before_check(self):
-        self.assertIn("over SSH", macos_permissions_mode(["x", "", ""], True)["reason"])
+        self.assertIn("over SSH", profile_mode(["x", "", ""], True)["reason"])
         self.assertIn("--check", CHECK["reason"])
         self.assertEqual(SCREEN["reason"], "")
 

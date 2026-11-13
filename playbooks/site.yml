@@ -175,7 +175,7 @@
           ansible.builtin.set_fact:
             site_stopped: "{{ ansible_failed_task.name }}: {{ ansible_failed_result.msg | default('no message') }}"
 
-- name: Take back permissions and summarize
+- name: Take back permissions, click through and summarize
   hosts: macs
   become: false
   gather_facts: false
@@ -192,6 +192,13 @@
       vars:
         macos_permissions_items: "{{ profile_permissions }}"
 
+    - name: Walk through the click-only pages of this account and the machine
+      ansible.builtin.include_role:
+        name: macos_by_hand
+      vars:
+        macos_by_hand_items: "{{ profile_by_hand }}"
+        macos_by_hand_list: "{{ not macos_permissions_run_mode.ask }}"
+
     - name: Summarize the run
       ansible.builtin.include_role:
         name: profile
@@ -199,3 +206,4 @@
       vars:
         profile_permission_notes: "{{ macos_permissions_summary }}"
         profile_stopped: "{{ site_stopped | default('') }}"
+        profile_walked: "{{ macos_permissions_run_mode.ask }}"

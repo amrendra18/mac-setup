@@ -11,19 +11,19 @@ Nothing runs in the background. You start `ansible-playbook` in Terminal. It run
 1. **The settings reference**, `settings/macos/*.yml`, one file per area. Each entry describes one setting. The section [The settings reference](#the-settings-reference) gives its fields. The permissions table, `settings/macos/permissions/table.yml`, describes each privacy permission a setting can need.
 2. **The profile**, your copy of `inventory/example/` in `.local/inventory/`. It holds `default_settings` for every account, an `accounts` list where each account may have settings of its own, and `machine_settings`. It holds no password.
 3. **The playbook**, `playbooks/site.yml`, which applies the profile in four plays.
-4. **The click-through**, `playbooks/by-hand.yml`, for settings only a person can change.
+4. **The click-through**, for settings only a person can change. It runs at the end of `playbooks/site.yml`, and `playbooks/by-hand.yml` runs it again on its own.
 5. **The template**, `inventory/example/TEMPLATE.yml`. `scripts/render-template` writes it from the reference.
 6. **The app catalog**, `apps/macos.yml`, the apps mac-setup can install and the facts each download must match.
 
 ## The plays
 
-`playbooks/site.yml` has four plays: "Permissions", "This account", "Machine and other accounts", and "Take back permissions and summarize". Only "Machine and other accounts" uses admin rights, so every admin step sits in one place. `scripts/check` finds that play by its name.
+`playbooks/site.yml` has four plays: "Permissions", "This account", "Machine and other accounts", and "Take back permissions, click through and summarize". Only "Machine and other accounts" uses admin rights, so every admin step sits in one place. `scripts/check` finds that play by its name.
 
 "Permissions" runs as you without admin rights:
 
 1. When the profile lists more than one Mac, the `profile` role reads this Mac's local hostname with `scutil --get LocalHostName`. It stops with one line when no entry has that name, and ends every other entry, so the later plays skip them too. The compare is case-sensitive.
 2. The `profile` role checks the whole profile against the reference and the catalog. A problem stops the run here, before any change.
-3. The `profile` role works out the permissions this run needs from your account's settings and the machine settings. A setting's `needs` names rows of the permissions table. A folder row counts only when the setting's value lists that folder or a folder inside it.
+3. The `profile` role works out the permissions this run needs from your account's settings and the machine settings. A setting's `needs` names rows of the permissions table. A folder row counts only when the setting's value lists that folder or a folder inside it. It also records whether the run sits at the Mac's screen: no `SSH_CONNECTION`, `SSH_CLIENT` or `SSH_TTY` is set, and the run is not `--check`. The permission asks and the click-through both follow that one record.
 4. `macos_permissions` tests each needed permission with `ls` of a protected folder: `~/Library/Mail` for Full Disk Access, and the folder itself for Desktop, Documents and Downloads. "Operation not permitted" means the permission is off. When `~/Library/Mail` does not exist, as on a fresh account, it lists `/Library/Application Support/com.apple.TCC` instead. That folder exists on every Mac, and listing it reads no file inside it.
 5. At the Mac's screen, it asks for each permission that is off. For Full Disk Access it opens the page, says what to turn on, waits for Return, and tests again. For a folder it says to click Allow, then reads the folder, which shows macOS's own dialog the first time. Over SSH (`SSH_CONNECTION`, `SSH_CLIENT` or `SSH_TTY` is set) or with `--check`, it asks for nothing and lists what it would ask. It skips the folder tests there, because a test read shows the dialog.
 6. "This account" and "Machine and other accounts" may not write a setting whose permission is still off. A command setting is read first. If it already matches, it is `ok`. If it would change, the module returns an Ansible skip. The Finder sidebar is set in one step, so a missing folder skips all three sidebar settings without a read.
@@ -44,14 +44,15 @@ Nothing runs in the background. You start `ansible-playbook` in Terminal. It run
 4. `macos_apps` installs the listed apps.
 5. `macos_defaults`, `macos_dock_apps`, `macos_wallpaper` and `macos_finder_sidebar` set each other account's settings, running as that account.
 
-"Take back permissions and summarize" runs as you without admin rights:
+"Take back permissions, click through and summarize" runs as you without admin rights:
 
-1. `macos_permissions` takes back each temporary permission that "Permissions" found off and you turned on. Today that is only Full Disk Access. It opens the page, says to turn the app off, waits for Return, and tests that it is off. A permission that was on before the run stays on.
-2. The `profile` role prints the summary, with one line per needed permission and one line per skipped setting. A permission that stayed off gets "every setting that needs it already matches" only when the run read each of those settings and found it matching. The role then fails the run with one `refused` line per refused setting or account. A skipped setting is not a refusal, so it leaves the exit code at 0.
+1. `macos_permissions` takes back each temporary permission that "Permissions" found off and you turned on. Today that is only Full Disk Access. It opens the page, says to turn the app off, waits for Return, and tests that it is off. A permission that was on before the run stays on. This step comes first, so a run you stop at a click page never leaves Full Disk Access on.
+2. `macos_by_hand` walks the click-only settings of your account and of the machine. For each one it opens the System Settings page, says what to choose, and waits for Return. It walks only when "Permissions" would ask, by the same rule: at the Mac's screen and without `--check`. Otherwise it prints one `would open` line per page and opens none.
+3. The `profile` role prints the summary, with one line per needed permission and one line per skipped setting. A permission that stayed off gets "every setting that needs it already matches" only when the run read each of those settings and found it matching. The role then fails the run with one `refused` line per refused setting or account. A skipped setting is not a refusal, so it leaves the exit code at 0. The summary counts the click-only settings this run did not walk: your account's and the machine's when it only listed them, and every other account's, which that account walks when it runs mac-setup while signed in.
 
-"This account" and "Machine and other accounts" each wrap their work in one block. An unexpected error, such as a wrong admin password or a failed helper build, is recorded instead of ending the run. "Machine and other accounts" then does nothing, and "Take back permissions and summarize" still takes back Full Disk Access. The summary ends with "the run stopped early at" the failed task and its message, and the run exits with code 2. Only a run stopped with Control-C skips the take-back.
+"This account" and "Machine and other accounts" each wrap their work in one block. An unexpected error, such as a wrong admin password or a failed helper build, is recorded instead of ending the run. "Machine and other accounts" then does nothing, and "Take back permissions, click through and summarize" still takes back Full Disk Access and walks the click pages. The summary ends with "the run stopped early at" the failed task and its message, and the run exits with code 2. Only a run stopped with Control-C skips the take-back. Control-C at a click page skips the summary, but Full Disk Access is already off by then, because the take-back comes first.
 
-`playbooks/by-hand.yml` runs the `profile` role, then `macos_by_hand` for the click-only settings of your account and of the machine.
+`playbooks/by-hand.yml` runs the `profile` role, then `macos_by_hand` for the click-only settings of your account and of the machine, to walk the pages again without the rest of the run. It walks or lists by the same rule as `site.yml`.
 
 ## The roles
 
@@ -256,7 +257,7 @@ The [verification map](../verify/features/README.md) describes the harness in fu
 | 3 | M2 | the full settings reference and the template | All researched settings load, and the template lists each one. |
 | 4 | M3 | account settings by area | Dock, Finder, input, system UI and privacy preferences apply and read back. |
 | 5 | M4 | machine settings | Admin settings and command-line tools apply and read back. |
-| 6 | M5 | guided click-through | Each click-only page opens with what to choose and 0 preference writes. |
+| 6 | M5 | guided click-through at the end of a run | At the Mac's screen, each click-only page opens at the end of `playbooks/site.yml` with what to choose and 0 preference writes. Over SSH, each page is listed and none opens. |
 | 7 | M6 | Dock apps and a black desktop | The Dock holds only the listed apps, and the desktop is black. |
 | 8 | M7 | the remaining settings | Every setting has a way to apply it or a written reason why none is safe. |
 | 9 | M8 | the new-Mac journey | A fresh admin account follows the README end to end with one command. |

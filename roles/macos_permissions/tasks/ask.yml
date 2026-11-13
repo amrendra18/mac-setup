@@ -6,9 +6,15 @@
 - name: Open the page for {{ macos_permissions_item.name }}
   ansible.builtin.command:
     argv: ["{{ macos_permissions_open }}", "{{ macos_permissions_item.link }}"]
+  register: macos_permissions_opened
   changed_when: false
   failed_when: false
   check_mode: false
+
+- name: Say the page did not open for {{ macos_permissions_item.name }}
+  ansible.builtin.debug:
+    msg: "could not open the page; open {{ macos_permissions_item.where }} yourself"
+  when: macos_permissions_opened.rc != 0
 
 - name: Wait while you change {{ macos_permissions_item.name }}
   ansible.builtin.pause:

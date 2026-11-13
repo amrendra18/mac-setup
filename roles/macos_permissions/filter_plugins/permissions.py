@@ -25,23 +25,6 @@ def _sentence(text):
     return text[0].upper() + text[1:] + "."
 
 
-def macos_permissions_mode(ssh_values, check_mode):
-    if any(ssh_values):
-        return {
-            "ask": False,
-            "why": "ssh",
-            "reason": "this run asks for no permission, because it runs over SSH, "
-            "where nobody at the Mac's screen can answer",
-        }
-    if check_mode:
-        return {
-            "ask": False,
-            "why": "check",
-            "reason": "this run asks for no permission, because it is a check run (--check)",
-        }
-    return {"ask": True, "why": "screen", "reason": ""}
-
-
 def macos_permissions_app(term_program):
     return APPS.get(term_program, "the app you run mac-setup in")
 
@@ -172,7 +155,6 @@ def macos_permissions_notes(permissions, results, outcomes, mode, app):
 class FilterModule:
     def filters(self):
         return {
-            "macos_permissions_mode": macos_permissions_mode,
             "macos_permissions_app": macos_permissions_app,
             "macos_permissions_state": macos_permissions_state,
             "macos_permissions_ask_lines": macos_permissions_ask_lines,

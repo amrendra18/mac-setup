@@ -60,7 +60,8 @@ def counts(**fields):
     return {
         "after_logout": 0,
         "timing_not_measured": 0,
-        "need_click": 0,
+        "click_here": 0,
+        "click_elsewhere": 0,
         "own_session": 0,
         **fields,
     }
@@ -332,13 +333,6 @@ class ProfileProblems(unittest.TestCase):
         allowed = {**risky, "allow_lockout_risk": True}
         self.assertEqual(profile_problems(allowed, TEST_FILES), [])
 
-    def test_a_setting_that_needs_a_click_is_counted(self):
-        files = {"t.yml": {"t.siri": entry(needs=["click"])}}
-        work = profile_work(
-            {"default_settings": {"t.siri": True}}, files, "runner", TABLE
-        )
-        self.assertEqual(work["counts"]["need_click"], 1)
-
     def test_not_yet_setting_is_refused_with_its_reason(self):
         problems = profile_problems(
             {"default_settings": {"test.later": True}}, TEST_FILES
@@ -534,7 +528,6 @@ class ProfileProblems(unittest.TestCase):
 
     def test_run_switches_are_allowed(self):
         profile = {
-            "by_hand_list": True,
             "by_hand_open": "/usr/bin/true",
             "macos_apps_downloads": "/tmp/downloads",
             "macos_apps_applications": "/tmp/Applications",
@@ -726,22 +719,19 @@ class ProfileWork(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            [(i["account"], i["id"], i["choose"]) for i in work["by_hand"]],
+            [(i["id"], i["choose"]) for i in work["by_hand"]],
             [
-                ("setuptest1", "test.click", "A made-up setting: on"),
-                ("runner", "test.click", "A made-up setting: on"),
-                (
-                    "machine",
-                    "test.machine_click",
-                    "A made-up setting: the way you want",
-                ),
+                ("test.click", "A made-up setting: on"),
+                ("test.machine_click", "A made-up setting: the way you want"),
             ],
         )
         self.assertEqual(
-            work["by_hand"][2]["link"],
+            work["by_hand"][1]["link"],
             "x-apple.systempreferences:com.example.bluetooth",
         )
-        self.assertEqual(work["counts"]["need_click"], 3)
+        self.assertEqual(
+            (work["counts"]["click_here"], work["counts"]["click_elsewhere"]), (2, 1)
+        )
 
     def test_unmeasured_timing_is_not_counted_as_a_logout(self):
         profile = {"default_settings": {"test.logout": True, "test.unmeasured": True}}
@@ -762,14 +752,14 @@ class ProfileWork(unittest.TestCase):
         work = profile_work(profile, TEST_FILES, "runner", TABLE)
         self.assertEqual(
             work["counts"],
-            counts(after_logout=4, need_click=2),
+            counts(after_logout=4, click_here=1, click_elsewhere=1),
         )
 
 
 class ProfileSummary(unittest.TestCase):
     def test_notes_and_refused_lines(self):
         summary = profile_summary(
-            counts(after_logout=3, need_click=1),
+            counts(after_logout=3, click_here=1),
             [
                 {
                     "account": "runner",
@@ -811,7 +801,9 @@ class ProfileSummary(unittest.TestCase):
         self.assertIn("setuptest2", summary["notes"][1])
         self.assertIn(" 3 settings", summary["notes"][2])
         self.assertEqual(
-            summary["notes"][3], "1 setting needs a click: run playbooks/by-hand.yml"
+            summary["notes"][3],
+            "1 setting needs a click: at the Mac's screen, "
+            "run playbooks/site.yml again or playbooks/by-hand.yml",
         )
 
     def test_check_run_names_each_account_it_skipped(self):
@@ -872,7 +864,7 @@ class ProfileSummary(unittest.TestCase):
 
     def test_a_wallpaper_waiting_for_another_account_is_a_note(self):
         summary = profile_summary(
-            counts(need_click=2),
+            counts(click_here=2),
             [],
             [],
             ["setuptest1"],
@@ -883,7 +875,8 @@ class ProfileSummary(unittest.TestCase):
                 "notes": [
                     "the desktop picture for setuptest1 is set at its next run "
                     "while it is signed in",
-                    "2 settings need a click: run playbooks/by-hand.yml",
+                    "2 settings need a click: at the Mac's screen, "
+                    "run playbooks/site.yml again or playbooks/by-hand.yml",
                 ],
                 "refused": [],
             },
@@ -913,7 +906,7 @@ class ProfileSummary(unittest.TestCase):
 
     def test_permission_notes_come_first(self):
         summary = profile_summary(
-            counts(need_click=1),
+            counts(click_here=1),
             [],
             [],
             [],
@@ -924,7 +917,8 @@ class ProfileSummary(unittest.TestCase):
             [
                 "Full Disk Access: off",
                 "skipped time.zone: needs Full Disk Access",
-                "1 setting needs a click: run playbooks/by-hand.yml",
+                "1 setting needs a click: at the Mac's screen, "
+                "run playbooks/site.yml again or playbooks/by-hand.yml",
             ],
         )
 
@@ -951,6 +945,32 @@ class ProfileSummary(unittest.TestCase):
                 "refused dock.tile_size for runner: Type mismatch.",
             ],
         )
+
+    def test_only_the_click_pages_this_run_did_not_walk_are_counted(self):
+        files = {**TEST_FILES, "siri.yml": {"siri.enabled": entry(needs=["click"])}}
+        profile = {
+            "default_settings": {"siri.enabled": False, "test.click": True},
+            "accounts": [account("setuptest1")],
+        }
+        work_counts = profile_work(profile, files, "runner", TABLE)["counts"]
+        other = (
+            "1 setting for other accounts needs a click: "
+            "sign in as each account and run mac-setup there"
+        )
+        for walked, expected in [
+            (True, [other]),
+            (
+                False,
+                [
+                    "1 setting needs a click: at the Mac's screen, "
+                    "run playbooks/site.yml again or playbooks/by-hand.yml",
+                    other,
+                ],
+            ),
+        ]:
+            with self.subTest(walked=walked):
+                notes = profile_summary(work_counts, [], [], [], walked=walked)["notes"]
+                self.assertEqual([n for n in notes if "click" in n], expected)
 
     def test_settings_for_another_session_are_a_note(self):
         summary = profile_summary(

@@ -17,7 +17,6 @@ PROFILE_KEYS = [
     "virustotal_api_key",
 ]
 RUN_SWITCHES = {
-    "by_hand_list",
     "by_hand_open",
     "macos_apps_downloads",
     "macos_apps_applications",
@@ -566,10 +565,9 @@ def _choose(entry, value):
     return f"{setting}: {'the way you want' if value == 'by_hand' else _shown(value)}"
 
 
-def _by_hand(account, settings, reference):
+def _by_hand(settings, reference):
     return [
         {
-            "account": account,
             "id": setting_id,
             "where": reference[setting_id]["where"],
             "link": reference[setting_id]["link"],
@@ -652,16 +650,8 @@ def profile_work(profile, files, running_account, permission_table):
         for name, account_settings in settings.items()
         if name != running_account
     ]
-    by_hand = [
-        item
-        for name, account_settings in [*settings.items(), ("machine", machine)]
-        for item in _by_hand(name, account_settings, reference)
-    ]
-    clicks_elsewhere = sum(
-        reference[setting_id]["route"] != "by_hand"
-        and "click" in reference[setting_id]["needs"]
-        for group in [*settings.values(), machine]
-        for setting_id in group
+    by_hand = _by_hand(settings[running_account], reference) + _by_hand(
+        machine, reference
     )
     own_timing = {write["id"]: write["takes_effect"] for write in own["writes"]}
     return {
@@ -690,7 +680,12 @@ def profile_work(profile, files, running_account, permission_table):
             "after_logout": list(own_timing.values()).count("logout")
             + sum(len(_written(other)) for other in others),
             "timing_not_measured": list(own_timing.values()).count("not measured"),
-            "need_click": len(by_hand) + clicks_elsewhere,
+            "click_here": len(by_hand),
+            "click_elsewhere": sum(
+                len(_routed(account_settings, reference, "by_hand"))
+                for name, account_settings in settings.items()
+                if name != running_account
+            ),
             "own_session": sum(len(other["commands"]) for other in others),
         },
     }
@@ -713,6 +708,7 @@ def profile_summary(
     waiting_wallpaper,
     permission_notes=(),
     stopped="",
+    walked=False,
 ):
     refused = (
         ([f"the run stopped early at {stopped}"] if stopped else [])
@@ -744,7 +740,8 @@ def profile_summary(
             for name in waiting_wallpaper
         ]
     )
-    after_logout, click = counts["after_logout"], counts["need_click"]
+    after_logout = counts["after_logout"]
+    click_here = 0 if walked else counts["click_here"]
     if after_logout:
         notes.append(f"log out and back in to see {_settings(after_logout)}")
     unmeasured = counts["timing_not_measured"]
@@ -759,12 +756,35 @@ def profile_summary(
             f"{'runs' if counts['own_session'] == 1 else 'run'} in the account's "
             "own session: sign in as each account and run mac-setup there"
         )
-    if click:
+    if click_here:
         notes.append(
-            f"{_settings(click)} {'needs' if click == 1 else 'need'} a click: "
-            "run playbooks/by-hand.yml"
+            f"{_settings(click_here)} {'needs' if click_here == 1 else 'need'} a click: "
+            "at the Mac's screen, run playbooks/site.yml again or playbooks/by-hand.yml"
+        )
+    if counts["click_elsewhere"]:
+        notes.append(
+            f"{_settings(counts['click_elsewhere'])} for other accounts "
+            f"{'needs' if counts['click_elsewhere'] == 1 else 'need'} a click: "
+            "sign in as each account and run mac-setup there"
         )
     return {"notes": notes, "refused": refused}
+
+
+def profile_mode(ssh_values, check_mode):
+    if any(ssh_values):
+        return {
+            "ask": False,
+            "why": "ssh",
+            "reason": "this run asks for no permission, because it runs over SSH, "
+            "where nobody at the Mac's screen can answer",
+        }
+    if check_mode:
+        return {
+            "ask": False,
+            "why": "check",
+            "reason": "this run asks for no permission, because it is a check run (--check)",
+        }
+    return {"ask": True, "why": "screen", "reason": ""}
 
 
 class FilterModule:
@@ -773,4 +793,5 @@ class FilterModule:
             "profile_problems": profile_problems,
             "profile_work": profile_work,
             "profile_summary": profile_summary,
+            "profile_mode": profile_mode,
         }

@@ -15,7 +15,7 @@ The example file that ships with mac-setup makes these main changes, among other
 5. **Machine settings.** Firewall on and blocking all incoming connections, with stealth mode on and no app allowed in automatically, Wi-Fi on, display sleep after 10 minutes, system sleep after 30 minutes, and the time zone you choose.
 6. **Accounts.** mac-setup creates each extra account you list, admin or standard, with its own settings. The example lists none.
 7. **Apps.** Apps you pick from a short list, such as Firefox or Sublime Text, each checked before it is copied to `/Applications`. The example installs none.
-8. **A guided walk through the clicks.** Apple lets only a person grant privacy permissions, such as camera or screen recording. For those settings, mac-setup opens the right System Settings page and tells you what to choose. The example turns Location Services off this way.
+8. **A guided walk through the clicks.** Apple lets only a person grant privacy permissions, such as camera or screen recording. For those settings, mac-setup opens the right System Settings page at the end of the run and tells you what to choose. The example turns Location Services off this way.
 
 mac-setup knows 288 macOS settings. A run sets 218 of them, 40 need your click, and 30 it cannot set yet. A setting counts as proven on a macOS version once a test applied it on a real Mac and read it back. 66 settings are proven on macOS 27.2.1:
 
@@ -66,7 +66,7 @@ You also need a GitHub SSH key that can read this repository. Follow GitHub's gu
    .local/venv/bin/ansible-playbook playbooks/site.yml -K --check
    ```
 
-   `-K` makes Ansible ask once for your admin password, shown as `BECOME password:`. Each setting that would change prints a `changed` line. The preview creates no account and asks no account password. It asks for no permission either, and lists what step 5 would ask for.
+   `-K` makes Ansible ask once for your admin password, shown as `BECOME password:`. Each setting that would change prints a `changed` line. The preview creates no account and asks no account password. It asks for no permission either, and lists what step 5 would ask for. It opens no page, and prints one `would open` line for each click-only page step 5 would open.
 
 5. Apply the changes, then run the same command once more.
 
@@ -79,9 +79,14 @@ You also need a GitHub SSH key that can read this repository. Follow GitHub's gu
    1. **Full Disk Access for Terminal**, which the time zone needs. The run opens the Full Disk Access page, asks you to turn on Terminal, and waits until you press Return. Full Disk Access lets every command in Terminal read every file. So at the end the run opens the page again and asks you to turn Terminal off. If Terminal had it before the run, the run leaves it on. If a step fails, the run still asks you to turn Terminal off before it ends. If you stop the run with Control-C, turn Terminal off there yourself.
    2. **Desktop and Downloads access**, which the Finder sidebar needs. macOS asks whether Terminal may use each folder. Click Allow. Terminal keeps this access.
 
-   If a permission stays off, the run skips each setting that needs it and would change, and names each one in the summary. Over SSH, the run asks for nothing, because nobody at the screen can answer. It skips the settings that need Full Disk Access, such as the time zone, and lists the permissions it would ask for. Over SSH it does not test folder access, because the test would show macOS's dialog. So it runs the Finder sidebar step anyway. If the SSH session has no access to a listed folder, macOS refuses the step, and the run ends with one `refused` line and exit code 2.
+   Then the run changes your settings. If the profile lists a new account, the run still asks that account's password, as the note after step 5 says. Otherwise you can walk away until it ends. At the end it needs you again:
 
-   You see the Dock and Finder change. The run ends with a short summary. It says how many settings show only after you log out and back in, and how many need a click in System Settings. It also counts the settings whose timing is not measured, which may need a logout or an app restart to show. The last line, called the recap, shows `failed=0` when everything worked. In the second run, every setting prints `ok` and the recap shows `changed=0`, because the Mac already matches. It asks no account password, because the accounts exist.
+   1. If this run turned on Full Disk Access, it opens that page and asks you to turn Terminal off, as item 1 above says.
+   2. It walks you through the click-only settings of your account and of the machine. For each one, it opens the System Settings page and prints where to go and what to choose. For a page with no known link, it opens System Settings itself, and you go to the place it prints. Make the choice and press Return. The example has one such page, Location Services, with "Let apps and system services find where this Mac is: off".
+
+   If a permission stays off, the run skips each setting that needs it and would change, and names each one in the summary. Over SSH, the run asks for nothing and opens no page, because nobody at the screen can answer. It prints one `would open` line for each click-only page instead. It skips the settings that need Full Disk Access, such as the time zone, and lists the permissions it would ask for. Over SSH it does not test folder access, because the test would show macOS's dialog. So it runs the Finder sidebar step anyway. If the SSH session has no access to a listed folder, macOS refuses the step, and the run ends with one `refused` line and exit code 2.
+
+   You see the Dock and Finder change. The run ends with a short summary. It says how many settings show only after you log out and back in. It also says how many click-only settings this run did not walk you through, such as another account's, and what to do for them. It counts the settings whose timing is not measured, which may need a logout or an app restart to show. The last line, called the recap, shows `failed=0` when everything worked. In the second run, every setting prints `ok` and the recap shows `changed=0`, because the Mac already matches. It asks no account password, because the accounts exist. It opens the click-only pages again, so press Return at each one.
 
 If the profile lists accounts that do not exist yet, the run asks each new account's password once, with typing hidden. mac-setup never stores a password.
 
@@ -149,13 +154,17 @@ A new account has no secure token, the macOS right that lets an account unlock a
 
 ### Settings only a person can click
 
-The template lists these settings under "Click-only settings". List one in the profile like any other, for example `network.bluetooth_power: false` under `machine_settings`. Then, while you sit at the Mac, run:
+The template lists these settings under "Click-only settings". List one in the profile like any other, for example `network.bluetooth_power: false` under `machine_settings`.
+
+A run of `playbooks/site.yml` at the Mac's screen walks you through them at its end, after it asks you to turn Terminal off if this run turned on Full Disk Access. For each click-only setting of your account and of the machine, it opens the System Settings page, prints where to go and what to choose (such as "Turn Bluetooth on or off: off"), and waits until you press Return. For a page with no known link, such as Bluetooth, it opens System Settings itself, and you go to the place it prints. It changes nothing itself. Over SSH or with `--check`, it opens no page and prints one `would open` line per page.
+
+To walk the pages again later without the rest of the run, sit at the Mac and run:
 
 ```sh
 .local/venv/bin/ansible-playbook playbooks/by-hand.yml
 ```
 
-For each click-only setting of your account and of the machine, it opens the System Settings page, prints what to choose (such as "Turn Bluetooth on or off: off"), and waits until you press Return. It changes nothing itself. Add `-e by_hand_list=true` to list the pages without opening them. Another account's click-only settings appear when that person runs the playbook while signed in.
+Over SSH or with `--check`, it lists the pages without opening them, by the same rule as `site.yml`. Another account's click-only settings appear when that person runs mac-setup while signed in.
 
 ### Change a setting back
 

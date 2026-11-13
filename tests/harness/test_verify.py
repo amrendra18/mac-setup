@@ -295,6 +295,59 @@ class Harness(unittest.TestCase):
         self.assertIn("dock.show_recents: unset", profiles[1])
         self.assertIn("dock.show_recents: false", profiles[2])
 
+    def test_a_run_playbook_replaces_the_journey_playbook_for_that_run_only(self):
+        self.journey(
+            {
+                "summary": "s",
+                "playbook": "playbooks/by-hand.yml",
+                "runs": [
+                    {"name": "a", "exit": 0},
+                    {"name": "b", "exit": 0, "playbook": "playbooks/site.yml"},
+                ],
+            },
+            [{}, {}],
+        )
+        self.assertEqual(
+            [c["args"][2] for c in self.recorded()],
+            ["playbooks/by-hand.yml", "playbooks/site.yml"],
+        )
+
+    def test_the_doctor_checks_every_playbook_of_a_journey_in_one_check(self):
+        galaxy = self.bin / "ansible-galaxy"
+        galaxy.write_text("#!/bin/sh\necho '{}'\n")
+        galaxy.chmod(0o755)
+        self.verify.sh = lambda argv, **kwargs: subprocess.CompletedProcess(argv, 0, "")
+        for second, ok in [
+            ("playbooks/site.yml", True),
+            ("playbooks/missing.yml", False),
+        ]:
+            with self.subTest(second):
+                journey = self.verify.parse_journey(
+                    "test",
+                    {
+                        "summary": "s",
+                        "playbook": "playbooks/by-hand.yml",
+                        "runs": [
+                            {"name": "a", "exit": 0},
+                            {"name": "b", "exit": 0, "playbook": second},
+                        ],
+                    },
+                    "test journey",
+                )
+                checks = [
+                    c for c in self.verify.doctor([journey]) if "playbook" in c["check"]
+                ]
+                self.assertEqual(
+                    checks,
+                    [
+                        {
+                            "check": "test playbook",
+                            "ok": ok,
+                            "detail": f"playbooks/by-hand.yml, {second}",
+                        }
+                    ],
+                )
+
     def test_run_reads_are_checked_after_that_run(self):
         result = self.journey(
             {

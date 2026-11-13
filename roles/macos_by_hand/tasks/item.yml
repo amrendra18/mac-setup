@@ -2,7 +2,15 @@
 - name: Open the page for {{ macos_by_hand_item.id }}
   ansible.builtin.command:
     argv: "{{ [macos_by_hand_open] + ([macos_by_hand_item.link] if macos_by_hand_item.link else ['-b', 'com.apple.systempreferences']) }}"
+  register: macos_by_hand_opened
   changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Say the page did not open for {{ macos_by_hand_item.id }}
+  ansible.builtin.debug:
+    msg: "could not open the page; go to {{ macos_by_hand_item.where }} yourself"
+  when: macos_by_hand_opened.rc != 0
 
 - name: Say what to choose for {{ macos_by_hand_item.id }}
   ansible.builtin.debug:
