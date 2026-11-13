@@ -1,7 +1,7 @@
 ---
 - name: List the pages this run would open
   ansible.builtin.debug:
-    msg: "would open {{ macos_by_hand_item.link or 'System Settings' }} for {{ macos_by_hand_item.id }} ({{ macos_by_hand_item.choose }})"
+    msg: "would open {{ macos_by_hand_item.link }} for {{ macos_by_hand_item.id }} ({{ macos_by_hand_item.choose }})"
   loop: "{{ macos_by_hand_items }}"
   loop_control:
     loop_var: macos_by_hand_item

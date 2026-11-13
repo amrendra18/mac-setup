@@ -6,7 +6,6 @@ Some settings have no script path: privacy permissions and panes that only take 
 
 - `by-hand-list` prints one `would open` line per item and opens no page.
 - `by-hand-walk` opens each item's page with `/usr/bin/open`, prints the page and what to choose, for example "Turn Bluetooth on or off: off", and waits for Return.
-- `by-hand-settings-home` opens System Settings itself with `open -b com.apple.systempreferences` when an item's `link` is `""`.
 - `by-hand-site-list` makes `site.yml` with `--check` print one `would open` line per item after the take-back and before the summary, open no page, and count the listed items in the summary.
 
 ## How to get to it (user POV)
@@ -25,7 +24,7 @@ Preconditions:
 - The profile check accepts the run-time switch `by_hand_open`.
 
 - **Setup.** The journey writes a stand-in for `open` at `.local/by-hand-journey/open`, which records each call in `open.log` next to it. It saves `defaults export` of `com.apple.dock` and `com.apple.finder` as a sample of domains a stray write would touch.
-- **List.** Run `ansible-playbook playbooks/by-hand.yml --check` with the stand-in as `by_hand_open`. The profile lists `notifications.per_app` and `appearance.icon_style` for the account and `network.bluetooth_power` for the machine. Exit 0, recap `changed=0 failed=0`, 3 `would open` lines, one per setting, and the line `would open System Settings for network.bluetooth_power (Turn Bluetooth on or off: off)`, because that setting has no known page.
+- **List.** Run `ansible-playbook playbooks/by-hand.yml --check` with the stand-in as `by_hand_open`. The profile lists `notifications.per_app` and `appearance.icon_style` for the account and `network.bluetooth_power` for the machine. Exit 0, recap `changed=0 failed=0`, 3 `would open` lines, one per setting, and the line `would open x-apple.systempreferences:com.apple.BluetoothSettings for network.bluetooth_power (Turn Bluetooth on or off: off)`, which the output wraps before `(Turn`.
 - **Site list.** Run `ansible-playbook playbooks/site.yml --check` with the stand-in as `by_hand_open`. Exit 0, recap `changed=0 failed=0`, 3 `would open` lines, the take-back task and the summary task once each, no `would open` line before the take-back task and none after the summary task, and the summary line `3 settings need a click: at the Mac's screen, ...`.
 - **Proof.** The cleanup finds no `open.log`, so neither run called `open`. It exports both domains again and requires each to equal its saved export byte for byte.
 

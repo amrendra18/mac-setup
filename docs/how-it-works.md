@@ -129,7 +129,7 @@ dock.position:
 | 4 | `wallpaper` | none | Sets the desktop picture. |
 | 5 | `finder_sidebar` | none | Sets the Finder sidebar. Values are `paths`, `bool` or a `list`. |
 | 6 | `apps` | none | Installs apps from the catalog. Values are `catalog_ids`. |
-| 7 | `by_hand` | `link`, an `x-apple.systempreferences:` URL or `""` | Opens the System Settings page for a person to click. |
+| 7 | `by_hand` | `link`, an `x-apple.systempreferences:` URL | Opens the System Settings page for a person to click. |
 | 8 | `not_yet` | none | Nothing yet. The profile check refuses the setting. |
 
 ### The permissions table

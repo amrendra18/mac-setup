@@ -375,10 +375,10 @@ def entry_problems(entry):
         if not _line(entry["where"]):
             problems.append("where must name the System Settings page")
         link = entry["link"]
-        if not isinstance(link, str) or not (
-            link == "" or link.startswith("x-apple.systempreferences:")
+        if not isinstance(link, str) or not link.startswith(
+            "x-apple.systempreferences:"
         ):
-            problems.append('link must be an x-apple.systempreferences: URL or ""')
+            problems.append("link must be an x-apple.systempreferences: URL")
     if route == "defaults":
         writes = entry["writes"]
         if not isinstance(writes, list) or not writes:
@@ -831,6 +831,11 @@ BROKEN = [
         "by_hand without link",
         lambda e: (e.pop("writes"), e.update(route="by_hand")),
         "missing field link",
+    ),
+    (
+        "by_hand with an empty link",
+        lambda e: (e.pop("writes"), e.update(route="by_hand", link="")),
+        "link must be an x-apple.systempreferences: URL",
     ),
     ("no default", lambda e: e.update(macos_default=None), "macos_default must be"),
     (

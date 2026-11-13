@@ -51,7 +51,6 @@ def entry(**fields):
         "lockout_risk": False,
         "summary": "A made-up setting.",
         "where": "System Settings > Example",
-        "link": "",
     }
     return {**base, **fields}
 
@@ -76,7 +75,11 @@ TEST_FILES = {
         "test.label": entry(values={"type": "text", "pattern": "[A-Z][a-z]+"}),
         "test.logout": entry(takes_effect="logout"),
         "test.unmeasured": entry(takes_effect="not measured"),
-        "test.click": entry(route="by_hand", writes=[]),
+        "test.click": entry(
+            route="by_hand",
+            link="x-apple.systempreferences:com.example.click",
+            writes=[],
+        ),
         "test.machine_click": entry(
             scope="machine",
             route="by_hand",

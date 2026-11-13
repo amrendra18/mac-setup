@@ -175,7 +175,7 @@ network.bluetooth_power:
   needs: [click]
   lockout_risk: false
   where: System Settings > Bluetooth
-  link: ""
+  link: x-apple.systempreferences:com.apple.BluetoothSettings
   proven_on: {}
   not_yet_reason: ""
   notes: macOS has no supported command to turn Bluetooth on or

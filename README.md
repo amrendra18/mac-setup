@@ -82,7 +82,7 @@ You also need a GitHub SSH key that can read this repository. Follow GitHub's gu
    Then the run changes your settings. If the profile lists a new account, the run still asks that account's password, as the note after step 5 says. Otherwise you can walk away until it ends. At the end it needs you again:
 
    1. If this run turned on Full Disk Access, it opens that page and asks you to turn Terminal off, as item 1 above says.
-   2. It walks you through the click-only settings of your account and of the machine. For each one, it opens the System Settings page and prints where to go and what to choose. For a page with no known link, it opens System Settings itself, and you go to the place it prints. Make the choice and press Return. The example has one such page, Location Services, with "Let apps and system services find where this Mac is: off".
+   2. It walks you through the click-only settings of your account and of the machine. For each one, it opens the System Settings page and prints where to go and what to choose. Make the choice and press Return. The example has one click-only page, Location Services, with "Let apps and system services find where this Mac is: off".
 
    If a permission stays off, the run skips each setting that needs it and would change, and names each one in the summary. Over SSH, the run asks for nothing and opens no page, because nobody at the screen can answer. It prints one `would open` line for each click-only page instead. It skips the settings that need Full Disk Access, such as the time zone, and lists the permissions it would ask for. Over SSH it does not test folder access, because the test would show macOS's dialog. So it runs the Finder sidebar step anyway. If the SSH session has no access to a listed folder, macOS refuses the step, and the run ends with one `refused` line and exit code 2.
 
@@ -156,7 +156,7 @@ A new account has no secure token, the macOS right that lets an account unlock a
 
 The template lists these settings under "Click-only settings". List one in the profile like any other, for example `network.bluetooth_power: false` under `machine_settings`.
 
-A run of `playbooks/site.yml` at the Mac's screen walks you through them at its end, after it asks you to turn Terminal off if this run turned on Full Disk Access. For each click-only setting of your account and of the machine, it opens the System Settings page, prints where to go and what to choose (such as "Turn Bluetooth on or off: off"), and waits until you press Return. For a page with no known link, such as Bluetooth, it opens System Settings itself, and you go to the place it prints. It changes nothing itself. Over SSH or with `--check`, it opens no page and prints one `would open` line per page.
+A run of `playbooks/site.yml` at the Mac's screen walks you through them at its end, after it asks you to turn Terminal off if this run turned on Full Disk Access. For each click-only setting of your account and of the machine, it opens the System Settings page, prints where to go and what to choose (such as "Turn Bluetooth on or off: off"), and waits until you press Return. It changes nothing itself. Over SSH or with `--check`, it opens no page and prints one `would open` line per page.
 
 To walk the pages again later without the rest of the run, sit at the Mac and run:
 

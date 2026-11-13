@@ -1,7 +1,7 @@
 ---
 - name: Open the page for {{ macos_by_hand_item.id }}
   ansible.builtin.command:
-    argv: "{{ [macos_by_hand_open] + ([macos_by_hand_item.link] if macos_by_hand_item.link else ['-b', 'com.apple.systempreferences']) }}"
+    argv: ["{{ macos_by_hand_open }}", "{{ macos_by_hand_item.link }}"]
   register: macos_by_hand_opened
   changed_when: false
   failed_when: false

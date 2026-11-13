@@ -300,7 +300,7 @@ LISTED_NOTE = (
 
 WALK_OPENS = [
     "x-apple.systempreferences:com.apple.Appearance-Settings.extension",
-    "-b com.apple.systempreferences",
+    "x-apple.systempreferences:com.apple.BluetoothSettings",
 ]
 
 

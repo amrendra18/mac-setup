@@ -222,7 +222,7 @@ lock_screen.password_after:
   needs: [click]
   lockout_risk: false
   where: System Settings > Lock Screen
-  link: ""
+  link: x-apple.systempreferences:com.apple.Lock-Screen-Settings.extension
   proven_on: {}
   not_yet_reason: ""
   notes: sysadminctl asks for the account's own password, so a

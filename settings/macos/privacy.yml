@@ -330,7 +330,7 @@ privacy.location_services:
   route: by_hand
   values: {type: bool}
   macos_default: not measured
-  link: ""
+  link: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_LocationServices
   takes_effect: live
   needs: [click]
   lockout_risk: false
