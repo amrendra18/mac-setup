@@ -1,0 +1,6 @@
+---
+- name: Record whether each setting without its permission was skipped or already matched
+  ansible.builtin.set_fact:
+    macos_permissions_outcomes: >-
+      {{ macos_permissions_outcomes | default({})
+      | combine(dict(macos_permissions_record_ids | product([macos_permissions_record_outcome]))) }}

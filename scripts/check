@@ -170,16 +170,26 @@ def keys(node, path):
         for i, value in enumerate(node):
             yield from keys(value, path + [i])
 
+SITE, ADMIN_PLAY = "playbooks/site.yml", "Machine and other accounts"
 bad = 0
 for name in sys.stdin.read().split("\0"):
     if not name:
         continue
-    for key, path, value in keys(yaml.load(open(name), Loader), []):
+    data = yaml.load(open(name), Loader)
+    admin = None
+    if name == SITE:
+        plays = [play.get("name") for play in data]
+        if plays.count(ADMIN_PLAY) != 1:
+            print(f"{SITE}: needs exactly one play named {ADMIN_PLAY!r}, found {plays}")
+            bad = 1
+        else:
+            admin = [plays.index(ADMIN_PLAY)]
+    for key, path, value in keys(data, []):
         in_role = name.startswith("roles/")
         if (key == "ansible_become" and value is not False) or (
-            key == "become" and (in_role or (value is not False and (name, path) != ("playbooks/site.yml", [2])))
+            key == "become" and (in_role or (value is not False and (name != SITE or path != admin)))
         ):
-            print(f"{name}: {key}: {value} at {path}; admin rights belong only in play 2 of playbooks/site.yml")
+            print(f"{name}: {key}: {value} at {path}; admin rights belong only in the {ADMIN_PLAY!r} play of {SITE}")
             bad = 1
 sys.exit(bad)
 ' || bad=1

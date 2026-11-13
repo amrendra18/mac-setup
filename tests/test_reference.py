@@ -1052,7 +1052,7 @@ class FixtureReference(unittest.TestCase):
             '  #   Values: a list of folder paths that start with / or "~", other than / itself, in order',
             "  #   macOS default: bottom",
             "  #   Takes effect: when the Dock restarts",
-            "  #   Needs: Full Disk Access for the terminal app",
+            "  #   Needs: Full Disk Access",
             "  #   Proven on: macOS 27.2.1 (2026-11-12)",
             "  #   Proven on: not yet",
             "  #   Warning: can lock you out of this Mac; it needs allow_lockout_risk: true",
@@ -1248,9 +1248,6 @@ class Reference(unittest.TestCase):
                     f"{need}: temporary must be true or false, and true only for ask pane"
                 )
         self.assertEqual(problems, [], "\n" + "\n".join(problems))
-
-    def test_every_needs_value_has_template_words(self):
-        self.assertEqual(set(template.NEEDS), NEEDS)
 
     def test_reference_has_every_researched_setting(self):
         routes = Counter(entry.get("route") for _, _, entry in self.entries)

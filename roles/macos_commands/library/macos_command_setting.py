@@ -11,7 +11,8 @@ description:
   - Runs the read argv, then searches its output with the parse pattern. The pattern sees stdout, then stderr, then a last line "exit: N" with the read's exit code, so a read whose exit code is the state (launchctl print exits 0 or 113) parses that line.
   - A read that exits nonzero is an error unless the pattern matches.
   - The value found is compared with the wanted value, after map turns the wanted public value into the text the read prints.
-  - Only on a difference it runs the set argv lists in order, then reads again and fails unless the read shows the wanted value.
+  - Only on a difference it runs the set argv lists in order, stopping at the first that exits nonzero, then reads again. The read decides. The set succeeded when the read shows the wanted value, whatever the set's exit code; a known refusal line still refuses.
+  - When the read after the set still shows the old value and needs names a permission, the failure says in plain words that the setting needs that permission for the app that runs mac-setup.
   - A known refusal line in any command's output, such as systemsetup's "You need administrator access", is a failure, whatever the exit code. The failure gives the entry's reason, or the line itself when the entry has no reason.
   - A read whose text matches a pattern in refuse is a failure with that pattern's reason, before parse runs.
   - Arguments go to the tool as a list, never through a shell.
@@ -24,12 +25,12 @@ options:
   set: {description: Public value to a list of argv lists, or a list of argv lists where the item "{value}" becomes the value., type: raw, required: true}
   value: {description: The wanted public value., type: raw, required: true}
   write_allowed: {description: Whether this run may run the set commands., type: bool, default: true}
+  needs: {description: Plain names of the permissions the setting needs, such as Full Disk Access., type: list, elements: str, default: []}
 """
 
 REFUSALS = {
     "You need administrator access": "",
     "requires Full Disk Access": "",
-    "### Error:-99": "printed Error -99 and changed nothing; macOS gives this when the app that runs mac-setup, such as Terminal or an SSH session, has no Full Disk Access",
 }
 
 
@@ -69,6 +70,10 @@ def read_state(runner, argv, pattern, refusals):
     return found.group("value")
 
 
+def joined(items):
+    return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " and " + items[-1]
+
+
 def set_commands(set_spec, value):
     if isinstance(set_spec, dict):
         commands = {text(key): argvs for key, argvs in set_spec.items()}
@@ -92,6 +97,7 @@ def ensure_setting(
     value,
     check_mode,
     write_allowed=True,
+    needs=(),
 ):
     try:
         pattern = re.compile(parse, re.MULTILINE)
@@ -121,15 +127,25 @@ def ensure_setting(
         "after": f"{text(value)}\n",
     }
     if not check_mode:
+        failure = ""
         for argv in commands:
             rc, out, err = run(runner, argv)
             if rc != 0:
-                raise SettingError(f"{' '.join(argv)} exited {rc}: {out}{err}")
+                failure = f"{' '.join(argv)} exited {rc}: {(out + err).strip()}"
+                break
         after = read_state(runner, read, pattern, refusals)
         if after != wanted:
-            raise SettingError(
-                f"after the set, {' '.join(read)} shows {public.get(after, after)}, not {text(value)}"
+            problem = (
+                failure
+                or f"after the set, {' '.join(read)} shows {public.get(after, after)}, not {text(value)}"
             )
+            if after == current and needs:
+                problem = (
+                    f"the value did not change ({problem}); this setting needs "
+                    f"{joined(needs)} for the app that runs mac-setup, so if that is off, "
+                    f"it is the likely reason"
+                )
+            raise SettingError(problem)
     return {"changed": True, "diff": diff}
 
 
@@ -143,6 +159,7 @@ def main():
             "set": {"type": "raw", "required": True},
             "value": {"type": "raw", "required": True},
             "write_allowed": {"type": "bool", "default": True},
+            "needs": {"type": "list", "elements": "str", "default": []},
         },
         supports_check_mode=True,
     )
@@ -158,6 +175,7 @@ def main():
             params["value"],
             module.check_mode,
             params["write_allowed"],
+            params["needs"],
         )
     except SettingError as error:
         module.fail_json(msg=str(error))

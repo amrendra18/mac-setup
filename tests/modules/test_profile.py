@@ -334,7 +334,9 @@ class ProfileProblems(unittest.TestCase):
 
     def test_a_setting_that_needs_a_click_is_counted(self):
         files = {"t.yml": {"t.siri": entry(needs=["click"])}}
-        work = profile_work({"default_settings": {"t.siri": True}}, files, "runner")
+        work = profile_work(
+            {"default_settings": {"t.siri": True}}, files, "runner", TABLE
+        )
         self.assertEqual(work["counts"]["need_click"], 1)
 
     def test_not_yet_setting_is_refused_with_its_reason(self):
@@ -400,7 +402,9 @@ class ProfileProblems(unittest.TestCase):
     def test_apps_install_takes_the_catalog_ids(self):
         good = {"machine_settings": {"apps.install": sorted(CATALOG)}}
         self.assertEqual(profile_problems(good, FILES, CATALOG), [])
-        self.assertEqual(profile_work(good, FILES, "runner")["apps"], sorted(CATALOG))
+        self.assertEqual(
+            profile_work(good, FILES, "runner", TABLE)["apps"], sorted(CATALOG)
+        )
         under_account = {"default_settings": {"apps.install": ["sublime_text"]}}
         self.assertEqual(
             subjects(profile_problems(under_account, FILES, CATALOG)),
@@ -546,7 +550,7 @@ class ProfileProblems(unittest.TestCase):
 
 class ProfileWork(unittest.TestCase):
     def test_writes_for_the_running_account(self):
-        work = profile_work({"default_settings": VALID}, FILES, "runner")
+        work = profile_work({"default_settings": VALID}, FILES, "runner", TABLE)
         self.assertEqual(
             work["own"]["writes"],
             [
@@ -593,14 +597,14 @@ class ProfileWork(unittest.TestCase):
 
     def test_unset_deletes_the_key(self):
         work = profile_work(
-            {"default_settings": {"dock.show_recents": "unset"}}, FILES, "runner"
+            {"default_settings": {"dock.show_recents": "unset"}}, FILES, "runner", TABLE
         )
         [write] = work["own"]["writes"]
         self.assertEqual((write["state"], write["value"]), ("absent", None))
 
     def test_maps_host_and_several_writes(self):
         work = profile_work(
-            {"default_settings": {"test.mapped": "large"}}, TEST_FILES, "runner"
+            {"default_settings": {"test.mapped": "large"}}, TEST_FILES, "runner", TABLE
         )
         self.assertEqual(
             [
@@ -622,7 +626,7 @@ class ProfileWork(unittest.TestCase):
                 account("setuptest2"),
             ],
         }
-        work = profile_work(profile, FILES, "runner")
+        work = profile_work(profile, FILES, "runner", TABLE)
 
         def values(writes):
             return {w["id"]: w["value"] for w in writes}
@@ -657,7 +661,7 @@ class ProfileWork(unittest.TestCase):
 
     def test_a_null_in_the_map_deletes_the_key(self):
         work = profile_work(
-            {"default_settings": {"test.switch": "off"}}, TEST_FILES, "runner"
+            {"default_settings": {"test.switch": "off"}}, TEST_FILES, "runner", TABLE
         )
         [write] = work["own"]["writes"]
         self.assertEqual((write["state"], write["value"]), ("absent", None))
@@ -680,7 +684,7 @@ class ProfileWork(unittest.TestCase):
                 "test.software": ["beta_app", "alpha_app"],
             },
         }
-        work = profile_work(profile, TEST_FILES, "runner")
+        work = profile_work(profile, TEST_FILES, "runner", TABLE)
         self.assertEqual(work["apps"], ["beta_app", "alpha_app"])
         own = work["own"]
         self.assertEqual(own["dock_apps"], {"apps": ["com.apple.Terminal"]})
@@ -717,6 +721,7 @@ class ProfileWork(unittest.TestCase):
                         False: [["/usr/bin/example", "off"]],
                     },
                     "value": False,
+                    "needs": [],
                 }
             ],
         )
@@ -741,7 +746,7 @@ class ProfileWork(unittest.TestCase):
     def test_unmeasured_timing_is_not_counted_as_a_logout(self):
         profile = {"default_settings": {"test.logout": True, "test.unmeasured": True}}
         self.assertEqual(
-            profile_work(profile, TEST_FILES, "runner")["counts"],
+            profile_work(profile, TEST_FILES, "runner", TABLE)["counts"],
             counts(after_logout=1, timing_not_measured=1),
         )
 
@@ -754,7 +759,7 @@ class ProfileWork(unittest.TestCase):
             },
             "accounts": [account("setuptest1", settings={"test.mapped": "small"})],
         }
-        work = profile_work(profile, TEST_FILES, "runner")
+        work = profile_work(profile, TEST_FILES, "runner", TABLE)
         self.assertEqual(
             work["counts"],
             counts(after_logout=4, need_click=2),
@@ -923,7 +928,7 @@ class ProfileSummary(unittest.TestCase):
             ],
         )
 
-    def test_a_stop_in_play_1_or_2_ends_the_run_with_its_line(self):
+    def test_a_stop_in_the_account_or_machine_play_ends_the_run_with_its_line(self):
         summary = profile_summary(
             counts(),
             [
@@ -976,7 +981,7 @@ class ProfilePermissions(unittest.TestCase):
     def test_full_disk_access_comes_from_needs(self):
         profile = {
             "machine_settings": {
-                "time.zone": "Etc/UTC",
+                "time.zone": "GMT",
                 "power.system_sleep_minutes": 30,
                 "sharing.remote_apple_events": False,
             }
@@ -1031,9 +1036,15 @@ class ProfilePermissions(unittest.TestCase):
             [("documents_folder", ["finder.sidebar_favorites"])],
         )
 
+    def test_a_command_carries_the_plain_names_of_its_permissions(self):
+        [command] = profile_work(
+            {"machine_settings": {"time.zone": "GMT"}}, FILES, "runner", TABLE
+        )["commands"]
+        self.assertEqual(command["needs"], ["Full Disk Access"])
+
     def test_each_permission_carries_its_table_row(self):
         permission = profile_work(
-            {"machine_settings": {"time.zone": "Etc/UTC"}}, FILES, "runner", TABLE
+            {"machine_settings": {"time.zone": "GMT"}}, FILES, "runner", TABLE
         )["permissions"][0]
         self.assertEqual(
             permission,
@@ -1136,7 +1147,7 @@ class RemainingStores(unittest.TestCase):
                 },
             }
         }
-        writes = profile_work(profile, FILES, "runner")["own"]["writes"]
+        writes = profile_work(profile, FILES, "runner", TABLE)["own"]["writes"]
         self.assertEqual(
             [
                 (w["id"], w["domain"], w["key"], w["type"], w["dict_mode"])
@@ -1190,6 +1201,7 @@ class RemainingStores(unittest.TestCase):
             },
             FILES,
             "runner",
+            TABLE,
         )["own"]["writes"]
         self.assertEqual(
             (write["domain"], write["key"], write["type"], write["value"]),
@@ -1221,6 +1233,7 @@ class RemainingStores(unittest.TestCase):
             },
             FILES,
             "runner",
+            TABLE,
         )
         self.assertEqual(
             [(w["id"], w["key"], w["value"]) for w in work["own"]["writes"]],
@@ -1302,6 +1315,7 @@ class RemainingStores(unittest.TestCase):
             {"default_settings": {pages: "two_finger", apps: "three_finger"}},
             FILES,
             "runner",
+            TABLE,
         )
         self.assertEqual(
             [(w["id"], w["key"], w["value"]) for w in work["own"]["writes"]],
@@ -1358,6 +1372,7 @@ class RemainingStores(unittest.TestCase):
             },
             FILES,
             "runner",
+            TABLE,
         )
         [own] = work["own"]["commands"]
         self.assertEqual((own["id"], own["value"]), ("sound.output_volume", 50))

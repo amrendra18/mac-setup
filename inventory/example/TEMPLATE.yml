@@ -669,8 +669,8 @@ default_settings:
   #   Values: a list of folder paths that start with / or "~", other than / itself, in order
   #   macOS default: not measured
   #   Takes effect: when Finder restarts
-  #   Needs: access to ~/Desktop when listed, access to ~/Documents when listed, access to
-  #     ~/Downloads when listed
+  #   Needs: Desktop folder access when ~/Desktop is listed, Documents folder access when
+  #     ~/Documents is listed, Downloads folder access when ~/Downloads is listed
   #   Proven on: not yet
   #   Note: "~" means the home folder of each account. Other favorite folders stay after the listed
   #     ones unless finder.sidebar_favorites_only is true. Finder refuses / as a favorite.
@@ -1937,20 +1937,18 @@ machine_settings:
   #   Values: true or false
   #   macOS default: not measured
   #   Takes effect: at once
-  #   Needs: Full Disk Access for the terminal app
+  #   Needs: Full Disk Access
   #   Proven on: not yet
-  #   Note: systemsetup needs Full Disk Access.
 
   # sharing.remote_login: false
   #   Allow SSH logins to this Mac (Remote Login).
   #   Values: true or false
   #   macOS default: not measured
   #   Takes effect: at once
-  #   Needs: Full Disk Access for the terminal app
+  #   Needs: Full Disk Access
   #   Proven on: not yet
   #   Warning: can lock you out of this Mac; it needs allow_lockout_risk: true
-  #   Note: systemsetup fails unless the terminal has Full Disk Access. The lockout guard applies.
-  #     -f stops systemsetup asking to confirm the off step.
+  #   Note: The lockout guard applies. -f stops systemsetup asking to confirm the off step.
 
   # sharing.screen_sharing: false
   #   Let others see and control this screen (Screen Sharing).
@@ -1985,10 +1983,12 @@ machine_settings:
   #   Values: text that matches ^[A-Za-z_]+(/[A-Za-z0-9_+-]+){0,2}$
   #   macOS default: not measured
   #   Takes effect: at once
-  #   Needs: Full Disk Access for the terminal app
+  #   Needs: Full Disk Access
   #   Proven on: not yet
-  #   Note: Without Full Disk Access, systemsetup prints Error -99 and leaves the time zone as it
-  #     was. Measured on macOS 27.2.1 over SSH and in a local Terminal that has no Full Disk Access.
+  #   Note: systemsetup prints Error -99 whether or not the set works, so the read after the set
+  #     decides. Without Full Disk Access the time zone stays as it was. Measured on macOS 27.2.1
+  #     over SSH, in a local Terminal without Full Disk Access, and in one with it. The zone must be
+  #     a name that systemsetup -listtimezones prints. GMT is one, Etc/UTC is not.
 
   # updates.check_automatically: false
   #   Check for software updates automatically.

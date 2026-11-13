@@ -1,6 +1,6 @@
 # Machine settings
 
-One run of `playbooks/site.yml` sets the machine settings listed under `machine_settings` that a command tool stores. Play 2 runs as admin and sets each one with the tool its reference entry names, then reads it back with the same tool. This journey covers 4 power settings. The time zone is not in it: without Full Disk Access, `systemsetup -settimezone` prints Error -99 and changes nothing, over SSH and in a local Terminal (measured on macOS 27.2.1). A second run changes nothing.
+One run of `playbooks/site.yml` sets the machine settings listed under `machine_settings` that a command tool stores. The "Machine and other accounts" play runs as admin and sets each one with the tool its reference entry names, then reads it back with the same tool. This journey covers 4 power settings. The time zone is not in it: without Full Disk Access, `systemsetup -settimezone` leaves the zone as it was, over SSH and in a local Terminal (measured on macOS 27.2.1). It prints Error -99 whether or not the zone changes, so the read after the set decides. A second run changes nothing.
 
 ## Sub-features
 

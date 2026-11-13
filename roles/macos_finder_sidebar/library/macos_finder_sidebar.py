@@ -15,7 +15,7 @@ description:
   - favorites go first in FavoriteItems, in order. Other favorite folders stay after them unless favorites_only is true.
   - Each hide name removes its items from every list. Finder ignores the hidden flag of an item, so the module removes the item.
   - A "~" in a path means the home folder of the account that runs the module.
-  - The helper lists each Desktop, Documents or Downloads folder before it adds the folder, so macOS asks for Files and Folders access for the program that runs mac-setup.
+  - The helper lists each Desktop, Documents or Downloads folder before it adds the folder. For the account that runs mac-setup, the Permissions play asks for Files & Folders access before this module runs.
   - Three empty lists mean the program has no access to the sidebar, so the module refuses and changes nothing.
 options:
   helper: {description: Path of the compiled sidebar helper., type: path, required: true}
@@ -39,7 +39,7 @@ SPECIAL = [name for name in HIDE if name != "home_in_locations"]
 
 REFUSED = (
     "macOS refused to add {} to the sidebar; Desktop, Documents and Downloads "
-    "need Files and Folders access for the program that runs mac-setup"
+    "need Files & Folders access for the app that runs mac-setup"
 )
 
 

@@ -56,7 +56,7 @@ You also need a GitHub SSH key that can read this repository. Follow GitHub's gu
    test -d .local/inventory || cp -R inventory/example .local/inventory
    ```
 
-   Then open `.local/inventory/host_vars/example-mac/machine.yml` with `open -e` (TextEdit). Set `time.zone` to your own zone, such as `Europe/Berlin`. The example uses `Etc/UTC`. To see your Mac's current zone, run `readlink /etc/localtime`. The zone is the part after `zoneinfo/`. macOS changes the zone only for an app with Full Disk Access, so step 5 asks you to turn it on for Terminal.
+   Then open `.local/inventory/host_vars/example-mac/machine.yml` with `open -e` (TextEdit). Set `time.zone` to your own zone, such as `Europe/London`. The example uses `GMT`. The zone must be one of the names that `systemsetup -listtimezones` lists, and `Etc/UTC` is not one of them. To see your Mac's current zone, run `readlink /etc/localtime`. The zone is the part after `zoneinfo/`. macOS changes the zone only for an app with Full Disk Access, so step 5 asks you to turn it on for Terminal.
 
    The example also turns on the firewall's "Block all incoming connections", which refuses SSH logins too. If you set up or reach this Mac over SSH, delete both the `security.firewall_block_all` line and the `allow_lockout_risk: true` line.
 
@@ -79,7 +79,7 @@ You also need a GitHub SSH key that can read this repository. Follow GitHub's gu
    1. **Full Disk Access for Terminal**, which the time zone needs. The run opens the Full Disk Access page, asks you to turn on Terminal, and waits until you press Return. Full Disk Access lets every command in Terminal read every file. So at the end the run opens the page again and asks you to turn Terminal off. If Terminal had it before the run, the run leaves it on. If a step fails, the run still asks you to turn Terminal off before it ends. If you stop the run with Control-C, turn Terminal off there yourself.
    2. **Desktop and Downloads access**, which the Finder sidebar needs. macOS asks whether Terminal may use each folder. Click Allow. Terminal keeps this access.
 
-   If a permission stays off, the run skips each setting that needs it and would change, and names each one in the summary. Over SSH, the run asks for nothing, because nobody at the screen can answer. It skips the settings that need Full Disk Access, such as the time zone, and lists the permissions it would ask for.
+   If a permission stays off, the run skips each setting that needs it and would change, and names each one in the summary. Over SSH, the run asks for nothing, because nobody at the screen can answer. It skips the settings that need Full Disk Access, such as the time zone, and lists the permissions it would ask for. Over SSH it does not test folder access, because the test would show macOS's dialog. So it runs the Finder sidebar step anyway. If the SSH session has no access to a listed folder, macOS refuses the step, and the run ends with one `refused` line and exit code 2.
 
    You see the Dock and Finder change. The run ends with a short summary. It says how many settings show only after you log out and back in, and how many need a click in System Settings. It also counts the settings whose timing is not measured, which may need a logout or an app restart to show. The last line, called the recap, shows `failed=0` when everything worked. In the second run, every setting prints `ok` and the recap shows `changed=0`, because the Mac already matches. It asks no account password, because the accounts exist.
 
@@ -88,7 +88,7 @@ If the profile lists accounts that do not exist yet, the run asks each new accou
 ### If a run stops or refuses a setting
 
 1. A mistake in the profile, such as an unknown setting or a value that is not allowed, stops the run before anything changes. The run prints one line per problem and ends with exit code 2.
-2. If macOS refuses one setting, the other settings still apply. The run ends with one `refused` line per setting and exit code 2.
+2. If macOS refuses one setting, the other settings still apply. The run ends with one `refused` line per setting and exit code 2. For a setting that a command tool sets, such as the time zone, the run reads the value again after the set, and that read decides. If the value did not change and the setting needs Full Disk Access, the `refused` line says so.
 3. Without `-K`, or from an account without admin rights, your own account's settings still apply first. The summary then names each machine or other-account setting it could not set, with "needs admin rights: run with -K".
 4. A setting whose permission is off, and whose value would change, is skipped, as Quick start step 5 says. The summary names it in one `skipped` line, and the run still ends with exit code 0.
 5. If you skipped step 3, there is no profile. The run warns that no host (Ansible's word for a Mac) matched, changes nothing, and exits 0.

@@ -2,7 +2,7 @@
 - name: Keep the listed Finder sidebar
   when:
     - macos_finder_sidebar_items | length > 0
-    - macos_finder_sidebar_items.ids | intersect(macos_finder_sidebar_skip) | length == 0
+    - macos_finder_sidebar_items.ids | intersect(macos_finder_sidebar_blocked) | length == 0
   block:
     - name: Set the Finder sidebar
       macos_finder_sidebar:
@@ -19,9 +19,12 @@
         macos_defaults_refused_id: "{{ macos_finder_sidebar_items.ids | join(', ') }}"
 
 - name: Record the skip of the Finder sidebar
-  ansible.builtin.include_tasks: "{{ role_path }}/../macos_permissions/tasks/skipped.yml"
+  ansible.builtin.include_role:
+    name: macos_permissions
+    tasks_from: record
   vars:
-    macos_permissions_skipped_ids: "{{ macos_finder_sidebar_items.ids }}"
+    macos_permissions_record_ids: "{{ macos_finder_sidebar_items.ids }}"
+    macos_permissions_record_outcome: skipped
   when:
     - macos_finder_sidebar_items | length > 0
-    - macos_finder_sidebar_items.ids | intersect(macos_finder_sidebar_skip) | length > 0
+    - macos_finder_sidebar_items.ids | intersect(macos_finder_sidebar_blocked) | length > 0

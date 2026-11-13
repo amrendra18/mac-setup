@@ -17,7 +17,7 @@ Nothing runs in the background. You start `ansible-playbook` in Terminal. It run
 
 ## The plays
 
-`playbooks/site.yml` has four plays: "Permissions", "This account", "Machine and other accounts", and "Take back permissions and summarize". Only "Machine and other accounts" uses admin rights, so every admin step sits in one place. `scripts/check` and the invariants call it play 2, counting from 0.
+`playbooks/site.yml` has four plays: "Permissions", "This account", "Machine and other accounts", and "Take back permissions and summarize". Only "Machine and other accounts" uses admin rights, so every admin step sits in one place. `scripts/check` finds that play by its name.
 
 "Permissions" runs as you without admin rights:
 
@@ -47,7 +47,7 @@ Nothing runs in the background. You start `ansible-playbook` in Terminal. It run
 "Take back permissions and summarize" runs as you without admin rights:
 
 1. `macos_permissions` takes back each temporary permission that "Permissions" found off and you turned on. Today that is only Full Disk Access. It opens the page, says to turn the app off, waits for Return, and tests that it is off. A permission that was on before the run stays on.
-2. The `profile` role prints the summary, with one line per needed permission and one line per skipped setting, then fails the run with one `refused` line per refused setting or account. A skipped setting is not a refusal, so it leaves the exit code at 0.
+2. The `profile` role prints the summary, with one line per needed permission and one line per skipped setting. A permission that stayed off gets "every setting that needs it already matches" only when the run read each of those settings and found it matching. The role then fails the run with one `refused` line per refused setting or account. A skipped setting is not a refusal, so it leaves the exit code at 0.
 
 "This account" and "Machine and other accounts" each wrap their work in one block. An unexpected error, such as a wrong admin password or a failed helper build, is recorded instead of ending the run. "Machine and other accounts" then does nothing, and "Take back permissions and summarize" still takes back Full Disk Access. The summary ends with "the run stopped early at" the failed task and its message, and the run exits with code 2. Only a run stopped with Control-C skips the take-back.
 
@@ -76,7 +76,7 @@ A custom module exists only where no existing module does the job. Each one read
 2. Each new account adds 1 to the run's `changed` count, and each setting written for another account adds 1 more.
 3. A preview with `--check` still builds the Finder sidebar helper into `.local/finder-sidebar/` when the profile lists a sidebar setting, because the helper is needed to read the sidebar.
 4. A preview prints a `changed` line for each setting it would change, without the value. To see a current value, run `defaults read DOMAIN KEY` with the domain and key from the reference.
-5. `dock.applications` joins a newly installed app on the next run, because play 1 sets the Dock before play 2 installs apps.
+5. `dock.applications` joins a newly installed app on the next run, because the "This account" play sets the Dock before the "Machine and other accounts" play installs apps.
 
 ## The settings reference
 
@@ -123,7 +123,7 @@ dock.position:
 | # | Route | Extra field | How mac-setup applies it |
 | --- | --- | --- | --- |
 | 1 | `defaults` | `writes`, each with `domain`, `key` and `type`, and optional `host: currentHost`, `map` and `dict_mode` | Writes a preference. A machine-scope domain must be a path that starts with `/`. |
-| 2 | `command` | `command`, with `read`, `parse`, `set`, and an optional `map` and `refuse` | Runs a command tool. [The command read](../settings/macos/README.md) explains how `parse` matches the output. |
+| 2 | `command` | `command`, with `read`, `parse`, `set`, and an optional `map` and `refuse` | Runs a command tool, then reads again. That read decides whether the set worked, whatever the tool's exit code; a known refusal line still refuses. [The command read](../settings/macos/README.md) explains how `parse` matches the output. |
 | 3 | `dock_apps` | none | Sets the Dock's app list. Values are `bundle_ids`. |
 | 4 | `wallpaper` | none | Sets the desktop picture. |
 | 5 | `finder_sidebar` | none | Sets the Finder sidebar. Values are `paths`, `bool` or a `list`. |
@@ -194,7 +194,7 @@ An upgrade replaces the old copy whole. The run copies the new app next to the o
 
 1. **The profile is the source of truth.** A run makes the Mac match the profile. There is no hidden state and no receipt file.
 2. **Check before writing.** The whole profile is checked before the first change. A bad profile changes nothing.
-3. **Admin work sits in one place.** Only play 2 of `playbooks/site.yml` uses admin rights.
+3. **Admin work sits in one place.** Only the "Machine and other accounts" play of `playbooks/site.yml` uses admin rights.
 4. **Small, data-driven code.** One role writes every simple preference from the reference. A custom module exists only where no existing module can do the job.
 5. **Pinned and checked downloads.** See [How downloads are checked](#how-downloads-are-checked).
 6. **Private data stays local.** Real machine names, account names and profiles live in `.local/` or `~/.dot/`, outside the tracked files. Account passwords are typed at a prompt and never written to a file. The only secret stored in plain text is the vault password, in a file only you can read. The VirusTotal key sits in an encrypted vault that this password opens.
@@ -242,7 +242,7 @@ Homebrew, dotfiles, turning FileVault on with a secure token (the right to unloc
 
 Two scripts test mac-setup. [CONTRIBUTING.md](../CONTRIBUTING.md) says when to run each.
 
-1. `scripts/check` runs on any Mac and changes no settings. It lints the YAML files, checks playbook syntax, runs the unit tests and every broken test profile in `tests/inputs/`, plus the two-Mac inventory `tests/two-macs/hosts.yml`, whose entries match no Mac. Each must stop in the profile check with exit code 2. It also checks the structure rules (no `sudo` in a role, `become` only in play 2 of `playbooks/site.yml`, and no task that touches the privacy database or System Integrity Protection) and scans the files for private words and secrets. `scripts/check full` adds the reference test, a format check and ansible-lint.
+1. `scripts/check` runs on any Mac and changes no settings. It lints the YAML files, checks playbook syntax, runs the unit tests and every broken test profile in `tests/inputs/`, plus the two-Mac inventory `tests/two-macs/hosts.yml`, whose entries match no Mac. Each must stop in the profile check with exit code 2. It also checks the structure rules (no `sudo` in a role, `become` only in the "Machine and other accounts" play of `playbooks/site.yml`, and no task that touches the privacy database or System Integrity Protection) and scans the files for private words and secrets. `scripts/check full` adds the reference test, a format check and ansible-lint.
 2. `scripts/verify` is the harness that proves features on a real Mac. Each feature has a journey in `verify/journeys/`, a YAML file that lists playbook runs and the values to read back afterwards. The harness runs the real playbook, reads the stored values with `defaults export`, and keeps the evidence in `.local/verify/UTCTIME/`. It changes the real settings of the account that runs it, and the `accounts` journey creates the standard account `setuptest1`.
 
 The [verification map](../verify/features/README.md) describes the harness in full. It gives the harness's steps, its evidence, the journey file format and one page per feature.

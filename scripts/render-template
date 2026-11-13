@@ -35,13 +35,12 @@ TAKES_EFFECT = {
     "logout": "at the next login",
     "not measured": "not measured",
 }
+PERMISSIONS = yaml.safe_load((ROOT / SETTINGS / "permissions/table.yml").read_text())
 NEEDS = {
-    "full_disk_access": "Full Disk Access for the terminal app",
-    "desktop_folder": "access to ~/Desktop when listed",
-    "documents_folder": "access to ~/Documents when listed",
-    "downloads_folder": "access to ~/Downloads when listed",
-    "click": "a click at the Mac's screen",
-}
+    need: row["name"]
+    + (f" when {row['test']} is listed" if row["only_when_listed"] else "")
+    for need, row in PERMISSIONS.items()
+} | {"click": "a click at the Mac's screen"}
 ORDERED_WORDS = {
     "bundle_ids": "a list of app bundle ids, in Dock order",
     "paths": 'a list of folder paths that start with / or "~", other than / itself, in order',

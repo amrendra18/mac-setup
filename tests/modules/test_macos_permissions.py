@@ -171,19 +171,31 @@ class Outcome(unittest.TestCase):
 
 
 class Notes(unittest.TestCase):
-    SKIPPED = ["time.zone", "finder.sidebar_favorites", "finder.sidebar_hide"]
+    SKIPPED = dict.fromkeys(
+        ["time.zone", "finder.sidebar_favorites", "finder.sidebar_hide"], "skipped"
+    )
+    OFF = {"full_disk_access": {"before": "off", "after": "off"}}
 
-    def notes(self, results, mode=SCREEN, permissions=(DISK,), skipped=SKIPPED):
+    def notes(self, results, mode=SCREEN, permissions=(DISK,), outcomes=SKIPPED):
         return macos_permissions_notes(
-            list(permissions), results, skipped, mode, "Terminal"
+            list(permissions), results, outcomes, mode, "Terminal"
         )
 
-    def test_only_a_setting_the_run_skipped_gets_a_skip_line(self):
+    def test_only_a_setting_the_run_read_and_found_matching_says_it_matches(self):
         self.assertEqual(
-            self.notes(
-                {"full_disk_access": {"before": "off", "after": "off"}}, skipped=[]
-            ),
+            self.notes(self.OFF, outcomes={"time.zone": "matched"}),
             ["Full Disk Access: off, but every setting that needs it already matches"],
+        )
+
+    def test_a_setting_the_run_never_read_makes_no_claim(self):
+        self.assertEqual(self.notes(self.OFF, outcomes={}), ["Full Disk Access: off"])
+
+    def test_one_setting_not_read_makes_no_claim_for_the_others(self):
+        both = {**DISK, "settings": ["time.zone", "sharing.remote_login"]}
+        both["skips"] = both["settings"]
+        self.assertEqual(
+            self.notes(self.OFF, permissions=[both], outcomes={"time.zone": "matched"}),
+            ["Full Disk Access: off"],
         )
 
     def test_over_ssh_the_skip_says_to_run_at_the_screen(self):

@@ -16,7 +16,7 @@ Anchor each pattern to the text of its own line, so it cannot match the exit lin
 
 ## Rules for writes
 
-1. A `command` setting with `scope: user` runs as the account that runs mac-setup, in play 1. Other listed accounts get a note in the summary instead.
+1. A `command` setting with `scope: user` runs as the account that runs mac-setup, in the "This account" play. Other listed accounts get a note in the summary instead.
 2. A choice that is missing from a write's `map` leaves that key alone.
 3. A `{type: list}` value on the `defaults` route needs one array write. Its `map` turns each item into the stored value.
 4. A `{type: hotkeys}` value maps each action to `true`, `false`, or keys joined with `+`, such as `control+up`. It merges into one dictionary with `dict_mode: add`, so other shortcuts stay as they are.

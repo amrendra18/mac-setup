@@ -10,7 +10,7 @@ profile:
   default_settings:
     finder.sidebar_favorites: ["~", ~/Desktop, ~/Downloads]
   machine_settings:
-    time.zone: Etc/UTC
+    time.zone: GMT
 runs:
   - name: list
     args: [--check]

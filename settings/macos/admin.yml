@@ -755,7 +755,6 @@ sharing.remote_apple_events:
     Scripting
   proven_on: {}
   not_yet_reason: ""
-  notes: systemsetup needs Full Disk Access.
 sharing.remote_login:
   summary: Allow SSH logins to this Mac (Remote Login).
   scope: machine
@@ -777,8 +776,7 @@ sharing.remote_login:
   where: System Settings > General > Sharing > Remote Login
   proven_on: {}
   not_yet_reason: ""
-  notes: systemsetup fails unless the terminal has Full Disk Access.
-    The lockout guard applies. -f stops systemsetup asking to confirm
+  notes: The lockout guard applies. -f stops systemsetup asking to confirm
     the off step.
 sharing.remote_management:
   summary: Allow Apple Remote Desktop to manage this Mac (Remote
@@ -880,9 +878,11 @@ time.zone:
   where: System Settings > General > Date & Time > Closest city
   proven_on: {}
   not_yet_reason: ""
-  notes: Without Full Disk Access, systemsetup prints Error -99 and leaves the
-    time zone as it was. Measured on macOS 27.2.1 over SSH and in a local
-    Terminal that has no Full Disk Access.
+  notes: systemsetup prints Error -99 whether or not the set works, so the
+    read after the set decides. Without Full Disk Access the time zone stays
+    as it was. Measured on macOS 27.2.1 over SSH, in a local Terminal without
+    Full Disk Access, and in one with it. The zone must be a name that
+    systemsetup -listtimezones prints. GMT is one, Etc/UTC is not.
 time.zone_automatic:
   summary: Set the time zone from the Mac's location.
   scope: machine

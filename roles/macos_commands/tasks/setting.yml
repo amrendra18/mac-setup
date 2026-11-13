@@ -9,14 +9,18 @@
         refuse: "{{ macos_commands_item.refuse }}"
         set: "{{ macos_commands_item.set }}"
         value: "{{ macos_commands_item.value }}"
-        write_allowed: "{{ macos_commands_item.id not in macos_commands_skip }}"
+        write_allowed: "{{ macos_commands_item.id not in macos_commands_blocked }}"
+        needs: "{{ macos_commands_item.needs }}"
       register: macos_commands_result
 
-    - name: "Record the skip of {{ macos_commands_item.id }}"
-      ansible.builtin.include_tasks: "{{ role_path }}/../macos_permissions/tasks/skipped.yml"
+    - name: "Record whether a run without the permission skipped or matched {{ macos_commands_item.id }}"
+      ansible.builtin.include_role:
+        name: macos_permissions
+        tasks_from: record
       vars:
-        macos_permissions_skipped_ids: ["{{ macos_commands_item.id }}"]
-      when: macos_commands_result is skipped
+        macos_permissions_record_ids: ["{{ macos_commands_item.id }}"]
+        macos_permissions_record_outcome: "{{ 'skipped' if macos_commands_result is skipped else 'matched' }}"
+      when: macos_commands_item.id in macos_commands_blocked
   rescue:
     - name: "Record the refusal of {{ macos_commands_item.id }}"
       ansible.builtin.include_tasks: "{{ role_path }}/../macos_defaults/tasks/refused.yml"

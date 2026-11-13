@@ -15,6 +15,7 @@ LAUNCHCTL = "/bin/launchctl"
 SCUTIL = "/usr/sbin/scutil"
 ADMIN_REFUSAL = "You need administrator access to run this tool... exiting!"
 DISK_REFUSAL = "Turning Remote Login on or off requires Full Disk Access privileges."
+ERROR_99 = "systemsetup[1:2] ### Error:-99 File:/x/InternetServices.m Line:395"
 
 
 class FakeTool:
@@ -57,7 +58,7 @@ def display_sleep(minutes):
     return tool, entry
 
 
-def remote_login(on, refuse_read="", refuse_set="", set_works=True):
+def remote_login(on, refuse_read="", refuse_set="", set_works=True, set_exit=0):
     def show(state):
         if refuse_read:
             return 0, f"{refuse_read}\n", ""
@@ -66,11 +67,11 @@ def remote_login(on, refuse_read="", refuse_set="", set_works=True):
     def change(tool, argv):
         if argv[0] != SYSTEMSETUP or "-setremotelogin" not in argv:
             return None
-        if refuse_set:
-            return 0, f"{refuse_set}\n", ""
         if set_works:
             tool.state = argv[-1] == "on"
-        return 0, "", ""
+        if refuse_set:
+            return set_exit, f"{refuse_set}\n", ""
+        return set_exit, "", ""
 
     tool = FakeTool([SYSTEMSETUP, "-getremotelogin"], on, show, change)
     entry = {
@@ -140,12 +141,13 @@ def computer_name(name):
     return tool, entry
 
 
-def ensure(tool, entry, value, check_mode=False, write_allowed=True):
+def ensure(tool, entry, value, check_mode=False, write_allowed=True, needs=()):
     return ensure_setting(
         tool,
         value=value,
         check_mode=check_mode,
         write_allowed=write_allowed,
+        needs=needs,
         **{"refuse": {}, **entry},
     )
 
@@ -262,21 +264,50 @@ class Refusals(unittest.TestCase):
         self.assertEqual(tool.sets(), [])
 
     def test_disk_access_refusal_on_set_with_exit_0_fails_with_that_line(self):
-        tool, entry = remote_login(on=False, refuse_set=DISK_REFUSAL)
+        tool, entry = remote_login(on=False, refuse_set=DISK_REFUSAL, set_works=False)
         with self.assertRaises(SettingError) as raised:
             ensure(tool, entry, True)
         self.assertIn(DISK_REFUSAL, str(raised.exception))
         self.assertFalse(tool.state)
 
-    def test_error_99_is_refused_in_plain_words(self):
-        tool, entry = remote_login(
-            on=False,
-            refuse_set="systemsetup[1:2] ### Error:-99 File:/x/InternetServices.m Line:395",
-        )
+
+class ErrorNinetyNine(unittest.TestCase):
+    def test_a_set_that_prints_error_99_and_changes_the_value_is_changed(self):
+        for set_exit in (0, 1):
+            with self.subTest(set_exit=set_exit):
+                tool, entry = remote_login(
+                    on=False, refuse_set=ERROR_99, set_exit=set_exit
+                )
+                result = ensure(tool, entry, True, needs=["Full Disk Access"])
+                self.assertTrue(result["changed"])
+                self.assertTrue(tool.state)
+                self.assertEqual(
+                    ensure(tool, entry, True, needs=["Full Disk Access"]),
+                    {"changed": False},
+                )
+
+    def test_a_set_that_prints_error_99_and_changes_nothing_names_the_permission(
+        self,
+    ):
+        for set_exit in (0, 1):
+            with self.subTest(set_exit=set_exit):
+                tool, entry = remote_login(
+                    on=False, refuse_set=ERROR_99, set_works=False, set_exit=set_exit
+                )
+                with self.assertRaises(SettingError) as raised:
+                    ensure(tool, entry, True, needs=["Full Disk Access"])
+                self.assertRegex(
+                    str(raised.exception),
+                    r"^the value did not change \(.*\); this setting needs Full Disk "
+                    r"Access for the app that runs mac-setup, so if that is off, it is "
+                    r"the likely reason$",
+                )
+
+    def test_an_unchanged_value_without_needs_gives_no_permission_hint(self):
+        tool, entry = remote_login(on=False, refuse_set=ERROR_99, set_works=False)
         with self.assertRaises(SettingError) as raised:
             ensure(tool, entry, True)
-        self.assertIn("no Full Disk Access", str(raised.exception))
-        self.assertNotIn("InternetServices", str(raised.exception))
+        self.assertNotIn("needs", str(raised.exception))
 
 
 class ParseFailure(unittest.TestCase):

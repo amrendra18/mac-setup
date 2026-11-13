@@ -49,7 +49,7 @@
           vars:
             macos_commands_items: "{{ profile_own_work.commands }}"
             macos_commands_account: "{{ profile_running_account }}"
-            macos_commands_skip: "{{ macos_permissions_blocked }}"
+            macos_commands_blocked: "{{ macos_permissions_blocked }}"
 
         - name: Build the Finder sidebar helper
           ansible.builtin.include_role:
@@ -63,7 +63,7 @@
           vars:
             macos_finder_sidebar_items: "{{ profile_own_work.finder_sidebar }}"
             macos_finder_sidebar_account: "{{ profile_running_account }}"
-            macos_finder_sidebar_skip: "{{ macos_permissions_blocked }}"
+            macos_finder_sidebar_blocked: "{{ macos_permissions_blocked }}"
       rescue:
         - name: Record where this account's settings stopped
           ansible.builtin.set_fact:
@@ -82,7 +82,7 @@
       ansible.builtin.meta: end_host
       when: profile_running_account is not defined
 
-    - name: Skip the rest after a stop in play 1
+    - name: Skip the rest after this account's settings stopped
       ansible.builtin.meta: end_host
       when: site_stopped is defined
 
@@ -106,7 +106,7 @@
           vars:
             macos_commands_items: "{{ profile_commands }}"
             macos_commands_account: machine
-            macos_commands_skip: "{{ macos_permissions_blocked }}"
+            macos_commands_blocked: "{{ macos_permissions_blocked }}"
 
         - name: Install the listed apps
           ansible.builtin.include_role:

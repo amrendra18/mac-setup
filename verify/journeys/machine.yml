@@ -1,5 +1,5 @@
 summary: >-
-  Play 2 sets 4 power settings from machine_settings, a second run changes nothing, and the cleanup reads each
+  The "Machine and other accounts" play sets 4 power settings from machine_settings, a second run changes nothing, and the cleanup reads each
   back with the module's own read command, then restores the saved values.
 level: fast
 setup:

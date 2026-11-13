@@ -373,7 +373,7 @@ def doctor(journeys):
     check(
         "sudo",
         sh(["sudo", "-n", "true"]).returncode == 0,
-        "play 2 of playbooks/site.yml and reads as another account need password-free sudo, because the harness passes no -K",
+        "the Machine and other accounts play of playbooks/site.yml and reads as another account need password-free sudo, because the harness passes no -K",
     )
     return checks
 

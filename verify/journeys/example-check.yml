@@ -74,7 +74,7 @@ profile:
   accounts: []
   allow_lockout_risk: true
   machine_settings:
-    time.zone: Etc/UTC
+    time.zone: GMT
     network.wifi_power: true
     security.firewall: true
     security.stealth: true

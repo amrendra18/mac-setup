@@ -13,7 +13,7 @@ Some settings need a privacy permission for the app that runs mac-setup. `time.z
 
 ## How to get to it (user POV)
 
-- Put a setting that needs a permission in the profile, such as `time.zone: Etc/UTC` under `machine_settings`, or `finder.sidebar_favorites: ["~", ~/Desktop]` under `default_settings`.
+- Put a setting that needs a permission in the profile, such as `time.zone: GMT` under `machine_settings`, or `finder.sidebar_favorites: ["~", ~/Desktop]` under `default_settings`.
 - Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K --check` to see what the run would ask.
 - Run `.local/venv/bin/ansible-playbook playbooks/site.yml -K` in Terminal at the Mac's screen, follow each step, and press Return after each one.
 
@@ -25,7 +25,7 @@ Preconditions:
 - The account that runs the journey has no Full Disk Access in this session. Over SSH that holds unless someone gave SSH Full Disk Access.
 
 - **Setup.** The journey saves `defaults export` of `com.apple.dock` and `com.apple.finder`, and the time zone link from `readlink /etc/localtime`.
-- **List.** Run `ansible-playbook playbooks/site.yml --check` with a profile that lists `finder.sidebar_favorites: ["~", ~/Desktop, ~/Downloads]` and `time.zone: Etc/UTC`. Exit 0, recap `failed=0`. The output holds the line saying why the run asks for nothing, one `would ask for` line each for Full Disk Access, Desktop folder access and Downloads folder access, and no line for Documents. The ask for Full Disk Access and the 2 folder reads are skipped, and no page opens. The `time.zone` task is skipped. The summary holds `Full Disk Access: off`, one `skipped time.zone` line, and a `not tested` line for each folder.
+- **List.** Run `ansible-playbook playbooks/site.yml --check` with a profile that lists `finder.sidebar_favorites: ["~", ~/Desktop, ~/Downloads]` and `time.zone: GMT`. Exit 0, recap `failed=0`. The output holds the line saying why the run asks for nothing, one `would ask for` line each for Full Disk Access, Desktop folder access and Downloads folder access, and no line for Documents. The ask for Full Disk Access and the 2 folder reads are skipped, and no page opens. The `time.zone` task is skipped. The summary holds `Full Disk Access: off`, one `skipped time.zone` line, and a `not tested` line for each folder.
 - **Proof.** The cleanup exports both domains again and requires each to equal its saved export byte for byte, and requires the same time zone link.
 
 ## Gotchas
@@ -36,6 +36,6 @@ Preconditions:
 - In list mode the folders are not tested, because a test read is what shows macOS's dialog. So list mode never skips the sidebar.
 - The run decides "over SSH" from `SSH_CONNECTION`, `SSH_CLIENT` or `SSH_TTY`, which sshd sets. It ignores `SSH_AUTH_SOCK`, which macOS also sets in a Terminal at the screen.
 - If someone gave SSH Full Disk Access, the test reads on and `time.zone` runs, so the `skipped time.zone` patterns fail. The journey then reports the failure.
-- The journey needs a Mac whose time zone is not `Etc/UTC`. A zone that already matches is `ok`, not skipped, so the `skipped time.zone` patterns fail.
+- The journey needs a Mac whose time zone is not `GMT`. A zone that already matches is `ok`, not skipped, so the `skipped time.zone` patterns fail.
 - Run the hand steps in a fresh Terminal window, not inside tmux or screen. Those run under their own server process, so the permission you turn on for Terminal may not reach the run.
-- `permissions_ls` replaces `/bin/ls` for the test reads, and `permissions_open` replaces `/usr/bin/open`. `tests/harness/test_site_permissions.py` uses both to fake a permission that is off or on and to record each page it opens.
+- `permissions_ls` replaces `/bin/ls` for the test reads, and `permissions_open` replaces `/usr/bin/open`. `tests/harness/test_site_permissions.py` uses both to fake a permission that is off or on and to record each page it opens. To test the sidebar skip, which list mode never reaches, it runs `playbooks/site.yml` through a wrapper playbook whose play variables act as a run at the screen and point at a helper that never runs.

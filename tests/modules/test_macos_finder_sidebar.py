@@ -222,7 +222,7 @@ class FinderSidebar(unittest.TestCase):
         self.assertEqual(
             str(raised.exception),
             "macOS refused to add ~/Downloads to the sidebar; Desktop, Documents and "
-            "Downloads need Files and Folders access for the program that runs mac-setup",
+            "Downloads need Files & Folders access for the app that runs mac-setup",
         )
         self.assertEqual(mac.changes, [["first", "/Applications", HOME + "/Downloads"]])
         self.assertEqual(mac.lists["FavoriteVolumes"], START["FavoriteVolumes"])

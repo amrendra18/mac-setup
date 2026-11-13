@@ -65,7 +65,7 @@ class SyncExample(unittest.TestCase):
             }
         )
         self.assertEqual(sorted(refused), ["computer.name", "login_window.message"])
-        self.assertEqual(result["time.zone"], "Etc/UTC")
+        self.assertEqual(result["time.zone"], "GMT")
         self.assertIs(result["network.wifi_power"], True)
         self.assertNotIn("sharing.remote_login", result)
         self.assertEqual(
@@ -80,7 +80,7 @@ class SyncExample(unittest.TestCase):
 
     def test_the_example_blocks_all_incoming_connections(self):
         for private in [
-            {"time.zone": "Etc/UTC"},
+            {"time.zone": "America/Vancouver"},
             {
                 "security.firewall": False,
                 "security.firewall_block_all": False,

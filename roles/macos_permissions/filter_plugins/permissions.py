@@ -117,10 +117,12 @@ def macos_permissions_take_back(permissions, results):
     ]
 
 
-def _state_line(permission, result, mode, app, skipped):
+def _state_line(permission, result, mode, app, outcomes):
     name, where = permission["name"], permission["where"]
     after = result.get("after")
-    if after == "off" and not set(permission["skips"]) & set(skipped):
+    if after == "off" and all(
+        outcomes.get(setting_id) == "matched" for setting_id in permission["skips"]
+    ):
         return f"{name}: off, but every setting that needs it already matches"
     if after == "off":
         return f"{name}: off"
@@ -150,16 +152,16 @@ def _skip_line(setting_id, permission, mode, app):
     return f"skipped {setting_id}: needs {permission['name']}, {reason}"
 
 
-def macos_permissions_notes(permissions, results, skipped, mode, app):
+def macos_permissions_notes(permissions, results, outcomes, mode, app):
     lines, named = [], set()
     for permission in permissions:
         result = _result(results, permission)
-        lines.append(_state_line(permission, result, mode, app, skipped))
+        lines.append(_state_line(permission, result, mode, app, outcomes))
         lines += [
             _skip_line(setting_id, permission, mode, app)
             for setting_id in permission["skips"]
             if result.get("after") == "off"
-            and setting_id in skipped
+            and outcomes.get(setting_id) == "skipped"
             and setting_id not in named
         ]
         if result.get("after") == "off":

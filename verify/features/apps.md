@@ -28,5 +28,5 @@ Preconditions:
 ## Gotchas
 
 - The harness writes its own inventory, so the private profile's vault file and its key never reach the journey. This journey therefore proves the fail-closed path only. A real install needs the key, or a verdict stored by an earlier run, and is not yet proven by a journey.
-- Play 2 runs as root, so the download in the scratch cache belongs to root. The setup makes the folder as the running account, so the cleanup can still delete the file.
+- The "Machine and other accounts" play runs as root, so the download in the scratch cache belongs to root. The setup makes the folder as the running account, so the cleanup can still delete the file.
 - `failed=1` comes from the summary task, which fails on purpose when an app was refused. The refused install itself is rescued and not counted as failed.

@@ -32,7 +32,7 @@ Preconditions:
 
 ## Gotchas
 
-- For each other listed account, play 2 runs the module as that account through sudo. That session usually sees no screen, so the summary notes "the desktop picture for ACCOUNT is set at its next run while it is signed in". That note is not a refusal, so it does not make the run end with exit 2.
+- For each other listed account, the "Machine and other accounts" play runs the module as that account through sudo. That session usually sees no screen, so the summary notes "the desktop picture for ACCOUNT is set at its next run while it is signed in". That note is not a refusal, so it does not make the run end with exit 2.
 - With no screen visible to the session the module refuses. Whether a `become_user` run for another account sees that account's screens is not measured.
 - The call covers the current space. A space created later may show its own picture. Not measured.
 - The fill colour behind the picture stays the system's blue. With the default placement `Crop` it is not visible.

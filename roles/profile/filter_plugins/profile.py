@@ -529,18 +529,18 @@ def _item(settings, reference, route, key):
     return {key: value for value in _routed(settings, reference, route).values()}
 
 
-def _commands(settings, reference):
+def _commands(settings, reference, table):
     return [
-        _command(setting_id, value, reference[setting_id]["command"])
+        _command(setting_id, value, reference[setting_id], table)
         for setting_id, value in _routed(settings, reference, "command").items()
     ]
 
 
-def _account_work(settings, reference):
+def _account_work(settings, reference, table):
     sidebar = _routed(settings, reference, "finder_sidebar")
     return {
         "writes": _writes(settings, reference),
-        "commands": _commands(settings, reference),
+        "commands": _commands(settings, reference, table),
         "dock_apps": _item(settings, reference, "dock_apps", "apps"),
         "wallpaper": _item(settings, reference, "wallpaper", "color"),
         "finder_sidebar": (
@@ -579,7 +579,8 @@ def _by_hand(account, settings, reference):
     ]
 
 
-def _command(setting_id, value, command):
+def _command(setting_id, value, entry, table):
+    command = entry["command"]
     return {
         "id": setting_id,
         "read": command["read"],
@@ -588,6 +589,7 @@ def _command(setting_id, value, command):
         "refuse": command.get("refuse", {}),
         "set": command["set"],
         "value": value,
+        "needs": [table[need]["name"] for need in entry["needs"] if need in table],
     }
 
 
@@ -631,7 +633,7 @@ def _permissions(groups, reference, table):
     ]
 
 
-def profile_work(profile, files, running_account, permission_table=None):
+def profile_work(profile, files, running_account, permission_table):
     reference, _ = _reference(files)
     defaults = _section(profile, "default_settings", {})
     accounts = _section(profile, "accounts", [])
@@ -641,9 +643,12 @@ def profile_work(profile, files, running_account, permission_table=None):
         for account in accounts
     }
     settings.setdefault(running_account, defaults)
-    own = _account_work(settings[running_account], reference)
+    own = _account_work(settings[running_account], reference, permission_table)
     others = [
-        {"account": name, **_account_work(account_settings, reference)}
+        {
+            "account": name,
+            **_account_work(account_settings, reference, permission_table),
+        }
         for name, account_settings in settings.items()
         if name != running_account
     ]
@@ -663,7 +668,7 @@ def profile_work(profile, files, running_account, permission_table=None):
         "own": own,
         "others": others,
         "machine_writes": _writes(machine, reference),
-        "commands": _commands(machine, reference),
+        "commands": _commands(machine, reference, permission_table),
         "apps": [
             app_id
             for app_ids in _routed(machine, reference, "apps").values()
@@ -671,7 +676,7 @@ def profile_work(profile, files, running_account, permission_table=None):
         ],
         "by_hand": by_hand,
         "permissions": _permissions(
-            [settings[running_account], machine], reference, permission_table or {}
+            [settings[running_account], machine], reference, permission_table
         ),
         "accounts": [
             {

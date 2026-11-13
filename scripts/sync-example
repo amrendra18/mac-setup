@@ -20,7 +20,7 @@ NAMES = ["sam", "robin", "alex", "kim", "lee", "max"]
 SETTINGS = ROOT / "settings" / "macos"
 SAFE_PATHS = ["/Applications", "~", "~/Desktop", "~/Documents", "~/Downloads"]
 NEUTRAL = {
-    "time.zone": "Etc/UTC",
+    "time.zone": "GMT",
     "network.wifi_power": True,
     "power.display_sleep_minutes": 10,
     "power.system_sleep_minutes": 30,
