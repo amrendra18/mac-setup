@@ -33,7 +33,7 @@ The example makes these main changes. Review both settings files before applying
 8. The example creates no extra account and installs no app.
    At the end, it opens Location Services and asks you to turn it off yourself.
 
-mac-setup knows 1242 macOS settings. A run sets 553 of them, 40 need your click, and 649 it cannot set yet.
+mac-setup knows 1243 macOS settings. A run sets 554 of them, 40 need your click, and 649 it cannot set yet.
 66 settings are proven on macOS 27.2.1.
 A test applied each proven setting on a real Mac and read it back.
 The other settings have unit tests, without real-Mac proof.
@@ -138,7 +138,8 @@ Check the named Mac and summary for `skipped`, `refused`, logout, and other-acco
 `failed=0` means Ansible reports no failed task. Skipped changes can still remain.
 Click-only settings depend on your actions. mac-setup does not verify those clicks.
 After a complete apply, repeat the same command.
-An unchanged, fully applied profile reports `changed=0`, meaning no additional writes.
+An unchanged, fully applied profile reports `changed=0`, meaning mac-setup applied no further managed changes.
+Firefox can still update its own files when started for bookmark inspection.
 Click-only pages open again. See [troubleshooting](docs/troubleshooting.md) if anything remains incomplete.
 
 ## Choose your settings
@@ -168,7 +169,7 @@ Use spaces for indentation. Quote the words `"on"`, `"off"`, `"yes"`, and `"no"`
 Without quotes, YAML, the settings file format, treats those words as true or false.
 Removing a line stops mac-setup managing that setting and leaves its current value unchanged.
 
-The template, [inventory/example/TEMPLATE.yml](inventory/example/TEMPLATE.yml), lists all 1242 settings in four sections.
+The template, [inventory/example/TEMPLATE.yml](inventory/example/TEMPLATE.yml), lists all 1243 settings in four sections.
 They cover account settings, machine settings, click-only settings, and settings not yet supported.
 The template gives allowed values and when supported changes appear.
 For supported account and machine settings, copy the setting line into your profile and remove its leading `# `.
@@ -276,10 +277,81 @@ The policy loader stays enabled after the final release.
 External management can still impose locks.
 
 mac-setup stores policies in `/Library/Preferences/org.mozilla.firefox.plist`.
-It does not change Firefox.app or browser profile files.
+The policy role does not change Firefox.app or browser profile files.
 The example profile enables no Firefox settings.
 The [settings template](inventory/example/TEMPLATE.yml) lists supported values and reasons for unsupported settings.
 The [Firefox internals](docs/how-it-works.md#firefox-policies) describe ownership and validation.
+
+## Import bookmarks once
+
+`bookmarks.import_file` selects one cleaned HTML bookmarks export for each account's browser imports.
+Firefox currently uses this source. Other browser importers can reuse the same value.
+Firefox imports once for each selected account and preserves existing bookmarks.
+Quit the selected browsers in each account before applying.
+Firefox must be closed in every account. mac-setup refuses while any Firefox instance runs.
+Install Firefox first, or include `firefox` in `apps.install` for the same run.
+The import runs after app installation and Firefox policies.
+Firefox imports through its own bookmarks interface in a temporary headless session, a browser process without a visible window.
+Firefox selects its normal default profile. mac-setup never opens the protected Firefox data folder itself.
+Keep the selected account signed in at the Mac's screen during the import. The command can run over SSH while that account remains signed in.
+mac-setup starts Firefox through LaunchServices, macOS's app launcher, so Firefox can access its own protected data.
+mac-setup never writes Firefox's bookmarks database directly.
+Firefox can update itself after installation. The bookmarks journey records the version observed during setup.
+Firefox 158.0.1 remains the catalog and browser-map test baseline until native verification supports a change.
+
+1. In Firefox, open **Bookmarks > Manage Bookmarks > Import and Backup > Export Bookmarks to HTML**.
+   Save the export outside this checkout. Keep the export private because bookmark addresses can contain account details or access tokens.
+2. Open the export locally in a text editor. Remove private links, unwanted folders, and sensitive text from titles and addresses.
+   Keep the HTML folder structure. Review every remaining link before encryption.
+   [inventory/files/firefox-bookmarks.html](inventory/files/firefox-bookmarks.html) is test input with three example links in toolbar folders.
+3. Follow steps 1 and 2 in [Secrets](#secrets) to restore or create your vault password.
+   Create the private files folder:
+
+   ```sh
+   mkdir -p ~/.dot/mac-setup/files
+   chmod 700 ~/.dot/mac-setup/files
+   ```
+
+4. Save the cleaned export as `~/.dot/mac-setup/files/firefox-bookmarks.html`.
+   Restrict its access, then encrypt it to a new file:
+
+   ```sh
+   chmod 600 ~/.dot/mac-setup/files/firefox-bookmarks.html
+   test ! -e ~/.dot/mac-setup/files/firefox-bookmarks.vault && \
+     ANSIBLE_CONFIG=$PWD/ansible.cfg .local/venv/bin/ansible-vault encrypt ~/.dot/mac-setup/files/firefox-bookmarks.html --output ~/.dot/mac-setup/files/firefox-bookmarks.vault
+   ```
+
+   Stop if the destination already exists. After encryption reports success, remove the plaintext export and any earlier plaintext copies.
+
+   ```sh
+   rm ~/.dot/mac-setup/files/firefox-bookmarks.html
+   ```
+
+5. In `~/.dot/mac-setup/inventory/host_vars/example-mac/accounts.yml`, add this line under the existing `default_settings`:
+
+   ```yaml
+   default_settings:
+     bookmarks.import_file: files/firefox-bookmarks.vault
+   ```
+
+   This selects every account. To select one listed account, put the setting under that account's `settings` instead.
+   The value starts at `~/.dot/mac-setup/`, the parent of the inventory folder.
+   The profile check refuses absolute paths, `..` path parts, empty paths, and line breaks before changes.
+6. Run the Quick start preview and apply commands. Preview never reads the private profile, decrypts the export, writes files, or opens Firefox.
+   Preview reports `would_import` because Firefox must start to identify its default profile.
+   Apply briefly starts Firefox to check completion before decryption, including for a completed import.
+   For a pending import, apply decrypts into a private temporary directory and removes it after the import attempt.
+
+Firefox stores a profile identifier through its own API, the interface Firefox provides to programs.
+mac-setup records completion outside Firefox data, in `~/Library/Application Support/mac-setup/firefox-bookmarks/`, using hashed filenames.
+Later runs ignore changed source files for that completed profile and never refresh bookmarks automatically.
+Firefox may update its own profile files during normal browser housekeeping, including on completed runs.
+Firefox preserves existing duplicate bookmarks. A partial retry skips imported items without joining bookmarks that share an address.
+Firefox reports a skip when it is not installed and leaves the source available for another browser importer.
+mac-setup requests no extra data permission by default.
+If native Firefox access fails, follow the refusal message to grant the terminal app Full Disk Access or Firefox App Data access.
+Removing the setting leaves imported bookmarks in place. Use your browser to edit or remove those bookmarks.
+Back up `~/.dot/mac-setup/files/` with your private inventory, and keep the vault password separately.
 
 ## Capture browser settings without Ansible
 
@@ -355,7 +427,8 @@ Missing values stay absent. Capture does not infer browser defaults.
 A policy represented by several preference keys needs every key from the same source before it becomes an assignment.
 Versions come from the browser's saved profile record, alongside the running macOS and Python versions.
 Reports name the map's tested version separately from the observed profile version.
-The map's pinned versions are Firefox 158.0.1 and Chrome 158.0.8127.37.
+The map's tested versions are Firefox 158.0.1 and Chrome 158.0.8127.37.
+These test baselines can differ from the installed browsers after automatic updates.
 Newer versions still capture values and show both versions in the report header.
 Each mapping records its minimum known support. An upper bound exists only for a vendor-documented removal.
 An unknown version, a version below that minimum, or a version beyond a documented bound gives `unavailable` entries.
@@ -374,9 +447,9 @@ The command refuses existing files and links. A new report has mode 0600, readab
 App checks use one secret, your VirusTotal API key.
 Get it from your VirusTotal account's API key page.
 mac-setup does not set up other app secrets or store account passwords.
-Keep `apps.install: []` to skip this section for a settings-only profile.
+Skip this section when you install no apps and import no encrypted bookmarks.
 
-An **Ansible vault** is an encrypted file containing the key.
+An **Ansible vault** is an encrypted file containing a secret or private export.
 Your vault password opens it. Keep the password outside version control.
 The encrypted vault can travel with a private profile backup.
 

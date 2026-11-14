@@ -20,6 +20,10 @@ scripts/verify [fast|full] [--feature NAME] [--profile FILE]
 
 Exit code 0 means every selected feature was proven. 1 means a feature failed, and its output line names it. 2 means a usage error, including a malformed journey file. 3 means the doctor found the Mac not ready, and no playbook ran.
 
+A journey can declare an `environment` mapping of variable names to text values.
+The harness adds these values to setup, playbook, and cleanup commands for that journey.
+Other journeys keep their own environment.
+
 ## Steps of one run
 
 1. **Doctor.** It checks that the Mac runs macOS, that `ansible.cfg` exists (it keeps Ansible's files in `.local/`), and that `.local/venv` holds the ansible-core version pinned in `requirements/ansible.txt` and each collection version pinned in `requirements/collections.txt`. It checks, in one check per selected journey, that every playbook the journey runs exists, and that `sudo -n true` works: the "Machine and other accounts" play of `playbooks/site.yml` and reads as another account need password-free sudo, because the harness passes no `-K`. A failed check prints `not ready` with its name and ends the run with exit 3. Before `scripts/bootstrap` has run, the script exits 3 without making an evidence folder.
@@ -51,7 +55,8 @@ Proof standards:
 
 1. A feature is proven only by a journey that runs the real playbook on a real Mac and reads the stored values back.
 2. A check run (`--check`) proves what would change. Only an apply followed by reads proves a setting.
-3. A second run with `changed=0` proves that a run changes nothing when the Mac already matches.
+3. A second run with `changed=0` proves that mac-setup applies no further managed changes when the Mac already matches.
+   Firefox may update its own housekeeping files when started to identify its selected bookmark profile.
 4. A planted broken input proves the failure path only when the run exits 1, names the feature, and the reads before and after are equal.
 
 ## Journey files

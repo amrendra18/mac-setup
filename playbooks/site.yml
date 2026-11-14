@@ -121,6 +121,19 @@
           vars:
             macos_firefox_settings: "{{ profile_firefox }}"
 
+        - name: Import each other account's Firefox bookmarks as that account
+          ansible.builtin.include_role:
+            name: macos_firefox_bookmarks
+            apply:
+              become_user: "{{ other_account.account }}"
+          vars:
+            macos_firefox_bookmarks_items: "{{ other_account.bookmarks_import }}"
+            macos_firefox_bookmarks_account: "{{ other_account.account }}"
+          loop: "{{ site_other_work | selectattr('bookmarks_import') }}"
+          loop_control:
+            loop_var: other_account
+            label: "{{ other_account.account }}"
+
         - name: Write each other account's settings as that account
           ansible.builtin.include_role:
             name: macos_defaults
@@ -180,6 +193,26 @@
         - name: Record where the machine settings stopped
           ansible.builtin.set_fact:
             site_stopped: "{{ ansible_failed_task.name }}: {{ ansible_failed_result.msg | default('no message') }}"
+
+- name: This account's Firefox bookmarks
+  hosts: macs
+  become: false
+  gather_facts: false
+  tasks:
+    - name: Skip the profile entries of other Macs
+      ansible.builtin.meta: end_host
+      when: profile_running_account is not defined
+
+    - name: Skip the import after earlier settings stopped
+      ansible.builtin.meta: end_host
+      when: site_stopped is defined
+
+    - name: Import this account's Firefox bookmarks
+      ansible.builtin.include_role:
+        name: macos_firefox_bookmarks
+      vars:
+        macos_firefox_bookmarks_items: "{{ profile_own_work.bookmarks_import }}"
+        macos_firefox_bookmarks_account: "{{ profile_running_account }}"
 
 - name: Take back permissions, click through and summarize
   hosts: macs

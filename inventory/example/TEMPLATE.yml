@@ -50,6 +50,19 @@ default_settings:
   #   Proven on: not yet
   #   Note: Research note on when it takes effect: Probably `killall mediasharingd`. Guess.
 
+  # Area: bookmarks
+
+  # bookmarks.import_file: files/firefox-bookmarks.vault
+  #   Select one cleaned bookmarks HTML export for each account's browser imports.
+  #   Values: a nonempty relative file path under the profile root, without ..
+  #   macOS default: not measured
+  #   Takes effect: at once
+  #   Needs: nothing extra
+  #   Proven on: not yet
+  #   Note: The path starts at the profile root, the parent of the inventory folder. Encrypt private
+  #     exports with Ansible Vault. Quit selected browsers before applying. A completed import is
+  #     never repeated, even when the source file changes.
+
   # Area: dock
 
   # desktop.click_wallpaper_reveals: always

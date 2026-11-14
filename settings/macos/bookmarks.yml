@@ -1,0 +1,17 @@
+---
+bookmarks.import_file:
+  summary: Select one cleaned bookmarks HTML export for each account's browser imports.
+  scope: user
+  route: bookmarks
+  values: {type: profile_path}
+  macos_default: not measured
+  takes_effect: live
+  needs: []
+  lockout_risk: false
+  where: Browser bookmarks import
+  proven_on: {}
+  not_yet_reason: ""
+  notes: >-
+    The path starts at the profile root, the parent of the inventory folder.
+    Encrypt private exports with Ansible Vault. Quit selected browsers before applying.
+    A completed import is never repeated, even when the source file changes.

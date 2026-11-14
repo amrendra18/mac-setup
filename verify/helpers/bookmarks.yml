@@ -1,0 +1,57 @@
+---
+- name: Prepare the isolated encrypted bookmarks run
+  hosts: macs
+  gather_facts: false
+  tasks:
+    - name: Prepare the artificial source and target
+      ansible.builtin.command:
+        argv:
+          - "{{ ansible_playbook_python }}"
+          - -I
+          - -B
+          - "{{ playbook_dir }}/bookmarks.py"
+          - before
+          - --stage
+          - "{{ bookmarks_journey_stage }}"
+          - --inventory
+          - "{{ inventory_dir }}"
+      changed_when: false
+      check_mode: false
+      environment:
+        ANSIBLE_LOG_PATH: /dev/null
+    - name: Select the isolated Firefox target for the real role
+      ansible.builtin.set_fact:
+        macos_firefox_bookmarks_root: >-
+          {{ ((playbook_dir ~ '/../..') | realpath) ~ '/.local/bookmarks-journey/' ~ (
+          'existing-firefox' if bookmarks_journey_stage.startswith('existing') else
+          'partial-firefox' if bookmarks_journey_stage.startswith('partial') else
+          'refused-firefox' if bookmarks_journey_stage == 'refusal' else 'firefox') }}
+      changed_when: false
+
+- name: Apply the real site playbook
+  ansible.builtin.import_playbook: ../../playbooks/site.yml
+
+- name: Prove isolated Firefox bookmark contents without exposing values
+  hosts: macs
+  gather_facts: false
+  tasks:
+    - name: Read the exact bookmark counts through Firefox
+      ansible.builtin.command:
+        argv:
+          - "{{ ansible_playbook_python }}"
+          - -I
+          - -B
+          - "{{ playbook_dir }}/bookmarks.py"
+          - after
+          - --stage
+          - "{{ bookmarks_journey_stage }}"
+          - --inventory
+          - "{{ inventory_dir }}"
+      changed_when: false
+      check_mode: false
+      register: bookmarks_journey_proof
+      environment:
+        ANSIBLE_LOG_PATH: /dev/null
+    - name: Show only the bookmark proof counts
+      ansible.builtin.debug:
+        msg: "{{ bookmarks_journey_proof.stdout }}"

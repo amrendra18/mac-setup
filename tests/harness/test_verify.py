@@ -566,10 +566,10 @@ class Harness(unittest.TestCase):
         self.fake_defaults({"|com.apple.dock": dict(self.SCALARS)})
         run_steps = self.verify.run_steps
 
-        def broken_cleanup(kind, *args):
+        def broken_cleanup(kind, *args, **kwargs):
             if kind == "cleanup":
                 raise OSError("cleanup broke")
-            return run_steps(kind, *args)
+            return run_steps(kind, *args, **kwargs)
 
         error = KeyboardInterrupt("original failure")
         with patch.object(self.verify, "run_steps", side_effect=broken_cleanup):
@@ -636,10 +636,10 @@ class Harness(unittest.TestCase):
 
         run_steps, restore = self.verify.run_steps, self.verify.restore
 
-        def finishing_steps(kind, commands, log):
+        def finishing_steps(kind, commands, log, **kwargs):
             if step == "cleanup" and kind == "cleanup" and log.name == "a-cleanup.txt":
                 raise error
-            return run_steps(kind, commands, log)
+            return run_steps(kind, commands, log, **kwargs)
 
         def finishing_restore(path, log):
             if step == "restore" and path == saved:

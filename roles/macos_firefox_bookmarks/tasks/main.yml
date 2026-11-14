@@ -1,0 +1,101 @@
+---
+- name: Import the selected Firefox bookmarks
+  when: macos_firefox_bookmarks_items | length > 0
+  block:
+    - name: Inspect the Firefox bookmarks import
+      macos_firefox_bookmarks:
+        operation: inspect
+        firefox_root: "{{ macos_firefox_bookmarks_root | default(omit, true) }}"
+      register: macos_firefox_bookmarks_inspection
+      no_log: true
+      diff: false
+
+    - name: Report the Firefox bookmarks skip when Firefox is absent
+      ansible.builtin.debug:
+        msg: Firefox bookmarks import skipped because Firefox is not installed.
+      when: macos_firefox_bookmarks_inspection.state | default('') == 'not_installed'
+
+    - name: Apply the Firefox bookmarks import
+      when:
+        - not ansible_check_mode
+        - macos_firefox_bookmarks_inspection.state == 'pending'
+      block:
+        - name: Resolve the bookmarks source inside the profile root
+          ansible.builtin.set_fact:
+            macos_firefox_bookmarks_profile_root: "{{ inventory_dir | dirname | realpath }}"
+            macos_firefox_bookmarks_source: >-
+              {{ ((inventory_dir | dirname) ~ '/' ~ macos_firefox_bookmarks_items.source) | realpath }}
+          no_log: true
+          diff: false
+
+        - name: Refuse a bookmarks source outside the profile root
+          ansible.builtin.assert:
+            that:
+              - macos_firefox_bookmarks_source.startswith(macos_firefox_bookmarks_profile_root ~ '/')
+            quiet: true
+          no_log: true
+          diff: false
+
+        - name: Create a private bookmarks directory
+          ansible.builtin.tempfile:
+            state: directory
+            prefix: mac-setup-bookmarks-
+          register: macos_firefox_bookmarks_temporary
+          no_log: true
+          diff: false
+
+        - name: Restrict the bookmarks directory
+          ansible.builtin.file:
+            path: "{{ macos_firefox_bookmarks_temporary.path }}"
+            state: directory
+            mode: '0700'
+          no_log: true
+          diff: false
+
+        - name: Decrypt the selected bookmarks into the private directory
+          ansible.builtin.copy:
+            src: "{{ macos_firefox_bookmarks_source }}"
+            dest: "{{ macos_firefox_bookmarks_temporary.path }}/bookmarks.html"
+            decrypt: true
+            mode: '0600'
+          no_log: true
+          diff: false
+
+        - name: Import the private bookmarks file
+          macos_firefox_bookmarks:
+            operation: import
+            source: "{{ macos_firefox_bookmarks_temporary.path }}/bookmarks.html"
+            firefox_root: "{{ macos_firefox_bookmarks_root | default(omit, true) }}"
+            expected_profile_key: "{{ macos_firefox_bookmarks_inspection.profile_key }}"
+          no_log: true
+          diff: false
+      always:
+        - name: Remove the private bookmarks directory
+          ansible.builtin.file:
+            path: "{{ macos_firefox_bookmarks_temporary.path }}"
+            state: absent
+          when: macos_firefox_bookmarks_temporary.path is defined
+          no_log: true
+          diff: false
+  rescue:
+    - name: Record the Firefox bookmarks refusal
+      ansible.builtin.include_tasks: "{{ role_path }}/../macos_defaults/tasks/refused.yml"
+      vars:
+        macos_defaults_refused_account: "{{ macos_firefox_bookmarks_account }}"
+        macos_defaults_refused_id: bookmarks.import_file
+        macos_defaults_refused_message: >-
+          {{ "macOS denied data access. Run mac-setup at the Mac's screen. Grant Full Disk Access or Firefox App Data access to the terminal app."
+          if ansible_failed_result.permission_denied | default(false)
+          else {
+            'state_directory': "Firefox bookmark state directory check failed. State and verification directories must belong to this account, " ~
+              "have mode 0700, and contain no symbolic links.",
+            'isolation': "Firefox profile isolation check failed. Firefox did not confirm the requested verification target.",
+            'system_access': "Firefox chrome context and system access check failed. Firefox refused privileged bookmark automation. " ~
+              "Check the installed Firefox version and Firefox developer tools policies.",
+            'gui': "Firefox bookmark import needs this account's graphical login session. Sign in to this account at the Mac's screen and retry.",
+            'launch': "LaunchServices could not start Firefox for bookmark automation. " ~
+              "Keep this account signed in at the Mac's screen, quit Firefox, and retry.",
+            'automation': "Firefox startup through LaunchServices failed. Keep this account signed in at the Mac's screen. " ~
+              "Open Firefox, choose its default profile, and quit before retrying."
+          }.get(ansible_failed_result.startup_check | default(''),
+          "Firefox bookmarks import refused. Check the source export, vault access, and Firefox availability.") }}

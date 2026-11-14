@@ -1,0 +1,102 @@
+summary: Encrypted artificial Firefox bookmarks import once, preserve existing bookmarks, retry without duplicates, and leave no plaintext.
+level: fast
+playbook: verify/helpers/bookmarks.yml
+environment:
+  ANSIBLE_VAULT_PASSWORD_FILE: .local/bookmarks-journey/password
+setup:
+  - ANSIBLE_LOG_PATH=/dev/null .local/venv/bin/python -I -B verify/helpers/bookmarks.py setup
+cleanup:
+  - ANSIBLE_LOG_PATH=/dev/null .local/venv/bin/python -I -B verify/helpers/bookmarks.py cleanup
+profile:
+  default_settings:
+    bookmarks.import_file: files/bookmarks.vault
+runs:
+  - name: preview
+    args: [--check, --vault-password-file, .local/bookmarks-journey/password, -e, bookmarks_journey_stage=preview]
+    exit: 0
+    recap: {failed: 0}
+    output:
+      - pattern: >-
+          (?x)\bbookmarks\s+preview\s+target_writes=0(?=\s|['"]|$)
+        count: 1
+  - name: apply
+    args: [--vault-password-file, .local/bookmarks-journey/password, -e, bookmarks_journey_stage=apply]
+    exit: 0
+    recap: {failed: 0}
+    output:
+      - pattern: >-
+          (?x)\bbookmarks\s+apply\s+imported_count=3\s+existing_count=0\s+
+          extra_count=0\s+private_copies=0\s+plaintext_directories=0(?=\s|['"]|$)
+        count: 1
+  - name: again
+    args: [--vault-password-file, .local/bookmarks-journey/password, -e, bookmarks_journey_stage=again]
+    exit: 0
+    recap: {changed: 0, failed: 0}
+    output:
+      - pattern: >-
+          (?x)\bbookmarks\s+again\s+imported_count=3\s+existing_count=0\s+
+          extra_count=0\s+private_copies=0\s+plaintext_directories=0(?=\s|['"]|$)
+        count: 1
+  - name: changed
+    args: [--vault-password-file, .local/bookmarks-journey/password, -e, bookmarks_journey_stage=changed]
+    exit: 0
+    recap: {changed: 0, failed: 0}
+    output:
+      - pattern: >-
+          (?x)\bbookmarks\s+changed\s+imported_count=3\s+existing_count=0\s+
+          extra_count=0\s+private_copies=0\s+plaintext_directories=0(?=\s|['"]|$)
+        count: 1
+  - name: retry
+    args: [--vault-password-file, .local/bookmarks-journey/password, -e, bookmarks_journey_stage=retry]
+    exit: 0
+    recap: {failed: 0}
+    output:
+      - pattern: >-
+          (?x)\bbookmarks\s+retry\s+imported_count=3\s+existing_count=0\s+
+          extra_count=0\s+private_copies=0\s+plaintext_directories=0(?=\s|['"]|$)
+        count: 1
+  - name: partial
+    args: [--vault-password-file, .local/bookmarks-journey/password, -e, bookmarks_journey_stage=partial]
+    exit: 0
+    recap: {failed: 0}
+    output:
+      - pattern: >-
+          (?x)\bbookmarks\s+partial\s+imported_count=3\s+existing_count=0\s+
+          extra_count=0\s+private_copies=0\s+plaintext_directories=0(?=\s|['"]|$)
+        count: 1
+  - name: partial-again
+    args: [--vault-password-file, .local/bookmarks-journey/password, -e, bookmarks_journey_stage=partial-again]
+    exit: 0
+    recap: {changed: 0, failed: 0}
+    output:
+      - pattern: >-
+          (?x)\bbookmarks\s+partial-again\s+imported_count=3\s+existing_count=0\s+
+          extra_count=0\s+private_copies=0\s+plaintext_directories=0(?=\s|['"]|$)
+        count: 1
+  - name: existing
+    args: [--vault-password-file, .local/bookmarks-journey/password, -e, bookmarks_journey_stage=existing]
+    exit: 0
+    recap: {failed: 0}
+    output:
+      - pattern: >-
+          (?x)\bbookmarks\s+existing\s+imported_count=3\s+existing_count=1\s+
+          extra_count=0\s+private_copies=0\s+plaintext_directories=0(?=\s|['"]|$)
+        count: 1
+  - name: existing-again
+    args: [--vault-password-file, .local/bookmarks-journey/password, -e, bookmarks_journey_stage=existing-again]
+    exit: 0
+    recap: {changed: 0, failed: 0}
+    output:
+      - pattern: >-
+          (?x)\bbookmarks\s+existing-again\s+imported_count=3\s+existing_count=1\s+
+          extra_count=0\s+private_copies=0\s+plaintext_directories=0(?=\s|['"]|$)
+        count: 1
+  - name: refusal
+    args: [--vault-password-file, .local/bookmarks-journey/password, -e, bookmarks_journey_stage=refusal]
+    exit: 2
+    recap: {failed: 1}
+    output:
+      - pattern: >-
+          (?imx)^[ \t]+msg:\s*['"]?\s*refused\s+
+          bookmarks\.import_file(?=\s|['"]|$)
+        count: 1

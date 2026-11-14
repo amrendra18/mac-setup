@@ -1538,5 +1538,81 @@ class FirefoxProfile(unittest.TestCase):
                 self.assertTrue(problems)
 
 
+class FirefoxBookmarksProfileTests(unittest.TestCase):
+    def test_isolated_journey_switches_are_not_profile_settings(self):
+        self.assertEqual(
+            profile_problems(
+                {
+                    "bookmarks_journey_stage": "preview",
+                    "macos_firefox_bookmarks_root": "/private/tmp/artificial-firefox",
+                },
+                FILES,
+            ),
+            [],
+        )
+
+    def test_relative_source_routes_to_each_account_without_machine_policies(self):
+        source = "files/firefox-bookmarks.vault"
+        selected = {
+            "default_settings": {"bookmarks.import_file": source},
+            "accounts": [{"name": "sample", "full_name": "Sample Account"}],
+        }
+        self.assertEqual(profile_problems(selected, FILES), [])
+        work = profile_work(selected, FILES, "runner", TABLE)
+        self.assertEqual(work["own"]["bookmarks_import"], {"source": source})
+        self.assertEqual(work["others"][0]["bookmarks_import"], {"source": source})
+        self.assertEqual(work["firefox"], {})
+        self.assertEqual(
+            profile_work({}, FILES, "runner", TABLE)["own"]["bookmarks_import"], {}
+        )
+
+    def test_account_override_selects_its_own_source(self):
+        selected = {
+            "default_settings": {"bookmarks.import_file": "files/default.vault"},
+            "accounts": [
+                {
+                    "name": "sample",
+                    "full_name": "Sample Account",
+                    "settings": {"bookmarks.import_file": "files/sample.vault"},
+                }
+            ],
+        }
+        work = profile_work(selected, FILES, "sample", TABLE)
+        self.assertEqual(
+            work["own"]["bookmarks_import"], {"source": "files/sample.vault"}
+        )
+
+    def test_invalid_sources_are_refused_without_printing_the_value(self):
+        for source in (
+            "",
+            " ",
+            ".",
+            "/PRIVATE-SOURCE",
+            "../PRIVATE-SOURCE",
+            "files/../PRIVATE-SOURCE",
+            "files/PRIVATE-SOURCE\nexport",
+            "files/PRIVATE-SOURCE\rexport",
+            "files/PRIVATE-SOURCE\x00export",
+            4,
+            False,
+            [],
+            {},
+        ):
+            with self.subTest(source=source):
+                problems = profile_problems(
+                    {"default_settings": {"bookmarks.import_file": source}}, FILES
+                )
+                self.assertTrue(problems)
+                self.assertNotIn("PRIVATE-SOURCE", "\n".join(problems))
+
+    def test_source_is_an_account_setting(self):
+        problems = profile_problems(
+            {"machine_settings": {"bookmarks.import_file": "files/sample.vault"}},
+            FILES,
+        )
+        self.assertTrue(problems)
+        self.assertIn("an account setting", problems[0])
+
+
 if __name__ == "__main__":
     unittest.main()

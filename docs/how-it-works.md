@@ -10,14 +10,14 @@ Nothing runs in the background. You start `ansible-playbook` in Terminal. It run
 
 1. **The settings reference**, `settings/macos/*.yml`, one file per area. Each entry describes one setting. The section [The settings reference](#the-settings-reference) gives its fields. The permissions table, `settings/macos/permissions/table.yml`, describes each privacy permission a setting can need.
 2. **The profile**, your copy of `inventory/example/`. The README keeps it in `~/.dot/mac-setup/inventory/` and selects it with `-i`. The configured default remains `.local/inventory/`. It holds `default_settings` for every account, an `accounts` list where each account may have settings of its own, and `machine_settings`. Account passwords stay out of the profile. An optional encrypted vault holds the VirusTotal API key.
-3. **The playbook**, `playbooks/site.yml`, which applies the profile in four plays.
+3. **The playbook**, `playbooks/site.yml`, which applies the profile in five plays.
 4. **The click-through**, for settings only a person can change. It runs at the end of `playbooks/site.yml`, and `playbooks/by-hand.yml` runs it again on its own.
 5. **The template**, `inventory/example/TEMPLATE.yml`. `scripts/render-template` writes it from the reference.
 6. **The app catalog**, `apps/macos.yml`, the apps mac-setup can install and the facts each download must match.
 
 ## The plays
 
-`playbooks/site.yml` has four plays: "Permissions", "This account", "Machine and other accounts", and "Take back permissions, click through and summarize". Only "Machine and other accounts" uses admin rights, so every admin step sits in one place. `scripts/check` finds that play by its name.
+`playbooks/site.yml` has five plays. They are "Permissions", "This account", "Machine and other accounts", "This account's Firefox bookmarks", and "Take back permissions, click through and summarize". Only "Machine and other accounts" uses admin rights, so every admin step sits in one place. `scripts/check` finds that play by its name.
 
 "Permissions" runs as you without admin rights:
 
@@ -43,7 +43,11 @@ Nothing runs in the background. You start `ansible-playbook` in Terminal. It run
 3. `macos_commands` sets the machine settings that need a command tool, such as `pmset` or `systemsetup`.
 4. `macos_apps` installs the listed apps.
 5. `macos_firefox` applies the selected machine-wide Firefox policies.
-6. `macos_defaults`, `macos_dock_apps`, `macos_wallpaper` and `macos_finder_sidebar` set each other account's settings, running as that account.
+6. `macos_firefox_bookmarks` imports each other account's selected bookmarks, running as that account.
+7. `macos_defaults`, `macos_dock_apps`, `macos_wallpaper` and `macos_finder_sidebar` set each other account's settings, running as that account.
+
+"This account's Firefox bookmarks" runs `macos_firefox_bookmarks` as you without admin rights.
+Both bookmarks steps run after app installation and Firefox policies, so the same run can install Firefox before importing.
 
 "Take back permissions, click through and summarize" runs as you without admin rights:
 
@@ -70,6 +74,7 @@ Nothing runs in the background. You start `ansible-playbook` in Terminal. It run
 | 9 | `macos_by_hand` | Opens each click-only System Settings page and waits for you | none |
 | 10 | `macos_permissions` | Tests each permission the run needs, asks for the missing ones at the screen, and takes back Full Disk Access at the end | none. It uses a filter plugin. |
 | 11 | `macos_firefox` | Applies selected Firefox policies and reports unsupported lock forms | `macos_firefox` |
+| 12 | `macos_firefox_bookmarks` | Imports a cleaned bookmarks export once per Firefox profile | `macos_firefox_bookmarks` |
 
 A custom module exists only where no existing module does the job. Each one reads before it writes and supports `--check`.
 
@@ -88,7 +93,7 @@ Both helpers live in `roles/macos_apps/module_utils/`.
 
 ## The settings reference
 
-Each `*.yml` file in `settings/macos/` maps setting ids to entries. An id looks like `area.name`, such as `dock.position`. The reference holds 1242 entries, and `ENTRY_COUNT` in `tests/test_reference.py` pins that number. `tests/test_reference.py` checks every entry against the rules below.
+Each `*.yml` file in `settings/macos/` maps setting ids to entries. An id looks like `area.name`, such as `dock.position`. The reference holds 1243 entries, and `ENTRY_COUNT` in `tests/test_reference.py` pins that number. `tests/test_reference.py` checks every entry against the rules below.
 
 This is one entry:
 
@@ -116,7 +121,7 @@ dock.position:
 | 1 | `summary` | One line on what the setting does |
 | 2 | `scope` | `user` for an account setting, `machine` for a setting of the whole Mac |
 | 3 | `route` | How mac-setup applies it. See the routes table below. |
-| 4 | `values` | A list of plain choices, or `{type: T}`. T is `bool`; `int` or `float` with `min` and `max`; `text` with `pattern`; `bundle_ids`; `paths`; `catalog_ids`; `list` with `choices` and an optional `min`, the fewest items allowed; or `hotkeys` with `actions`, which maps each shortcut name to its number in macOS. Browser entries use `{type: browser, schema: ...}`. Their schema defines allowed value types, choices, and bounds. |
+| 4 | `values` | A list of plain choices, or `{type: T}`. T is `bool`; `int` or `float` with `min` and `max`; `text` with `pattern`; `bundle_ids`; `paths`; `profile_path`; `catalog_ids`; `list` with `choices` and an optional `min`, the fewest items allowed; or `hotkeys` with `actions`, which maps each shortcut name to its number in macOS. Browser entries use `{type: browser, schema: ...}`. Their schema defines allowed value types, choices, and bounds. |
 | 5 | `macos_default` | The measured macOS default, or `not measured` |
 | 6 | `takes_effect` | `live`, `dock`, `finder`, `systemuiserver`, `relaunch` (when the app opens again), `logout`, or `not measured` when no test, document or report says when the change appears and the run restarts nothing for it; the other values come from a document, a report, or a guess that makes the run restart the Dock or the menu bar |
 | 7 | `needs` | Any of `click` and the rows of the permissions table, each at most once. A permission is allowed only on routes `command` and `finder_sidebar`, where a run can skip the setting. |
@@ -139,6 +144,7 @@ dock.position:
 | 7 | `by_hand` | `link`, an `x-apple.systempreferences:` URL | Opens the System Settings page for a person to click. |
 | 8 | `not_yet` | none | Nothing yet. The profile check refuses the setting. |
 | 9 | `firefox` | `browser`, the shared map metadata | Applies selected machine-wide Firefox policy values. |
+| 10 | `bookmarks` | none | Shares one bookmarks source between browser importers. Values are `profile_path`, a nonempty relative file path without `..` parts or line breaks. |
 
 ### The permissions table
 
@@ -164,7 +170,7 @@ Three optional fields change a `defaults` write:
 2. `map` turns each value from the profile into the value macOS stores. A value missing from the map leaves that key alone.
 3. `dict_mode` applies to a `dict` type. `replace`, the default, writes the whole dictionary, and `add` merges only the listed keys.
 
-Of the 1242 entries, 553 are set by a run, 40 are on route `by_hand`, and 649 are on route `not_yet`.
+Of the 1243 entries, 554 are set by a run, 40 are on route `by_hand`, and 649 are on route `not_yet`.
 The unsupported entries include 603 Chrome rows, 16 Firefox rows, and 30 macOS settings awaiting support.
 The macOS entries cover 26 privacy permissions, text replacements, modifier keys, the number of Spaces, and the password minimum length.
 
@@ -223,6 +229,7 @@ An upgrade replaces the old copy whole. The run copies the new app next to the o
 6. The guided click-through for privacy permissions and click-only System Settings panes.
 7. A generated template, `inventory/example/TEMPLATE.yml`, that lists every known setting with its allowed values, whether it needs admin rights, when it takes effect, and whether it is proven on the current macOS.
 8. Apps from the checked catalog in `apps/macos.yml`, and one profile for several Macs.
+9. Selected Firefox machine policies and a one-time cleaned bookmarks import for each selected account.
 
 ### Next, right after the first release
 
@@ -441,3 +448,113 @@ Enablement follows Foundation's conversions, rather than requiring a Boolean pli
 [Apple's UserDefaults reference](https://developer.apple.com/documentation/foundation/userdefaults/bool(forkey:))
 documents numeric and string conversion. Nonzero numbers, `YES`, `true`, and `1` enable the source.
 String conversion follows [NSString.boolValue](https://developer.apple.com/documentation/foundation/nsstring/boolvalue).
+
+## Firefox bookmarks
+
+`settings/macos/bookmarks.yml` defines the account setting `bookmarks.import_file` on route `bookmarks`.
+The generic source can serve Firefox and Chrome importers. This repository currently routes it to Firefox.
+This entry has no browser-map metadata because it imports account data rather than a machine policy.
+The profile checker accepts a nonempty relative path without `..` parts, null bytes, or line breaks.
+It refuses invalid paths without printing their values.
+Before decryption, the role resolves links and refuses a source outside the profile root.
+The account work dictionary contains `bookmarks_import: {source: VALUE}`, or an empty dictionary when omitted.
+
+The source path starts at the parent of `inventory_dir`, the selected inventory folder.
+For the README's profile, `files/firefox-bookmarks.vault` means `~/.dot/mac-setup/files/firefox-bookmarks.vault`.
+Each account imports independently, after app installation and Firefox policy application.
+The running account imports in an unprivileged play.
+Other accounts import through `become_user` inside the machine play.
+
+`macos_firefox_bookmarks` first calls its module with `operation: inspect` and Ansible's actual check-mode value.
+Preview reads no private profile or export, starts no Firefox process, and writes nothing.
+It reports `would_import` because identifying Firefox's default profile requires starting Firefox.
+Apply starts Firefox before decryption and checks the completion record for the profile Firefox selects.
+A completed import skips decryption and all temporary files, even when the source changes or disappears.
+Firefox still briefly starts on completed apply runs and may update its own files during normal browser housekeeping.
+For an import that remains pending, apply creates a private directory with mode `0700`.
+Ansible's copy module decrypts the source into `bookmarks.html` with mode `0600` inside that directory.
+The importer receives that plaintext path and the inspected profile identity.
+It refuses a changed profile identity before bookmark writes. Cleanup removes the directory after the attempt.
+Sensitive tasks disable logs and diffs. Refusals use fixed messages without arbitrary module error details.
+An access denial preserves the specific instruction to grant the terminal app Full Disk Access or Firefox App Data access.
+Startup failures expose only the check category `gui`, `launch`, `system_access`, or `automation` alongside their fixed error message.
+The role and journey map those categories to fixed screen-login or startup guidance without echoing arbitrary error text.
+The normal permission flow adds no prompt or permission requirement for bookmarks.
+
+The module accepts `operation`, which defaults to `import`, and requires `source` only for import.
+Optional `firefox_root` selects an isolated application data container for verification.
+Optional `expected_profile_key` binds import to the profile found by inspection.
+The module reports `changed`, the imported count, and its state.
+Inspection states are `pending`, `already_imported`, `would_import`, and `not_installed`.
+Real pending or completed inspections also return the opaque SHA-256 `profile_key`.
+Import states are `imported`, `already_imported`, `would_import`, and `not_installed`.
+An absent Firefox installation records a visible skip without decrypting the shared source.
+A running Firefox instance in any account refuses import. Completed imports never refresh automatically.
+
+The importer starts headless Firefox through LaunchServices without `-profile`, so Firefox chooses its normal default profile.
+It uses `/usr/bin/open -n -g -W -a /Applications/Firefox.app` with arguments after `--args`.
+The selected account must have a graphical login session. The importer checks `launchctl print gui/UID` by exit status before launching.
+An SSH command can use that account's existing graphical session.
+On macOS 27, Firefox launched directly from SSH can inherit SSH responsibility and lose protected-profile access.
+LaunchServices is macOS's [application launcher](https://developer.apple.com/documentation/coreservices/launch_services).
+It never inspects the protected Firefox folder. It communicates through Marionette, Firefox's automation interface.
+Firefox creates the UUID preference `mac_setup.bookmarks.profile_id` only when absent.
+It reads and saves that identifier through its own [preference service](https://firefox-source-docs.mozilla.org/modules/libpref/index.html).
+The identifier is a random value that distinguishes profiles. Its SHA-256 hash names the private completion record.
+Completion records live in `~/Library/Application Support/mac-setup/firefox-bookmarks/`, outside the protected Firefox folder.
+The importer uses Firefox's Places bookmarks interface.
+It reads and inserts through Mozilla's [`Bookmarks.fetch` and `Bookmarks.insert` APIs](https://searchfox.org/firefox-main/source/toolkit/components/places/Bookmarks.sys.mjs).
+It never writes the Places database directly.
+Mozilla's [`DisableProfileImport` handler](https://searchfox.org/firefox-main/source/browser/components/enterprisepolicies/Policies.sys.mjs)
+blocks the profile-import user interface. It does not block these native bookmarks operations.
+The importer leaves the configured policies in place.
+
+The headless process uses [Marionette's environment configuration](https://searchfox.org/firefox-main/source/remote/components/Marionette.sys.mjs).
+Each automation session sets `MOZ_REMOTE_ALLOW_SYSTEM_ACCESS=1` for Firefox's privileged browser context.
+This value applies only to the launched session.
+Firefox [158.0.1](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_158_0_1_RELEASE/remote/components/RemoteAgent.sys.mjs),
+[159.0](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_159_0_RELEASE/remote/components/RemoteAgent.sys.mjs),
+and [160.0](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_160_0_RELEASE/remote/components/RemoteAgent.sys.mjs) read this variable when creating RemoteAgent.
+Releases 159 and 160 remove the older command-line flag handler, so the importer omits `--remote-allow-system-access`.
+Firefox 160's [privileged-context check](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_160_0_RELEASE/remote/marionette/driver.sys.mjs#L423-L428)
+requires that system-access state.
+A refusal of privileged context or scripts retains the named `system_access` check through shutdown and cleanup.
+The installed `open(1)` manual documents `--env NAME=VALUE`. Each required Mozilla variable is passed through that option.
+Standard input, output, and error point to `/dev/null`, including Firefox's streams.
+The launcher and Firefox have separate process identities. A random `about:blank` fragment identifies this launch without network access.
+Initial process discovery requires the current account, exact executable path, complete fragment argument, and one matching main process.
+The executable is independently checked with the system `proc_pidpath` function through Python's built-in `ctypes` module.
+Monitoring retains the PID, account, and kernel birth time, including microseconds.
+The birth fields come from Apple's [`proc_bsdinfo` structure](https://github.com/apple-oss-distributions/xnu/blob/main/bsd/sys/proc_info.h#L54-L77).
+Discovery rechecks the token between matching kernel birth observations, so stale command data cannot bind a replacement process.
+Monitoring verifies the kernel executable path on each observation.
+Firefox can consume startup arguments without losing its established process identity.
+Mozilla's [argument helper](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_158_0_1_RELEASE/toolkit/xre/CmdLineAndEnvUtils.h#L46-L54)
+removes entries from its argument array. [Firefox startup](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_158_0_1_RELEASE/toolkit/xre/nsAppRunner.cpp)
+also keeps a separate argument array for relaunches. These sources do not establish which argument changed in a particular `ps` observation.
+Before profile access, a startup replacement can be discovered only with the original account, executable, and whole fragment argument.
+The Marionette PID must match the independently discovered replacement before profile identity or bookmarks are accessed.
+After profile access starts, a process exit fails the operation instead of transferring it to another process.
+Signals require a fresh matching account, precise birth time, and kernel executable. A detected replacement receives no signal.
+An observed PID with incomplete metadata refuses exit verification instead of counting as an exited process.
+mac-setup briefly reserves a free loopback port, then passes that known port to Firefox's complete `marionette.port` preference.
+It connects directly to that port and never reads a port file from Firefox's folder.
+Before any protocol command, a narrow `lsof` query verifies that the bound process owns the exact server-side TCP connection.
+The query selects only that PID and established TCP sockets on the chosen loopback port. It reads no browser profile files.
+Ownership is polled within the startup deadline because connecting can finish before Firefox accepts the socket.
+No protocol bytes are sent while that ownership remains unproved.
+The process identity is checked before and after the query. The peer's reported PID is then checked as an additional condition.
+A peer claiming Firefox's PID cannot replace the independent connection-owner check.
+The importer requires [Marionette's normal shutdown acknowledgement](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_158_0_1_RELEASE/remote/marionette/driver.sys.mjs#L2848-L2921)
+and the same Firefox process must exit before completion is recorded.
+`open -W` waits for the launched application but does not expose Firefox's exit status.
+A crash before acknowledgement or a shutdown timeout refuses completion. A crash after acknowledgement cannot be excluded by the launcher status.
+Each imported folder and bookmark receives a stable identifier, so a partial retry skips items already committed by Firefox.
+It preserves source duplicates and never joins existing bookmarks by address.
+The completion marker has mode `0600` and appears only after that acknowledged shutdown and observed exit.
+
+The bookmarks journey observes `capabilities.browserVersion` from its controlled setup session.
+It saves only a numeric version or `unknown`, alongside the two startup-control booleans.
+Before preview, the helper copies the safe setup fields to `reads/bookmarks-startup-control.json` in the evidence folder.
+The version identifies the setup session. Firefox can update between sessions, so it does not describe every later session.
+The Firefox catalog and browser-map baseline remains 158.0.1 until a new version receives native verification.

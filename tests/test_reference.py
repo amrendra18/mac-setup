@@ -13,7 +13,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-ENTRY_COUNT = 1242
+ENTRY_COUNT = 1243
 SCRIPT = ROOT / "scripts/render-template"
 _loader = importlib.machinery.SourceFileLoader("render_template", str(SCRIPT))
 template = importlib.util.module_from_spec(
@@ -50,6 +50,7 @@ ROUTES = (
     "finder_sidebar",
     "apps",
     "firefox",
+    "bookmarks",
     "by_hand",
     "not_yet",
 )
@@ -83,6 +84,7 @@ VALUE_FIELDS = {
     "list": {"type", "choices"},
     "catalog_ids": {"type"},
     "hotkeys": {"type", "actions"},
+    "profile_path": {"type"},
 }
 OPTIONAL_VALUE_FIELDS = {"list": {"min"}}
 SETTING_WORD = re.compile(r"[a-z][a-z0-9_]*")
@@ -357,6 +359,12 @@ def entry_problems(entry):
         )
     if (kind == "catalog_ids") != (route == "apps"):
         problems.append("values: {type: catalog_ids} is for route apps, and only there")
+    if (kind == "profile_path") != (route == "bookmarks"):
+        problems.append(
+            "values: {type: profile_path} is for route bookmarks, and only there"
+        )
+    if route == "bookmarks" and (entry["scope"] != "user" or "browser" in entry):
+        problems.append("bookmarks needs account scope and no browser metadata")
     if kind == "paths" and route != "finder_sidebar":
         problems.append("values: {type: paths} is only for route finder_sidebar")
     if kind == "list" and route == "defaults":
@@ -1377,6 +1385,30 @@ class FirefoxRoute(unittest.TestCase):
                         for mode in ("locked", "unlocked")
                     )
                 )
+
+
+class FirefoxBookmarksRoute(unittest.TestCase):
+    def test_route_is_an_account_path_without_browser_map_metadata(self):
+        row = yaml.safe_load((ROOT / "settings/macos/bookmarks.yml").read_text())[
+            "bookmarks.import_file"
+        ]
+        self.assertEqual(entry_problems(row), [])
+        self.assertNotIn("browser", row)
+        for fields in (
+            {"scope": "machine"},
+            {"values": {"type": "bool"}},
+            {"browser": {}},
+        ):
+            with self.subTest(fields=fields):
+                self.assertTrue(entry_problems({**row, **fields}))
+        self.assertTrue(entry_problems(fixture(values={"type": "profile_path"})))
+
+    def test_template_renders_bookmarks_in_account_settings_only(self):
+        text = template.render(ROOT / "settings/macos")
+        account, machine = text.split("machine_settings:\n", 1)
+        line = "  # bookmarks.import_file: files/firefox-bookmarks.vault\n"
+        self.assertIn(line, account)
+        self.assertNotIn(line, machine)
 
 
 if __name__ == "__main__":

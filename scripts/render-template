@@ -33,6 +33,7 @@ SETTABLE = (
     "finder_sidebar",
     "apps",
     "firefox",
+    "bookmarks",
 )
 TAKES_EFFECT = {
     "live": "at once",
@@ -121,6 +122,7 @@ def example(values, default):
         "paths": [],
         "catalog_ids": [],
         "hotkeys": {},
+        "profile_path": "files/firefox-bookmarks.vault",
     }[kind]
 
 

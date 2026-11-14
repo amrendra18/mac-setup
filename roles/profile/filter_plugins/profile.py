@@ -32,10 +32,12 @@ PROFILE_KEYS = [
     "virustotal_api_key",
 ]
 RUN_SWITCHES = {
+    "bookmarks_journey_stage",
     "by_hand_open",
     "firefox_journey_stage",
     "macos_apps_downloads",
     "macos_apps_applications",
+    "macos_firefox_bookmarks_root",
     "permissions_ls",
     "permissions_open",
 }
@@ -163,6 +165,17 @@ def _hotkey_entry(choice):
 
 
 VALUE_KINDS = {
+    "profile_path": (
+        lambda spec, value: (
+            isinstance(value, str)
+            and bool(value.strip())
+            and not value.startswith("/")
+            and ".." not in value.split("/")
+            and not any(character in value for character in "\x00\r\n")
+            and posixpath.normpath(value) != "."
+        ),
+        lambda spec: "a nonempty relative file path under the profile root, without ..",
+    ),
     "browser": (
         lambda spec, value: _browser.value_allowed(spec, value),
         lambda spec: "a value matching the browser setting's schema",
@@ -344,7 +357,7 @@ def _setting_problems(prefix, settings, scope, reference, allow_lockout_risk, ca
                 f"{subject}: "
                 + (
                     "value is not allowed, "
-                    if entry["route"] == "firefox"
+                    if entry["route"] in ("firefox", "bookmarks")
                     else f"{value!r} is not allowed, "
                 )
                 + f"use {describe(entry['values'])}"
@@ -484,7 +497,7 @@ def profile_problems(profile, files, catalog=()):
                 {
                     key: row
                     for key, row in reference.items()
-                    if key.startswith("firefox.")
+                    if row["route"] == "firefox"
                 },
             )
         except _firefox.FirefoxError as error:
@@ -585,6 +598,7 @@ def _account_work(settings, reference, table):
         "commands": _commands(settings, reference, table),
         "dock_apps": _item(settings, reference, "dock_apps", "apps"),
         "wallpaper": _item(settings, reference, "wallpaper", "color"),
+        "bookmarks_import": _item(settings, reference, "bookmarks", "source"),
         "finder_sidebar": (
             {"ids": sorted(sidebar)}
             | {

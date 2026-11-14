@@ -313,7 +313,7 @@ def _is_browser(family, command):
     command = command.lower()
     name = Path(command).name
     patterns = {
-        "firefox": ("firefox", "firefoxcp"),
+        "firefox": ("firefox", "firefoxcp", "firefox-bin"),
         "chrome": ("google chrome", "chrome helper", "google chrome helper"),
     }
     bundle = (

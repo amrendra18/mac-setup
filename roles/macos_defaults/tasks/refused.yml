@@ -3,4 +3,5 @@
   ansible.builtin.set_fact:
     macos_defaults_refused: >-
       {{ macos_defaults_refused | default([])
-      + [{'account': macos_defaults_refused_account, 'id': macos_defaults_refused_id, 'message': ansible_failed_result.msg}] }}
+      + [{'account': macos_defaults_refused_account, 'id': macos_defaults_refused_id,
+      'message': macos_defaults_refused_message | default(ansible_failed_result.msg)}] }}

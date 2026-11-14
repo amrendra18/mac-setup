@@ -1,6 +1,7 @@
 ---
 # Written by scripts/sync-example from the maintainer's profile. Run it again after a change.
 default_settings:
+  # bookmarks.import_file: files/firefox-bookmarks.html
   dock.position: left
   dock.tile_size: 32
   dock.show_recents: false

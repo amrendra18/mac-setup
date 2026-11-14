@@ -73,6 +73,7 @@ FIELDS = {
             "profile",
             "setup",
             "cleanup",
+            "environment",
             "reads",
             "passwords",
             "creates",
@@ -150,6 +151,7 @@ class Journey:
     profile: dict = field(default_factory=dict)
     setup: list = field(default_factory=list)
     cleanup: list = field(default_factory=list)
+    environment: dict = field(default_factory=dict)
     reads: list = field(default_factory=list)
     passwords: list = field(default_factory=list)
     creates: str = ""
@@ -272,6 +274,14 @@ def parse_journey(name, data, where):
         raise JourneyError(
             f"{where}: profile must be a mapping, and setup and cleanup lists of shell commands"
         )
+    if not isinstance(journey.environment, dict) or not all(
+        isinstance(key, str)
+        and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", key)
+        and isinstance(value, str)
+        and "\x00" not in value
+        for key, value in journey.environment.items()
+    ):
+        raise JourneyError(f"{where}: environment needs valid names and text values")
     if not isinstance(journey.passwords, list) or not all(
         isinstance(n, str) and n for n in journey.passwords
     ):
@@ -295,11 +305,11 @@ def load_journey(path):
     return journey
 
 
-def sh(argv, **kwargs):
+def sh(argv, *, environment=None, **kwargs):
     return subprocess.run(
         argv,
         cwd=ROOT,
-        env=ENV,
+        env=ENV | (environment or {}),
         stdin=subprocess.DEVNULL,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -617,10 +627,10 @@ def restore(path, log):
     return ""
 
 
-def run_steps(kind, commands, log):
+def run_steps(kind, commands, log, *, environment=None):
     with log.open("a") as out:
         for i, command in enumerate(commands, 1):
-            done = sh(["/bin/sh", "-c", command])
+            done = sh(["/bin/sh", "-c", command], environment=environment)
             out.write(f"$ {command}\n{done.stdout}exit {done.returncode}\n\n")
             if done.returncode != 0:
                 last = done.stdout.strip().splitlines()[-1:]
@@ -644,7 +654,7 @@ def drive(journey, run, evidence, profile_file, password_file):
         *run.args,
     ] + (["-e", f"@{password_file}"] if password_file else [])
     started = time.monotonic()
-    done = sh(argv)
+    done = sh(argv, environment=journey.environment)
     seconds = round(time.monotonic() - started, 2)
     (evidence / "logs" / f"{journey.name}-{run.name}.txt").write_text(
         f"$ {shlex.join(argv)}\n{done.stdout}exit {done.returncode}\n"
@@ -704,7 +714,10 @@ def run_journey(journey, evidence, profile_file):
     password_file = evidence / f"{journey.name}-passwords.json"
     try:
         failure = failure or run_steps(
-            "setup", journey.setup, evidence / "logs" / f"{journey.name}-setup.txt"
+            "setup",
+            journey.setup,
+            evidence / "logs" / f"{journey.name}-setup.txt",
+            environment=journey.environment,
         )
         runs = journey.runs
         if journey.creates:
@@ -753,6 +766,7 @@ def run_journey(journey, evidence, profile_file):
                     "cleanup",
                     journey.cleanup,
                     evidence / "logs" / f"{journey.name}-cleanup.txt",
+                    environment=journey.environment,
                 ),
             ),
             (
