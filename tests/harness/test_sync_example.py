@@ -145,6 +145,65 @@ class SyncExample(unittest.TestCase):
             self.assertIn("one host_vars directory", stderr.getvalue())
             self.assertEqual([p.read_bytes() for p in outputs], before)
 
+    def test_sync_example_refuses_private_browser_values(self):
+        entries = {
+            "firefox.private": {
+                "values": {"type": "text", "pattern": ".*"},
+                "browser": {"capture": {"class": "mask"}},
+            },
+            "chrome.structured": {
+                "values": {"type": "browser", "schema": {"type": "object"}},
+                "browser": {"capture": {"class": "mask"}},
+            },
+            "chrome.endpoint": {
+                "values": {"type": "text", "pattern": ".*"},
+                "browser": {
+                    "capture": {
+                        "class": "public_endpoint",
+                        "choices": ["https://example.org/"],
+                    }
+                },
+            },
+            "firefox.safe": {
+                "values": {"type": "bool"},
+                "browser": {"capture": {"class": "scalar"}},
+            },
+            "chrome.enum": {
+                "values": ["system", "light", "dark"],
+                "browser": {
+                    "capture": {"class": "enum", "choices": ["system", "light", "dark"]}
+                },
+            },
+        }
+        settings = {
+            "firefox.private": "test-input-identifying-name",
+            "chrome.structured": {"name": "test-input-identifying-name"},
+            "chrome.endpoint": "https://example.org/",
+            "firefox.safe": True,
+            "chrome.enum": "system",
+        }
+        refused = []
+        result = self.script.neutral_settings(settings, entries, refused)
+        self.assertEqual(sorted(refused), ["chrome.structured", "firefox.private"])
+        self.assertEqual(
+            result,
+            {
+                "chrome.endpoint": "https://example.org/",
+                "firefox.safe": True,
+                "chrome.enum": "system",
+            },
+        )
+        for key, value in [
+            ("firefox.safe", "test-input-identifying-name"),
+            ("chrome.enum", "test-input-identifying-name"),
+            ("chrome.endpoint", "https://example.org/private"),
+        ]:
+            refused = []
+            self.assertEqual(
+                self.script.neutral_settings({key: value}, entries, refused), {}
+            )
+            self.assertEqual(refused, [key])
+
     def test_accounts_get_made_up_names(self):
         refused = []
         accounts = self.script.neutral_accounts(

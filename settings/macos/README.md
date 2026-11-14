@@ -22,3 +22,41 @@ Anchor each pattern to the text of its own line, so it cannot match the exit lin
 4. A `{type: hotkeys}` value maps each action to `true`, `false`, or keys joined with `+`, such as `control+up`. It merges into one dictionary with `dict_mode: add`, so other shortcuts stay as they are.
 5. The profile check refuses two settings that set the same key to different values. Under an account, the line names the account's own setting. Two entries that share a key leave it alone for every choice that does not claim it, so only two claims that disagree are refused.
 6. The profile check refuses `unset` for a `{type: hotkeys}` value and for a `{type: list}` value on the `defaults` route, because it would delete the whole dictionary or list.
+
+## Browser rows
+
+`firefox.yml` and `chrome.yml` are the shared source for capture and later browser application.
+Every browser row remains on `route: not_yet`, so normal profiles still refuse those settings.
+The `browser` field holds the family, read descriptors, capture rule, lock forms, proposed baseline, support metadata, and inventory disposition.
+The metadata validator rejects unknown fields and executable descriptors.
+
+1. `read` names exact keys in approved sources and an identity or boolean inversion conversion.
+2. `capture` allows a scalar, a finite enum, an exact reviewed public endpoint, or a masked value.
+3. `locked` and `unlocked` describe supported forms. An unsupported form names why it stays unset.
+4. `baseline.status` remains `proposed` until the settings review. It is separate from observed browser values.
+5. `support` requires `min`, `tested`, `source`, and `note`. Only a vendor-documented removal has an optional `max`.
+6. `inventory` links each row to a policy leaf, deprecated policy, non-policy setting, or lock control.
+
+`support.min` records minimum known support from the vendor, or the pinned test version when earlier support is unknown.
+`support.tested` names the map's pinned test version. It stays separate from the observed profile version.
+Newer profile versions remain eligible for capture unless they exceed a documented `max`.
+A major-version `max` includes that major version's point releases.
+The report header names both the tested and observed versions.
+
+Structured values use `{type: browser, schema: ...}` with a validated subset of JSON Schema.
+Schemas state types, enum choices, numeric bounds, object members, array members, and required fields.
+Dynamic keys and private structures remain masked during capture.
+The ledgers in `tests/browser/` list policy names, configurable leaves, structured members, and non-policy settings independently.
+The coverage test requires one disposition per listed item, with no duplicates.
+
+After editing browser rows, run these commands:
+
+```sh
+scripts/render-browser-map
+scripts/render-template
+scripts/check full
+```
+
+Capture loads the generated Python map without PyYAML or Ansible.
+Do not edit the generated file by hand.
+`scripts/sync-example` refuses private or structured browser values instead of copying them into an example.

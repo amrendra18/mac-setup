@@ -51,7 +51,7 @@ scripts/check full
 
 `fast` runs these checks, in this order:
 
-1. yamllint on every YAML file.
+1. yamllint on every YAML file and `scripts/render-browser-map --check` for stale browser data.
 2. The playbook syntax check.
 3. The unit tests in `tests/modules/` and `tests/harness/`.
 4. Every broken test profile in `tests/inputs/`, and the two-Mac inventory `tests/two-macs/hosts.yml`. Each one must stop in the profile check with exit code 2 and `changed=0`.
@@ -72,9 +72,10 @@ The last line says `every check held` and the script exits 0 when every check he
 
 1. Edit the entry in `settings/macos/AREA.yml`. [The settings reference](docs/how-it-works.md#the-settings-reference) gives its fields.
 2. For a new entry, raise `ENTRY_COUNT` in `tests/test_reference.py`. Then update the counts in README.md ("Before you start") and in docs/how-it-works.md ("The settings reference"). `tests/test_reference.py` fails on a stale count and names the sentence. A reworded count sentence also fails; then update its pattern in `DOC_COUNTS` in that file.
-3. Run `scripts/render-template`.
-4. Run `scripts/check full`.
-5. On a Mac set aside for testing, run `scripts/verify fast --feature NAME`. When it proves the setting, add the macOS version and date to `proven_on`, and update the proven count in README.md.
+3. For a browser entry, run `scripts/render-browser-map`.
+4. Run `scripts/render-template`.
+5. Run `scripts/check full`.
+6. On a Mac set aside for testing, run `scripts/verify fast --feature NAME`. When it proves the setting, add the macOS version and date to `proven_on`, and update the proven count in README.md.
 
 ## Prove a change on a real Mac
 
@@ -94,3 +95,7 @@ The [verification map](verify/features/README.md) lists every feature, the journ
 4. `scripts/collection-age` checks the Ansible collection pins in `requirements/collections.txt` against Galaxy's publish dates, and fails on a pin younger than 21 days. It needs the network.
 
 Every script in `scripts/` answers `--help` with its usage and exit codes.
+
+Browser capture tests use temporary artificial folders and selected policy copies.
+They never use the running account's browser data.
+The command tests need read-only process and lock checks. Ordinary browsers may remain open because fixtures use isolated folders.

@@ -16,8 +16,8 @@ fast  yamllint, playbook syntax, Python unit tests in tests/modules/ and
       tests/two-macs/hosts.yml (each must stop in the profile check with exit 2
       and changed=0, run with --check, and print one problem line per
       "# expect: SUBJECT" line in the input, each line starting "SUBJECT: "),
-      the structure rules, the private-word scan and gitleaks. It changes no
-      settings.
+      the generated browser map, the structure rules, the private-word scan and
+      gitleaks. It changes no settings.
 full  fast, then the reference test tests/test_reference.py, black --check on the
       Python files, and ansible-lint with broken module arguments when requirements/dev.txt pins it.
 
@@ -233,7 +233,7 @@ python_files() {
   while IFS= read -r -d '' f; do
     case $f in
       *.py) printf '%s\0' "$f" ;;
-      scripts/*) head -3 "$f" | grep -q "^'''" && printf '%s\0' "$f" ;;
+      scripts/*) { head -3 "$f" | grep -q "^'''" || head -1 "$f" | grep -qE '^#!.*python'; } && printf '%s\0' "$f" ;;
     esac
   done
 }
@@ -249,6 +249,7 @@ python_format() {
 
 step yamllint yaml_lint
 step "playbook syntax" syntax
+step "generated browser map" "$bin/python" -I scripts/render-browser-map --check
 if [ -n "$(find tests/modules -name 'test_*.py' 2>/dev/null)" ]; then
   step "unit tests" unit_tests
 else

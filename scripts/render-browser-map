@@ -1,0 +1,585 @@
+#!/bin/sh
+# fmt: off
+''':'
+root=$(cd "$(dirname "$0")/.." && pwd)
+[ -x "$root/.local/venv/bin/python" ] || { echo "render-browser-map: .local/venv is missing. Run scripts/bootstrap first." >&2; exit 3; }
+exec "$root/.local/venv/bin/python" -I "$0" "$@"
+'''
+# fmt: on
+
+import argparse
+import hashlib
+import importlib.util
+import ipaddress
+import json
+import math
+import re
+import sys
+from pathlib import Path
+from urllib.parse import urlsplit
+
+import yaml
+
+ROOT = Path(__file__).resolve().parents[1]
+_spec = importlib.util.spec_from_file_location(
+    "browser_settings_for_map", ROOT / "module_utils/browser_settings.py"
+)
+_browser_settings = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_browser_settings)
+schema_accepts = _browser_settings.schema_accepts
+value_allowed = _browser_settings.value_allowed
+TARGET = ROOT / "module_utils/browser_settings_data.py"
+FAMILIES = {"firefox", "chrome"}
+READ_SOURCES = {
+    "firefox_prefs",
+    "firefox_user",
+    "firefox_policy",
+    "chrome_preferences",
+    "chrome_local_state",
+    "chrome_secure_preferences",
+    "chrome_policy",
+}
+WRITE_SOURCES = {
+    "firefox_policy",
+    "firefox_preferences",
+    "chrome_policy",
+    "chrome_preferences",
+    "none",
+}
+READ_TYPES = {"bool", "int", "float", "text", "array", "object"}
+SCHEMA_TYPES = {"boolean", "integer", "number", "string", "array", "object"}
+SCHEMA_FIELDS = {
+    "type",
+    "enum",
+    "minimum",
+    "maximum",
+    "properties",
+    "required",
+    "items",
+    "additionalProperties",
+    "anyOf",
+    "pattern",
+}
+
+
+def _line(value):
+    return isinstance(value, str) and bool(value.strip()) and "\n" not in value
+
+
+def _number(value):
+    return type(value) in (int, float) and math.isfinite(value)
+
+
+def _fields(value, required, optional=()):
+    return isinstance(value, dict) and set(required) <= set(value) <= set(
+        required
+    ) | set(optional)
+
+
+def _path(value):
+    return (
+        isinstance(value, list) and bool(value) and all(_line(part) for part in value)
+    )
+
+
+def schema_problems(schema):
+    if not isinstance(schema, dict) or not schema or set(schema) - SCHEMA_FIELDS:
+        return ["schema must use supported JSON Schema fields"]
+    problems = []
+    kind = schema.get("type")
+    if kind is not None and kind not in SCHEMA_TYPES:
+        problems.append("schema type is not supported")
+    if kind is None and not ("anyOf" in schema or "enum" in schema):
+        problems.append("schema needs type, anyOf or enum")
+    if "enum" in schema:
+        choices = schema["enum"]
+        if (
+            not isinstance(choices, list)
+            or not choices
+            or len({json.dumps(v, sort_keys=True) for v in choices}) != len(choices)
+        ):
+            problems.append("schema enum needs different choices")
+        elif (
+            any(
+                not schema_accepts(
+                    {k: v for k, v in schema.items() if k != "enum"}, choice
+                )
+                for choice in choices
+            )
+            and kind
+        ):
+            problems.append("schema enum choices must match its type and bounds")
+    for bound in ("minimum", "maximum"):
+        if bound in schema and (
+            kind not in ("integer", "number") or not _number(schema[bound])
+        ):
+            problems.append(
+                "schema numeric bounds need a numeric type and finite numbers"
+            )
+    if (
+        _number(schema.get("minimum"))
+        and _number(schema.get("maximum"))
+        and schema["minimum"] > schema["maximum"]
+    ):
+        problems.append("schema minimum must not exceed maximum")
+    if "pattern" in schema:
+        try:
+            if kind != "string":
+                raise ValueError()
+            re.compile(schema["pattern"])
+        except (re.error, TypeError, ValueError):
+            problems.append("schema pattern needs a string type and valid expression")
+    if kind == "array" and "items" not in schema:
+        problems.append("schema array needs items")
+    if "items" in schema:
+        if kind != "array":
+            problems.append("schema items needs array type")
+        problems += schema_problems(schema["items"])
+    properties = schema.get("properties", {})
+    if "properties" in schema:
+        if (
+            kind != "object"
+            or not isinstance(properties, dict)
+            or not all(_line(key) for key in properties)
+        ):
+            problems.append("schema properties needs object type and named properties")
+        else:
+            for child in properties.values():
+                problems += schema_problems(child)
+    if "required" in schema:
+        required = schema["required"]
+        if (
+            kind != "object"
+            or not isinstance(required, list)
+            or not all(_line(key) for key in required)
+            or len(set(required)) != len(required)
+            or not isinstance(properties, dict)
+            or not set(required) <= set(properties)
+        ):
+            problems.append("schema required must list different declared properties")
+    if "additionalProperties" in schema:
+        extra = schema["additionalProperties"]
+        if kind != "object" or not isinstance(extra, (bool, dict)):
+            problems.append(
+                "schema additionalProperties needs object type and bool or schema"
+            )
+        elif isinstance(extra, dict):
+            problems += schema_problems(extra)
+    if "anyOf" in schema:
+        variants = schema["anyOf"]
+        if not isinstance(variants, list) or not variants:
+            problems.append("schema anyOf needs schemas")
+        else:
+            for variant in variants:
+                problems += schema_problems(variant)
+    return problems
+
+
+def _values_problems(values):
+    if isinstance(values, list):
+        if not values or any(
+            type(value) not in (bool, int, float, str) for value in values
+        ):
+            return ["browser choices must contain plain values"]
+        return []
+    fields = {
+        "bool": {"type"},
+        "int": {"type", "min", "max"},
+        "float": {"type", "min", "max"},
+        "text": {"type", "pattern"},
+        "browser": {"type", "schema"},
+    }
+    if not isinstance(values, dict) or values.get("type") not in fields:
+        return ["browser values need a supported value shape"]
+    kind = values["type"]
+    if set(values) != fields[kind]:
+        return ["browser values fields must match their type"]
+    if kind == "browser":
+        return schema_problems(values["schema"])
+    if kind in ("int", "float"):
+        low, high = values["min"], values["max"]
+        if (
+            not (_number(low) and _number(high) and low <= high)
+            or kind == "int"
+            and not (type(low) is int and type(high) is int)
+        ):
+            return ["browser numeric values need valid finite bounds"]
+    if kind == "text":
+        try:
+            re.compile(values["pattern"])
+        except (TypeError, re.error):
+            return ["browser text pattern must be a regular expression"]
+    return []
+
+
+def _public_endpoint(value):
+    if not isinstance(value, str):
+        return False
+    if value.startswith("https://"):
+        try:
+            address = urlsplit(value)
+            host = address.hostname
+            if not host or address.username or address.password:
+                return False
+            try:
+                return ipaddress.ip_address(host).is_global
+            except ValueError:
+                return "." in host and not host.endswith((".local", ".localhost"))
+        except ValueError:
+            return False
+    try:
+        return ipaddress.ip_address(value).is_global
+    except ValueError:
+        return False
+
+
+def _writer_problems(writer, family, unlocked):
+    if _fields(writer, {"unsupported"}):
+        return (
+            []
+            if _line(writer["unsupported"])
+            else ["writer unsupported needs a reason"]
+        )
+    if not _fields(writer, {"source", "path"}, {"level", "value"}):
+        return ["writer fields must be source, path and optional level, value"]
+    problems = []
+    source = writer["source"]
+    if (
+        source not in WRITE_SOURCES
+        or source != "none"
+        and not source.startswith(family + "_")
+    ):
+        problems.append("writer source must belong to its browser")
+    if source == "none":
+        if writer["path"] != [] or "value" in writer or "level" in writer:
+            problems.append("none writer needs empty path without value or level")
+    elif not _path(writer["path"]):
+        problems.append("writer path must list exact keys")
+    if "level" in writer and writer["level"] not in (
+        "mandatory",
+        "recommended",
+        "user",
+    ):
+        problems.append("writer level must be mandatory, recommended or user")
+    if (
+        unlocked
+        and source != "none"
+        and source.endswith("_policy")
+        and writer.get("level") not in ("recommended", "user")
+    ):
+        problems.append("unlocked policy writer needs recommended or user level")
+    return problems
+
+
+def browser_problems(entry):
+    browser = entry.get("browser")
+    if not _fields(
+        browser,
+        {
+            "family",
+            "kind",
+            "read",
+            "capture",
+            "locked",
+            "unlocked",
+            "baseline",
+            "support",
+            "inventory",
+        },
+    ):
+        return ["browser fields must follow the shared map contract"]
+    problems = []
+    family, kind = browser["family"], browser["kind"]
+    if family not in FAMILIES or kind not in ("setting", "lock_control"):
+        return ["browser family or kind is not supported"]
+    if (
+        entry.get("route") != "not_yet"
+        or entry.get("needs") != []
+        or entry.get("proven_on") != {}
+        or entry.get("takes_effect") != "relaunch"
+    ):
+        problems.append(
+            "browser rows need not_yet, no permissions or proof, and relaunch"
+        )
+    reads = browser["read"]
+    if not isinstance(reads, list):
+        problems.append("browser read must list descriptors")
+    else:
+        for read in reads:
+            if not _fields(
+                read, {"source", "path", "type", "conversion"}, {"alternative"}
+            ):
+                problems.append(
+                    "read fields must be source, path, type, conversion and optional alternative"
+                )
+                continue
+            if "alternative" in read and (
+                not isinstance(read["alternative"], str)
+                or not re.fullmatch(
+                    r"[a-z][a-z0-9]*(?:_[a-z0-9]+)*", read["alternative"]
+                )
+            ):
+                problems.append(
+                    "read alternative must be a nonempty snake_case group word"
+                )
+            if read["source"] not in READ_SOURCES or not read["source"].startswith(
+                family + "_"
+            ):
+                problems.append("read source must belong to its browser")
+            if not _path(read["path"]):
+                problems.append("read path must list exact keys")
+            if read["type"] not in READ_TYPES:
+                problems.append("read type is not supported")
+            if (
+                read["conversion"] not in ("identity", "invert_bool")
+                or read["conversion"] == "invert_bool"
+                and read["type"] != "bool"
+            ):
+                problems.append(
+                    "read conversion must be identity or invert_bool for bool"
+                )
+    values = entry.get("values", {})
+    value_problems = _values_problems(values)
+    if value_problems:
+        return problems + value_problems
+    value_kind = values.get("type") if isinstance(values, dict) else None
+    semantic_type = value_kind
+    if value_kind == "browser":
+        semantic_type = values["schema"].get("type")
+    read_types = {
+        "bool": "bool",
+        "int": "int",
+        "float": "float",
+        "text": "text",
+        "boolean": "bool",
+        "integer": "int",
+        "number": "float",
+        "string": "text",
+        "array": "array",
+        "object": "object",
+    }
+    expected_type = read_types.get(semantic_type)
+    if (
+        expected_type
+        and isinstance(reads, list)
+        and any(
+            isinstance(read, dict) and read.get("type") != expected_type
+            for read in reads
+        )
+    ):
+        problems.append("read type must match the setting value type")
+    capture = browser["capture"]
+    if not _fields(capture, {"class"}, {"choices", "reason"}) or capture.get(
+        "class"
+    ) not in ("scalar", "enum", "public_endpoint", "mask"):
+        problems.append("capture must declare scalar, enum, public_endpoint or mask")
+    else:
+        privacy = capture["class"]
+        if privacy in ("enum", "public_endpoint"):
+            choices = capture.get("choices")
+            if (
+                not isinstance(choices, list)
+                or not choices
+                or any(isinstance(v, (dict, list)) for v in choices)
+                or len({json.dumps(v, sort_keys=True) for v in choices}) != len(choices)
+            ):
+                problems.append("capture choices need different plain reviewed values")
+            elif any(not value_allowed(values, choice) for choice in choices):
+                problems.append("capture choices must satisfy values")
+            elif privacy == "public_endpoint" and not all(
+                _public_endpoint(v) for v in choices
+            ):
+                problems.append(
+                    "public_endpoint choices must be HTTPS addresses or public IP addresses"
+                )
+        elif "choices" in capture:
+            problems.append("only enum and public_endpoint capture take choices")
+        if (
+            privacy == "scalar"
+            and value_kind not in ("bool", "int", "float")
+            and not (
+                value_kind == "browser"
+                and values.get("schema", {}).get("type")
+                in ("boolean", "integer", "number")
+                and (
+                    values["schema"]["type"] == "boolean"
+                    or {"minimum", "maximum"} <= set(values["schema"])
+                )
+            )
+            and not (
+                isinstance(values, list)
+                and all(type(v) in (bool, int, float) for v in values)
+            )
+        ):
+            problems.append("scalar capture accepts only booleans and bounded numbers")
+        if privacy == "mask" and not _line(capture.get("reason")):
+            problems.append("masked capture needs a reason")
+        if "reason" in capture and not _line(capture["reason"]):
+            problems.append("capture reason must be one line")
+    for name in ("locked", "unlocked"):
+        problems += _writer_problems(browser[name], family, name == "unlocked")
+    baseline = browser["baseline"]
+    if (
+        not _fields(baseline, {"status"}, {"value", "reason"})
+        or baseline.get("status") != "proposed"
+    ):
+        problems.append("baseline must retain proposed status")
+    else:
+        if "value" in baseline and not value_allowed(values, baseline["value"]):
+            problems.append("baseline value must satisfy values")
+        if "reason" in baseline and not _line(baseline["reason"]):
+            problems.append("baseline reason must be one line")
+    support = browser["support"]
+    if not _fields(support, {"min", "tested", "source", "note"}, {"max"}):
+        problems.append("support needs min, tested, source, note and optional max")
+    elif not all(
+        isinstance(support[k], str) and re.fullmatch(r"\d+(\.\d+)*", support[k])
+        for k in ("min", "tested", "max")
+        if k in support
+    ):
+        problems.append("support versions must be dotted numbers")
+    else:
+        versions = {
+            key: tuple(map(int, value.split(".")))
+            for key, value in support.items()
+            if key in ("min", "tested", "max")
+        }
+        maximum_width = len(versions.get("max", ()))
+        width = max(map(len, versions.values()))
+        versions = {
+            key: value + (0,) * (width - len(value)) for key, value in versions.items()
+        }
+        if (
+            "max" in versions
+            and versions["min"][:maximum_width] > versions["max"][:maximum_width]
+        ):
+            problems.append("support minimum must not exceed maximum")
+        if (
+            not isinstance(support["source"], str)
+            or not support["source"].startswith("https://")
+            or not _line(support["note"])
+        ):
+            problems.append("support needs an HTTPS source and one-line note")
+    inventory = browser["inventory"]
+    if not _fields(
+        inventory, {"category", "policy", "leaf", "disposition"}, {"reason"}
+    ):
+        problems.append("inventory fields must follow the shared map contract")
+    else:
+        if inventory["category"] not in (
+            "policy",
+            "deprecated",
+            "non_policy",
+            "control",
+        ) or inventory["disposition"] not in ("mapped", "masked", "unsupported"):
+            problems.append("inventory category or disposition is not supported")
+        if not _line(inventory["policy"]) or not _line(inventory["leaf"]):
+            problems.append("inventory needs exact policy and leaf names")
+        if inventory["disposition"] in ("masked", "unsupported") and not _line(
+            inventory.get("reason")
+        ):
+            problems.append("masked or unsupported inventory needs a reason")
+        if (
+            inventory["category"] in ("policy", "deprecated", "control")
+            and entry.get("scope") != "machine"
+        ):
+            problems.append("policy and lock rows need machine scope")
+        if kind == "lock_control":
+            if (
+                entry.get("values") != {"type": "bool"}
+                or reads != []
+                or baseline.get("value") is not True
+                or inventory["category"] != "control"
+            ):
+                problems.append(
+                    "lock control must default true without a fabricated observed value"
+                )
+        elif inventory["category"] == "control":
+            problems.append("control inventory needs lock_control kind")
+        elif not reads and inventory["disposition"] != "unsupported":
+            problems.append("mapped or masked setting needs a read descriptor")
+    return problems
+
+
+class Loader(yaml.SafeLoader):
+    pass
+
+
+def _unique_mapping(loader, node):
+    result = {}
+    for key_node, value_node in node.value:
+        key = loader.construct_object(key_node, deep=True)
+        if key in result:
+            raise ValueError("browser reference repeats a setting or metadata key")
+        result[key] = loader.construct_object(value_node, deep=True)
+    return result
+
+
+Loader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _unique_mapping)
+
+
+def render():
+    rows, digest = {}, hashlib.sha256()
+    for family in sorted(FAMILIES):
+        path = ROOT / "settings/macos" / f"{family}.yml"
+        data = path.read_bytes()
+        digest.update(path.name.encode() + b"\0" + data)
+        entries = yaml.load(data, Loader)
+        if not isinstance(entries, dict):
+            raise ValueError(f"{family}: reference must map ids to rows")
+        for setting_id, row in entries.items():
+            problems = browser_problems(row)
+            if not isinstance(setting_id, str) or not setting_id.startswith(
+                family + "."
+            ):
+                problems.append("setting id must start with its browser family")
+            if row.get("browser", {}).get("family") != family:
+                problems.append("browser family must match its source file")
+            if problems:
+                raise ValueError(f"{setting_id}: " + "; ".join(problems))
+            rows[setting_id] = row
+    payload = json.dumps(
+        dict(sorted(rows.items())), sort_keys=True, indent=2, ensure_ascii=True
+    )
+    return (
+        "# Generated by scripts/render-browser-map. Do not edit.\n\n"
+        "import json\n\n"
+        "MAP_VERSION = 1\n"
+        f'SOURCE_DIGEST = "{digest.hexdigest()}"\n'
+        'CONTROL_DEFAULTS = {"firefox.lock": True, "chrome.lock": True}\n'
+        'BROWSER_SETTINGS = json.loads(r"""' + payload + '""")\n'
+    )
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog="scripts/render-browser-map",
+        epilog="exit codes: 0 generated or current, 1 invalid reference or stale map, 2 invalid command.",
+        description="Generate the browser map from the reviewed YAML reference.",
+    )
+    parser.add_argument(
+        "--check", action="store_true", help="Refuse a missing or stale generated map."
+    )
+    args = parser.parse_args()
+    try:
+        output = render()
+        if args.check:
+            if not TARGET.is_file() or TARGET.read_text() != output:
+                print(
+                    "render-browser-map: generated map differs; run scripts/render-browser-map",
+                    file=sys.stderr,
+                )
+                return 1
+            print("browser map matches the YAML reference")
+        else:
+            TARGET.parent.mkdir(exist_ok=True)
+            TARGET.write_text(output)
+            print("wrote module_utils/browser_settings_data.py")
+    except (OSError, ValueError, TypeError, yaml.YAMLError) as error:
+        print(f"render-browser-map: {error}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

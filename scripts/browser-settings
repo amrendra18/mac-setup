@@ -1,0 +1,238 @@
+#!/bin/sh
+# fmt: off
+''':'
+case "${1:-}" in
+  -h|--help)
+    cat <<'HELP'
+usage: scripts/browser-settings [-h] [--version] {capture,read-back} ...
+
+Read saved Firefox and Chrome configuration. No browser writes or network requests.
+Run /usr/bin/python3 -I -B scripts/browser-settings capture --help for capture options.
+Run /usr/bin/python3 -I -B scripts/browser-settings read-back --help for JSON options.
+
+exit codes: 0 completed, 2 invalid command or output, 3 unavailable evidence, 4 internal error.
+HELP
+    exit 0 ;;
+esac
+exec /usr/bin/python3 -I -B "$0" "$@"
+'''
+# fmt: on
+
+import argparse
+import importlib.util
+import json
+import os
+import sys
+from pathlib import Path
+
+sys.dont_write_bytecode = True
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def load_module(name):
+    spec = importlib.util.spec_from_file_location(
+        name, ROOT / "module_utils" / (name + ".py")
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class SafeParser(argparse.ArgumentParser):
+    def error(self, message):
+        self.exit(2, "Invalid command. Run scripts/browser-settings --help.\n")
+
+
+def main():
+    try:
+        reader = load_module("browser_settings")
+        data = load_module("browser_settings_data")
+        if data.MAP_VERSION != 1:
+            raise ValueError("Map version")
+    except Exception:
+        print("Browser settings map is unavailable or incompatible.", file=sys.stderr)
+        return 4
+    parser = SafeParser(
+        prog="scripts/browser-settings",
+        description="Read saved Firefox and Chrome configuration. No browser writes or network requests.",
+        epilog="exit codes: 0 completed, 2 invalid command or output, 3 unavailable evidence, 4 internal error. Quit the instance using the selected source with Command-Q. Review output locally before sharing.",
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version="browser-settings 1; map "
+        + str(data.MAP_VERSION)
+        + "; source "
+        + data.SOURCE_DIGEST,
+    )
+    commands = parser.add_subparsers(
+        dest="command", required=True, parser_class=SafeParser
+    )
+    for name in ("capture", "read-back"):
+        command = commands.add_parser(
+            name,
+            help=(
+                "Write a private YAML review candidate."
+                if name == "capture"
+                else "Print filtered saved observations as JSON."
+            ),
+        )
+        command.add_argument(
+            "--browser", choices=("firefox", "chrome", "both"), required=True
+        )
+        command.add_argument("--firefox-profile", type=Path, metavar="DIR")
+        command.add_argument("--chrome-profile", type=Path, metavar="DIR")
+        command.add_argument("--chrome-user-data-dir", type=Path, metavar="DIR")
+        command.add_argument(
+            "--policy-root",
+            type=Path,
+            metavar="DIR",
+            help="Read selected policy copies from this directory, instead of live macOS policy stores.",
+        )
+        if name == "capture":
+            command.add_argument(
+                "--output",
+                type=Path,
+                required=True,
+                metavar="FILE",
+                help="New report outside the checkout and browser stores. Parent directory must exist.",
+            )
+        else:
+            command.add_argument("--setting", action="append", default=[], metavar="ID")
+    args = parser.parse_args()
+    try:
+        if os.geteuid() == 0:
+            raise reader.CaptureError(
+                2, "Run capture as your regular account, without sudo."
+            )
+        families = ["firefox", "chrome"] if args.browser == "both" else [args.browser]
+        selected = getattr(args, "setting", [])
+        if any(
+            key not in data.BROWSER_SETTINGS
+            or data.BROWSER_SETTINGS[key]["browser"]["family"] not in families
+            for key in selected
+        ):
+            raise reader.CaptureError(
+                2, "Choose a mapped setting for the selected browser."
+            )
+        home = Path.home()
+        firefox_root = home / "Library/Application Support/Firefox"
+        chrome_root = (
+            args.chrome_user_data_dir
+            or home / "Library/Application Support/Google/Chrome"
+        )
+        entries = data.BROWSER_SETTINGS
+        forbidden = [
+            ROOT,
+            firefox_root,
+            chrome_root,
+            Path("/Applications/Firefox.app"),
+            Path("/Applications/Google Chrome.app"),
+            Path("/Library/Preferences"),
+            Path("/Library/Managed Preferences"),
+            home / "Library/Preferences",
+            home / "Library/Managed Preferences",
+        ]
+        results = []
+        source_checks = []
+        for family in families:
+            if family == "firefox":
+                profile = args.firefox_profile or reader.select_firefox_profile(
+                    firefox_root
+                )
+                user_data = firefox_root
+                domain = "org.mozilla.firefox.plist"
+            else:
+                profile = args.chrome_profile or reader.select_chrome_profile(
+                    chrome_root
+                )
+                user_data = args.chrome_user_data_dir or (
+                    profile.parent if args.chrome_profile else chrome_root
+                )
+                domain = "com.google.Chrome.plist"
+            roots = (
+                [args.policy_root]
+                if args.policy_root
+                else [
+                    Path("/Library/Preferences"),
+                    Path("/Library/Managed Preferences"),
+                    home / "Library/Preferences",
+                    home / "Library/Managed Preferences",
+                ]
+            )
+            forbidden.extend([profile, user_data] + roots)
+            source_checks.append((family, profile, user_data))
+            result = reader.read_browser(
+                family, entries, profile, user_data, [root / domain for root in roots]
+            )
+            if selected:
+                result["settings"] = {
+                    key: item
+                    for key, item in result["settings"].items()
+                    if key in selected
+                }
+                for state in (
+                    "captured",
+                    "masked",
+                    "unavailable",
+                    "unsupported",
+                    "absent",
+                    "conflict",
+                    "unverified",
+                ):
+                    result["counts"][state] = sum(
+                        item["state"] == state for item in result["settings"].values()
+                    )
+            result["policy_sources"] = (
+                "selected_copy" if args.policy_root else "saved_macos_stores"
+            )
+            results.append(result)
+        for family, profile, user_data in source_checks:
+            reader.check_browser_closed(family, profile, user_data)
+        if args.command == "read-back":
+            print(
+                json.dumps(
+                    {
+                        "format": 1,
+                        "map_version": data.MAP_VERSION,
+                        "source_digest": data.SOURCE_DIGEST,
+                        "browsers": results,
+                    },
+                    sort_keys=True,
+                    ensure_ascii=True,
+                    allow_nan=False,
+                )
+            )
+        else:
+            captured = sum(result["counts"]["captured"] for result in results)
+            if captured == 0:
+                raise reader.CaptureError(
+                    3, "No safe mapped value was captured. No report was written."
+                )
+            text = reader.candidate_yaml(results)
+            reader.write_candidate(args.output, text, forbidden)
+            masked = sum(result["counts"]["masked"] for result in results)
+            print(
+                "Capture completed: "
+                + str(captured)
+                + " safe assignments; "
+                + str(masked)
+                + " masked settings. Review the private report before sharing."
+            )
+        return 0
+    except reader.CaptureError as error:
+        print(str(error), file=sys.stderr)
+        return error.code
+    except KeyboardInterrupt:
+        print("Capture stopped. No browser setting was changed.", file=sys.stderr)
+        return 3
+    except Exception:
+        print(
+            "Browser settings could not complete because of an internal error.",
+            file=sys.stderr,
+        )
+        return 4
+
+
+if __name__ == "__main__":
+    sys.exit(main())

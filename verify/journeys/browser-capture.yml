@@ -1,0 +1,29 @@
+summary: Two captures of artificial Firefox and Chrome folders preserve sources, keep reports private, and reveal zero planted personal values.
+level: fast
+playbook: tests/browser/capture.yml
+setup:
+  - mkdir -p .local/browser-capture-journey
+profile: {}
+runs:
+  - name: first
+    args: [-e, browser_capture_run=first, --check]
+    exit: 0
+    recap: {changed: 0, failed: 0}
+    output:
+      - pattern: 'browser capture firefox expected=4 observed=4 leaks=0'
+        count: 1
+      - pattern: 'browser capture chrome expected=3 observed=3 leaks=0'
+        count: 1
+      - pattern: 'leak scanner detected deliberate test input=True'
+        count: 1
+  - name: second
+    args: [-e, browser_capture_run=second, --check]
+    exit: 0
+    recap: {changed: 0, failed: 0}
+    output:
+      - pattern: 'browser capture firefox expected=4 observed=4 leaks=0'
+        count: 1
+      - pattern: 'browser capture chrome expected=3 observed=3 leaks=0'
+        count: 1
+      - pattern: 'leak scanner detected deliberate test input=True'
+        count: 1

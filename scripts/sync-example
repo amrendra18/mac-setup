@@ -8,12 +8,19 @@ exec "$root/.local/venv/bin/python" -I "$0" "$@"
 # fmt: on
 
 import argparse
+import importlib.util
 import sys
 from pathlib import Path
 
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
+_spec = importlib.util.spec_from_file_location(
+    "browser_settings_for_example", ROOT / "module_utils/browser_settings.py"
+)
+_browser_settings = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_browser_settings)
+value_allowed = _browser_settings.value_allowed
 EXAMPLE = ROOT / "inventory" / "example" / "host_vars" / "example-mac"
 JOURNEY = ROOT / "verify" / "journeys" / "example-check.yml"
 NAMES = ["sam", "robin", "alex", "kim", "lee", "max"]
@@ -67,11 +74,27 @@ def neutral_value(setting_id, value):
     return value
 
 
+def browser_value_is_public(entry, value):
+    if (
+        isinstance(value, (list, dict))
+        or "values" not in entry
+        or "capture" not in entry.get("browser", {})
+    ):
+        return False
+    return _browser_settings.filter_value(entry, value)[0]
+
+
 def neutral_settings(settings, entries, refused):
     result = {}
     for key, value in (settings or {}).items():
         entry = entries.get(key, {})
         if entry.get("lockout_risk") or key in LEFT_OUT:
+            continue
+        if "browser" in entry or key.startswith(("firefox.", "chrome.")):
+            if browser_value_is_public(entry, value):
+                result[key] = value
+            else:
+                refused.append(key)
             continue
         values = entry.get("values")
         if (
@@ -125,7 +148,7 @@ def main():
     parser = argparse.ArgumentParser(
         prog="scripts/sync-example",
         description="Write inventory/example/ from a private profile with exactly one host_vars directory, without personal values.",
-        epilog="exit codes: 0 written, 1 a free-text setting needs a neutral value, 2 usage error, 3 not ready",
+        epilog="exit codes: 0 written, 1 a setting may contain private values, 2 usage error, 3 not ready",
     )
     parser.add_argument(
         "profile",
@@ -151,8 +174,14 @@ def main():
     machine = neutral_machine(profile.get("machine_settings"), entries, refused)
     if refused:
         for key in sorted(set(refused)):
+            reason = (
+                "may contain private or structured browser values; remove it from the example input"
+                if "browser" in entries.get(key, {})
+                or key.startswith(("firefox.", "chrome."))
+                else "is free text and may be personal; add a neutral value for it to NEUTRAL"
+            )
             print(
-                f"sync-example: {key} is free text and may be personal; add a neutral value for it to NEUTRAL",
+                f"sync-example: {key} {reason}",
                 file=sys.stderr,
             )
         return 1
