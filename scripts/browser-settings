@@ -4,13 +4,16 @@
 case "${1:-}" in
   -h|--help)
     cat <<'HELP'
-usage: scripts/browser-settings [-h] [--version] {capture,read-back} ...
+usage: scripts/browser-settings [-h] [--version] {capture,read-back,diff,check} ...
 
 Read saved Firefox and Chrome configuration. No browser writes or network requests.
 Run /usr/bin/python3 -I -B scripts/browser-settings capture --help for capture options.
 Run /usr/bin/python3 -I -B scripts/browser-settings read-back --help for JSON options.
+Run /usr/bin/python3 -I -B scripts/browser-settings diff A.yml B.yml to compare captures.
+Run /usr/bin/python3 -I -B scripts/browser-settings check --help for normalized JSON options.
 
-exit codes: 0 completed, 2 invalid command or output, 3 unavailable evidence, 4 internal error.
+exit codes: 0 completed or equal, 1 differences or diff gaps, 2 invalid input,
+3 unavailable check evidence, 4 internal error.
 HELP
     exit 0 ;;
 esac
@@ -47,6 +50,7 @@ def main():
     try:
         reader = load_module("browser_settings")
         data = load_module("browser_settings_data")
+        comparison = load_module("browser_compare")
         if data.MAP_VERSION != 1:
             raise ValueError("Map version")
     except Exception:
@@ -55,7 +59,7 @@ def main():
     parser = SafeParser(
         prog="scripts/browser-settings",
         description="Read saved Firefox and Chrome configuration. No browser writes or network requests.",
-        epilog="exit codes: 0 completed, 2 invalid command or output, 3 unavailable evidence, 4 internal error. Quit the instance using the selected source with Command-Q. Review output locally before sharing.",
+        epilog="exit codes: 0 completed or equal, 1 differences or diff gaps, 2 invalid input, 3 unavailable check evidence, 4 internal error. Quit the instance using the selected source with Command-Q. Review output locally before sharing.",
     )
     parser.add_argument(
         "--version",
@@ -68,13 +72,24 @@ def main():
     commands = parser.add_subparsers(
         dest="command", required=True, parser_class=SafeParser
     )
-    for name in ("capture", "read-back"):
+    diff = commands.add_parser(
+        "diff",
+        help="Compare two generated captures without printing values.",
+        description="Compare the generated capture subset only. Unknown states are named gaps and return 1. This does not resolve inventory YAML or prove browser enforcement.",
+    )
+    diff.add_argument("first", type=Path, metavar="A.yml")
+    diff.add_argument("second", type=Path, metavar="B.yml")
+    for name in ("capture", "read-back", "check"):
         command = commands.add_parser(
             name,
             help=(
                 "Write a private YAML review candidate."
                 if name == "capture"
-                else "Print filtered saved observations as JSON."
+                else (
+                    "Print filtered saved observations as JSON."
+                    if name == "read-back"
+                    else "Compare normalized browser-only JSON with saved configuration."
+                )
             ),
         )
         command.add_argument(
@@ -97,16 +112,48 @@ def main():
                 metavar="FILE",
                 help="New report outside the checkout and browser stores. Parent directory must exist.",
             )
-        else:
+        elif name == "read-back":
             command.add_argument("--setting", action="append", default=[], metavar="ID")
+        else:
+            command.add_argument(
+                "--profile-json",
+                type=Path,
+                required=True,
+                metavar="FILE",
+                help="Resolved browser-only machine_settings/default_settings JSON. No inventory YAML, overrides, or vault resolution. Stored reads do not prove browser enforcement. Explicit lock controls remain unverified.",
+            )
     args = parser.parse_args()
     try:
+        if args.command == "diff":
+            first = comparison.parse_candidate(
+                comparison.read_text(args.first),
+                data.BROWSER_SETTINGS,
+                reader.value_allowed,
+            )
+            second = comparison.parse_candidate(
+                comparison.read_text(args.second),
+                data.BROWSER_SETTINGS,
+                reader.value_allowed,
+            )
+            lines, code = comparison.compare(first, second)
+            if lines:
+                print("\n".join(lines))
+            return code
         if os.geteuid() == 0:
             raise reader.CaptureError(
                 2, "Run capture as your regular account, without sudo."
             )
         families = ["firefox", "chrome"] if args.browser == "both" else [args.browser]
         selected = getattr(args, "setting", [])
+        desired = None
+        if args.command == "check":
+            desired = comparison.parse_profile(
+                comparison.read_text(args.profile_json),
+                data.BROWSER_SETTINGS,
+                reader.value_allowed,
+                families,
+            )
+            selected = list(desired)
         if any(
             key not in data.BROWSER_SETTINGS
             or data.BROWSER_SETTINGS[key]["browser"]["family"] not in families
@@ -189,7 +236,20 @@ def main():
             results.append(result)
         for family, profile, user_data in source_checks:
             reader.check_browser_closed(family, profile, user_data)
-        if args.command == "read-back":
+        if args.command == "check":
+            observed = {
+                setting_id: (item["state"], item.get("value"))
+                for result in results
+                for setting_id, item in result["settings"].items()
+            }
+            for setting_id in desired:
+                if entries[setting_id]["browser"]["kind"] == "lock_control":
+                    observed[setting_id] = ("unverified", None)
+            lines, code = comparison.compare(desired, observed, required=True)
+            if lines:
+                print("\n".join(lines))
+            return code
+        elif args.command == "read-back":
             print(
                 json.dumps(
                     {
@@ -220,6 +280,12 @@ def main():
                 + " masked settings. Review the private report before sharing."
             )
         return 0
+    except comparison.CompareError:
+        print(
+            "Invalid comparison input. Use generated captures or normalized browser JSON.",
+            file=sys.stderr,
+        )
+        return 2
     except reader.CaptureError as error:
         print(str(error), file=sys.stderr)
         return error.code

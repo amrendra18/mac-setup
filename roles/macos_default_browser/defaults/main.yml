@@ -1,0 +1,5 @@
+---
+macos_default_browser_browser: ""
+macos_default_browser_ask: false
+macos_default_browser_interactive: false
+macos_default_browser_account: ""

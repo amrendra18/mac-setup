@@ -475,7 +475,26 @@
     "general.smoothScroll",
     "browser.zoom.full",
     "browser.zoom.siteSpecific",
-    "browser.download.always_ask_before_handling_new_types"
+    "browser.download.always_ask_before_handling_new_types",
+    "browser.compactmode.show",
+    "browser.touchmode.auto",
+    "sidebar.verticalTabs",
+    "sidebar.revamp",
+    "sidebar.position_start",
+    "sidebar.expandOnHover",
+    "browser.tabs.tabmanager.enabled",
+    "sidebar.visibility",
+    "browser.toolbars.bookmarks.visibility",
+    "browser.uiCustomization.state",
+    "extensions.activeThemeID",
+    "font.default.x-western",
+    "browser.content.full-zoom",
+    "browser.mac-setup.owner",
+    "extensions.json public add-ons",
+    "layout.css.prefers-color-scheme.content-override",
+    "browser.theme.toolbar-theme",
+    "browser.theme.content-theme",
+    "browser.crashReports.unsubmittedCheck.autoSubmit2"
   ],
   "structured_members": {
     "3rdparty.Extensions": [

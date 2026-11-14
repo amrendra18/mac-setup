@@ -1,0 +1,18 @@
+---
+browser.default:
+  summary: Ask macOS to make Firefox the default web browser.
+  scope: user
+  route: default_browser
+  values: [firefox]
+  macos_default: not measured
+  takes_effect: live
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Desktop & Dock > Widgets > Default web browser
+  proven_on: {}
+  not_yet_reason: ""
+  notes: Read the http and https handlers first. If both already use Firefox,
+    nothing changes. At the running account's screen, ask macOS once through
+    the public NSWorkspace API and let the person confirm. Over SSH, in check
+    mode, without interactive terminal input and output, or outside that
+    account's screen session, list the manual step without opening Firefox.

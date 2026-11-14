@@ -36,6 +36,6 @@
       changed_when: false
       check_mode: false
       register: firefox_journey_proof
-    - name: Show the Firefox proof counts
+    - name: Show the Firefox policy and extension proof counts
       ansible.builtin.debug:
         msg: "{{ firefox_journey_proof.stdout }}"

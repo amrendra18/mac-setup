@@ -4,7 +4,7 @@ import plistlib
 from pathlib import Path
 
 try:
-    from ansible.module_utils.browser_settings import value_allowed
+    from ansible.module_utils.browser_settings import addon_id, value_allowed
     from ansible.module_utils.browser_settings_data import BROWSER_SETTINGS
 except ImportError:
 
@@ -16,7 +16,8 @@ except ImportError:
         spec.loader.exec_module(module)
         return module
 
-    value_allowed = _local("browser_settings").value_allowed
+    _reader = _local("browser_settings")
+    value_allowed, addon_id = _reader.value_allowed, _reader.addon_id
     BROWSER_SETTINGS = _local("browser_settings_data").BROWSER_SETTINGS
 
 ENTRIES = BROWSER_SETTINGS
@@ -94,6 +95,25 @@ def _policy_writes(row, value, lock, entries):
     if writer.get("source") != "firefox_policy":
         return {}, writer.get("unsupported", "No machine policy form exists.")
     path = tuple(writer["path"])
+    if row is entries.get("firefox.addons.install"):
+        if len(value) != len(set(value)) or not all(addon_id(key) for key in value):
+            raise FirefoxError("Firefox add-on ids must be valid and different.")
+        return {
+            ("ExtensionSettings", key, field): item
+            for key in value
+            for field, item in (
+                (
+                    "installation_mode",
+                    "force_installed" if lock else "normal_installed",
+                ),
+                (
+                    "install_url",
+                    "https://addons.mozilla.org/firefox/downloads/latest/"
+                    + key
+                    + "/latest.xpi",
+                ),
+            )
+        }, None
     if "value" in writer and not typed_equal(value, writer["value"]):
         raise FirefoxError("A selected Firefox Locked field contradicts firefox.lock.")
     if path == ("SanitizeOnShutdown",) and not lock:
@@ -104,7 +124,7 @@ def _policy_writes(row, value, lock, entries):
     writes = {path: value}
     if path[:1] == ("Preferences",) and path[-1] == "Value":
         writes[path[:-1] + ("Status",)] = (
-            "locked" if lock else writer.get("level", "user")
+            "locked" if lock and writer.get("level") != "user" else "user"
         )
         if type(value) is int:
             writes[path[:-1] + ("Type",)] = "number"
@@ -118,6 +138,8 @@ def _policy_writes(row, value, lock, entries):
 
 
 def owned_forms(row, entries):
+    if row is entries.get("firefox.addons.install"):
+        return set()
     result = set()
     for lock in (True, False):
         writer = _writer(row, lock)
@@ -132,6 +154,17 @@ def owned_forms(row, entries):
                 if sibling == path[:-1] + ("Locked",):
                     result.add(sibling)
     return result
+
+
+def owned_path_allowed(setting_id, path, entries):
+    if setting_id == "firefox.addons.install":
+        return (
+            len(path) == 3
+            and path[0] == "ExtensionSettings"
+            and addon_id(path[1])
+            and path[2] in ("installation_mode", "install_url")
+        )
+    return tuple(path) in owned_forms(entries[setting_id], entries)
 
 
 def _validate_shared_preferences(settings, entries):
@@ -295,6 +328,12 @@ def plan_policies(settings, entries=None):
         for path, item in assignments.items():
             _add(writes, path, item)
         by_id[setting_id] = assignments
+        if setting_id == "firefox.owner_label":
+            notes.append("Firefox owner label: " + value)
+        if setting_id == "firefox.pref.browser_ui_customization_state":
+            notes.append(
+                "Firefox toolbar layout stays editable so you can rearrange buttons. The policy reapplies at startup."
+            )
         if lock and "unsupported" in row["browser"]["locked"]:
             notes.append(
                 setting_id + ": applied as an editable seed; this setting cannot lock."

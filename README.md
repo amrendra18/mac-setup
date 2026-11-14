@@ -33,7 +33,7 @@ The example makes these main changes. Review both settings files before applying
 8. The example creates no extra account and installs no app.
    At the end, it opens Location Services and asks you to turn it off yourself.
 
-mac-setup knows 1243 macOS settings. A run sets 554 of them, 40 need your click, and 649 it cannot set yet.
+mac-setup knows 1264 macOS settings. A run sets 569 of them, 41 need your click, and 654 it cannot set yet.
 66 settings are proven on macOS 27.2.1.
 A test applied each proven setting on a real Mac and read it back.
 The other settings have unit tests, without real-Mac proof.
@@ -169,7 +169,7 @@ Use spaces for indentation. Quote the words `"on"`, `"off"`, `"yes"`, and `"no"`
 Without quotes, YAML, the settings file format, treats those words as true or false.
 Removing a line stops mac-setup managing that setting and leaves its current value unchanged.
 
-The template, [inventory/example/TEMPLATE.yml](inventory/example/TEMPLATE.yml), lists all 1243 settings in four sections.
+The template, [inventory/example/TEMPLATE.yml](inventory/example/TEMPLATE.yml), lists all 1264 settings in four sections.
 They cover account settings, machine settings, click-only settings, and settings not yet supported.
 The template gives allowed values and when supported changes appear.
 For supported account and machine settings, copy the setting line into your profile and remove its leading `# `.
@@ -202,9 +202,8 @@ Add these lines under the existing `default_settings` section, replacing any lin
 
 1. `dock.applications` keeps only the listed app icons, in order. Folders in the Dock stay.
    Each bundle id is an app's unique name. Find Safari's with `osascript -e 'id of app "Safari"'`.
-   Install an app first, then add its bundle id on a later run.
-   Your Dock is set before apps install. Combining both steps refuses the Dock list and ends the first run with exit code 2.
-   Other settings and app installs continue. Run again after installation.
+   Apps install before the Dock list applies, so a newly installed app can appear in the same run.
+   Every listed app must exist when the Dock step runs. A missing app refuses the entire Dock list.
 2. `desktop.wallpaper` needs that account signed in at the screen. Other accounts need a later run while signed in.
 3. `finder.sidebar_favorites` puts those folders first. `"~"` means each account's home folder.
    `finder.sidebar_favorites_only: true` removes other favorite folders.
@@ -281,6 +280,51 @@ The policy role does not change Firefox.app or browser profile files.
 The example profile enables no Firefox settings.
 The [settings template](inventory/example/TEMPLATE.yml) lists supported values and reasons for unsupported settings.
 The [Firefox internals](docs/how-it-works.md#firefox-policies) describe ownership and validation.
+
+Firefox shows "Managed by your organization" whenever a policy is active.
+This includes policies you set yourself. Policies also provide the preference locks.
+Add an owner label and public Mozilla add-on ids in your private profile:
+
+```yaml
+machine_settings:
+  firefox.owner_label: HOME
+  firefox.addons.install: [FirefoxColor@mozilla.com]
+  firefox.pref.sidebar_vertical_tabs: true
+  firefox.pref.sidebar_revamp: true
+  firefox.pref.browser_uidensity: 1
+  firefox.pref.browser_compactmode_show: true
+  firefox.pref.layout_css_prefers_color_scheme_content_override: 0
+```
+
+The example chooses vertical tabs, compact spacing, and dark website colors.
+The label appears under **Preferences** in `about:policies` and in the run summary.
+The label declares ownership. It does not authenticate the policies.
+Locked mode force-installs add-ons. Editable mode installs them while allowing you to disable them.
+Add-ons download their latest version from Mozilla when Firefox starts. mac-setup does not copy extension settings or storage.
+
+Capture also reads the toolbar layout, sidebar, active theme, common fonts, font sizes, and global zoom.
+Toolbar layout always uses editable `user` status so you can rearrange buttons. The saved layout reapplies at startup.
+Other supported appearance preferences use `locked` status with `firefox.lock: true`, and `user` otherwise.
+Firefox rejects `font.` preferences in policies, so select fonts and sizes in Firefox Settings.
+Select the active theme in **Add-ons and themes**. Its saved id alone cannot reliably reactivate an installed theme.
+Set default zoom in Firefox Settings. Its global value lives in a database rather than a policy preference.
+The [appearance reference](docs/how-it-works.md#firefox-appearance-and-add-ons) lists the mappings and limits.
+
+### Default web browser
+
+To ask macOS to make Firefox the default for the selected account, add this account setting:
+
+```yaml
+default_settings:
+  browser.default: firefox
+```
+
+The run reads the current HTTP and HTTPS handlers first. If both use Firefox, it changes nothing.
+At that account's Mac screen, macOS asks for confirmation once. Confirm Firefox in the system dialog.
+The run reports a change only after both handlers identify Firefox.
+Over SSH, in check mode, or without terminal input and output, the run lists the manual step without prompting.
+Other accounts apply this choice when they sign in and run mac-setup in their own session.
+The existing `desktop.default_browser` entry remains a manual choice for any browser.
 
 ## Import bookmarks once
 
@@ -418,17 +462,27 @@ The `firefox.lock` and `chrome.lock` recommendations default to `true`, each com
 
 Capture emits only reviewed booleans, bounded numbers, and exact public choices.
 It masks free text, private addresses, paths, account identifiers, site lists, and extension payloads.
+For add-ons, capture reads Firefox's saved Mozilla signing and installation metadata in `extensions.json`.
+A Mozilla-signed add-on with a saved `addons.mozilla.org` download source emits its id and saved default display name.
+The capture discovers these offline, including extensions absent from earlier captures.
+Private, sideloaded, temporary, system, and unknown-source add-ons remain masked and counted.
+System and built-in entries are excluded from the installation list.
+Other unresolved user add-ons need manual review.
+Disabled add-ons and missing activation evidence create a named gap and withhold installation suggestions.
+An unknown toolbar widget masks the whole layout. Capture makes no automatic lookup of unknown add-on ids.
 It never opens bookmarks, history, cookies, sessions, password stores, or a vault.
 Parsing an approved configuration file can encounter private bytes in memory. Those bytes stay out of the report.
 
 Values describe saved configuration. A stored policy does not prove that the browser enforces it.
+
 Conflicting saved and startup values produce comments without an active assignment.
 Missing values stay absent. Capture does not infer browser defaults.
 A policy represented by several preference keys needs every key from the same source before it becomes an assignment.
 Versions come from the browser's saved profile record, alongside the running macOS and Python versions.
 Reports name the map's tested version separately from the observed profile version.
-The map's tested versions are Firefox 158.0.1 and Chrome 158.0.8127.37.
-These test baselines can differ from the installed browsers after automatic updates.
+The map records Firefox 158.0.1 and Chrome 158.0.8127.37 as reference versions.
+Browsers can update after installation. These reference labels do not identify the installed version.
+The Firefox journey records each running browser's reported version rather than assuming the catalog version.
 Newer versions still capture values and show both versions in the report header.
 Each mapping records its minimum known support. An upper bound exists only for a vendor-documented removal.
 An unknown version, a version below that minimum, or a version beyond a documented bound gives `unavailable` entries.
@@ -441,6 +495,36 @@ That choice replaces the live policy stores. Output labels it `selected_copy`.
 Exit codes are 0 for completion, 2 for invalid arguments or output, 3 for unavailable evidence, and 4 for an internal error.
 The command refuses existing files and links. A new report has mode 0600, readable only by its owner.
 
+
+### Compare saved browser settings
+
+Compare two generated captures with the same checkout:
+
+```sh
+/usr/bin/python3 -I -B scripts/browser-settings diff "$HOME/browser-settings-review/daily.yml" "$HOME/browser-settings-review/test.yml"
+```
+
+The output lists setting ids with `same`, `different`, `only-in-one`, or a named evidence gap.
+It never prints values. Exit 0 means equal saved observations, 1 means differences or gaps, and 2 means invalid input.
+Two captures with no observations return exit 2.
+Toolbar comparisons ignore JSON object order and spacing. The order of toolbar buttons must still match.
+Two masked values remain a gap. Matching absent values mean neither capture saved an override.
+They do not prove matching browser defaults or behavior.
+
+To check saved values against your profile, supply a private normalized browser-only JSON file:
+
+```json
+{"machine_settings":{"firefox.pref.sidebar_vertical_tabs":true},"default_settings":{}}
+```
+
+```sh
+/usr/bin/python3 -I -B scripts/browser-settings check --browser firefox --profile-json "$HOME/browser-settings-review/expected.json"
+```
+
+Resolve account and host overrides before creating this export. There is no automatic inventory or vault export yet.
+The command returns 0 for equal saved values, 1 for drift, 2 for invalid input, and 3 for unavailable or unverified evidence.
+Explicit lock controls remain unverified because stored reads cannot prove enforcement.
+Explicit `unset` release requests also remain unverified and return exit 3. Saved values cannot prove policy release.
 
 ## Secrets
 

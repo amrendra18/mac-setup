@@ -1,4 +1,4 @@
-summary: Firefox policies preserve unrelated keys, honor locks, clear artificial history, and restore the original machine plist.
+summary: Firefox policies preserve unrelated keys, show ownership, install a public add-on, honor locks, clear history, and restore original stores.
 level: fast
 playbook: verify/helpers/firefox.yml
 setup:
@@ -7,6 +7,8 @@ cleanup:
   - /usr/bin/python3 -I -B verify/helpers/firefox.py restore
 profile:
   machine_settings:
+    firefox.owner_label: mac-setup artificial journey
+    firefox.addons.install: [uBlock0@raymondhill.net]
     firefox.lock: true
     firefox.homepage.url: https://example.invalid/managed
     firefox.homepage.locked: true
@@ -31,6 +33,9 @@ runs:
           (?x)firefox\s+apply\s+\{
           [^{}]*"artificial_history_after_quit":\s*0(?=\s*[,}])
           [^{}]*"artificial_history_before_quit":\s*1(?=\s*[,}])
+          [^{}]*"extension_user_can_disable":\s*false(?=\s*[,}])
+          [^{}]*"installed_extensions":\s*1(?=\s*[,}])
+          [^{}]*"owner_label_verified":\s*true(?=\s*[,}])
           [^{}]*"policy_errors":\s*0(?=\s*[,}])[^{}]*\}
         count: 1
   - name: again
@@ -38,7 +43,11 @@ runs:
     exit: 0
     recap: {changed: 0, failed: 0}
     output:
-      - pattern: 'firefox\s+again\s+\{[^{}]*"policy_errors":\s*0(?=\s*[,}])[^{}]*\}'
+      - pattern: >-
+          (?x)firefox\s+again\s+\{
+          [^{}]*"installed_extensions":\s*1(?=\s*[,}])
+          [^{}]*"owner_label_verified":\s*true(?=\s*[,}])
+          [^{}]*"policy_errors":\s*0(?=\s*[,}])[^{}]*\}
         count: 1
   - name: unlock
     args: [-e, firefox_journey_stage=unlock]
@@ -46,6 +55,8 @@ runs:
     recap: {failed: 0}
     profile:
       machine_settings:
+        firefox.owner_label: mac-setup artificial journey
+        firefox.addons.install: [uBlock0@raymondhill.net]
         firefox.lock: false
         firefox.homepage.url: https://example.invalid/managed
         firefox.homepage.locked: false
@@ -56,7 +67,10 @@ runs:
     output:
       - pattern: >-
           (?x)firefox\s+unlock\s+\{
+          [^{}]*"extension_user_can_disable":\s*true(?=\s*[,}])
+          [^{}]*"installed_extensions":\s*1(?=\s*[,}])
           [^{}]*"owned_locked_paths":\s*0(?=\s*[,}])
+          [^{}]*"owner_label_verified":\s*true(?=\s*[,}])
           [^{}]*"policy_errors":\s*0(?=\s*[,}])
           [^{}]*"user_override_reported":\s*true(?=\s*[,}])[^{}]*\}
         count: 1

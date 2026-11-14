@@ -594,6 +594,9 @@ def _commands(settings, reference, table):
 def _account_work(settings, reference, table):
     sidebar = _routed(settings, reference, "finder_sidebar")
     return {
+        "default_browser": _routed(settings, reference, "default_browser").get(
+            "browser.default", ""
+        ),
         "writes": _writes(settings, reference),
         "commands": _commands(settings, reference, table),
         "dock_apps": _item(settings, reference, "dock_apps", "apps"),
@@ -747,7 +750,10 @@ def profile_work(profile, files, running_account, permission_table):
                 for name, account_settings in settings.items()
                 if name != running_account
             ),
-            "own_session": sum(len(other["commands"]) for other in others),
+            "own_session": sum(
+                len(other["commands"]) + bool(other["default_browser"])
+                for other in others
+            ),
         },
     }
 
@@ -771,6 +777,7 @@ def profile_summary(
     stopped="",
     walked=False,
     firefox_notes=(),
+    default_browser_notes=(),
 ):
     refused = (
         ([f"the run stopped early at {stopped}"] if stopped else [])
@@ -787,6 +794,7 @@ def profile_summary(
     notes = (
         list(permission_notes)
         + list(firefox_notes)
+        + list(default_browser_notes)
         + [
             f"account {item['name']} does not exist yet, so this check run skipped its settings"
             for item in account_results
@@ -835,7 +843,7 @@ def profile_summary(
     return {"notes": notes, "refused": refused}
 
 
-def profile_mode(ssh_values, check_mode):
+def profile_mode(ssh_values, check_mode, interactive=False):
     if any(ssh_values):
         return {
             "ask": False,
@@ -848,6 +856,13 @@ def profile_mode(ssh_values, check_mode):
             "ask": False,
             "why": "check",
             "reason": "this run asks for no permission, because it is a check run (--check)",
+        }
+    if not interactive:
+        return {
+            "ask": False,
+            "why": "unattended",
+            "reason": "this run asks for no permission, because its input and output "
+            "are not both connected to a terminal",
         }
     return {"ask": True, "why": "screen", "reason": ""}
 

@@ -10,19 +10,28 @@ PROOFS = {
     "apply": {
         "artificial_history_after_quit": 0,
         "artificial_history_before_quit": 1,
-        "checked_preferences": 4,
-        "owned_locked_paths": 4,
+        "checked_preferences": 5,
+        "extension_user_can_disable": False,
+        "installed_extensions": 1,
+        "owner_label_verified": True,
+        "owned_locked_paths": 5,
         "policy_errors": 0,
         "user_override_reported": False,
     },
     "again": {
-        "checked_preferences": 4,
-        "owned_locked_paths": 4,
+        "checked_preferences": 5,
+        "extension_user_can_disable": False,
+        "installed_extensions": 1,
+        "owner_label_verified": True,
+        "owned_locked_paths": 5,
         "policy_errors": 0,
         "user_override_reported": False,
     },
     "unlock": {
-        "checked_preferences": 4,
+        "checked_preferences": 5,
+        "extension_user_can_disable": True,
+        "installed_extensions": 1,
+        "owner_label_verified": True,
         "owned_locked_paths": 0,
         "policy_errors": 0,
         "user_override_reported": True,
@@ -32,11 +41,21 @@ REQUIRED = {
     "apply": {
         "artificial_history_after_quit": 0,
         "artificial_history_before_quit": 1,
+        "extension_user_can_disable": False,
+        "installed_extensions": 1,
+        "owner_label_verified": True,
         "policy_errors": 0,
     },
-    "again": {"policy_errors": 0},
+    "again": {
+        "policy_errors": 0,
+        "installed_extensions": 1,
+        "owner_label_verified": True,
+    },
     "unlock": {
         "owned_locked_paths": 0,
+        "extension_user_can_disable": True,
+        "installed_extensions": 1,
+        "owner_label_verified": True,
         "policy_errors": 0,
         "user_override_reported": True,
     },
@@ -73,7 +92,8 @@ class FirefoxOutputTests(unittest.TestCase):
     def test_apply_accepts_the_observed_yaml_wrap_shape(self):
         output = """ok: [verify-mac] =>
     msg: 'firefox apply {"artificial_history_after_quit": 0, "artificial_history_before_quit":
-        1, "checked_preferences": 4, "owned_locked_paths": 4, "policy_errors": 0, "user_override_reported":
+        1, "checked_preferences": 5, "extension_user_can_disable": false, "installed_extensions": 1,
+        "owned_locked_paths": 5, "owner_label_verified": true, "policy_errors": 0, "user_override_reported":
         false}'
 """
         self.assertEqual(self.count("apply", output), 1)
@@ -82,8 +102,8 @@ class FirefoxOutputTests(unittest.TestCase):
         for stage, fields in REQUIRED.items():
             for field, expected in fields.items():
                 wrong_values = (
-                    (False, 1, 10, "true")
-                    if expected is True
+                    (not expected, 0, 1, str(expected).lower())
+                    if type(expected) is bool
                     else (
                         expected + 1,
                         expected + 10,

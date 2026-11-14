@@ -3,7 +3,7 @@
 import json
 
 MAP_VERSION = 1
-SOURCE_DIGEST = "6e5c1b3975500f3b7c013e51073c97a35f03c8a535d34650641bd55416212d7f"
+SOURCE_DIGEST = "73d540c921af26a2237419bf01c5adaccd751342ef19aa5c2e1df390b86731b0"
 CONTROL_DEFAULTS = {"firefox.lock": True, "chrome.lock": True}
 BROWSER_SETTINGS = json.loads(r"""{
   "chrome.abusive_experience_intervention_enforce": {
@@ -43154,6 +43154,75 @@ BROWSER_SETTINGS = json.loads(r"""{
     },
     "where": "Firefox > Settings"
   },
+  "firefox.addons.install": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "class": "addon_ids"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "extensions.json public add-ons",
+        "policy": "extensions.json public add-ons"
+      },
+      "kind": "setting",
+      "locked": {
+        "level": "mandatory",
+        "path": [
+          "ExtensionSettings"
+        ],
+        "source": "firefox_policy"
+      },
+      "read": [
+        {
+          "conversion": "identity",
+          "path": [
+            "install"
+          ],
+          "source": "firefox_extensions",
+          "type": "array"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "Public ids compile to Mozilla latest.xpi URLs. Locked mode force-installs. Editable mode installs normally and permits disabling.",
+        "source": "https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/components/enterprisepolicies/Policies.sys.mjs",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "level": "user",
+        "path": [
+          "ExtensionSettings"
+        ],
+        "source": "firefox_policy"
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "",
+    "proven_on": {},
+    "route": "firefox",
+    "scope": "machine",
+    "summary": "Install public add-on ids from the Mozilla add-on site.",
+    "takes_effect": "relaunch",
+    "values": {
+      "schema": {
+        "items": {
+          "pattern": "^(?:\\{[0-9A-Fa-f-]{36}\\}|[A-Za-z0-9._+-]*@[A-Za-z0-9.-]+)$",
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "type": "browser"
+    },
+    "where": "Firefox > Settings"
+  },
   "firefox.ai_controls.default.locked": {
     "browser": {
       "baseline": {
@@ -59964,6 +60033,85 @@ BROWSER_SETTINGS = json.loads(r"""{
     },
     "where": "Firefox > Settings"
   },
+  "firefox.owner_label": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "class": "mask",
+        "reason": "The owner label can identify a person."
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "masked",
+        "leaf": "browser.mac-setup.owner",
+        "policy": "browser.mac-setup.owner",
+        "reason": "The owner label can identify a person."
+      },
+      "kind": "setting",
+      "locked": {
+        "level": "mandatory",
+        "path": [
+          "Preferences",
+          "browser.mac-setup.owner",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      },
+      "read": [
+        {
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "browser.mac-setup.owner",
+            "Value"
+          ],
+          "source": "firefox_policy",
+          "type": "text"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "browser.mac-setup.owner"
+          ],
+          "source": "firefox_prefs",
+          "type": "text"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "Custom browser. preferences are permitted. This label identifies the declared owner, not cryptographic proof.",
+        "source": "https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/components/enterprisepolicies/Policies.sys.mjs",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "level": "user",
+        "path": [
+          "Preferences",
+          "browser.mac-setup.owner",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "",
+    "proven_on": {},
+    "route": "firefox",
+    "scope": "machine",
+    "summary": "Identify the owner of the Firefox policies.",
+    "takes_effect": "relaunch",
+    "values": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9 ._-]{0,39}$",
+      "type": "text"
+    },
+    "where": "Firefox > Settings"
+  },
   "firefox.password_manager_enabled": {
     "browser": {
       "baseline": {
@@ -62686,6 +62834,253 @@ BROWSER_SETTINGS = json.loads(r"""{
     },
     "where": "Firefox > Settings"
   },
+  "firefox.pref.browser_compactmode_show": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "class": "scalar"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "browser.compactmode.show",
+        "policy": "browser.compactmode.show"
+      },
+      "kind": "setting",
+      "locked": {
+        "level": "mandatory",
+        "path": [
+          "Preferences",
+          "browser.compactmode.show",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      },
+      "read": [
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "browser.compactmode.show",
+            "Value"
+          ],
+          "source": "firefox_policy",
+          "type": "bool"
+        },
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "browser.compactmode.show"
+          ],
+          "source": "firefox_policy",
+          "type": "bool"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "browser.compactmode.show"
+          ],
+          "source": "firefox_prefs",
+          "type": "bool"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "browser.compactmode.show"
+          ],
+          "source": "firefox_user",
+          "type": "bool"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "Preferences uses locked status with firefox.lock true and user status otherwise.",
+        "source": "https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "level": "user",
+        "path": [
+          "Preferences",
+          "browser.compactmode.show",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "",
+    "proven_on": {},
+    "route": "firefox",
+    "scope": "machine",
+    "summary": "Show the compact toolbar density choice.",
+    "takes_effect": "relaunch",
+    "values": {
+      "type": "bool"
+    },
+    "where": "Firefox > Settings"
+  },
+  "firefox.pref.browser_content_full_zoom": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "class": "scalar"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "browser.content.full-zoom",
+        "policy": "browser.content.full-zoom"
+      },
+      "kind": "setting",
+      "locked": {
+        "unsupported": "Global zoom lives in content-prefs.sqlite, not a Preferences policy. Set default zoom in Firefox Settings."
+      },
+      "read": [
+        {
+          "conversion": "identity",
+          "path": [
+            "default_zoom"
+          ],
+          "source": "firefox_content_prefs",
+          "type": "float"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "Global zoom lives in content-prefs.sqlite, not a Preferences policy. Set default zoom in Firefox Settings.",
+        "source": "https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/components/zoom/FullZoom.sys.mjs",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "unsupported": "Global zoom lives in content-prefs.sqlite, not a Preferences policy. Set default zoom in Firefox Settings."
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "Global zoom lives in content-prefs.sqlite, not a Preferences policy. Set default zoom in Firefox Settings.",
+    "proven_on": {},
+    "route": "not_yet",
+    "scope": "user",
+    "summary": "Capture the global page zoom.",
+    "takes_effect": "relaunch",
+    "values": {
+      "max": 5.0,
+      "min": 0.3,
+      "type": "float"
+    },
+    "where": "Firefox > Settings"
+  },
+  "firefox.pref.browser_crash_reports_unsubmitted_check_auto_submit2": {
+    "browser": {
+      "baseline": {
+        "reason": "Keep automatic crash uploads disabled. Manual crash submission remains a person's choice.",
+        "status": "proposed",
+        "value": false
+      },
+      "capture": {
+        "class": "scalar"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "browser.crashReports.unsubmittedCheck.autoSubmit2",
+        "policy": "browser.crashReports.unsubmittedCheck.autoSubmit2"
+      },
+      "kind": "setting",
+      "locked": {
+        "level": "mandatory",
+        "path": [
+          "Preferences",
+          "browser.crashReports.unsubmittedCheck.autoSubmit2",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      },
+      "read": [
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "browser.crashReports.unsubmittedCheck.autoSubmit2",
+            "Value"
+          ],
+          "source": "firefox_policy",
+          "type": "bool"
+        },
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "browser.crashReports.unsubmittedCheck.autoSubmit2"
+          ],
+          "source": "firefox_policy",
+          "type": "bool"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "browser.crashReports.unsubmittedCheck.autoSubmit2"
+          ],
+          "source": "firefox_prefs",
+          "type": "bool"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "browser.crashReports.unsubmittedCheck.autoSubmit2"
+          ],
+          "source": "firefox_user",
+          "type": "bool"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "UnsubmittedCrashHandler.autoSubmit reads this preference. False disables automatic unsubmitted crash uploads. It does not prevent manual report submission.",
+        "source": "https://github.com/mozilla-firefox/firefox/blob/FIREFOX_158_0_1_RELEASE/browser/modules/ContentCrashHandlers.sys.mjs",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "level": "user",
+        "path": [
+          "Preferences",
+          "browser.crashReports.unsubmittedCheck.autoSubmit2",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "",
+    "proven_on": {},
+    "route": "firefox",
+    "scope": "machine",
+    "summary": "Automatically submit unsubmitted Firefox crash reports.",
+    "takes_effect": "relaunch",
+    "values": {
+      "type": "bool"
+    },
+    "where": "Firefox > Settings"
+  },
   "firefox.pref.browser_download_always_ask_before_handling_new_types": {
     "browser": {
       "baseline": {
@@ -63273,6 +63668,543 @@ BROWSER_SETTINGS = json.loads(r"""{
     },
     "where": "Firefox > Settings"
   },
+  "firefox.pref.browser_tabs_tabmanager_enabled": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "class": "scalar"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "browser.tabs.tabmanager.enabled",
+        "policy": "browser.tabs.tabmanager.enabled"
+      },
+      "kind": "setting",
+      "locked": {
+        "level": "mandatory",
+        "path": [
+          "Preferences",
+          "browser.tabs.tabmanager.enabled",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      },
+      "read": [
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "browser.tabs.tabmanager.enabled",
+            "Value"
+          ],
+          "source": "firefox_policy",
+          "type": "bool"
+        },
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "browser.tabs.tabmanager.enabled"
+          ],
+          "source": "firefox_policy",
+          "type": "bool"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "browser.tabs.tabmanager.enabled"
+          ],
+          "source": "firefox_prefs",
+          "type": "bool"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "browser.tabs.tabmanager.enabled"
+          ],
+          "source": "firefox_user",
+          "type": "bool"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "Preferences uses locked status with firefox.lock true and user status otherwise.",
+        "source": "https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "level": "user",
+        "path": [
+          "Preferences",
+          "browser.tabs.tabmanager.enabled",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "",
+    "proven_on": {},
+    "route": "firefox",
+    "scope": "machine",
+    "summary": "Show the tab list button.",
+    "takes_effect": "relaunch",
+    "values": {
+      "type": "bool"
+    },
+    "where": "Firefox > Settings"
+  },
+  "firefox.pref.browser_theme_content_theme": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "choices": [
+          0,
+          1,
+          2
+        ],
+        "class": "enum"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "browser.theme.content-theme",
+        "policy": "browser.theme.content-theme"
+      },
+      "kind": "setting",
+      "locked": {
+        "unsupported": "Firefox theme code owns this derived value. Select the active theme in Firefox instead."
+      },
+      "read": [
+        {
+          "conversion": "identity",
+          "path": [
+            "browser.theme.content-theme"
+          ],
+          "source": "firefox_prefs",
+          "type": "int"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "browser.theme.content-theme"
+          ],
+          "source": "firefox_user",
+          "type": "int"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "0 chooses dark, 1 light, and 2 automatic colors. This does not select an active theme package.",
+        "source": "https://github.com/mozilla-firefox/firefox/blob/FIREFOX_159_0_RELEASE/modules/libpref/init/StaticPrefList.yaml",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "unsupported": "Firefox theme code owns this derived value. Select the active theme in Firefox instead."
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "Firefox theme code owns this derived value. Select the active theme in Firefox instead.",
+    "proven_on": {},
+    "route": "not_yet",
+    "scope": "user",
+    "summary": "Capture theme-derived content colors.",
+    "takes_effect": "relaunch",
+    "values": {
+      "schema": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer"
+      },
+      "type": "browser"
+    },
+    "where": "Firefox > Settings"
+  },
+  "firefox.pref.browser_theme_toolbar_theme": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "choices": [
+          0,
+          1,
+          2
+        ],
+        "class": "enum"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "browser.theme.toolbar-theme",
+        "policy": "browser.theme.toolbar-theme"
+      },
+      "kind": "setting",
+      "locked": {
+        "unsupported": "Firefox theme code owns this derived value. Select the active theme in Firefox instead."
+      },
+      "read": [
+        {
+          "conversion": "identity",
+          "path": [
+            "browser.theme.toolbar-theme"
+          ],
+          "source": "firefox_prefs",
+          "type": "int"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "browser.theme.toolbar-theme"
+          ],
+          "source": "firefox_user",
+          "type": "int"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "0 chooses dark, 1 light, and 2 automatic colors. This does not select an active theme package.",
+        "source": "https://github.com/mozilla-firefox/firefox/blob/FIREFOX_159_0_RELEASE/modules/libpref/init/StaticPrefList.yaml",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "unsupported": "Firefox theme code owns this derived value. Select the active theme in Firefox instead."
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "Firefox theme code owns this derived value. Select the active theme in Firefox instead.",
+    "proven_on": {},
+    "route": "not_yet",
+    "scope": "user",
+    "summary": "Capture theme-derived toolbar colors.",
+    "takes_effect": "relaunch",
+    "values": {
+      "schema": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer"
+      },
+      "type": "browser"
+    },
+    "where": "Firefox > Settings"
+  },
+  "firefox.pref.browser_toolbars_bookmarks_visibility": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "choices": [
+          "always",
+          "never",
+          "newtab"
+        ],
+        "class": "enum"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "browser.toolbars.bookmarks.visibility",
+        "policy": "browser.toolbars.bookmarks.visibility"
+      },
+      "kind": "setting",
+      "locked": {
+        "level": "mandatory",
+        "path": [
+          "Preferences",
+          "browser.toolbars.bookmarks.visibility",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      },
+      "read": [
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "browser.toolbars.bookmarks.visibility",
+            "Value"
+          ],
+          "source": "firefox_policy",
+          "type": "text"
+        },
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "browser.toolbars.bookmarks.visibility"
+          ],
+          "source": "firefox_policy",
+          "type": "text"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "browser.toolbars.bookmarks.visibility"
+          ],
+          "source": "firefox_prefs",
+          "type": "text"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "browser.toolbars.bookmarks.visibility"
+          ],
+          "source": "firefox_user",
+          "type": "text"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "Preferences uses locked status with firefox.lock true and user status otherwise.",
+        "source": "https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "level": "user",
+        "path": [
+          "Preferences",
+          "browser.toolbars.bookmarks.visibility",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "",
+    "proven_on": {},
+    "route": "firefox",
+    "scope": "machine",
+    "summary": "Choose when the bookmarks toolbar appears.",
+    "takes_effect": "relaunch",
+    "values": {
+      "pattern": "^(?:always|never|newtab)$",
+      "type": "text"
+    },
+    "where": "Firefox > Settings"
+  },
+  "firefox.pref.browser_touchmode_auto": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "class": "scalar"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "browser.touchmode.auto",
+        "policy": "browser.touchmode.auto"
+      },
+      "kind": "setting",
+      "locked": {
+        "level": "mandatory",
+        "path": [
+          "Preferences",
+          "browser.touchmode.auto",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      },
+      "read": [
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "browser.touchmode.auto",
+            "Value"
+          ],
+          "source": "firefox_policy",
+          "type": "bool"
+        },
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "browser.touchmode.auto"
+          ],
+          "source": "firefox_policy",
+          "type": "bool"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "browser.touchmode.auto"
+          ],
+          "source": "firefox_prefs",
+          "type": "bool"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "browser.touchmode.auto"
+          ],
+          "source": "firefox_user",
+          "type": "bool"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "Preferences uses locked status with firefox.lock true and user status otherwise.",
+        "source": "https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "level": "user",
+        "path": [
+          "Preferences",
+          "browser.touchmode.auto",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "",
+    "proven_on": {},
+    "route": "firefox",
+    "scope": "machine",
+    "summary": "Choose touch density automatically.",
+    "takes_effect": "relaunch",
+    "values": {
+      "type": "bool"
+    },
+    "where": "Firefox > Settings"
+  },
+  "firefox.pref.browser_ui_customization_state": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "class": "toolbar_layout"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "browser.uiCustomization.state",
+        "policy": "browser.uiCustomization.state"
+      },
+      "kind": "setting",
+      "locked": {
+        "level": "user",
+        "path": [
+          "Preferences",
+          "browser.uiCustomization.state",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      },
+      "read": [
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "browser.uiCustomization.state",
+            "Value"
+          ],
+          "source": "firefox_policy",
+          "type": "text"
+        },
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "browser.uiCustomization.state"
+          ],
+          "source": "firefox_policy",
+          "type": "text"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "browser.uiCustomization.state"
+          ],
+          "source": "firefox_prefs",
+          "type": "text"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "browser.uiCustomization.state"
+          ],
+          "source": "firefox_user",
+          "type": "text"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "Always editable so Firefox can save rearrangements. User status reapplies at startup.",
+        "source": "https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "level": "user",
+        "path": [
+          "Preferences",
+          "browser.uiCustomization.state",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "",
+    "proven_on": {},
+    "route": "firefox",
+    "scope": "machine",
+    "summary": "Set the toolbar button layout.",
+    "takes_effect": "relaunch",
+    "values": {
+      "pattern": "^[\\s\\S]*$",
+      "type": "text"
+    },
+    "where": "Firefox > Settings"
+  },
   "firefox.pref.browser_uidensity": {
     "browser": {
       "baseline": {
@@ -63571,6 +64503,136 @@ BROWSER_SETTINGS = json.loads(r"""{
     },
     "where": "Firefox > Settings"
   },
+  "firefox.pref.extensions_active_theme_id": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "class": "addon_id"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "extensions.activeThemeID",
+        "policy": "extensions.activeThemeID"
+      },
+      "kind": "setting",
+      "locked": {
+        "unsupported": "The active theme id alone does not reliably enable a theme. Install its public add-on, then select the theme in Firefox."
+      },
+      "read": [
+        {
+          "conversion": "identity",
+          "path": [
+            "extensions.activeThemeID"
+          ],
+          "source": "firefox_prefs",
+          "type": "text"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "extensions.activeThemeID"
+          ],
+          "source": "firefox_user",
+          "type": "text"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "The active theme id alone does not reliably enable a theme. Install its public add-on, then select the theme in Firefox.",
+        "source": "https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "unsupported": "The active theme id alone does not reliably enable a theme. Install its public add-on, then select the theme in Firefox."
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "The active theme id alone does not reliably enable a theme. Install its public add-on, then select the theme in Firefox.",
+    "proven_on": {},
+    "route": "not_yet",
+    "scope": "user",
+    "summary": "Capture the active theme add-on id.",
+    "takes_effect": "relaunch",
+    "values": {
+      "pattern": "^[A-Za-z0-9@{}._+-]{1,200}$",
+      "type": "text"
+    },
+    "where": "Firefox > Settings"
+  },
+  "firefox.pref.font_default_x_western": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "choices": [
+          "serif",
+          "sans-serif"
+        ],
+        "class": "enum"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "font.default.x-western",
+        "policy": "font.default.x-western"
+      },
+      "kind": "setting",
+      "locked": {
+        "unsupported": "Firefox Preferences rejects the font. prefix. Select the font in Firefox Settings."
+      },
+      "read": [
+        {
+          "conversion": "identity",
+          "path": [
+            "font.default.x-western"
+          ],
+          "source": "firefox_prefs",
+          "type": "text"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "font.default.x-western"
+          ],
+          "source": "firefox_user",
+          "type": "text"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "Firefox Preferences rejects the font. prefix. Select the font in Firefox Settings.",
+        "source": "https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "unsupported": "Firefox Preferences rejects the font. prefix. Select the font in Firefox Settings."
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "Firefox Preferences rejects the font. prefix. Select the font in Firefox Settings.",
+    "proven_on": {},
+    "route": "not_yet",
+    "scope": "user",
+    "summary": "Choose the Western default font family.",
+    "takes_effect": "relaunch",
+    "values": {
+      "pattern": "^(?:serif|sans-serif)$",
+      "type": "text"
+    },
+    "where": "Firefox > Settings"
+  },
   "firefox.pref.font_minimum_size_x_western": {
     "browser": {
       "baseline": {
@@ -63646,16 +64708,29 @@ BROWSER_SETTINGS = json.loads(r"""{
         "status": "proposed"
       },
       "capture": {
-        "class": "mask",
-        "reason": "This value can contain private names, paths, URLs, identifiers, or browser content."
+        "choices": [
+          "Times",
+          "Times New Roman",
+          "Arial",
+          "Helvetica",
+          "Courier",
+          "Courier New",
+          "Menlo",
+          "Monaco",
+          "Georgia",
+          "Verdana",
+          "serif",
+          "sans-serif",
+          "monospace"
+        ],
+        "class": "enum"
       },
       "family": "firefox",
       "inventory": {
         "category": "non_policy",
-        "disposition": "masked",
+        "disposition": "mapped",
         "leaf": "font.name.monospace.x-western",
-        "policy": "font.name.monospace.x-western",
-        "reason": "This value can contain private names, paths, URLs, identifiers, or browser content."
+        "policy": "font.name.monospace.x-western"
       },
       "kind": "setting",
       "locked": {
@@ -63715,16 +64790,29 @@ BROWSER_SETTINGS = json.loads(r"""{
         "status": "proposed"
       },
       "capture": {
-        "class": "mask",
-        "reason": "This value can contain private names, paths, URLs, identifiers, or browser content."
+        "choices": [
+          "Times",
+          "Times New Roman",
+          "Arial",
+          "Helvetica",
+          "Courier",
+          "Courier New",
+          "Menlo",
+          "Monaco",
+          "Georgia",
+          "Verdana",
+          "serif",
+          "sans-serif",
+          "monospace"
+        ],
+        "class": "enum"
       },
       "family": "firefox",
       "inventory": {
         "category": "non_policy",
-        "disposition": "masked",
+        "disposition": "mapped",
         "leaf": "font.name.sans-serif.x-western",
-        "policy": "font.name.sans-serif.x-western",
-        "reason": "This value can contain private names, paths, URLs, identifiers, or browser content."
+        "policy": "font.name.sans-serif.x-western"
       },
       "kind": "setting",
       "locked": {
@@ -63784,16 +64872,29 @@ BROWSER_SETTINGS = json.loads(r"""{
         "status": "proposed"
       },
       "capture": {
-        "class": "mask",
-        "reason": "This value can contain private names, paths, URLs, identifiers, or browser content."
+        "choices": [
+          "Times",
+          "Times New Roman",
+          "Arial",
+          "Helvetica",
+          "Courier",
+          "Courier New",
+          "Menlo",
+          "Monaco",
+          "Georgia",
+          "Verdana",
+          "serif",
+          "sans-serif",
+          "monospace"
+        ],
+        "class": "enum"
       },
       "family": "firefox",
       "inventory": {
         "category": "non_policy",
-        "disposition": "masked",
+        "disposition": "mapped",
         "leaf": "font.name.serif.x-western",
-        "policy": "font.name.serif.x-western",
-        "reason": "This value can contain private names, paths, URLs, identifiers, or browser content."
+        "policy": "font.name.serif.x-western"
       },
       "kind": "setting",
       "locked": {
@@ -64074,6 +65175,114 @@ BROWSER_SETTINGS = json.loads(r"""{
     "takes_effect": "relaunch",
     "values": {
       "type": "bool"
+    },
+    "where": "Firefox > Settings"
+  },
+  "firefox.pref.layout_css_prefers_color_scheme_content_override": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "choices": [
+          0,
+          1,
+          2
+        ],
+        "class": "enum"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "layout.css.prefers-color-scheme.content-override",
+        "policy": "layout.css.prefers-color-scheme.content-override"
+      },
+      "kind": "setting",
+      "locked": {
+        "level": "mandatory",
+        "path": [
+          "Preferences",
+          "layout.css.prefers-color-scheme.content-override",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      },
+      "read": [
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "layout.css.prefers-color-scheme.content-override",
+            "Value"
+          ],
+          "source": "firefox_policy",
+          "type": "int"
+        },
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "layout.css.prefers-color-scheme.content-override"
+          ],
+          "source": "firefox_policy",
+          "type": "int"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "layout.css.prefers-color-scheme.content-override"
+          ],
+          "source": "firefox_prefs",
+          "type": "int"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "layout.css.prefers-color-scheme.content-override"
+          ],
+          "source": "firefox_user",
+          "type": "int"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "0 chooses dark, 1 light, and 2 automatic colors. This does not select an active theme package.",
+        "source": "https://github.com/mozilla-firefox/firefox/blob/FIREFOX_159_0_RELEASE/modules/libpref/init/StaticPrefList.yaml",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "level": "user",
+        "path": [
+          "Preferences",
+          "layout.css.prefers-color-scheme.content-override",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "",
+    "proven_on": {},
+    "route": "firefox",
+    "scope": "machine",
+    "summary": "Choose dark, light, or automatic website colors.",
+    "takes_effect": "relaunch",
+    "values": {
+      "schema": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer"
+      },
+      "type": "browser"
     },
     "where": "Firefox > Settings"
   },
@@ -65406,6 +66615,489 @@ BROWSER_SETTINGS = json.loads(r"""{
     "takes_effect": "relaunch",
     "values": {
       "type": "bool"
+    },
+    "where": "Firefox > Settings"
+  },
+  "firefox.pref.sidebar_expand_on_hover": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "class": "scalar"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "sidebar.expandOnHover",
+        "policy": "sidebar.expandOnHover"
+      },
+      "kind": "setting",
+      "locked": {
+        "level": "mandatory",
+        "path": [
+          "Preferences",
+          "sidebar.expandOnHover",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      },
+      "read": [
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "sidebar.expandOnHover",
+            "Value"
+          ],
+          "source": "firefox_policy",
+          "type": "bool"
+        },
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "sidebar.expandOnHover"
+          ],
+          "source": "firefox_policy",
+          "type": "bool"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "sidebar.expandOnHover"
+          ],
+          "source": "firefox_prefs",
+          "type": "bool"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "sidebar.expandOnHover"
+          ],
+          "source": "firefox_user",
+          "type": "bool"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "Preferences uses locked status with firefox.lock true and user status otherwise.",
+        "source": "https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "level": "user",
+        "path": [
+          "Preferences",
+          "sidebar.expandOnHover",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "",
+    "proven_on": {},
+    "route": "firefox",
+    "scope": "machine",
+    "summary": "Expand the sidebar on hover.",
+    "takes_effect": "relaunch",
+    "values": {
+      "type": "bool"
+    },
+    "where": "Firefox > Settings"
+  },
+  "firefox.pref.sidebar_position_start": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "class": "scalar"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "sidebar.position_start",
+        "policy": "sidebar.position_start"
+      },
+      "kind": "setting",
+      "locked": {
+        "level": "mandatory",
+        "path": [
+          "Preferences",
+          "sidebar.position_start",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      },
+      "read": [
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "sidebar.position_start",
+            "Value"
+          ],
+          "source": "firefox_policy",
+          "type": "bool"
+        },
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "sidebar.position_start"
+          ],
+          "source": "firefox_policy",
+          "type": "bool"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "sidebar.position_start"
+          ],
+          "source": "firefox_prefs",
+          "type": "bool"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "sidebar.position_start"
+          ],
+          "source": "firefox_user",
+          "type": "bool"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "Preferences uses locked status with firefox.lock true and user status otherwise.",
+        "source": "https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "level": "user",
+        "path": [
+          "Preferences",
+          "sidebar.position_start",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "",
+    "proven_on": {},
+    "route": "firefox",
+    "scope": "machine",
+    "summary": "Place the sidebar before the page.",
+    "takes_effect": "relaunch",
+    "values": {
+      "type": "bool"
+    },
+    "where": "Firefox > Settings"
+  },
+  "firefox.pref.sidebar_revamp": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "class": "scalar"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "sidebar.revamp",
+        "policy": "sidebar.revamp"
+      },
+      "kind": "setting",
+      "locked": {
+        "level": "mandatory",
+        "path": [
+          "Preferences",
+          "sidebar.revamp",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      },
+      "read": [
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "sidebar.revamp",
+            "Value"
+          ],
+          "source": "firefox_policy",
+          "type": "bool"
+        },
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "sidebar.revamp"
+          ],
+          "source": "firefox_policy",
+          "type": "bool"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "sidebar.revamp"
+          ],
+          "source": "firefox_prefs",
+          "type": "bool"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "sidebar.revamp"
+          ],
+          "source": "firefox_user",
+          "type": "bool"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "Preferences uses locked status with firefox.lock true and user status otherwise.",
+        "source": "https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "level": "user",
+        "path": [
+          "Preferences",
+          "sidebar.revamp",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "",
+    "proven_on": {},
+    "route": "firefox",
+    "scope": "machine",
+    "summary": "Use the new sidebar layout.",
+    "takes_effect": "relaunch",
+    "values": {
+      "type": "bool"
+    },
+    "where": "Firefox > Settings"
+  },
+  "firefox.pref.sidebar_vertical_tabs": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "class": "scalar"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "sidebar.verticalTabs",
+        "policy": "sidebar.verticalTabs"
+      },
+      "kind": "setting",
+      "locked": {
+        "level": "mandatory",
+        "path": [
+          "Preferences",
+          "sidebar.verticalTabs",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      },
+      "read": [
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "sidebar.verticalTabs",
+            "Value"
+          ],
+          "source": "firefox_policy",
+          "type": "bool"
+        },
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "sidebar.verticalTabs"
+          ],
+          "source": "firefox_policy",
+          "type": "bool"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "sidebar.verticalTabs"
+          ],
+          "source": "firefox_prefs",
+          "type": "bool"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "sidebar.verticalTabs"
+          ],
+          "source": "firefox_user",
+          "type": "bool"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "Preferences uses locked status with firefox.lock true and user status otherwise.",
+        "source": "https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "level": "user",
+        "path": [
+          "Preferences",
+          "sidebar.verticalTabs",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "",
+    "proven_on": {},
+    "route": "firefox",
+    "scope": "machine",
+    "summary": "Choose vertical tabs instead of horizontal tabs.",
+    "takes_effect": "relaunch",
+    "values": {
+      "type": "bool"
+    },
+    "where": "Firefox > Settings"
+  },
+  "firefox.pref.sidebar_visibility": {
+    "browser": {
+      "baseline": {
+        "reason": "Leave unset. Keep the current personal preference.",
+        "status": "proposed"
+      },
+      "capture": {
+        "choices": [
+          "always-show",
+          "expand-on-hover",
+          "hide-sidebar",
+          "hide-on-close",
+          "hide-launcher"
+        ],
+        "class": "enum"
+      },
+      "family": "firefox",
+      "inventory": {
+        "category": "non_policy",
+        "disposition": "mapped",
+        "leaf": "sidebar.visibility",
+        "policy": "sidebar.visibility"
+      },
+      "kind": "setting",
+      "locked": {
+        "level": "mandatory",
+        "path": [
+          "Preferences",
+          "sidebar.visibility",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      },
+      "read": [
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "sidebar.visibility",
+            "Value"
+          ],
+          "source": "firefox_policy",
+          "type": "text"
+        },
+        {
+          "alternative": "preference_value",
+          "conversion": "identity",
+          "path": [
+            "Preferences",
+            "sidebar.visibility"
+          ],
+          "source": "firefox_policy",
+          "type": "text"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "sidebar.visibility"
+          ],
+          "source": "firefox_prefs",
+          "type": "text"
+        },
+        {
+          "conversion": "identity",
+          "path": [
+            "sidebar.visibility"
+          ],
+          "source": "firefox_user",
+          "type": "text"
+        }
+      ],
+      "support": {
+        "min": "158.0.1",
+        "note": "Preferences uses locked status with firefox.lock true and user status otherwise.",
+        "source": "https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js",
+        "tested": "158.0.1"
+      },
+      "unlocked": {
+        "level": "user",
+        "path": [
+          "Preferences",
+          "sidebar.visibility",
+          "Value"
+        ],
+        "source": "firefox_policy"
+      }
+    },
+    "lockout_risk": false,
+    "macos_default": "not measured",
+    "needs": [],
+    "not_yet_reason": "",
+    "proven_on": {},
+    "route": "firefox",
+    "scope": "machine",
+    "summary": "Choose when the sidebar appears.",
+    "takes_effect": "relaunch",
+    "values": {
+      "pattern": "^(?:always-show|expand-on-hover|hide-sidebar|hide-on-close|hide-launcher)$",
+      "type": "text"
     },
     "where": "Firefox > Settings"
   },

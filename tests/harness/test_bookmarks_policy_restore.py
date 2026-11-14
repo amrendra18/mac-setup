@@ -204,8 +204,10 @@ class BookmarksPolicyRestoreTests(unittest.TestCase):
     def test_failed_cleanup_retains_all_snapshots_for_a_retry(self):
         bookmarks.setup()
         self.fail_restore_ownership = True
-        with self.assertRaises(OSError):
+        with self.assertRaises(bookmarks.firefox.ProofError) as caught:
             bookmarks.cleanup()
+        self.assertIn("restore failed (system-error)", str(caught.exception))
+        self.assertNotIn("Synthetic restoration refusal", str(caught.exception))
         self.assert_snapshots()
         self.assertTrue(self.state.is_dir())
         self.fail_restore_ownership = False

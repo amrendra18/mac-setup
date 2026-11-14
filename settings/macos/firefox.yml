@@ -18280,27 +18280,44 @@ firefox.pref.font_name_serif_x_western:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: No machine policy form exists. Firefox 158 Preferences rejects this key. A profile seed cannot lock it.
+  not_yet_reason: No machine policy form exists. Firefox 158 Preferences rejects this key. A profile seed cannot
+    lock it.
   browser:
     family: firefox
     kind: setting
     read:
       - source: firefox_prefs
-        path: [font.name.serif.x-western]
+        path:
+          - font.name.serif.x-western
         type: text
         conversion: identity
       - source: firefox_user
-        path: [font.name.serif.x-western]
+        path:
+          - font.name.serif.x-western
         type: text
         conversion: identity
     capture:
-      class: mask
-      reason: This value can contain private names, paths, URLs, identifiers, or browser content.
+      class: enum
+      choices:
+        - Times
+        - Times New Roman
+        - Arial
+        - Helvetica
+        - Courier
+        - Courier New
+        - Menlo
+        - Monaco
+        - Georgia
+        - Verdana
+        - serif
+        - sans-serif
+        - monospace
     locked:
       unsupported: Firefox 158 Preferences rejects this key. A profile seed cannot lock it.
     unlocked:
       source: firefox_preferences
-      path: [font.name.serif.x-western]
+      path:
+        - font.name.serif.x-western
       level: user
     baseline:
       status: proposed
@@ -18309,15 +18326,13 @@ firefox.pref.font_name_serif_x_western:
       min: 158.0.1
       tested: 158.0.1
       source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/modules/libpref/init/all.js
-      note: A user.js profile seed remains editable and reapplies at startup. Removing it may leave a prefs.js
-        override. No published introduction version was identified for this exact mapping. Minimum uses the
-        tested version.
+      note: A user.js profile seed remains editable and reapplies at startup. Removing it may leave a prefs.js override.
+        No published introduction version was identified for this exact mapping. Minimum uses the tested version.
     inventory:
       category: non_policy
       policy: font.name.serif.x-western
       leaf: font.name.serif.x-western
-      disposition: masked
-      reason: This value can contain private names, paths, URLs, identifiers, or browser content.
+      disposition: mapped
 firefox.pref.font_name_sans_serif_x_western:
   summary: Choose the Western sans-serif font.
   scope: user
@@ -18331,27 +18346,44 @@ firefox.pref.font_name_sans_serif_x_western:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: No machine policy form exists. Firefox 158 Preferences rejects this key. A profile seed cannot lock it.
+  not_yet_reason: No machine policy form exists. Firefox 158 Preferences rejects this key. A profile seed cannot
+    lock it.
   browser:
     family: firefox
     kind: setting
     read:
       - source: firefox_prefs
-        path: [font.name.sans-serif.x-western]
+        path:
+          - font.name.sans-serif.x-western
         type: text
         conversion: identity
       - source: firefox_user
-        path: [font.name.sans-serif.x-western]
+        path:
+          - font.name.sans-serif.x-western
         type: text
         conversion: identity
     capture:
-      class: mask
-      reason: This value can contain private names, paths, URLs, identifiers, or browser content.
+      class: enum
+      choices:
+        - Times
+        - Times New Roman
+        - Arial
+        - Helvetica
+        - Courier
+        - Courier New
+        - Menlo
+        - Monaco
+        - Georgia
+        - Verdana
+        - serif
+        - sans-serif
+        - monospace
     locked:
       unsupported: Firefox 158 Preferences rejects this key. A profile seed cannot lock it.
     unlocked:
       source: firefox_preferences
-      path: [font.name.sans-serif.x-western]
+      path:
+        - font.name.sans-serif.x-western
       level: user
     baseline:
       status: proposed
@@ -18360,15 +18392,13 @@ firefox.pref.font_name_sans_serif_x_western:
       min: 158.0.1
       tested: 158.0.1
       source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/modules/libpref/init/all.js
-      note: A user.js profile seed remains editable and reapplies at startup. Removing it may leave a prefs.js
-        override. No published introduction version was identified for this exact mapping. Minimum uses the
-        tested version.
+      note: A user.js profile seed remains editable and reapplies at startup. Removing it may leave a prefs.js override.
+        No published introduction version was identified for this exact mapping. Minimum uses the tested version.
     inventory:
       category: non_policy
       policy: font.name.sans-serif.x-western
       leaf: font.name.sans-serif.x-western
-      disposition: masked
-      reason: This value can contain private names, paths, URLs, identifiers, or browser content.
+      disposition: mapped
 firefox.pref.font_name_monospace_x_western:
   summary: Choose the Western fixed-width font.
   scope: user
@@ -18382,27 +18412,44 @@ firefox.pref.font_name_monospace_x_western:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: No machine policy form exists. Firefox 158 Preferences rejects this key. A profile seed cannot lock it.
+  not_yet_reason: No machine policy form exists. Firefox 158 Preferences rejects this key. A profile seed cannot
+    lock it.
   browser:
     family: firefox
     kind: setting
     read:
       - source: firefox_prefs
-        path: [font.name.monospace.x-western]
+        path:
+          - font.name.monospace.x-western
         type: text
         conversion: identity
       - source: firefox_user
-        path: [font.name.monospace.x-western]
+        path:
+          - font.name.monospace.x-western
         type: text
         conversion: identity
     capture:
-      class: mask
-      reason: This value can contain private names, paths, URLs, identifiers, or browser content.
+      class: enum
+      choices:
+        - Times
+        - Times New Roman
+        - Arial
+        - Helvetica
+        - Courier
+        - Courier New
+        - Menlo
+        - Monaco
+        - Georgia
+        - Verdana
+        - serif
+        - sans-serif
+        - monospace
     locked:
       unsupported: Firefox 158 Preferences rejects this key. A profile seed cannot lock it.
     unlocked:
       source: firefox_preferences
-      path: [font.name.monospace.x-western]
+      path:
+        - font.name.monospace.x-western
       level: user
     baseline:
       status: proposed
@@ -18411,15 +18458,13 @@ firefox.pref.font_name_monospace_x_western:
       min: 158.0.1
       tested: 158.0.1
       source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/modules/libpref/init/all.js
-      note: A user.js profile seed remains editable and reapplies at startup. Removing it may leave a prefs.js
-        override. No published introduction version was identified for this exact mapping. Minimum uses the
-        tested version.
+      note: A user.js profile seed remains editable and reapplies at startup. Removing it may leave a prefs.js override.
+        No published introduction version was identified for this exact mapping. Minimum uses the tested version.
     inventory:
       category: non_policy
       policy: font.name.monospace.x-western
       leaf: font.name.monospace.x-western
-      disposition: masked
-      reason: This value can contain private names, paths, URLs, identifiers, or browser content.
+      disposition: mapped
 firefox.pref.font_size_variable_x_western:
   summary: Choose the Western proportional font size.
   scope: user
@@ -18947,4 +18992,1255 @@ firefox.pref.browser_download_always_ask_before_handling_new_types:
       category: non_policy
       policy: browser.download.always_ask_before_handling_new_types
       leaf: browser.download.always_ask_before_handling_new_types
+      disposition: mapped
+firefox.pref.browser_compactmode_show:
+  summary: Show the compact toolbar density choice.
+  scope: machine
+  route: firefox
+  values:
+    type: bool
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: ''
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_policy
+        path:
+          - Preferences
+          - browser.compactmode.show
+          - Value
+        type: bool
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_policy
+        path:
+          - Preferences
+          - browser.compactmode.show
+        type: bool
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_prefs
+        path:
+          - browser.compactmode.show
+        type: bool
+        conversion: identity
+      - source: firefox_user
+        path:
+          - browser.compactmode.show
+        type: bool
+        conversion: identity
+    capture:
+      class: scalar
+    locked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - browser.compactmode.show
+        - Value
+      level: mandatory
+    unlocked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - browser.compactmode.show
+        - Value
+      level: user
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js
+      note: Preferences uses locked status with firefox.lock true and user status otherwise.
+    inventory:
+      category: non_policy
+      policy: browser.compactmode.show
+      leaf: browser.compactmode.show
+      disposition: mapped
+firefox.pref.browser_touchmode_auto:
+  summary: Choose touch density automatically.
+  scope: machine
+  route: firefox
+  values:
+    type: bool
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: ''
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_policy
+        path:
+          - Preferences
+          - browser.touchmode.auto
+          - Value
+        type: bool
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_policy
+        path:
+          - Preferences
+          - browser.touchmode.auto
+        type: bool
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_prefs
+        path:
+          - browser.touchmode.auto
+        type: bool
+        conversion: identity
+      - source: firefox_user
+        path:
+          - browser.touchmode.auto
+        type: bool
+        conversion: identity
+    capture:
+      class: scalar
+    locked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - browser.touchmode.auto
+        - Value
+      level: mandatory
+    unlocked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - browser.touchmode.auto
+        - Value
+      level: user
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js
+      note: Preferences uses locked status with firefox.lock true and user status otherwise.
+    inventory:
+      category: non_policy
+      policy: browser.touchmode.auto
+      leaf: browser.touchmode.auto
+      disposition: mapped
+firefox.pref.sidebar_vertical_tabs:
+  summary: Choose vertical tabs instead of horizontal tabs.
+  scope: machine
+  route: firefox
+  values:
+    type: bool
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: ''
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_policy
+        path:
+          - Preferences
+          - sidebar.verticalTabs
+          - Value
+        type: bool
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_policy
+        path:
+          - Preferences
+          - sidebar.verticalTabs
+        type: bool
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_prefs
+        path:
+          - sidebar.verticalTabs
+        type: bool
+        conversion: identity
+      - source: firefox_user
+        path:
+          - sidebar.verticalTabs
+        type: bool
+        conversion: identity
+    capture:
+      class: scalar
+    locked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - sidebar.verticalTabs
+        - Value
+      level: mandatory
+    unlocked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - sidebar.verticalTabs
+        - Value
+      level: user
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js
+      note: Preferences uses locked status with firefox.lock true and user status otherwise.
+    inventory:
+      category: non_policy
+      policy: sidebar.verticalTabs
+      leaf: sidebar.verticalTabs
+      disposition: mapped
+firefox.pref.sidebar_revamp:
+  summary: Use the new sidebar layout.
+  scope: machine
+  route: firefox
+  values:
+    type: bool
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: ''
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_policy
+        path:
+          - Preferences
+          - sidebar.revamp
+          - Value
+        type: bool
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_policy
+        path:
+          - Preferences
+          - sidebar.revamp
+        type: bool
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_prefs
+        path:
+          - sidebar.revamp
+        type: bool
+        conversion: identity
+      - source: firefox_user
+        path:
+          - sidebar.revamp
+        type: bool
+        conversion: identity
+    capture:
+      class: scalar
+    locked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - sidebar.revamp
+        - Value
+      level: mandatory
+    unlocked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - sidebar.revamp
+        - Value
+      level: user
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js
+      note: Preferences uses locked status with firefox.lock true and user status otherwise.
+    inventory:
+      category: non_policy
+      policy: sidebar.revamp
+      leaf: sidebar.revamp
+      disposition: mapped
+firefox.pref.sidebar_position_start:
+  summary: Place the sidebar before the page.
+  scope: machine
+  route: firefox
+  values:
+    type: bool
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: ''
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_policy
+        path:
+          - Preferences
+          - sidebar.position_start
+          - Value
+        type: bool
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_policy
+        path:
+          - Preferences
+          - sidebar.position_start
+        type: bool
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_prefs
+        path:
+          - sidebar.position_start
+        type: bool
+        conversion: identity
+      - source: firefox_user
+        path:
+          - sidebar.position_start
+        type: bool
+        conversion: identity
+    capture:
+      class: scalar
+    locked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - sidebar.position_start
+        - Value
+      level: mandatory
+    unlocked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - sidebar.position_start
+        - Value
+      level: user
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js
+      note: Preferences uses locked status with firefox.lock true and user status otherwise.
+    inventory:
+      category: non_policy
+      policy: sidebar.position_start
+      leaf: sidebar.position_start
+      disposition: mapped
+firefox.pref.sidebar_expand_on_hover:
+  summary: Expand the sidebar on hover.
+  scope: machine
+  route: firefox
+  values:
+    type: bool
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: ''
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_policy
+        path:
+          - Preferences
+          - sidebar.expandOnHover
+          - Value
+        type: bool
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_policy
+        path:
+          - Preferences
+          - sidebar.expandOnHover
+        type: bool
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_prefs
+        path:
+          - sidebar.expandOnHover
+        type: bool
+        conversion: identity
+      - source: firefox_user
+        path:
+          - sidebar.expandOnHover
+        type: bool
+        conversion: identity
+    capture:
+      class: scalar
+    locked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - sidebar.expandOnHover
+        - Value
+      level: mandatory
+    unlocked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - sidebar.expandOnHover
+        - Value
+      level: user
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js
+      note: Preferences uses locked status with firefox.lock true and user status otherwise.
+    inventory:
+      category: non_policy
+      policy: sidebar.expandOnHover
+      leaf: sidebar.expandOnHover
+      disposition: mapped
+firefox.pref.browser_tabs_tabmanager_enabled:
+  summary: Show the tab list button.
+  scope: machine
+  route: firefox
+  values:
+    type: bool
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: ''
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_policy
+        path:
+          - Preferences
+          - browser.tabs.tabmanager.enabled
+          - Value
+        type: bool
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_policy
+        path:
+          - Preferences
+          - browser.tabs.tabmanager.enabled
+        type: bool
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_prefs
+        path:
+          - browser.tabs.tabmanager.enabled
+        type: bool
+        conversion: identity
+      - source: firefox_user
+        path:
+          - browser.tabs.tabmanager.enabled
+        type: bool
+        conversion: identity
+    capture:
+      class: scalar
+    locked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - browser.tabs.tabmanager.enabled
+        - Value
+      level: mandatory
+    unlocked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - browser.tabs.tabmanager.enabled
+        - Value
+      level: user
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js
+      note: Preferences uses locked status with firefox.lock true and user status otherwise.
+    inventory:
+      category: non_policy
+      policy: browser.tabs.tabmanager.enabled
+      leaf: browser.tabs.tabmanager.enabled
+      disposition: mapped
+firefox.pref.sidebar_visibility:
+  summary: Choose when the sidebar appears.
+  scope: machine
+  route: firefox
+  values:
+    type: text
+    pattern: ^(?:always-show|expand-on-hover|hide-sidebar|hide-on-close|hide-launcher)$
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: ''
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_policy
+        path:
+          - Preferences
+          - sidebar.visibility
+          - Value
+        type: text
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_policy
+        path:
+          - Preferences
+          - sidebar.visibility
+        type: text
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_prefs
+        path:
+          - sidebar.visibility
+        type: text
+        conversion: identity
+      - source: firefox_user
+        path:
+          - sidebar.visibility
+        type: text
+        conversion: identity
+    capture:
+      class: enum
+      choices:
+        - always-show
+        - expand-on-hover
+        - hide-sidebar
+        - hide-on-close
+        - hide-launcher
+    locked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - sidebar.visibility
+        - Value
+      level: mandatory
+    unlocked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - sidebar.visibility
+        - Value
+      level: user
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js
+      note: Preferences uses locked status with firefox.lock true and user status otherwise.
+    inventory:
+      category: non_policy
+      policy: sidebar.visibility
+      leaf: sidebar.visibility
+      disposition: mapped
+firefox.pref.browser_toolbars_bookmarks_visibility:
+  summary: Choose when the bookmarks toolbar appears.
+  scope: machine
+  route: firefox
+  values:
+    type: text
+    pattern: ^(?:always|never|newtab)$
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: ''
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_policy
+        path:
+          - Preferences
+          - browser.toolbars.bookmarks.visibility
+          - Value
+        type: text
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_policy
+        path:
+          - Preferences
+          - browser.toolbars.bookmarks.visibility
+        type: text
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_prefs
+        path:
+          - browser.toolbars.bookmarks.visibility
+        type: text
+        conversion: identity
+      - source: firefox_user
+        path:
+          - browser.toolbars.bookmarks.visibility
+        type: text
+        conversion: identity
+    capture:
+      class: enum
+      choices:
+        - always
+        - never
+        - newtab
+    locked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - browser.toolbars.bookmarks.visibility
+        - Value
+      level: mandatory
+    unlocked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - browser.toolbars.bookmarks.visibility
+        - Value
+      level: user
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js
+      note: Preferences uses locked status with firefox.lock true and user status otherwise.
+    inventory:
+      category: non_policy
+      policy: browser.toolbars.bookmarks.visibility
+      leaf: browser.toolbars.bookmarks.visibility
+      disposition: mapped
+firefox.pref.browser_ui_customization_state:
+  summary: Set the toolbar button layout.
+  scope: machine
+  route: firefox
+  values:
+    type: text
+    pattern: ^[\s\S]*$
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: ''
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_policy
+        path:
+          - Preferences
+          - browser.uiCustomization.state
+          - Value
+        type: text
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_policy
+        path:
+          - Preferences
+          - browser.uiCustomization.state
+        type: text
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_prefs
+        path:
+          - browser.uiCustomization.state
+        type: text
+        conversion: identity
+      - source: firefox_user
+        path:
+          - browser.uiCustomization.state
+        type: text
+        conversion: identity
+    capture:
+      class: toolbar_layout
+    locked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - browser.uiCustomization.state
+        - Value
+      level: user
+    unlocked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - browser.uiCustomization.state
+        - Value
+      level: user
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js
+      note: Always editable so Firefox can save rearrangements. User status reapplies at startup.
+    inventory:
+      category: non_policy
+      policy: browser.uiCustomization.state
+      leaf: browser.uiCustomization.state
+      disposition: mapped
+firefox.pref.extensions_active_theme_id:
+  summary: Capture the active theme add-on id.
+  scope: user
+  route: not_yet
+  values:
+    type: text
+    pattern: ^[A-Za-z0-9@{}._+-]{1,200}$
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: The active theme id alone does not reliably enable a theme. Install its public add-on, then select
+    the theme in Firefox.
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_prefs
+        path:
+          - extensions.activeThemeID
+        type: text
+        conversion: identity
+      - source: firefox_user
+        path:
+          - extensions.activeThemeID
+        type: text
+        conversion: identity
+    capture:
+      class: addon_id
+    locked:
+      unsupported: The active theme id alone does not reliably enable a theme. Install its public add-on, then select
+        the theme in Firefox.
+    unlocked:
+      unsupported: The active theme id alone does not reliably enable a theme. Install its public add-on, then select
+        the theme in Firefox.
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js
+      note: The active theme id alone does not reliably enable a theme. Install its public add-on, then select the
+        theme in Firefox.
+    inventory:
+      category: non_policy
+      policy: extensions.activeThemeID
+      leaf: extensions.activeThemeID
+      disposition: mapped
+firefox.pref.font_default_x_western:
+  summary: Choose the Western default font family.
+  scope: user
+  route: not_yet
+  values:
+    type: text
+    pattern: ^(?:serif|sans-serif)$
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: Firefox Preferences rejects the font. prefix. Select the font in Firefox Settings.
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_prefs
+        path:
+          - font.default.x-western
+        type: text
+        conversion: identity
+      - source: firefox_user
+        path:
+          - font.default.x-western
+        type: text
+        conversion: identity
+    capture:
+      class: enum
+      choices:
+        - serif
+        - sans-serif
+    locked:
+      unsupported: Firefox Preferences rejects the font. prefix. Select the font in Firefox Settings.
+    unlocked:
+      unsupported: Firefox Preferences rejects the font. prefix. Select the font in Firefox Settings.
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js
+      note: Firefox Preferences rejects the font. prefix. Select the font in Firefox Settings.
+    inventory:
+      category: non_policy
+      policy: font.default.x-western
+      leaf: font.default.x-western
+      disposition: mapped
+firefox.pref.browser_content_full_zoom:
+  summary: Capture the global page zoom.
+  scope: user
+  route: not_yet
+  values:
+    type: float
+    min: 0.3
+    max: 5.0
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: Global zoom lives in content-prefs.sqlite, not a Preferences policy. Set default zoom in Firefox
+    Settings.
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_content_prefs
+        path:
+          - default_zoom
+        type: float
+        conversion: identity
+    capture:
+      class: scalar
+    locked:
+      unsupported: Global zoom lives in content-prefs.sqlite, not a Preferences policy. Set default zoom in Firefox
+        Settings.
+    unlocked:
+      unsupported: Global zoom lives in content-prefs.sqlite, not a Preferences policy. Set default zoom in Firefox
+        Settings.
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/components/zoom/FullZoom.sys.mjs
+      note: Global zoom lives in content-prefs.sqlite, not a Preferences policy. Set default zoom in Firefox Settings.
+    inventory:
+      category: non_policy
+      policy: browser.content.full-zoom
+      leaf: browser.content.full-zoom
+      disposition: mapped
+firefox.owner_label:
+  summary: Identify the owner of the Firefox policies.
+  scope: machine
+  route: firefox
+  values:
+    type: text
+    pattern: ^[A-Za-z0-9][A-Za-z0-9 ._-]{0,39}$
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: ''
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_policy
+        path:
+          - Preferences
+          - browser.mac-setup.owner
+          - Value
+        type: text
+        conversion: identity
+      - source: firefox_prefs
+        path:
+          - browser.mac-setup.owner
+        type: text
+        conversion: identity
+    capture:
+      class: mask
+      reason: The owner label can identify a person.
+    locked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - browser.mac-setup.owner
+        - Value
+      level: mandatory
+    unlocked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - browser.mac-setup.owner
+        - Value
+      level: user
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/components/enterprisepolicies/Policies.sys.mjs
+      note: Custom browser. preferences are permitted. This label identifies the declared owner, not cryptographic
+        proof.
+    inventory:
+      category: non_policy
+      policy: browser.mac-setup.owner
+      leaf: browser.mac-setup.owner
+      disposition: masked
+      reason: The owner label can identify a person.
+firefox.addons.install:
+  summary: Install public add-on ids from the Mozilla add-on site.
+  scope: machine
+  route: firefox
+  values:
+    type: browser
+    schema:
+      type: array
+      items:
+        type: string
+        pattern: ^(?:\{[0-9A-Fa-f-]{36}\}|[A-Za-z0-9._+-]*@[A-Za-z0-9.-]+)$
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: ''
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_extensions
+        path:
+          - install
+        type: array
+        conversion: identity
+    capture:
+      class: addon_ids
+    locked:
+      source: firefox_policy
+      path:
+        - ExtensionSettings
+      level: mandatory
+    unlocked:
+      source: firefox_policy
+      path:
+        - ExtensionSettings
+      level: user
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/browser/components/enterprisepolicies/Policies.sys.mjs
+      note: Public ids compile to Mozilla latest.xpi URLs. Locked mode force-installs. Editable mode installs normally
+        and permits disabling.
+    inventory:
+      category: non_policy
+      policy: extensions.json public add-ons
+      leaf: extensions.json public add-ons
+      disposition: mapped
+firefox.pref.layout_css_prefers_color_scheme_content_override:
+  summary: Choose dark, light, or automatic website colors.
+  scope: machine
+  route: firefox
+  values:
+    type: browser
+    schema:
+      type: integer
+      enum:
+        - 0
+        - 1
+        - 2
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: ''
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_policy
+        path:
+          - Preferences
+          - layout.css.prefers-color-scheme.content-override
+          - Value
+        type: int
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_policy
+        path:
+          - Preferences
+          - layout.css.prefers-color-scheme.content-override
+        type: int
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_prefs
+        path:
+          - layout.css.prefers-color-scheme.content-override
+        type: int
+        conversion: identity
+      - source: firefox_user
+        path:
+          - layout.css.prefers-color-scheme.content-override
+        type: int
+        conversion: identity
+    capture:
+      class: enum
+      choices:
+        - 0
+        - 1
+        - 2
+    locked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - layout.css.prefers-color-scheme.content-override
+        - Value
+      level: mandatory
+    unlocked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - layout.css.prefers-color-scheme.content-override
+        - Value
+      level: user
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://github.com/mozilla-firefox/firefox/blob/FIREFOX_159_0_RELEASE/modules/libpref/init/StaticPrefList.yaml
+      note: 0 chooses dark, 1 light, and 2 automatic colors. This does not select an active theme package.
+    inventory:
+      category: non_policy
+      policy: layout.css.prefers-color-scheme.content-override
+      leaf: layout.css.prefers-color-scheme.content-override
+      disposition: mapped
+firefox.pref.browser_theme_toolbar_theme:
+  summary: Capture theme-derived toolbar colors.
+  scope: user
+  route: not_yet
+  values:
+    type: browser
+    schema:
+      type: integer
+      enum:
+        - 0
+        - 1
+        - 2
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: Firefox theme code owns this derived value. Select the active theme in Firefox instead.
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_prefs
+        path:
+          - browser.theme.toolbar-theme
+        type: int
+        conversion: identity
+      - source: firefox_user
+        path:
+          - browser.theme.toolbar-theme
+        type: int
+        conversion: identity
+    capture:
+      class: enum
+      choices:
+        - 0
+        - 1
+        - 2
+    locked:
+      unsupported: Firefox theme code owns this derived value. Select the active theme in Firefox instead.
+    unlocked:
+      unsupported: Firefox theme code owns this derived value. Select the active theme in Firefox instead.
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://github.com/mozilla-firefox/firefox/blob/FIREFOX_159_0_RELEASE/modules/libpref/init/StaticPrefList.yaml
+      note: 0 chooses dark, 1 light, and 2 automatic colors. This does not select an active theme package.
+    inventory:
+      category: non_policy
+      policy: browser.theme.toolbar-theme
+      leaf: browser.theme.toolbar-theme
+      disposition: mapped
+firefox.pref.browser_theme_content_theme:
+  summary: Capture theme-derived content colors.
+  scope: user
+  route: not_yet
+  values:
+    type: browser
+    schema:
+      type: integer
+      enum:
+        - 0
+        - 1
+        - 2
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: Firefox theme code owns this derived value. Select the active theme in Firefox instead.
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_prefs
+        path:
+          - browser.theme.content-theme
+        type: int
+        conversion: identity
+      - source: firefox_user
+        path:
+          - browser.theme.content-theme
+        type: int
+        conversion: identity
+    capture:
+      class: enum
+      choices:
+        - 0
+        - 1
+        - 2
+    locked:
+      unsupported: Firefox theme code owns this derived value. Select the active theme in Firefox instead.
+    unlocked:
+      unsupported: Firefox theme code owns this derived value. Select the active theme in Firefox instead.
+    baseline:
+      status: proposed
+      reason: Leave unset. Keep the current personal preference.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://github.com/mozilla-firefox/firefox/blob/FIREFOX_159_0_RELEASE/modules/libpref/init/StaticPrefList.yaml
+      note: 0 chooses dark, 1 light, and 2 automatic colors. This does not select an active theme package.
+    inventory:
+      category: non_policy
+      policy: browser.theme.content-theme
+      leaf: browser.theme.content-theme
+      disposition: mapped
+firefox.pref.browser_crash_reports_unsubmitted_check_auto_submit2:
+  summary: Automatically submit unsubmitted Firefox crash reports.
+  scope: machine
+  route: firefox
+  values:
+    type: bool
+  macos_default: not measured
+  takes_effect: relaunch
+  needs: []
+  lockout_risk: false
+  where: Firefox > Settings
+  proven_on: {}
+  not_yet_reason: ''
+  browser:
+    family: firefox
+    kind: setting
+    read:
+      - source: firefox_policy
+        path:
+          - Preferences
+          - browser.crashReports.unsubmittedCheck.autoSubmit2
+          - Value
+        type: bool
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_policy
+        path:
+          - Preferences
+          - browser.crashReports.unsubmittedCheck.autoSubmit2
+        type: bool
+        conversion: identity
+        alternative: preference_value
+      - source: firefox_prefs
+        path:
+          - browser.crashReports.unsubmittedCheck.autoSubmit2
+        type: bool
+        conversion: identity
+      - source: firefox_user
+        path:
+          - browser.crashReports.unsubmittedCheck.autoSubmit2
+        type: bool
+        conversion: identity
+    capture:
+      class: scalar
+    locked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - browser.crashReports.unsubmittedCheck.autoSubmit2
+        - Value
+      level: mandatory
+    unlocked:
+      source: firefox_policy
+      path:
+        - Preferences
+        - browser.crashReports.unsubmittedCheck.autoSubmit2
+        - Value
+      level: user
+    baseline:
+      status: proposed
+      value: false
+      reason: Keep automatic crash uploads disabled. Manual crash submission remains a person's choice.
+    support:
+      min: 158.0.1
+      tested: 158.0.1
+      source: https://github.com/mozilla-firefox/firefox/blob/FIREFOX_158_0_1_RELEASE/browser/modules/ContentCrashHandlers.sys.mjs
+      note: UnsubmittedCrashHandler.autoSubmit reads this preference. False disables automatic unsubmitted crash
+        uploads. It does not prevent manual report submission.
+    inventory:
+      category: non_policy
+      policy: browser.crashReports.unsubmittedCheck.autoSubmit2
+      leaf: browser.crashReports.unsubmittedCheck.autoSubmit2
       disposition: mapped

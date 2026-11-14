@@ -1,0 +1,19 @@
+---
+privacy.improve_sensitive_content_warning:
+  summary: Share Sensitive Content Warning usage data with Apple.
+  scope: user
+  route: by_hand
+  values: {type: bool}
+  macos_default: not measured
+  takes_effect: not measured
+  needs: [click]
+  lockout_risk: false
+  where: System Settings > Privacy & Security > Sensitive Content Warning
+  link: x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension
+  proven_on: {}
+  not_yet_reason: ""
+  notes: >-
+    Open Sensitive Content Warning and set Improve Sensitive Content Warning.
+    This sharing choice is separate from the warning feature itself.
+    Apple documents the control at
+    https://www.apple.com/legal/privacy/data/en/improve-sensitive-content-warning/.

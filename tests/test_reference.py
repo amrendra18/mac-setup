@@ -13,7 +13,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-ENTRY_COUNT = 1243
+ENTRY_COUNT = 1264
 SCRIPT = ROOT / "scripts/render-template"
 _loader = importlib.machinery.SourceFileLoader("render_template", str(SCRIPT))
 template = importlib.util.module_from_spec(
@@ -51,6 +51,7 @@ ROUTES = (
     "apps",
     "firefox",
     "bookmarks",
+    "default_browser",
     "by_hand",
     "not_yet",
 )

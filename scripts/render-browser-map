@@ -34,6 +34,8 @@ READ_SOURCES = {
     "firefox_prefs",
     "firefox_user",
     "firefox_policy",
+    "firefox_extensions",
+    "firefox_content_prefs",
     "chrome_preferences",
     "chrome_local_state",
     "chrome_secure_preferences",
@@ -372,10 +374,26 @@ def browser_problems(entry):
     capture = browser["capture"]
     if not _fields(capture, {"class"}, {"choices", "reason"}) or capture.get(
         "class"
-    ) not in ("scalar", "enum", "public_endpoint", "mask"):
+    ) not in (
+        "scalar",
+        "enum",
+        "public_endpoint",
+        "mask",
+        "addon_id",
+        "addon_ids",
+        "toolbar_layout",
+    ):
         problems.append("capture must declare scalar, enum, public_endpoint or mask")
     else:
         privacy = capture["class"]
+        if privacy in ("addon_id", "addon_ids", "toolbar_layout") and (
+            family != "firefox"
+            or privacy == "addon_ids"
+            and semantic_type != "array"
+            or privacy in ("addon_id", "toolbar_layout")
+            and semantic_type != "text"
+        ):
+            problems.append("Firefox structured capture needs its exact value type")
         if privacy in ("enum", "public_endpoint"):
             choices = capture.get("choices")
             if (

@@ -1,0 +1,20 @@
+---
+- name: Choose the running account's default browser
+  when: macos_default_browser_browser | length > 0
+  block:
+    - name: Ask macOS once for the default browser
+      macos_default_browser:
+        browser: "{{ macos_default_browser_browser }}"
+        ask: "{{ macos_default_browser_ask }}"
+        interactive: "{{ macos_default_browser_interactive }}"
+      register: macos_default_browser_result
+
+    - name: Record the default browser notes
+      ansible.builtin.set_fact:
+        macos_default_browser_notes: "{{ macos_default_browser_result.notes }}"
+  rescue:
+    - name: Record the refusal of browser.default
+      ansible.builtin.include_tasks: "{{ role_path }}/../macos_defaults/tasks/refused.yml"
+      vars:
+        macos_defaults_refused_account: "{{ macos_default_browser_account }}"
+        macos_defaults_refused_id: browser.default

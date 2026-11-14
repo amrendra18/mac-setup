@@ -23,7 +23,7 @@ Nothing runs in the background. You start `ansible-playbook` in Terminal. It run
 
 1. When the profile lists more than one Mac, the `profile` role reads this Mac's local hostname with `scutil --get LocalHostName`. It stops with one line when no entry has that name, and ends every other entry, so the later plays skip them too. The compare is case-sensitive.
 2. The `profile` role checks the whole profile against the reference and the catalog. A problem stops the run here, before any change.
-3. The `profile` role works out the permissions this run needs from your account's settings and the machine settings. A setting's `needs` names rows of the permissions table. A folder row counts only when the setting's value lists that folder or a folder inside it. It also records whether the run sits at the Mac's screen: no `SSH_CONNECTION`, `SSH_CLIENT` or `SSH_TTY` is set, and the run is not `--check`. The permission asks and the click-through both follow that one record.
+3. The `profile` role works out the permissions this run needs from your account's settings and the machine settings. A setting's `needs` names rows of the permissions table. A folder row counts only when the setting's value lists that folder or a folder inside it. It also records whether the run sits at the Mac's screen: no `SSH_CONNECTION`, `SSH_CLIENT` or `SSH_TTY` is set, the run is not `--check`, and controller input and output use terminals. The permission asks and the click-through both follow that one record.
 4. `macos_permissions` tests each needed permission with `ls` of a protected folder: `~/Library/Mail` for Full Disk Access, and the folder itself for Desktop, Documents and Downloads. "Operation not permitted" means the permission is off. When `~/Library/Mail` does not exist, as on a fresh account, it lists `/Library/Application Support/com.apple.TCC` instead. That folder exists on every Mac, and listing it reads no file inside it.
 5. At the Mac's screen, it asks for each permission that is off. For Full Disk Access it opens the page, says what to turn on, waits for Return, and tests again. For a folder it says to click Allow, then reads the folder, which shows macOS's own dialog the first time. Over SSH (`SSH_CONNECTION`, `SSH_CLIENT` or `SSH_TTY` is set) or with `--check`, it asks for nothing and lists what it would ask. It skips the folder tests there, because a test read shows the dialog.
 6. "This account" and "Machine and other accounts" may not write a setting whose permission is still off. A command setting is read first. If it already matches, it is `ok`. If it would change, the module returns an Ansible skip. The Finder sidebar is set in one step, so a missing folder skips all three sidebar settings without a read.
@@ -31,10 +31,9 @@ Nothing runs in the background. You start `ansible-playbook` in Terminal. It run
 "This account" runs as you without admin rights:
 
 1. `macos_defaults` writes your account's preferences.
-2. `macos_dock_apps` sets your Dock's app list.
-3. `macos_wallpaper` sets your desktop picture.
-4. `macos_commands` sets your account's settings that need a command tool, such as the output and alert volumes through `osascript`. Another listed account gets these only when it runs mac-setup itself while signed in.
-5. `macos_finder_sidebar` builds its helper when any account needs it, then sets your Finder sidebar.
+2. `macos_wallpaper` sets your desktop picture.
+3. `macos_commands` sets your account's settings that need a command tool, such as the output and alert volumes through `osascript`. Another listed account gets these only when it runs mac-setup itself while signed in.
+4. `macos_finder_sidebar` builds its helper when any account needs it, then sets your Finder sidebar.
 
 "Machine and other accounts" runs with admin rights:
 
@@ -51,11 +50,16 @@ Both bookmarks steps run after app installation and Firefox policies, so the sam
 
 "Take back permissions, click through and summarize" runs as you without admin rights:
 
-1. `macos_permissions` takes back each temporary permission that "Permissions" found off and you turned on. Today that is only Full Disk Access. It opens the page, says to turn the app off, waits for Return, and tests that it is off. A permission that was on before the run stays on. This step comes first, so a run you stop at a click page never leaves Full Disk Access on.
-2. `macos_by_hand` walks the click-only settings of your account and of the machine. For each one it opens the System Settings page, says what to choose, and waits for Return. It walks only when "Permissions" would ask, by the same rule: at the Mac's screen and without `--check`. Otherwise it prints one `would open` line per page and opens none.
-3. The `profile` role prints the summary, with one line per needed permission and one line per skipped setting. A permission that stayed off gets "every setting that needs it already matches" only when the run read each of those settings and found it matching. The role then fails the run with one `refused` line per refused setting or account. A skipped setting is not a refusal, so it leaves the exit code at 0. The summary counts the click-only settings this run did not walk: your account's and the machine's when it only listed them, and every other account's, which that account walks when it runs mac-setup while signed in.
+1. `macos_dock_apps` sets your Dock after the listed apps install. An earlier unexpected stop skips this step.
+2. `macos_permissions` takes back each temporary permission that "Permissions" found off and you turned on. Today that is only Full Disk Access. It opens the page, says to turn the app off, waits for Return, and tests that it is off. A permission that was on before the run stays on. This step comes before the click pages, so stopping at a click page never leaves Full Disk Access on.
+3. `macos_default_browser` reads web-link handlers and requests macOS confirmation only at your screen, after temporary permissions are removed.
+4. `macos_by_hand` walks the click-only settings of your account and of the machine. For each one it opens the System Settings page, says what to choose, and waits for Return. It walks only when "Permissions" would ask, by the same rule: at the Mac's screen and without `--check`. Otherwise it prints one `would open` line per page and opens none.
+5. The `profile` role prints the summary, with one line per needed permission and one line per skipped setting. A permission that stayed off gets "every setting that needs it already matches" only when the run read each of those settings and found it matching. The role then fails the run with one `refused` line per refused setting or account. A skipped setting is not a refusal, so it leaves the exit code at 0. The summary counts the click-only settings this run did not walk: your account's and the machine's when it only listed them, and every other account's, which that account walks when it runs mac-setup while signed in.
 
-"This account" and "Machine and other accounts" each wrap their work in one block. An unexpected error, such as a wrong admin password or a failed helper build, is recorded instead of ending the run. "Machine and other accounts" then does nothing, and "Take back permissions, click through and summarize" still takes back Full Disk Access and walks the click pages. The summary ends with "the run stopped early at" the failed task and its message, and the run exits with code 2. Only a run stopped with Control-C skips the take-back. Control-C at a click page skips the summary, but Full Disk Access is already off by then, because the take-back comes first.
+"This account" and "Machine and other accounts" each wrap their work in one block. The final play also wraps your Dock update. An unexpected error records the failed task instead of ending the run. Later settings stop, while permission cleanup and the click pages still run. The summary names the failed task and its message, and the run exits with code 2. Control-C skips any steps that have not run yet. Permission cleanup comes before the click pages.
+
+The final play first loads `macos_defaults` with no preference writes and your account as the target.
+This registers its restart handlers within that play and reads the current screen owner before the Dock changes.
 
 `playbooks/by-hand.yml` runs the `profile` role, then `macos_by_hand` for the click-only settings of your account and of the machine, to walk the pages again without the rest of the run. It walks or lists by the same rule as `site.yml`.
 
@@ -75,6 +79,7 @@ Both bookmarks steps run after app installation and Firefox policies, so the sam
 | 10 | `macos_permissions` | Tests each permission the run needs, asks for the missing ones at the screen, and takes back Full Disk Access at the end | none. It uses a filter plugin. |
 | 11 | `macos_firefox` | Applies selected Firefox policies and reports unsupported lock forms | `macos_firefox` |
 | 12 | `macos_firefox_bookmarks` | Imports a cleaned bookmarks export once per Firefox profile | `macos_firefox_bookmarks` |
+| 13 | `macos_default_browser` | Reads web-link handlers and requests macOS confirmation for the running account | `macos_default_browser` |
 
 A custom module exists only where no existing module does the job. Each one reads before it writes and supports `--check`.
 
@@ -89,11 +94,11 @@ Both helpers live in `roles/macos_apps/module_utils/`.
 2. Each new account adds 1 to the run's `changed` count, and each setting written for another account adds 1 more.
 3. A preview with `--check` still builds the Finder sidebar helper into `.local/finder-sidebar/` when the profile lists a sidebar setting, because the helper is needed to read the sidebar.
 4. A preview prints a `changed` line for each setting it would change, without the value. To see a current value, run `defaults read DOMAIN KEY` with the domain and key from the reference.
-5. `dock.applications` is set before apps install for the running account. If it lists a missing app, the entire Dock list is refused and the run ends with exit code 2, while other work continues. Install the app first, then add it to the Dock list on a later run.
+5. `dock.applications` runs after app installation for every account. An app installed by the same run can join the Dock immediately. The Dock role still refuses the entire list when an app is missing, and the run ends with exit code 2.
 
 ## The settings reference
 
-Each `*.yml` file in `settings/macos/` maps setting ids to entries. An id looks like `area.name`, such as `dock.position`. The reference holds 1243 entries, and `ENTRY_COUNT` in `tests/test_reference.py` pins that number. `tests/test_reference.py` checks every entry against the rules below.
+Each `*.yml` file in `settings/macos/` maps setting ids to entries. An id looks like `area.name`, such as `dock.position`. The reference holds 1264 entries, and `ENTRY_COUNT` in `tests/test_reference.py` pins that number. `tests/test_reference.py` checks every entry against the rules below.
 
 This is one entry:
 
@@ -145,6 +150,7 @@ dock.position:
 | 8 | `not_yet` | none | Nothing yet. The profile check refuses the setting. |
 | 9 | `firefox` | `browser`, the shared map metadata | Applies selected machine-wide Firefox policy values. |
 | 10 | `bookmarks` | none | Shares one bookmarks source between browser importers. Values are `profile_path`, a nonempty relative file path without `..` parts or line breaks. |
+| 11 | `default_browser` | none | Reads web-link handlers and asks macOS once at the selected account's screen. |
 
 ### The permissions table
 
@@ -170,8 +176,8 @@ Three optional fields change a `defaults` write:
 2. `map` turns each value from the profile into the value macOS stores. A value missing from the map leaves that key alone.
 3. `dict_mode` applies to a `dict` type. `replace`, the default, writes the whole dictionary, and `add` merges only the listed keys.
 
-Of the 1243 entries, 554 are set by a run, 40 are on route `by_hand`, and 649 are on route `not_yet`.
-The unsupported entries include 603 Chrome rows, 16 Firefox rows, and 30 macOS settings awaiting support.
+Of the 1264 entries, 569 are set by a run, 41 are on route `by_hand`, and 654 are on route `not_yet`.
+The unsupported entries include 603 Chrome rows, 21 Firefox rows, and 30 macOS settings awaiting support.
 The macOS entries cover 26 privacy permissions, text replacements, modifier keys, the number of Spaces, and the password minimum length.
 
 ## How downloads are checked
@@ -317,7 +323,11 @@ Mozilla's [version-record implementation](https://raw.githubusercontent.com/mozi
 The report labels this as `saved_profile`, rather than claiming a running browser version.
 The `versions.browser` field records that observed version.
 The separate `versions.map_tested_on` list names the map's pinned test versions for the selected family.
-The pins are Firefox 158.0.1 and Chrome 158.0.8127.37. They do not establish real-browser verification.
+The map's reference versions are Firefox 158.0.1 and Chrome 158.0.8127.37. They do not establish real-browser verification.
+Firefox can update itself after installation. The journey reads the running version from Marionette's NewSession capabilities.
+Each disposable launch saves only that sanitized version in `runtime.json`; unknown versions use `unavailable`.
+The launch environment grants system access through `MOZ_REMOTE_ALLOW_SYSTEM_ACCESS=1` for the test child only.
+Firefox 158 through 160 support this environment value. The legacy command-line flag was removed in Firefox 159.
 Candidate headers name the tested and observed versions. Newer observed versions still capture mapped values.
 Each mapping records minimum known support in `support.min` and its pinned test version in `support.tested`.
 An optional `support.max` records only a vendor-documented removal bound, with its source and limitation note.
@@ -355,7 +365,7 @@ Those counts describe persisted entries and do not establish changes from defaul
 Free text and dynamic structures stay masked. Exact reviewed public endpoints are the only URL exception.
 A report emits no active value for masked, absent, conflicting, unsupported, or unavailable entries.
 
-There are 335 Firefox rows on route `firefox`. The other 16 remain `not_yet`.
+There are 349 Firefox rows on route `firefox`. The other 21 remain `not_yet`.
 Chrome rows remain `not_yet`. Both lock controls are machine booleans with proposed default `true`.
 Every row documents its locked form and its editable form or reason for leaving it unset.
 Capture does not infer either global switch from saved browser state.
@@ -558,3 +568,114 @@ It saves only a numeric version or `unknown`, alongside the two startup-control 
 Before preview, the helper copies the safe setup fields to `reads/bookmarks-startup-control.json` in the evidence folder.
 The version identifies the setup session. Firefox can update between sessions, so it does not describe every later session.
 The Firefox catalog and browser-map baseline remains 158.0.1 until a new version receives native verification.
+
+## Firefox appearance and add-ons
+
+The appearance map uses Firefox 158 and 159 source definitions.
+A saved value describes configuration. The disposable Firefox journey proves runtime behavior separately.
+The following groups use ordinary Preferences policies where Firefox permits the prefix.
+
+| # | Setting group | Storage and policy behavior |
+| --- | --- | --- |
+| 1 | Toolbar density and compact choice | `browser.uidensity` uses 0 normal, 1 compact, or 2 touch. `browser.compactmode.show` exposes the compact choice. `browser.touchmode.auto` selects touch spacing automatically. |
+| 2 | Tabs and sidebar | `sidebar.verticalTabs`, `sidebar.revamp`, `sidebar.position_start`, `sidebar.expandOnHover`, and `sidebar.visibility` describe the layout. `browser.tabs.inTitlebar` and `browser.tabs.tabmanager.enabled` control the title bar and tab list. |
+| 3 | Toolbar buttons | `browser.uiCustomization.state` stores JSON placements. Its policy always uses `Status: user` so Firefox can save rearrangements. A restart reapplies the saved policy layout. Unknown keys, widgets, or areas mask the entire captured layout. |
+| 4 | Website colors | `layout.css.prefers-color-scheme.content-override` uses 0 dark, 1 light, or 2 automatic. This affects website color preferences. It does not activate a theme package. |
+| 5 | Active theme | `extensions.activeThemeID` identifies light, dark, system, or an approved public theme. `browser.theme.toolbar-theme` and `browser.theme.content-theme` record derived colors. Capture reads these; application remains manual because existing theme installation can skip activation. |
+| 6 | Fonts | Existing Western font rows capture reviewed public font names and bounded sizes. `font.default.x-western` captures serif or sans-serif. Firefox's Preferences handler rejects the `font.` prefix. These rows remain unsupported for application. |
+| 7 | Default zoom | `browser.content.full-zoom` is a global content preference in `content-prefs.sqlite`. Capture selects only the row with null group id and this exact setting name. It refuses a nonempty SQLite journal or write-ahead log. Default zoom application remains manual. |
+| 8 | Owner label | `firefox.owner_label` writes `Preferences.browser.mac-setup.owner`. The run summary includes the selected label. Capture masks the label because it can identify a person. |
+| 9 | Public add-ons | `firefox.addons.install` compiles each id into separate `ExtensionSettings` installation mode and URL fields. Locked mode uses `force_installed`; editable mode uses `normal_installed`. Removing an id releases its owned fields and preserves unrelated fields. It does not uninstall the add-on. |
+
+Except toolbar layout, supported appearance preferences follow `firefox.lock` with `locked` or `user` status.
+User status sets an editable value each startup. A different manager can still impose a lock.
+New preferences have no macOS proof until their real journey runs.
+
+The allowed prefixes and statuses follow Mozilla's [Preferences reference](https://firefox-admin-docs.mozilla.org/reference/policies/preferences/).
+The [Firefox policy implementation](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_158_0_1_RELEASE/browser/components/enterprisepolicies/Policies.sys.mjs) defines the accepted prefixes and startup order.
+The [Firefox appearance defaults](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js) define density and sidebar choices.
+The [color definitions](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_159_0_RELEASE/modules/libpref/init/StaticPrefList.yaml) define color values.
+The [toolbar serializer](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_159_0_RELEASE/browser/components/customizableui/CustomizableUI.sys.mjs) defines the stored layout.
+The [theme installation guard](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_159_0_RELEASE/toolkit/components/enterprisepolicies/PoliciesHelpers.sys.mjs) can skip an existing theme.
+The [zoom control](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_159_0_RELEASE/browser/components/preferences/config/accessibility.mjs) writes global content preferences.
+
+Capture reads `extensions.json` metadata only. It never opens extension storage or settings.
+An email-shaped id or a signature alone does not prove a public source.
+Capture requires a public Mozilla signature and a saved HTTPS `addons.mozilla.org` download source.
+The add-on must be visible, installed in the profile, and not sideloaded, temporary, hidden, or system-provided.
+The public id and Firefox's saved default display name come from that record. No hand-kept catalog gates discovery.
+The selected runtime language can show another localized name; capture cannot prove that selection offline.
+The capture command performs no network lookup or installation.
+An author-supplied update URL never establishes public provenance.
+Mozilla signs unlisted extensions too, so a signature alone is insufficient.
+Unknown user add-ons produce a manual-review count without ids or names.
+Their presence marks add-on comparison as unverified.
+System, hidden, and built-in entries have a separate excluded count and never enter the installation list.
+They do not prevent capture of eligible public user add-ons.
+An eligible add-on also needs explicit `active: true` and `userDisabled: false` metadata without application disablement.
+Disabled, missing, malformed, or inconsistent activation evidence marks the install setting as unverified and withholds its profile assignment.
+Capture reports a count for that gap. It does not turn a disabled source add-on into a force-install suggestion.
+Mozilla's [add-on manager constants](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_160_0_RELEASE/toolkit/mozapps/extensions/AddonManager.sys.mjs)
+define the accepted signing states.
+Firefox's [extension database](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_160_0_RELEASE/toolkit/mozapps/extensions/internal/XPIDatabase.sys.mjs)
+defines persisted source, location, visibility, signature, and display-name fields.
+Mozilla documents [signing for listed and self-distributed extensions](https://extensionworkshop.com/documentation/publish/signing-and-distribution-overview/).
+The manifest's [update URL](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/browser_specific_settings)
+is controlled by the extension author.
+The role installs captured public ids through the existing Mozilla latest-XPI URL.
+
+`browser-settings diff` parses only the generated capture subset, using standard-library JSON parsing for assignment values.
+It validates setting ids, scopes, values, duplicate keys, and regular input files before printing ids and comparison states.
+Unknown observations remain named gaps even when both files contain the same unknown state.
+Comparing two captures with zero observations returns exit 2.
+Both parsers normalize toolbar JSON object order and spacing. Widget array order remains significant.
+Matching absent states describe saved overrides only. They do not establish effective defaults.
+
+`browser-settings check` accepts resolved browser-only `machine_settings` and `default_settings` JSON.
+It uses the same saved-source reader and reports only ids and states.
+It cannot resolve inventory or vault data. No automatic normalized export command exists yet.
+Explicit locks, masked values, and missing required evidence return exit 3.
+Explicit `unset` requests retain a separate release state and report an unverified gap with exit 3.
+Saved profile values cannot prove policy ownership or release. `unset` remains invalid for a Boolean lock control.
+Neither comparison command proves runtime enforcement or network silence.
+
+### Firefox telemetry controls
+
+`firefox.disable_telemetry: true` selects Mozilla's native DisableTelemetry policy.
+It disables health reports, data submission, daily-use reporting, and telemetry archives.
+`firefox.disable_firefox_studies: true` disables studies.
+`firefox.firefox_suggest.improve_suggest: false` disables suggestion improvement sharing.
+Each setting applies only when selected in the profile.
+
+The separate `firefox.pref.browser_crash_reports_unsubmitted_check_auto_submit2: false` disables automatic submission of unsubmitted crash reports.
+It follows `firefox.lock` through Preferences status and does not prevent manual submission.
+Mozilla's pinned [crash handler](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_158_0_1_RELEASE/browser/modules/ContentCrashHandlers.sys.mjs) reads that preference.
+The [default preference](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_158_0_1_RELEASE/browser/app/profile/firefox.js) is false.
+Stored-policy tests verify compilation. Effective upload behavior remains unproven until tested in Firefox.
+
+App-specific upload controls remain separate from macOS **Share with app developers**.
+The new `privacy.improve_sensitive_content_warning: false` click-through setting opens Privacy & Security.
+A person selects Sensitive Content Warning and turns off Improve Sensitive Content Warning.
+No automatic switch or zero-telemetry guarantee follows from that click-through entry.
+
+### Default web browser
+
+The account setting `browser.default: firefox` uses route `default_browser`.
+The final account play runs `macos_default_browser` after app installation.
+It reads the current HTTP and HTTPS handlers through the LaunchServices read API.
+An already-default choice changes nothing.
+A project callback records controller terminal input and output when the playbook starts.
+Task workers read that process-only signal and pass explicit interactive intent to the module.
+The callback replaces any inherited signal on every run; a missing signal means unattended.
+The module requires that intent and checks SSH, check mode, and ownership of the screen before any request.
+It asks macOS once through the public NSWorkspace API and then reads both handlers again.
+The run reports a change only after both identify Firefox.
+A deferred confirmation stays a manual step.
+Other accounts wait for their own session.
+
+Apple documents the [NSWorkspace request](https://developer.apple.com/documentation/appkit/nsworkspace/setdefaultapplication(at:toopenurlswithscheme:completion:)).
+Firefox 160 uses the same single HTTP request on macOS 27 in its
+[Mac shell service](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_160_0_RELEASE/browser/components/shell/nsMacShellService.mm).
+Its source reports that macOS also updates HTTPS and HTML handlers.
+The module verifies both web-link handlers rather than assuming that result.
+No defaults write, private registration database edit, or silent consent workaround is used.

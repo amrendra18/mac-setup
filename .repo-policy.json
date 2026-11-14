@@ -2,7 +2,13 @@
   "schema_version": 1,
   "public_emails": [
     "noreply@anthropic.com",
-    "git@github.com"
+    "git@github.com",
+    "default-theme@mozilla.org",
+    "firefox-compact-light@mozilla.org",
+    "firefox-compact-dark@mozilla.org",
+    "firefox-alpenglow@mozilla.org",
+    "FirefoxColor@mozilla.com",
+    "uBlock0@raymondhill.net"
   ],
   "public_github_owner_urls": true,
   "private_literal_exceptions": [

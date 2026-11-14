@@ -8,11 +8,14 @@ import platform
 import plistlib
 import re
 import socket
+import sqlite3
 import stat
 import struct
 import subprocess
 import sys
+import unicodedata
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 from xml.parsers.expat import ExpatError
 
 
@@ -26,6 +29,8 @@ SOURCE_STATES = {
     "firefox_prefs": "persisted",
     "firefox_user": "startup_override",
     "firefox_policy": "policy_stored",
+    "firefox_extensions": "persisted",
+    "firefox_content_prefs": "persisted",
     "chrome_preferences": "persisted",
     "chrome_local_state": "persisted",
     "chrome_secure_preferences": "persisted",
@@ -628,11 +633,285 @@ def value_allowed(values, value):
     return False
 
 
-def filter_value(entry, value):
+BUILTIN_THEMES = {
+    "default-theme@mozilla.org",
+    "firefox-compact-light@mozilla.org",
+    "firefox-compact-dark@mozilla.org",
+    "firefox-alpenglow@mozilla.org",
+}
+SIGNEDSTATE_SIGNED = 2
+SIGNEDSTATE_SYSTEM = 3
+SIGNEDSTATE_PRIVILEGED = 4
+TOOLBAR_AREAS = {
+    "nav-bar",
+    "TabsToolbar",
+    "PersonalToolbar",
+    "toolbar-menubar",
+    "widget-overflow-fixed-list",
+    "unified-extensions-area",
+    "vertical-tabs",
+}
+TOOLBAR_WIDGETS = {
+    "back-button",
+    "forward-button",
+    "stop-reload-button",
+    "urlbar-container",
+    "search-container",
+    "downloads-button",
+    "home-button",
+    "library-button",
+    "sidebar-button",
+    "sidebar-revamp-button",
+    "alltabs-button",
+    "new-tab-button",
+    "tabbrowser-tabs",
+    "personal-bookmarks",
+    "bookmarks-menu-button",
+    "history-panelmenu",
+    "save-to-pocket-button",
+    "privatebrowsing-button",
+    "print-button",
+    "find-button",
+    "zoom-controls",
+    "fullscreen-button",
+    "developer-button",
+    "preferences-button",
+    "characterencoding-button",
+    "sync-button",
+    "fxa-toolbar-menu-button",
+    "panic-button",
+    "screenshot-button",
+    "unified-extensions-button",
+    "vertical-spacer",
+    "firefox-view-button",
+    "import-button",
+    "open-file-button",
+    "email-link-button",
+    "new-window-button",
+    "edit-controls",
+    "profiler-button",
+    "menubar-items",
+}
+
+
+def addon_id(value):
+    return (
+        isinstance(value, str)
+        and re.fullmatch(
+            r"(?:\{[0-9A-Fa-f]{8}-(?:[0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}\}|[A-Za-z0-9._+-]{0,100}@[A-Za-z0-9.-]{1,100})",
+            value,
+        )
+        is not None
+    )
+
+
+def toolbar_layout(value, public_addons=()):
+    try:
+        layout = json.loads(value, object_pairs_hook=_unique_object)
+    except (ValueError, TypeError):
+        return False, None
+    if (
+        not isinstance(layout, dict)
+        or "placements" not in layout
+        or set(layout)
+        - {
+            "placements",
+            "seen",
+            "dirtyAreaCache",
+            "currentVersion",
+            "newElementCount",
+        }
+    ):
+        return False, None
+    widgets = TOOLBAR_WIDGETS | {
+        re.sub(r"[^a-z0-9_-]", "_", key.lower()) + "-browser-action"
+        for key in public_addons
+    }
+
+    def widget(value):
+        return isinstance(value, str) and (
+            value in widgets
+            or re.fullmatch(
+                r"customizableui-special-(?:spring|spacer|separator)[0-9]{1,6}", value
+            )
+            is not None
+        )
+
+    placements = layout["placements"]
+    if not isinstance(placements, dict) or any(
+        area not in TOOLBAR_AREAS
+        or not isinstance(items, list)
+        or not all(widget(item) for item in items)
+        for area, items in placements.items()
+    ):
+        return False, None
+    for key in ("seen", "dirtyAreaCache"):
+        if key in layout and (
+            not isinstance(layout[key], list)
+            or not all(
+                (
+                    widget(item)
+                    if key == "seen"
+                    else isinstance(item, str) and item in TOOLBAR_AREAS
+                )
+                for item in layout[key]
+            )
+        ):
+            return False, None
+    for key in ("currentVersion", "newElementCount"):
+        if key in layout and (
+            type(layout[key]) is not int or not 0 <= layout[key] <= 1000000
+        ):
+            return False, None
+    return True, json.dumps(layout, sort_keys=True, separators=(",", ":"))
+
+
+def amo_extension_url(value):
+    if not isinstance(value, str) or any(
+        char.isspace() or ord(char) < 32 or char == "\\" for char in value
+    ):
+        return False
+    try:
+        uri = urlsplit(value)
+    except ValueError:
+        return False
+    if uri.scheme != "https" or uri.netloc != "addons.mozilla.org" or uri.fragment:
+        return False
+    path = unquote(uri.path)
+    return (
+        re.fullmatch(
+            r"/firefox/downloads/(?:file/[0-9]+/[^/]+\.xpi|latest/[^/]+/latest\.xpi)",
+            path,
+        )
+        is not None
+    )
+
+
+def public_extensions(document):
+    records = document.get("addons", [])
+    if not isinstance(records, list):
+        raise CaptureError(3, "Could not parse firefox_extensions.")
+    public, manual, excluded, activation_unverified = {}, 0, 0, 0
+    for record in records:
+        if not isinstance(record, dict):
+            raise CaptureError(3, "Could not parse firefox_extensions.")
+        if record.get("type") not in ("extension", "theme"):
+            continue
+        key = record.get("id")
+        if (
+            (isinstance(key, str) and key in BUILTIN_THEMES)
+            or record.get("hidden") is True
+            or record.get("visible") is False
+            or record.get("isSystem") is True
+            or record.get("temporarilyInstalled") is True
+            or record.get("signedState") == SIGNEDSTATE_SYSTEM
+            or record.get("location")
+            in (
+                "app-system-addons",
+                "app-builtin-addons",
+                "app-system-profile",
+                "app-builtin",
+                "app-system-local",
+                "app-system-share",
+                "app-temporary",
+            )
+        ):
+            excluded += 1
+            continue
+        name = (
+            record.get("defaultLocale", {}).get("name")
+            if isinstance(record.get("defaultLocale"), dict)
+            else None
+        )
+        if (
+            not addon_id(key)
+            or record.get("location") != "app-profile"
+            or record.get("foreignInstall") is not False
+            or record.get("hidden") is not False
+            or record.get("visible") is not True
+            or record.get("isSystem", False) is not False
+            or record.get("temporarilyInstalled", False) is not False
+            or type(record.get("signedState")) is not int
+            or record["signedState"] not in (SIGNEDSTATE_SIGNED, SIGNEDSTATE_PRIVILEGED)
+            or not amo_extension_url(record.get("sourceURI"))
+            or not isinstance(name, str)
+            or not name.strip()
+            or len(name) > 120
+            or any(
+                unicodedata.category(char).startswith("C")
+                or unicodedata.category(char) in ("Zl", "Zp")
+                for char in name
+            )
+        ):
+            manual += 1
+            continue
+        if key in public:
+            raise CaptureError(3, "Could not parse firefox_extensions.")
+        public[key] = name
+        if (
+            record.get("active") is not True
+            or record.get("userDisabled") is not False
+            or record.get("appDisabled", False) is not False
+        ):
+            activation_unverified += 1
+    result = {
+        "public": [{"id": key, "name": public[key]} for key in sorted(public)],
+        "manual_count": manual,
+    }
+    if activation_unverified:
+        result["activation_unverified_count"] = activation_unverified
+    if excluded:
+        result["excluded_count"] = excluded
+    return result
+
+
+def global_zoom(profile, sources):
+    path = profile / "content-prefs.sqlite"
+    if sources.load(path) is None:
+        return {}
+    for suffix in ("-wal", "-journal"):
+        payload = sources.load(Path(str(path) + suffix))
+        if payload:
+            raise CaptureError(3, "Quit Firefox cleanly before reading global zoom.")
+    try:
+        connection = sqlite3.connect(
+            path.resolve().as_uri() + "?mode=ro&immutable=1", uri=True
+        )
+        try:
+            values = connection.execute(
+                "SELECT prefs.value FROM prefs JOIN settings ON prefs.settingID = settings.id "
+                "WHERE prefs.groupID IS NULL AND settings.name = 'browser.content.full-zoom'"
+            ).fetchall()
+        finally:
+            connection.close()
+        if len(values) > 1:
+            raise ValueError()
+        return {"default_zoom": values[0][0]} if values else {}
+    except (sqlite3.Error, ValueError):
+        raise CaptureError(3, "Could not read the saved global zoom.") from None
+
+
+def filter_value(entry, value, public_addons=()):
     capture = entry["browser"]["capture"]
     kind = capture["class"]
     if kind == "mask" or not value_allowed(entry["values"], value):
         return False, None
+    if kind == "toolbar_layout":
+        return toolbar_layout(value, public_addons)
+    if kind == "addon_id":
+        return (
+            (True, value)
+            if value in BUILTIN_THEMES or value in public_addons
+            else (False, None)
+        )
+    if kind == "addon_ids":
+        return (
+            (True, value)
+            if isinstance(value, list)
+            and len(value) == len(set(value))
+            and all(addon_id(key) and key in public_addons for key in value)
+            else (False, None)
+        )
     if kind in ("enum", "public_endpoint"):
         if any(
             type(value) is type(choice) and value == choice
@@ -766,6 +1045,7 @@ def read_browser(
         item["source"] for row in rows.values() for item in row["browser"]["read"]
     }
     stores = {}
+    extensions = {"public": [], "manual_count": 0}
     paths = {
         "firefox_prefs": profile / "prefs.js",
         "firefox_user": profile / "user.js",
@@ -779,6 +1059,16 @@ def read_browser(
             payload = sources.load(paths[kind], required=(kind == required))
             if payload is not None:
                 stores[kind] = [parse_source(kind, payload)]
+    if family == "firefox" and "firefox_extensions" in needed:
+        payload = sources.load(profile / "extensions.json")
+        if payload is not None:
+            extensions = public_extensions(parse_source("firefox_extensions", payload))
+            stores["firefox_extensions"] = [
+                {"install": [item["id"] for item in extensions["public"]]}
+            ]
+    public_addons = {item["id"] for item in extensions["public"]}
+    if family == "firefox" and "firefox_content_prefs" in needed:
+        stores["firefox_content_prefs"] = [global_zoom(profile, sources)]
     policy_kind = family + "_policy"
     stores[policy_kind] = []
     for path in policy_paths:
@@ -854,7 +1144,7 @@ def read_browser(
                                 if type(value) is not bool:
                                     continue
                                 value = not value
-                            allowed, filtered = filter_value(row, value)
+                            allowed, filtered = filter_value(row, value, public_addons)
                             observation = {
                                 "source": source,
                                 "state": SOURCE_STATES[source],
@@ -907,6 +1197,12 @@ def read_browser(
             item["value"] = observations[0]["value"]
         else:
             item["state"] = "conflict"
+        if setting_id == "firefox.addons.install" and (
+            extensions["manual_count"]
+            or extensions.get("activation_unverified_count", 0)
+        ):
+            item["state"] = "unverified"
+            item.pop("value", None)
         settings[setting_id] = item
     unknown_persisted, unknown_policy = set(), 0
     for source, documents in stores.items():
@@ -941,7 +1237,7 @@ def read_browser(
         ),
         app_state_entries=app_state_entries,
     )
-    return {
+    result = {
         "browser": family,
         "versions": {
             "browser": version,
@@ -955,6 +1251,9 @@ def read_browser(
         "settings": settings,
         "counts": counts,
     }
+    if family == "firefox" and "firefox_extensions" in needed:
+        result["extensions"] = extensions
+    return result
 
 
 def leaked_test_values(canaries, texts):
@@ -1006,6 +1305,34 @@ def candidate_yaml(results):
                 + "; app-state entries: "
                 + str(result["counts"].get("app_state_entries", 0))
             )
+            for addon in result.get("extensions", {}).get("public", []):
+                lines.append(
+                    "# Public add-on: "
+                    + json.dumps(addon, ensure_ascii=True, sort_keys=True)
+                )
+            manual = result.get("extensions", {}).get("manual_count", 0)
+            if manual:
+                lines.append(
+                    "# Add-ons needing manual review: "
+                    + str(manual)
+                    + "; their ids and names are withheld."
+                )
+            excluded = result.get("extensions", {}).get("excluded_count", 0)
+            if excluded:
+                lines.append(
+                    "# System, hidden, built-in or temporary add-ons excluded: "
+                    + str(excluded)
+                    + "; their ids and names are withheld."
+                )
+            activation_unverified = result.get("extensions", {}).get(
+                "activation_unverified_count", 0
+            )
+            if activation_unverified:
+                lines.append(
+                    "# Add-ons with disabled or unverified activation: "
+                    + str(activation_unverified)
+                    + "; install suggestions withheld."
+                )
     for section, scope in (
         ("machine_settings", "machine"),
         ("default_settings", "user"),

@@ -33,7 +33,7 @@ DESKTOP = {
     "settings": ["finder.sidebar_favorites"],
     "skips": ["finder.sidebar_favorites", "finder.sidebar_hide"],
 }
-SCREEN = profile_mode(["", "", ""], False)
+SCREEN = profile_mode(["", "", ""], False, interactive=True)
 SSH = profile_mode(["192.0.2.1 50000 192.0.2.2 22", "", ""], False)
 CHECK = profile_mode(["", "", ""], True)
 NOT_PERMITTED = "ls: Library/Mail: Operation not permitted\n"
@@ -54,6 +54,15 @@ class Mode(unittest.TestCase):
         self.assertIn("over SSH", profile_mode(["x", "", ""], True)["reason"])
         self.assertIn("--check", CHECK["reason"])
         self.assertEqual(SCREEN["reason"], "")
+
+    def test_missing_or_false_interactive_state_is_unattended(self):
+        for mode in (
+            profile_mode(["", "", ""], False),
+            profile_mode(["", "", ""], False, interactive=False),
+        ):
+            self.assertFalse(mode["ask"])
+            self.assertEqual(mode["why"], "unattended")
+            self.assertIn("terminal", mode["reason"])
 
     def test_the_app_is_named_from_term_program(self):
         self.assertEqual(macos_permissions_app("Apple_Terminal"), "Terminal")

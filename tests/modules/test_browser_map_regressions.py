@@ -57,7 +57,7 @@ class BrowserMapRegressionTests(unittest.TestCase):
             ]
             if len(descriptors) == 2:
                 pairs[key] = (row, descriptors)
-        self.assertEqual(len(pairs), 24)
+        self.assertEqual(len(pairs), 36)
         for key, (row, descriptors) in pairs.items():
             preference = next(
                 descriptor["path"][1]
@@ -71,6 +71,11 @@ class BrowserMapRegressionTests(unittest.TestCase):
                 "int": 1,
                 "text": "fixture-private-dictionary" if private else "9.9.9.9",
             }[kind]
+            capture = row["browser"]["capture"]
+            if capture["class"] == "enum":
+                value = capture["choices"][0]
+            elif capture["class"] == "toolbar_layout":
+                value = '{"placements":{"nav-bar":["urlbar-container"]}}'
             for encoding in ("scalar", "object"):
                 with self.subTest(setting=key, encoding=encoding):
                     stored = (

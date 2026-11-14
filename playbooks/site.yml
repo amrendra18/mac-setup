@@ -29,13 +29,6 @@
             macos_defaults_writes: "{{ profile_own_work.writes }}"
             macos_defaults_account: "{{ profile_running_account }}"
 
-        - name: Set this account's Dock apps
-          ansible.builtin.include_role:
-            name: macos_dock_apps
-          vars:
-            macos_dock_apps_items: "{{ profile_own_work.dock_apps }}"
-            macos_dock_apps_account: "{{ profile_running_account }}"
-
         - name: Set this account's wallpaper
           ansible.builtin.include_role:
             name: macos_wallpaper
@@ -223,6 +216,27 @@
       ansible.builtin.meta: end_host
       when: profile_running_account is not defined
 
+    - name: Set this account's Dock after the apps install
+      when: site_stopped is not defined
+      block:
+        - name: Prepare this account's Dock restart
+          ansible.builtin.include_role:
+            name: macos_defaults
+          vars:
+            macos_defaults_writes: []
+            macos_defaults_account: "{{ profile_running_account }}"
+
+        - name: Set this account's Dock apps
+          ansible.builtin.include_role:
+            name: macos_dock_apps
+          vars:
+            macos_dock_apps_items: "{{ profile_own_work.dock_apps }}"
+            macos_dock_apps_account: "{{ profile_running_account }}"
+      rescue:
+        - name: Record where this account's Dock stopped
+          ansible.builtin.set_fact:
+            site_stopped: "{{ ansible_failed_task.name }}: {{ ansible_failed_result.msg | default('no message') }}"
+
     - name: Take back the permissions this run turned on for itself
       ansible.builtin.import_role:
         name: macos_permissions
@@ -230,6 +244,18 @@
       tags: [always]
       vars:
         macos_permissions_items: "{{ profile_permissions }}"
+
+    - name: Ask for this account's default browser after the apps install
+      ansible.builtin.include_role:
+        name: macos_default_browser
+      vars:
+        macos_default_browser_account: "{{ profile_running_account }}"
+        macos_default_browser_browser: "{{ profile_own_work.default_browser }}"
+        macos_default_browser_ask: "{{ profile_run_mode.ask }}"
+        macos_default_browser_interactive: "{{ profile_interactive }}"
+      when:
+        - site_stopped is not defined
+        - profile_own_work.default_browser | length > 0
 
     - name: Walk through the click-only pages of this account and the machine
       ansible.builtin.include_role:

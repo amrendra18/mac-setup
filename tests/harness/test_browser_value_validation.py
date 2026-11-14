@@ -82,7 +82,14 @@ def specimen(schema):
         pattern = schema.get("pattern", ".*")
         return next(
             value
-            for value in ("fixture", "", "https://example.invalid/%20", "safe", "123")
+            for value in (
+                "fixture",
+                "",
+                "https://example.invalid/%20",
+                "safe",
+                "123",
+                "FirefoxColor@mozilla.com",
+            )
             if re.search(pattern, value) is not None
         )
     if kind == "array":
@@ -362,6 +369,10 @@ class BrowserValueValidationTests(unittest.TestCase):
                     )
                     if (
                         isinstance(value, (dict, list))
+                        and not (
+                            row["browser"]["capture"]["class"] == "addon_ids"
+                            and value == []
+                        )
                         or row["browser"]["capture"]["class"] == "mask"
                     ):
                         self.assertEqual((allowed, public_value), (False, None))

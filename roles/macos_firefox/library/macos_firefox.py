@@ -19,6 +19,7 @@ try:
         assign,
         lookup,
         owned_forms,
+        owned_path_allowed,
         plan_policies,
         remove,
         typed_equal,
@@ -51,6 +52,7 @@ except ImportError:
         planner._validate_combination,
     )
     validate_policy_aliases = planner.validate_policy_aliases
+    owned_path_allowed = planner.owned_path_allowed
 
 DOCUMENTATION = r"""
 module: macos_firefox
@@ -262,11 +264,10 @@ class PolicyStore:
                     or not isinstance(paths, list)
                 ):
                     raise ValueError()
-                allowed = owned_forms(ENTRIES[key], ENTRIES)
                 if any(
                     not isinstance(path, list)
                     or not all(isinstance(part, str) for part in path)
-                    or tuple(path) not in allowed
+                    or not owned_path_allowed(key, path, ENTRIES)
                     for path in paths
                 ):
                     raise ValueError()
@@ -378,6 +379,8 @@ def _ensure_firefox(store, settings, plan, check_mode):
     selected = set(settings) - {"firefox.lock"}
     identifiers = {
         key: owned_forms(ENTRIES[key], ENTRIES)
+        | {tuple(path) for path in previous.get(key, [])}
+        | set(plan["by_id"].get(key, {}))
         for key in set(previous) | selected | set(plan["by_id"])
     }
     cleanup = set(selected)

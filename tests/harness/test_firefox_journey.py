@@ -25,11 +25,23 @@ def stored_policy(locked):
         "DontCheckDefaultBrowser": True,
         "Homepage": {"URL": "https://example.invalid/managed", "Locked": locked},
         "SanitizeOnShutdown": {"History": True, "Locked": locked},
+        "ExtensionSettings": {
+            "uBlock0@raymondhill.net": {
+                "installation_mode": (
+                    "force_installed" if locked else "normal_installed"
+                ),
+                "install_url": "https://addons.mozilla.org/firefox/downloads/latest/uBlock0@raymondhill.net/latest.xpi",
+            }
+        },
         "Preferences": {
+            "browser.mac-setup.owner": {
+                "Value": "mac-setup artificial journey",
+                "Status": "locked" if locked else "user",
+            },
             "privacy.globalprivacycontrol.enabled": {
                 "Value": True,
                 "Status": "locked" if locked else "user",
-            }
+            },
         },
     }
     if locked:
@@ -43,6 +55,14 @@ def active_policy(locked):
     # Firefox's Mac reader emits integers; Preferences.Value preserves numeric 1.
     document["Preferences"]["privacy.globalprivacycontrol.enabled"]["Value"] = 1
     return document
+
+
+def extension_state(locked):
+    return {
+        "id": "uBlock0@raymondhill.net",
+        "active": True,
+        "canDisable": not locked,
+    }
 
 
 class FirefoxJourneyTests(unittest.TestCase):
@@ -62,11 +82,152 @@ class FirefoxJourneyTests(unittest.TestCase):
 
     def test_response_requires_matching_id_and_no_remote_error(self):
         self.assertEqual(
-            probe.response_value([1, 2, None, {"value": 4}], 2), {"value": 4}
+            probe.response_value(
+                [1, 2, None, {"value": 4}], 2, "WebDriver:ExecuteScript"
+            ),
+            {"value": 4},
         )
         for value in ([1, 3, None, {}], [1, 2, {"error": "test"}, None], {}, [1, 2]):
             with self.subTest(value=value), self.assertRaises(probe.ProofError):
-                probe.response_value(value, 2)
+                probe.response_value(value, 2, "WebDriver:ExecuteScript")
+
+    def test_rejected_script_names_the_command_and_proof_without_private_values(self):
+        connection = Mock()
+        connection.makefile.return_value = io.BytesIO(
+            self.packet({"marionetteProtocol": 3})
+            + self.packet([1, 1, None, {}])
+            + self.packet(
+                [
+                    1,
+                    2,
+                    {
+                        "error": "javascript error",
+                        "message": "PRIVATE_MESSAGE",
+                        "stacktrace": "PRIVATE_TRACE",
+                    },
+                    None,
+                ]
+            )
+        )
+        client = probe.Marionette(connection)
+        with self.assertRaises(probe.ProofError) as caught:
+            client.script(
+                "PRIVATE_SCRIPT",
+                ["PRIVATE_ARGUMENT"],
+                asynchronous=True,
+                proof="bookmark-import",
+            )
+        self.assertEqual(
+            str(caught.exception),
+            "Firefox proof bookmark-import failed: Marionette rejected WebDriver:ExecuteAsyncScript [bookmark-import] (javascript error).",
+        )
+        self.assertNotIn("PRIVATE_", str(caught.exception))
+
+    def test_rejected_command_keeps_its_name_through_the_transport(self):
+        connection = Mock()
+        connection.makefile.return_value = io.BytesIO(
+            self.packet({"marionetteProtocol": 3})
+            + self.packet([1, 1, None, {}])
+            + self.packet(
+                [
+                    1,
+                    2,
+                    {"error": "unsupported operation", "message": "PRIVATE_REASON"},
+                    None,
+                ]
+            )
+        )
+        client = probe.Marionette(connection)
+        with self.assertRaises(probe.ProofError) as caught:
+            client.send("Marionette:SetContext", {"value": "chrome"})
+        self.assertEqual(
+            str(caught.exception),
+            "Firefox proof context-switch failed: Marionette rejected Marionette:SetContext (unsupported operation).",
+        )
+        self.assertNotIn("PRIVATE_", str(caught.exception))
+
+    def test_refused_system_access_names_the_running_browser_version(self):
+        connection = Mock()
+        connection.makefile.return_value = io.BytesIO(
+            self.packet({"marionetteProtocol": 3})
+            + self.packet([1, 1, None, {"capabilities": {"browserVersion": "160.0"}}])
+            + self.packet(
+                [
+                    1,
+                    2,
+                    {"error": "unsupported operation", "message": "PRIVATE_REASON"},
+                    None,
+                ]
+            )
+        )
+        client = probe.Marionette(connection)
+        with self.assertRaises(probe.ProofError) as caught:
+            probe.chrome(client)
+        self.assertEqual(
+            str(caught.exception),
+            "Firefox proof context-switch failed: Marionette rejected Marionette:SetContext on Firefox 160.0 (unsupported operation).",
+        )
+        self.assertNotIn("PRIVATE_", str(caught.exception))
+
+    def test_browser_version_discards_private_or_malformed_capabilities(self):
+        for version in ("PRIVATE_VERSION", "160.0\nPRIVATE_VALUE", {}, None, 160):
+            with self.subTest(version=version):
+                connection = Mock()
+                connection.makefile.return_value = io.BytesIO(
+                    self.packet({"marionetteProtocol": 3})
+                    + self.packet(
+                        [
+                            1,
+                            1,
+                            None,
+                            {
+                                "capabilities": {
+                                    "browserVersion": version,
+                                    "profile": "PRIVATE_PROFILE",
+                                }
+                            },
+                        ]
+                    )
+                )
+                client = probe.Marionette(connection)
+                self.assertEqual(client.browser_version, "unavailable")
+
+    def test_command_rejections_redact_unknown_labels_and_remote_errors(self):
+        for command in (
+            "WebDriver:NewSession",
+            "Marionette:SetContext",
+            "Marionette:Quit",
+            "WebDriver:Navigate",
+            "WebDriver:ExecuteScript",
+        ):
+            with self.subTest(command=command), self.assertRaises(
+                probe.ProofError
+            ) as caught:
+                probe.response_value(
+                    [
+                        1,
+                        2,
+                        {"error": "unsupported operation", "message": "PRIVATE_POLICY"},
+                        None,
+                    ],
+                    2,
+                    command,
+                )
+            self.assertEqual(
+                str(caught.exception),
+                "Marionette rejected " + command + " (unsupported operation).",
+            )
+        with self.assertRaises(probe.ProofError) as caught:
+            probe.response_value(
+                [1, 2, {"error": "PRIVATE_ERROR", "message": "PRIVATE_POLICY"}, None],
+                2,
+                "PRIVATE_COMMAND",
+                proof="PRIVATE_PROOF",
+            )
+        self.assertEqual(
+            str(caught.exception), "Marionette rejected proof command (unknown error)."
+        )
+        self.assertNotIn("PRIVATE_", str(caught.exception))
 
     def test_policy_page_requires_zero_errors_and_expected_policy_rows(self):
         page = {
@@ -83,6 +244,158 @@ class FirefoxJourneyTests(unittest.TestCase):
             with self.subTest(changed=changed), self.assertRaises(probe.ProofError):
                 probe.assert_policy_page(dict(page, **changed), {"Homepage"})
 
+    def test_policy_page_follows_preference_value_continuation_rows(self):
+        for status in ("locked", "user"):
+            for owner_first in (True, False):
+                with self.subTest(status=status, owner_first=owner_first):
+                    owner_rows = [
+                        ["", "browser.mac-setup.owner", "Status", json.dumps(status)],
+                        ["", "", "Value", json.dumps(probe.OWNER_LABEL)],
+                    ]
+                    other_rows = [
+                        ["", "privacy.globalprivacycontrol.enabled", "Value", "true"],
+                    ]
+                    rows = (
+                        owner_rows + other_rows
+                        if owner_first
+                        else other_rows + owner_rows
+                    )
+                    rows[0][0] = "Preferences"
+                    probe.assert_policy_page(
+                        {"url": "about:policies", "activeRows": rows, "errorRows": []},
+                        {"Preferences"},
+                        owner_label=probe.OWNER_LABEL,
+                    )
+
+    def test_policy_page_requires_the_owner_label_under_its_own_value(self):
+        rows = [
+            [
+                "Preferences",
+                "browser.mac-setup.owner",
+                "Value",
+                json.dumps(probe.OWNER_LABEL),
+            ],
+            ["", "", "Status", '"user"'],
+        ]
+        page = {"url": "about:policies", "activeRows": rows, "errorRows": []}
+        probe.assert_policy_page(page, {"Preferences"}, owner_label=probe.OWNER_LABEL)
+        for rows in (
+            [["Preferences", "browser.mac-setup.owner", "Value", '"wrong test label"']],
+            [
+                [
+                    "Preferences",
+                    "unrelated.preference",
+                    "Value",
+                    json.dumps(probe.OWNER_LABEL),
+                ]
+            ],
+            [
+                [
+                    "Preferences",
+                    "browser.mac-setup.owner",
+                    "Status",
+                    json.dumps(probe.OWNER_LABEL),
+                ]
+            ],
+            [
+                [
+                    "Preferences",
+                    "browser.mac-setup.owner",
+                    "Value",
+                    '"wrong test label"',
+                ],
+                ["", "unrelated.preference", "Value", json.dumps(probe.OWNER_LABEL)],
+            ],
+            [
+                [
+                    "Preferences",
+                    "browser.mac-setup.owner",
+                    "Value",
+                    '"wrong test label"',
+                ],
+                ["Proxy", "", "Value", json.dumps(probe.OWNER_LABEL)],
+            ],
+        ):
+            with self.subTest(rows=rows), self.assertRaises(probe.ProofError):
+                probe.assert_policy_page(
+                    dict(page, activeRows=rows),
+                    {"Preferences"},
+                    owner_label=probe.OWNER_LABEL,
+                )
+
+    def test_owner_and_extension_policies_require_exact_values_in_both_modes(self):
+        for locked in (True, False):
+            for factory, assertion in (
+                (stored_policy, probe.assert_stored),
+                (active_policy, probe.assert_active),
+            ):
+                for key in ("owner", "owner-status", "extension", "extension-url"):
+                    document = factory(locked)
+                    if key == "owner":
+                        document["Preferences"]["browser.mac-setup.owner"][
+                            "Value"
+                        ] = "wrong test label"
+                    elif key == "owner-status":
+                        document["Preferences"]["browser.mac-setup.owner"]["Status"] = (
+                            "user" if locked else "locked"
+                        )
+                    elif key == "extension":
+                        document["ExtensionSettings"]["uBlock0@raymondhill.net"][
+                            "installation_mode"
+                        ] = ("normal_installed" if locked else "force_installed")
+                    else:
+                        document["ExtensionSettings"]["uBlock0@raymondhill.net"][
+                            "install_url"
+                        ] = "https://example.invalid/wrong-test-addon.xpi"
+                    with self.subTest(locked=locked, key=key), self.assertRaises(
+                        probe.ProofError
+                    ):
+                        assertion(document, locked)
+
+    def test_extension_installation_waits_for_an_active_addon_with_expected_permissions(
+        self,
+    ):
+        for locked in (True, False):
+            client = Mock()
+            client.script.side_effect = [
+                None,
+                dict(extension_state(locked), active=False),
+                extension_state(locked),
+            ]
+            with patch.object(probe.time, "sleep"):
+                self.assertEqual(
+                    probe.extension_proof(client, locked),
+                    {
+                        "installed_extensions": 1,
+                        "extension_user_can_disable": not locked,
+                    },
+                )
+
+    def test_extension_installation_rejects_wrong_id_and_wrong_permissions(
+        self,
+    ):
+        for locked in (True, False):
+            for changed in (
+                {"id": "wrong@example.invalid"},
+                {"canDisable": locked},
+                {"active": 1},
+            ):
+                client = Mock()
+                client.script.return_value = dict(extension_state(locked), **changed)
+                with self.subTest(locked=locked, changed=changed), self.assertRaises(
+                    probe.ProofError
+                ):
+                    probe.extension_proof(client, locked)
+
+    def test_extension_installation_times_out_without_an_installed_addon(self):
+        client = Mock()
+        for state in (None, dict(extension_state(True), active=False)):
+            client.script.return_value = state
+            with self.subTest(state=state), patch.object(
+                probe.time, "monotonic", side_effect=[0, 121]
+            ), self.assertRaises(probe.ProofError):
+                probe.extension_proof(client, True)
+
     def test_stored_policy_checks_types_locks_and_unrelated_policy(self):
         locked = stored_policy(locked=True)
         probe.assert_stored(locked, locked=True)
@@ -91,13 +404,7 @@ class FirefoxJourneyTests(unittest.TestCase):
             bad[path]["Locked"] = 1
             with self.subTest(path=path), self.assertRaises(probe.ProofError):
                 probe.assert_stored(bad, locked=True)
-        unlocked = copy.deepcopy(locked)
-        unlocked["Homepage"]["Locked"] = False
-        unlocked["SanitizeOnShutdown"]["Locked"] = False
-        unlocked["Preferences"]["privacy.globalprivacycontrol.enabled"][
-            "Status"
-        ] = "user"
-        del unlocked["DisableProfileImport"]
+        unlocked = stored_policy(locked=False)
         probe.assert_stored(unlocked, locked=False)
         unlocked["Homepage"]["Locked"] = True
         with self.assertRaises(probe.ProofError):
@@ -153,6 +460,22 @@ class FirefoxJourneyTests(unittest.TestCase):
         with self.assertRaisesRegex(probe.ProofError, "Active.*import restriction"):
             probe.assert_active(document, locked=False)
 
+    def test_owner_runtime_rejects_wrong_label_and_lock_state(self):
+        state = {
+            "homepage": "https://example.invalid/managed",
+            "homepageLocked": True,
+            "history": True,
+            "historyLocked": True,
+            "quitLocked": True,
+            "gpc": True,
+            "gpcLocked": True,
+            "owner": "mac-setup artificial journey",
+            "ownerLocked": True,
+        }
+        for changed in ({"owner": "wrong test label"}, {"ownerLocked": False}):
+            with self.subTest(changed=changed), self.assertRaises(probe.ProofError):
+                probe.assert_runtime(dict(state, **changed), locked=True)
+
     def test_runtime_requires_exact_effective_values_and_lock_states(self):
         state = {
             "homepage": "https://example.invalid/managed",
@@ -162,6 +485,8 @@ class FirefoxJourneyTests(unittest.TestCase):
             "quitLocked": True,
             "gpc": True,
             "gpcLocked": True,
+            "owner": "mac-setup artificial journey",
+            "ownerLocked": True,
         }
         probe.assert_runtime(state, locked=True)
         bad = dict(state, historyLocked=False)
@@ -175,6 +500,7 @@ class FirefoxJourneyTests(unittest.TestCase):
             historyLocked=False,
             quitLocked=False,
             gpcLocked=False,
+            ownerLocked=False,
         )
         probe.assert_runtime(unlocked, locked=False)
         with self.assertRaises(probe.ProofError):
@@ -186,7 +512,19 @@ class FirefoxJourneyTests(unittest.TestCase):
         active = active_policy(locked=True)
         page = {
             "url": "about:policies",
-            "activeRows": [[name, "made-up"] for name in active],
+            "activeRows": [
+                (
+                    [
+                        name,
+                        "browser.mac-setup.owner",
+                        "Value",
+                        json.dumps(probe.OWNER_LABEL),
+                    ]
+                    if name == "Preferences"
+                    else [name, "artificial value"]
+                )
+                for name in active
+            ],
             "errorRows": [],
         }
         state = {
@@ -197,9 +535,11 @@ class FirefoxJourneyTests(unittest.TestCase):
             "quitLocked": True,
             "gpc": True,
             "gpcLocked": True,
+            "owner": "mac-setup artificial journey",
+            "ownerLocked": True,
         }
         client = Mock()
-        client.script.side_effect = [page, active, state]
+        client.script.side_effect = [page, active, state, extension_state(True)]
         with tempfile.TemporaryDirectory() as temporary, patch.object(
             probe, "STATE", Path(temporary)
         ), patch.object(probe, "browser") as browser, patch.object(
@@ -216,8 +556,11 @@ class FirefoxJourneyTests(unittest.TestCase):
                 proof,
                 {
                     "policy_errors": 0,
-                    "checked_preferences": 4,
-                    "owned_locked_paths": 4,
+                    "checked_preferences": 5,
+                    "owner_label_verified": True,
+                    "installed_extensions": 1,
+                    "extension_user_can_disable": False,
+                    "owned_locked_paths": 5,
                     "user_override_reported": False,
                 },
             )
@@ -232,6 +575,7 @@ class FirefoxJourneyTests(unittest.TestCase):
                     "expected_policy_names": sorted(active),
                     "expected_policies_present": True,
                     "active_policies_verified": True,
+                    "owner_label_visible": True,
                 },
             )
 
@@ -242,7 +586,19 @@ class FirefoxJourneyTests(unittest.TestCase):
         active["Proxy"] = {"HTTPProxy": marker}
         page = {
             "url": "about:policies",
-            "activeRows": [[name, "made-up"] for name in expected_names]
+            "activeRows": [
+                (
+                    [
+                        name,
+                        "browser.mac-setup.owner",
+                        "Value",
+                        json.dumps(probe.OWNER_LABEL),
+                    ]
+                    if name == "Preferences"
+                    else [name, "artificial value"]
+                )
+                for name in expected_names
+            ]
             + [["Proxy", marker]],
             "errorRows": [],
         }
@@ -258,7 +614,10 @@ class FirefoxJourneyTests(unittest.TestCase):
                 "quitLocked": True,
                 "gpc": True,
                 "gpcLocked": True,
+                "owner": "mac-setup artificial journey",
+                "ownerLocked": True,
             },
+            extension_state(True),
         ]
         output = io.StringIO()
         with tempfile.TemporaryDirectory() as temporary, patch.object(
@@ -280,8 +639,8 @@ class FirefoxJourneyTests(unittest.TestCase):
             evidence = json.loads(
                 (Path(temporary) / "again-policies-page.json").read_text()
             )
-            self.assertEqual(proof["checked_preferences"], 4)
-            self.assertEqual(proof["owned_locked_paths"], 4)
+            self.assertEqual(proof["checked_preferences"], 5)
+            self.assertEqual(proof["owned_locked_paths"], 5)
             for path in Path(temporary).rglob("*"):
                 if path.is_file():
                     self.assertNotIn(marker.encode(), path.read_bytes())
@@ -294,6 +653,7 @@ class FirefoxJourneyTests(unittest.TestCase):
                     "expected_policy_names": expected_names,
                     "expected_policies_present": True,
                     "active_policies_verified": True,
+                    "owner_label_visible": True,
                 },
             )
 

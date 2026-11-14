@@ -34,6 +34,7 @@ SETTABLE = (
     "apps",
     "firefox",
     "bookmarks",
+    "default_browser",
 )
 TAKES_EFFECT = {
     "live": "at once",
