@@ -33,7 +33,7 @@ The example makes these main changes. Review both settings files before applying
 8. The example creates no extra account and installs no app.
    At the end, it opens Location Services and asks you to turn it off yourself.
 
-mac-setup knows 288 macOS settings. A run sets 218 of them, 40 need your click, and 30 it cannot set yet.
+mac-setup knows 1242 macOS settings. A run sets 218 of them, 40 need your click, and 984 it cannot set yet.
 66 settings are proven on macOS 27.2.1.
 A test applied each proven setting on a real Mac and read it back.
 The other settings have unit tests, without real-Mac proof.
@@ -168,7 +168,7 @@ Use spaces for indentation. Quote the words `"on"`, `"off"`, `"yes"`, and `"no"`
 Without quotes, YAML, the settings file format, treats those words as true or false.
 Removing a line stops mac-setup managing that setting and leaves its current value unchanged.
 
-The template, [inventory/example/TEMPLATE.yml](inventory/example/TEMPLATE.yml), lists all 288 settings in four sections.
+The template, [inventory/example/TEMPLATE.yml](inventory/example/TEMPLATE.yml), lists all 1242 settings in four sections.
 They cover account settings, machine settings, click-only settings, and settings not yet supported.
 The template gives allowed values and when supported changes appear.
 For supported account and machine settings, copy the setting line into your profile and remove its leading `# `.
@@ -244,6 +244,93 @@ A failed check refuses that app, allows other apps to continue, and ends the run
 An app already at the catalog's version or newer stays as it is.
 An upgrade replaces the old copy. Quit a running app before upgrading it.
 Previews run the same checks and install nothing.
+
+## Capture browser settings without Ansible
+
+Capture reads saved Firefox or Chrome settings and writes a private review file.
+It needs no Ansible, virtual environment, or Python packages.
+The command works with Apple's Python 3.9.6, the minimum tested version.
+It makes no network request and changes no browser file.
+
+1. If Apple's Command Line Tools are missing, run this command and finish the installer:
+
+   ```sh
+   xcode-select --install
+   ```
+
+2. From this checkout, check the interpreter and command:
+
+   ```sh
+   /usr/bin/python3 --version
+   /usr/bin/python3 -I -B scripts/browser-settings --help
+   ```
+
+3. Before quitting, find Firefox's profile root in `about:support`, or Chrome's profile path in `chrome://version`.
+   Keep those paths private. Use Command-Q to quit the instance using your selected profile.
+   Other browser instances using separate data folders may stay open. Closing windows can leave an instance running.
+4. Choose a new output file outside the checkout and browser folders:
+
+   ```sh
+   umask 077
+   mkdir -p "$HOME/browser-settings-review"
+   /usr/bin/python3 -I -B scripts/browser-settings capture --browser firefox --output "$HOME/browser-settings-review/firefox.yml"
+   ```
+
+5. Use `--browser chrome` or `--browser both` with a new output filename for those browsers.
+   If several profiles exist, add `--firefox-profile DIR` or `--chrome-profile DIR` with the path found locally.
+   Chrome's custom data root uses `--chrome-user-data-dir DIR`.
+6. Read the report locally before sharing selected lines. Even filtered output reveals your setting choices.
+   Keep the complete report outside public repositories.
+
+Capture checks only the selected browser family and source folder.
+A Firefox capture does not wait for Chrome to close.
+A Chrome capture covers the whole selected user data folder, including its shared Local State.
+Another profile inside that same Chrome folder must also be closed.
+
+The command reads lock ownership before and after reading configuration.
+It never creates, removes, acquires, releases, or changes a browser lock, and never signals a process.
+Firefox on macOS normally uses `.parentlock`; a read-only `F_GETLK` query identifies its owner.
+Legacy Firefox `lock` or `.parentlock` links use `address:+pid` or `address:pid`.
+Chrome's `SingletonLock` link names `host-pid`.
+A live owner that is the selected browser refuses capture. A stale owner or unrelated reused process id does not.
+Other instances using independent source folders may remain open.
+
+An isolated source with no lock can be captured while another instance runs.
+A default source with no readable lock is refused while that browser family runs.
+Unreadable, malformed, remote, or changing lock evidence, and failed process checks, are refused.
+A legacy Firefox link requires a loopback address; another address cannot prove local ownership.
+An old regular Chrome lock cannot identify its browser owner, so running Chrome makes that case unverified.
+No process arguments, account names, lock targets, or process ids appear in output.
+
+The report uses `machine_settings` and `default_settings`, the same sections as your private profile.
+Browser application is not available yet. The profile check refuses these settings until browser support arrives.
+Proposed hardening values remain proposals. Capture never adds them as observed values.
+The `firefox.lock` and `chrome.lock` recommendations default to `true`, each commented until you choose it.
+
+Capture emits only reviewed booleans, bounded numbers, and exact public choices.
+It masks free text, private addresses, paths, account identifiers, site lists, and extension payloads.
+It never opens bookmarks, history, cookies, sessions, password stores, or a vault.
+Parsing an approved configuration file can encounter private bytes in memory. Those bytes stay out of the report.
+
+Values describe saved configuration. A stored policy does not prove that the browser enforces it.
+Conflicting saved and startup values produce comments without an active assignment.
+Missing values stay absent. Capture does not infer browser defaults.
+A policy represented by several preference keys needs every key from the same source before it becomes an assignment.
+Versions come from the browser's saved profile record, alongside the running macOS and Python versions.
+Reports name the map's tested version separately from the observed profile version.
+The map's pinned versions are Firefox 158.0.1 and Chrome 158.0.8127.37.
+Newer versions still capture values and show both versions in the report header.
+Each mapping records its minimum known support. An upper bound exists only for a vendor-documented removal.
+An unknown version, a version below that minimum, or a version beyond a documented bound gives `unavailable` entries.
+An empty safe capture returns exit code 3.
+
+`read-back` prints the same filtered observations as JSON. Add repeated `--setting ID` to select public ids.
+`--version` prints the command version, map version, and source fingerprint.
+For offline policy copies, `--policy-root DIR` reads only the fixed Firefox and Chrome plist names there.
+That choice replaces the live policy stores. Output labels it `selected_copy`.
+Exit codes are 0 for completion, 2 for invalid arguments or output, 3 for unavailable evidence, and 4 for an internal error.
+The command refuses existing files and links. A new report has mode 0600, readable only by its owner.
+
 
 ## Secrets
 

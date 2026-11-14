@@ -86,7 +86,7 @@ Both helpers live in `roles/macos_apps/module_utils/`.
 
 ## The settings reference
 
-Each `*.yml` file in `settings/macos/` maps setting ids to entries. An id looks like `area.name`, such as `dock.position`. The reference holds 288 entries, and `ENTRY_COUNT` in `tests/test_reference.py` pins that number. `tests/test_reference.py` checks every entry against the rules below.
+Each `*.yml` file in `settings/macos/` maps setting ids to entries. An id looks like `area.name`, such as `dock.position`. The reference holds 1242 entries, and `ENTRY_COUNT` in `tests/test_reference.py` pins that number. `tests/test_reference.py` checks every entry against the rules below.
 
 This is one entry:
 
@@ -114,7 +114,7 @@ dock.position:
 | 1 | `summary` | One line on what the setting does |
 | 2 | `scope` | `user` for an account setting, `machine` for a setting of the whole Mac |
 | 3 | `route` | How mac-setup applies it. See the routes table below. |
-| 4 | `values` | A list of plain choices, or `{type: T}`. T is `bool`; `int` or `float` with `min` and `max`; `text` with `pattern`; `bundle_ids`; `paths`; `catalog_ids`; `list` with `choices` and an optional `min`, the fewest items allowed; or `hotkeys` with `actions`, which maps each shortcut name to its number in macOS. |
+| 4 | `values` | A list of plain choices, or `{type: T}`. T is `bool`; `int` or `float` with `min` and `max`; `text` with `pattern`; `bundle_ids`; `paths`; `catalog_ids`; `list` with `choices` and an optional `min`, the fewest items allowed; or `hotkeys` with `actions`, which maps each shortcut name to its number in macOS. Browser entries use `{type: browser, schema: ...}`. Their schema defines allowed value types, choices, and bounds. |
 | 5 | `macos_default` | The measured macOS default, or `not measured` |
 | 6 | `takes_effect` | `live`, `dock`, `finder`, `systemuiserver`, `relaunch` (when the app opens again), `logout`, or `not measured` when no test, document or report says when the change appears and the run restarts nothing for it; the other values come from a document, a report, or a guess that makes the run restart the Dock or the menu bar |
 | 7 | `needs` | Any of `click` and the rows of the permissions table, each at most once. A permission is allowed only on routes `command` and `finder_sidebar`, where a run can skip the setting. |
@@ -161,7 +161,9 @@ Three optional fields change a `defaults` write:
 2. `map` turns each value from the profile into the value macOS stores. A value missing from the map leaves that key alone.
 3. `dict_mode` applies to a `dict` type. `replace`, the default, writes the whole dictionary, and `add` merges only the listed keys.
 
-Of the 288 entries, 218 are set by a run, 40 are on route `by_hand`, and 30 are on route `not_yet`: 26 privacy permissions that only a person can grant, text replacements, modifier keys, the number of Spaces, and the password minimum length.
+Of the 1242 entries, 218 are set by a run, 40 are on route `by_hand`, and 984 are on route `not_yet`.
+These include 954 browser entries and 30 macOS settings awaiting support.
+The macOS entries cover 26 privacy permissions, text replacements, modifier keys, the number of Spaces, and the password minimum length.
 
 ## How downloads are checked
 
@@ -268,3 +270,83 @@ The [verification map](../verify/features/README.md) describes the harness in fu
 | 9 | M8 | the new-Mac journey | A fresh admin account follows the README end to end with one command. |
 | 10 | M9 | the next items | Dotfiles, FileVault, MDM, undo and SSH runs, each planned and approved first. |
 | 11 | M10 | permissions up front | A run asks for the permissions its profile needs before any change, skips the settings of a permission that stays off, and takes back Full Disk Access at the end. |
+
+## Browser capture and shared map
+
+The Firefox and Chrome reference files own the browser map.
+They contain 121 Firefox policies, 499 current Chrome policies, and 41 deprecated Chrome policies.
+Configurable policy values occupy 319 Firefox rows and 557 Chrome rows.
+Structured arrays retain their member schemas. The inventory ledgers name their member paths separately.
+There are also 31 Firefox and 45 Chrome settings outside the policy catalogs, plus two lock controls.
+Every row has a mapping, a privacy restriction, or a named unsupported reason.
+Unsupported updater controls stay visible in the inventory.
+
+`scripts/render-browser-map` validates the browser metadata and writes `module_utils/browser_settings_data.py`.
+Its `--check` form rejects stale output in the fast check.
+The generated module contains reviewed data and a source fingerprint.
+It requires only Python's standard library when loaded.
+`module_utils/browser_settings.py` owns parsing, source checks, filtering, and candidate rendering.
+The standalone command loads those exact utilities. Later Ansible browser modules can import them through `ansible.module_utils`.
+`ansible.cfg` declares the shared `module_utils` folder.
+
+Capture reads only approved configuration sources for the selected profile.
+Firefox uses `prefs.js`, optional `user.js`, and saved policy plists.
+Its non-executing parser accepts preference records, comments, quoted strings, booleans, and signed integers.
+Repeated preference records keep the last value within that file.
+Saved preferences and startup overrides remain separate observations.
+When several descriptors share one source, they form a complete evidence group.
+A partially persisted group reports `unverified` and emits no assignment.
+Chrome uses mapped leaves in Preferences and, where required by the map, Local State or Secure Preferences.
+Saved machine and account policy plists remain separate observations with unknown effective lock state.
+Capture does not read installed extensions or personal stores.
+
+Firefox's `compatibility.ini` and Chrome's `Last Version` record the last browser version for that profile.
+Capture removes Firefox's build identifiers and never emits its recorded application paths.
+Mozilla's [version-record implementation](https://raw.githubusercontent.com/mozilla-firefox/firefox/FIREFOX_158_0_1_RELEASE/toolkit/xre/nsAppRunner.cpp) defines that format.
+The report labels this as `saved_profile`, rather than claiming a running browser version.
+The `versions.browser` field records that observed version.
+The separate `versions.map_tested_on` list names the map's pinned test versions for the selected family.
+The pins are Firefox 158.0.1 and Chrome 158.0.8127.37. They do not establish real-browser verification.
+Candidate headers name the tested and observed versions. Newer observed versions still capture mapped values.
+Each mapping records minimum known support in `support.min` and its pinned test version in `support.tested`.
+An optional `support.max` records only a vendor-documented removal bound, with its source and limitation note.
+A major-version maximum includes that major version's point releases.
+Unknown versions and versions outside these support bounds report `unavailable`.
+The command checks process ids and executable names before and after reading.
+It never reads process arguments or account names.
+Chrome activity belongs to the selected user data folder, including shared Local State.
+Firefox activity belongs to the selected profile.
+The command reads only selected-folder lock metadata and never changes locks or signals processes.
+
+Chrome's `SingletonLock` symlink contains a hostname and process id.
+Firefox on macOS normally uses a regular `.parentlock` held by a POSIX record lock.
+The reader opens that existing file read-only and queries `F_GETLK`; it never acquires a lock.
+Firefox's fallback `.parentlock` and older `lock` symlinks contain an address and process id.
+A live owner must also match the selected browser family before capture refuses it.
+A stale lock or a pid reused by an unrelated program does not prove an active writer.
+Changes in lock evidence during a process snapshot refuse capture.
+
+No lock in an isolated selected folder allows capture while another instance uses another folder.
+A default selected folder without lock evidence remains unverified while that browser runs.
+Unknown formats, unreadable locks, remote hosts, non-loopback Firefox link addresses, and failed process checks refuse capture.
+Old regular Chrome locks do not expose a usable owner pid and remain unverified while Chrome runs.
+The browser sources describe the formats: [Chromium singleton](https://raw.githubusercontent.com/chromium/chromium/main/chrome/browser/process_singleton_posix.cc),
+[Mozilla profile locks](https://raw.githubusercontent.com/mozilla-firefox/firefox/main/toolkit/profile/nsProfileLock.cpp),
+and [Apple record-lock queries](https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fcntl.2.html).
+It compares source identity, size, modification time, and change time to reject a changed snapshot.
+These checks reduce races. They do not provide an atomic browser snapshot.
+
+Output names come only from the map. Unknown persisted names become counts.
+Firefox counts unique unknown preference names across saved and startup files.
+Chrome counts unknown terminal entries in each approved JSON store; arrays count as one entry.
+Policy terminal entries have a separate count across inspected policy stores.
+Those counts describe persisted entries and do not establish changes from defaults.
+Free text and dynamic structures stay masked. Exact reviewed public endpoints are the only URL exception.
+A report emits no active value for masked, absent, conflicting, unsupported, or unavailable entries.
+
+All browser rows use `route: not_yet`; there is no browser role.
+The two lock controls are machine booleans with proposed default `true`.
+Every row documents its locked form and its editable form or reason for leaving it unset.
+Capture does not infer either global switch from saved browser state.
+Application, lock transitions, browser enforcement, and bookmarks require later work.
+The fixture journey proves extraction and privacy only.

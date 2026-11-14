@@ -2370,6 +2370,3039 @@ machine_settings:
 #   Not yet because: It sets the password rules for every account on this Mac, through pwpolicy or a
 #     configuration profile, and mac-setup does not change security policy yet.
 
+# Area: chrome
+
+# chrome.abusive_experience_intervention_enforce
+#   Abusive Experience Intervention Enforce
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.accept_languages
+#   Effective HTTP language order derived from selected and forced languages.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.access_code_cast_device_duration
+#   Specifies how long (in seconds) a cast device selected with an access code or QR code stays in
+#     the Google Cast menu's list of cast devices.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.access_code_cast_enabled
+#   Allow users to select cast devices with an access code or QR code from within the Google Cast
+#     menu.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.access_control_allow_methods_in_cors_preflight_spec_conformant
+#   Make Access-Control-Allow-Methods matching in CORS preflight spec conformant
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.accessibility_image_labels_enabled
+#   Enable Get Image Descriptions from Google.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ad_hoc_code_signing_for_pw_as_enabled
+#   Native application signing during Progressive Web Application installation
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.additional_dns_query_types_enabled
+#   Allow DNS queries for additional DNS record types
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ads_setting_for_intrusive_ads_sites
+#   Ads setting for sites with intrusive ads
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.advanced_protection_allowed
+#   Enable additional protections for users enrolled in the Advanced Protection program
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ai_mode_settings
+#   Settings for Google's AI Mode integrations in the address bar and New Tab page search box.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.all_http_auth_schemes_allowed_for_origins
+#   List of origins allowing all HTTP authentication
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.all_http_auth_schemes_allowed_for_proxies
+#   List of proxy servers allowing all HTTP authentication schemes
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.allow_back_forward_cache_for_cache_control_no_store_page_enabled
+#   Allow pages with Cache-Control: no-store header to enter back/forward cache
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.allow_cross_origin_auth_prompt
+#   Cross-origin HTTP Authentication prompts
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.allow_deleting_browser_history
+#   Enable deleting browser and download history
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.allow_dinosaur_easter_egg
+#   Allow Dinosaur Easter Egg Game
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.allow_file_selection_dialogs
+#   Allow invocation of file selection dialogs
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.allow_socket_pool_size_randomization_for_proxies
+#   Allow socket pool size randomization for proxies
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.allow_web_authn_with_broken_tls_certs
+#   Allow Web Authentication requests on sites with broken TLS certificates.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.allowed_domains_for_apps
+#   Define domains allowed to access Google Workspace
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.alternate_error_pages_enabled
+#   Enable alternate error pages
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.alternative_browser_parameters
+#   Command-line parameters for the alternative browser.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.alternative_browser_path
+#   Alternative browser to launch for configured websites.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.always_open_pdf_externally
+#   Always Open PDF files externally
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ambient_authentication_in_private_modes_enabled
+#   Enable Ambient Authentication for profile types.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.application_locale
+#   Application locale selected for the profile.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.audio_capture_allowed
+#   Allow or deny audio capture
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.audio_capture_allowed_urls
+#   URLs that will be granted access to audio capture devices without prompt
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.audio_sandbox_enabled
+#   Allow the audio sandbox to run
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.auth_negotiate_delegate_allowlist
+#   Kerberos delegation server allowlist
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.auth_negotiate_delegate_by_kdc_policy
+#   Use KDC policy to delegate credentials.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.auth_schemes
+#   Supported authentication schemes
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.auth_server_allowlist
+#   Authentication server allowlist
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.auto_fill_enabled
+#   Enable AutoFill
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.auto_launch_protocols_from_origins
+#   Define a list of protocols that can launch an external application from listed origins without
+#     prompting the user
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.auto_open_allowed_for_urls
+#   URLs where AutoOpenFileTypes can apply
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.auto_open_file_types
+#   List of file types that should be automatically opened on download
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.auto_select_certificate_for_urls
+#   Automatically select client certificates for these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.autofill_address_enabled
+#   Enable AutoFill for addresses
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.autofill_credit_card_enabled
+#   Enable AutoFill for credit cards
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.autofill_gen_ai_settings
+#   Settings for generative AI features in Autofill
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.autofill_prediction_settings
+#   Settings for enhanced autofill
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.autofill_settings
+#   Block Autofill data types for specific sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.autogenerated_theme_color
+#   Generated theme color.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.automated_password_change_settings
+#   Enable automated password change
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.automatic_downloads_allowed_for_urls
+#   Allow automatic downloads on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.automatic_downloads_blocked_for_urls
+#   Block automatic downloads on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.automatic_fullscreen_allowed_for_urls
+#   Allow automatic fullscreen on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.automatic_fullscreen_blocked_for_urls
+#   Block automatic fullscreen on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.autoplay_allowed
+#   Allow media autoplay
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.autoplay_allowlist
+#   Allow media autoplay on a allowlist of URL patterns
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.back_forward_cache_for_web_sockets_allowed
+#   Allow Back/Forward Cache for WebSockets
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.background_tab_freezing_enabled
+#   Enable background tab freezing
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.basic_auth_over_http_enabled
+#   Allow Basic authentication for HTTP
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.battery_saver_mode_availability
+#   Enable Battery Saver Mode
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.block_external_extensions
+#   Blocks external extensions from being installed
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.block_third_party_cookies
+#   Block third party cookies
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.bookmark_bar_enabled
+#   Enable Bookmark Bar
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_add_person_enabled
+#   Enable add person in user manager
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_color_scheme
+#   Browser appearance color scheme.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_color_variant
+#   Browser appearance color variant.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_context_aware_access_signals_allowlist
+#   Enable the Chrome Enterprise Device Trust Connector attestation flow for a list of URLs on
+#     Managed Browsers
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_follows_system_colors
+#   Follow the system colors.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_grayscale_theme
+#   Use the grayscale browser theme.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_guest_mode_enabled
+#   Enable guest mode in browser
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_guest_mode_enforced
+#   Enforce browser guest mode
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_labs_enabled
+#   Browser experiments icon in toolbar
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_network_time_queries_enabled
+#   Allow queries to a Google time service
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_signin
+#   Browser sign in settings
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_switcher_delay
+#   Delay before launching alternative browser (milliseconds)
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_switcher_enabled
+#   Enable the Legacy Browser Support feature.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_switcher_external_greylist_url
+#   URL of an XML file that contains URLs that should never trigger a browser switch.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_switcher_external_sitelist_url
+#   URL of an XML file that contains URLs to load in an alternative browser.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_switcher_keep_last_chrome_tab
+#   Keep last tab open in Chrome.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_switcher_parsing_mode
+#   Sitelist parsing mode
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_switcher_url_greylist
+#   Websites that should never trigger a browser switch.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_switcher_url_list
+#   Websites to open in alternative browser
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_theme_color
+#   Configure the color of the browser's theme
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browser_user_color
+#   Browser appearance color.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.browsing_data_lifetime
+#   Browsing Data Lifetime Settings
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.built_in_ai_apis_enabled
+#   Allow pages to use the built-in AI APIs.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.built_in_dns_client_enabled
+#   Use built-in DNS client
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ca_certificate_management_allowed
+#   Allow users to manage installed CA certificates.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ca_certificates
+#   TLS certificates that should be trusted by ChromeGoogle Chrome for server authentication
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ca_certificates_with_constraints
+#   TLS certificates that should be trusted by ChromeGoogle Chrome for server authentication with
+#     constraints
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ca_distrusted_certificates
+#   TLS certificates that should be distrusted by ChromeGoogle Chrome for server authentication
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ca_hint_certificates
+#   TLS certificates that are not trusted or distrusted but can be used in path-building for server
+#     authentication
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ca_platform_integration_enabled
+#   Use user-added TLS certificates from platform trust stores for server authentication
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.cache_encryption_enabled
+#   This policy allows administrators to encrypt http cache on disk.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.certificate_transparency_enforcement_disabled_for_cas
+#   Disable Certificate Transparency enforcement for a list of subjectPublicKeyInfo hashes
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.certificate_transparency_enforcement_disabled_for_urls
+#   Disable Certificate Transparency enforcement for a list of URLs
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.chrome_data_region_setting
+#   Set the data regions preference for data storage
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.chrome_for_testing_allowed
+#   Allow Chrome for Testing
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.chrome_suggestions_settings
+#   Settings for ChromeSuggestions
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.chrome_variations
+#   Determine the availability of variations
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.clear_browsing_data_on_exit_list
+#   Clear Browsing Data on Exit
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.clipboard_allowed_for_urls
+#   Allow clipboard on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.clipboard_blocked_for_urls
+#   Block clipboard on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.cloud_extension_request_enabled
+#   Enables ChromeGoogle Chrome extension installation requests
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.cloud_management_enrollment_mandatory
+#   Enable mandatory cloud management enrollment
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.cloud_management_enrollment_token
+#   The enrollment token of cloud policy
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.cloud_policy_overrides_platform_policy
+#   ChromeGoogle Chrome cloud policy overrides Platform policy.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.cloud_profile_reporting_enabled
+#   Enable ChromeGoogle Chrome cloud reporting for managed profile
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.cloud_reporting_enabled
+#   Enables ChromeGoogle Chrome cloud reporting
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.cloud_reporting_upload_frequency
+#   Frequency of cloud reporting in hours
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.cloud_user_policy_merge
+#   Enables merging of user cloud policies into machine-level policies
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.cloud_user_policy_overrides_cloud_machine_policy
+#   Allow user cloud policies to override Chrome Browser Cloud Management policies.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.coalesce_h2_connections_with_client_certificates_for_hosts
+#   Allow coalescing of HTTP/2 connections for these hosts even when client certificates are used
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.command_line_flag_security_warnings_enabled
+#   Enable security warnings for command-line flags
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.component_updates_enabled
+#   Enable component updates in ChromeGoogle Chrome
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.compression_dictionary_transport_enabled
+#   Enable compression dictionary transport support
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.confirm_to_quit
+#   Require confirmation before quitting.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.cookies_allowed_for_urls
+#   Allow cookies on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.cookies_blocked_for_urls
+#   Block cookies on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.cookies_session_only_for_urls
+#   Limit cookies from matching URLs to the current session
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.copy_prevention_settings.disable
+#   Allows blocking copying to the clipboard on specified URLs (disable).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.copy_prevention_settings.enable
+#   Allows blocking copying to the clipboard on specified URLs (enable).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.copy_prevention_settings.minimum_data_size
+#   Allows blocking copying to the clipboard on specified URLs (minimum_data_size).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.cors_non_wildcard_request_headers_support
+#   CORS non-wildcard request headers support
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.cpu_performance_tier_override
+#   Override for the CPU performance tier
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.create_passkeys_in_i_cloud_keychain
+#   Control whether passkey creation will default to iCloud Keychain.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.create_themes_settings
+#   Settings for Create Themes with AI
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.data_controls_rules
+#   Sets a list of Data Controls rules.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.data_url_in_svg_use_enabled
+#   Data URL support for SVGUseElement.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.data_url_in_web_worker_opaque_origin_enabled
+#   Enable opaque origins for data URLs in Web Workers
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.data_url_whitespace_preservation_enabled
+#   DataURL Whitespace Preservation for all media types
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_automatic_downloads_setting
+#   Default automatic downloads setting
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_browser_setting_enabled
+#   Set ChromeGoogle Chrome as Default Browser
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_clipboard_setting
+#   Default clipboard setting
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_cookies_setting
+#   Default cookies setting
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_download_directory
+#   Set default download directory
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_file_system_read_guard_setting
+#   Control use of the File System API for reading
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_file_system_write_guard_setting
+#   Control use of the File System API for writing
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_fixed_font_size
+#   Text size in CSS pixels.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_font_size
+#   Text size in CSS pixels.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_geolocation_setting
+#   Default geolocation setting
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_idle_detection_setting
+#   Default idle detection setting
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_images_setting
+#   Default images setting
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_insecure_content_setting
+#   Control use of insecure content exceptions
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_java_script_jit_setting
+#   Control use of JavaScript JIT
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_java_script_optimizer_setting
+#   Control use of JavaScript optimizers
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_java_script_setting
+#   Default JavaScript setting
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_local_fonts_setting
+#   Default Local Fonts permission setting
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_media_stream_setting
+#   Default mediastream setting
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_notifications_setting
+#   Default notification setting
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_popups_setting
+#   Default pop-ups setting
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_printer_selection
+#   Default printer selection rules
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_search_provider_alternate_urls
+#   List of alternate URLs for the default search provider
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_search_provider_context_menu_access_allowed
+#   Allow default search provider context menu search access
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_search_provider_enabled
+#   Enable the default search provider
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_search_provider_encodings
+#   Default search provider encodings
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_search_provider_image_url
+#   Parameter providing search-by-image feature for the default search provider
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_search_provider_image_url_post_params
+#   Parameters for image URL which uses POST
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_search_provider_keyword
+#   Default search provider keyword
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_search_provider_name
+#   Default search provider name
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_search_provider_new_tab_url
+#   Default search provider new tab page URL
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_search_provider_search_url
+#   Default search provider search URL
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_search_provider_search_url_post_params
+#   Parameters for search URL which uses POST
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_search_provider_suggest_url
+#   Default search provider suggest URL
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_search_provider_suggest_url_post_params
+#   Parameters for suggest URL which uses POST
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_sensors_setting
+#   Default sensors setting
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_serial_guard_setting
+#   Control use of the Serial API
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_web_bluetooth_guard_setting
+#   Control use of the Web Bluetooth API
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_web_hid_guard_setting
+#   Control use of the WebHID API
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_web_usb_guard_setting
+#   Control use of the WebUSB API
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_window_management_setting
+#   Default Window Management permission setting
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_window_placement_setting
+#   Default Window Placement permission setting
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.default_zoom_level
+#   Default page zoom by storage partition.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.deleting_undecryptable_passwords_enabled
+#   Enable deleting undecryptable passwords
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.desktop_sharing_hub_enabled
+#   Enable desktop sharing in the omnibox and 3-dot menu
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.dev_tools_gen_ai_settings
+#   Settings for Chrome DevTools Generative AI Features
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.dev_tools_google_developer_program_profile_availability
+#   Enable Google Developer Program Profiles in Chrome DevTools
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.developer_tools_availability
+#   Control where Chrome DevTools can be used
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.developer_tools_availability_allowlist
+#   List of URL patterns for which Chrome DevTools are allowed to be opened
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.developer_tools_availability_blocklist
+#   List of URL patterns for which Chrome DevTools are blocked
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.developer_tools_disabled
+#   Disable Developer Tools
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.disable3_d_apis
+#   Disable support for 3D graphics APIs
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.disable_auth_negotiate_cname_lookup
+#   Disable CNAME lookup when negotiating Kerberos authentication
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.disable_print_preview
+#   Disable Print Preview
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.disable_safe_browsing_proceed_anyway
+#   Disable proceeding from the Safe Browsing warning page
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.disable_screenshots
+#   Disable taking screenshots
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.disabled_schemes
+#   Disable URL protocol schemes
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.disk_cache_dir
+#   Set disk cache directory
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.disk_cache_size
+#   Set disk cache size in bytes
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.dns_interception_checks_enabled
+#   DNS interception checks enabled
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.dns_over_https_mode
+#   Controls the mode of DNS-over-HTTPS
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.dns_over_https_templates
+#   Specify URI template of desired DNS-over-HTTPS resolver
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.domain_reliability_allowed
+#   Allow reporting of domain reliability related data
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.download_directory
+#   Set download directory
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.download_restrictions
+#   Allow download restrictions
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.edit_bookmarks_enabled
+#   Enable or disable bookmark editing
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enable_auth_negotiate_port
+#   Include non-standard port in Kerberos SPN
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enable_experimental_policies
+#   Enables experimental policies
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enable_media_router
+#   Enable Google Cast
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enable_online_revocation_checks
+#   Enable online OCSP/CRL checks
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enable_proxy_override_rules_for_all_users
+#   Controls which managed users can set the ProxyOverrideRules and ProxyProvisioningDomains
+#     policies.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enable_unsafe_swift_shader
+#   Allow software WebGL fallback using SwiftShader
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.encrypted_client_hello_enabled
+#   Enable TLS Encrypted ClientHello
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enterprise_custom_label
+#   Set a custom enterprise label for a managed profile
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enterprise_custom_label_for_browser
+#   Set a custom enterprise label for a managed browser
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enterprise_hardware_platform_api_enabled
+#   Enables managed extensions to use the Enterprise Hardware Platform API
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enterprise_logo_url
+#   Enterprise Logo URL for a managed profile
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enterprise_logo_url_for_browser
+#   Enterprise Logo URL for a managed browser
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enterprise_profile_badge_toolbar_settings
+#   Controls visibility of enterprise profile badge in the toolbar
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enterprise_profile_creation_keep_browsing_data
+#   Keep browsing data when creating enterprise profile by default
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enterprise_real_time_url_check_mode
+#   Check Safe Browsing status of URLs in real time
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enterprise_search_aggregator_settings.icon_url
+#   Enterprise search aggregator settings (icon_url).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enterprise_search_aggregator_settings.name
+#   Enterprise search aggregator settings (name).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enterprise_search_aggregator_settings.require_shortcut
+#   Enterprise search aggregator settings (require_shortcut).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enterprise_search_aggregator_settings.search_url
+#   Enterprise search aggregator settings (search_url).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enterprise_search_aggregator_settings.shortcut
+#   Enterprise search aggregator settings (shortcut).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.enterprise_search_aggregator_settings.suggest_url
+#   Enterprise search aggregator settings (suggest_url).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.exempt_domain_file_type_pairs_from_file_type_download_warnings
+#   Disable download file type extension-based warnings for specified file types on domains
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.explicitly_allowed_network_ports
+#   Explicitly allowed network ports
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.extensible_enterprise_sso_blocklist
+#   Blocklist of identity providers that cannot use Extensible Enterprise SSO for the browser
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.extension_allowed_types
+#   Configure allowed app/extension types
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.extension_developer_mode_settings
+#   Control the availability of developer mode on extensions page
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.extension_extended_background_lifetime_for_port_connections_to_urls
+#   Configure a list of origins that grant extended background lifetime to the connecting
+#     extensions.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.extension_force_install_with_search_or_new_tab_overrides_enabled
+#   Enable policy-installed extensions that override default search or New Tab Page settings
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.extension_install_allowlist
+#   Configure extension installation allow list
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.extension_install_blocklist
+#   Configure extension installation blocklist
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.extension_install_cloud_policy_checks_enabled
+#   Enables additional cloud policy checks to allow/block installation of extensions.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.extension_install_forcelist
+#   Configure the list of force-installed apps and extensions
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.extension_install_sources
+#   Configure extension, app, and user script install sources
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.extension_install_type_blocklist
+#   Blocklist for install types of extensions
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.extension_review_prompts_enabled
+#   Control extension review prompts and rating links
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.extension_settings
+#   Extension management settings
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.extension_unpublished_availability
+#   Control availability of extensions unpublished on the Chrome Web Store.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.external_protocol_dialog_show_always_open_checkbox
+#   Show an "Always open" checkbox in external protocol dialog.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.feedback_surveys_enabled
+#   Specifies whether in-product ChromeGoogle Chrome surveys are shown to users.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.fetch_keepalive_duration_seconds_on_shutdown
+#   Fetch keepalive duration on Shutdown
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.file_or_directory_picker_without_gesture_allowed_for_origins
+#   Allow file or directory picker APIs to be called without prior user gesture
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.file_system_read_ask_for_urls
+#   Allow read access via the File System API on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.file_system_read_blocked_for_urls
+#   Block read access via the File System API on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.file_system_write_ask_for_urls
+#   Allow write access to files and directories on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.file_system_write_blocked_for_urls
+#   Block write access to files and directories on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.font_cursive
+#   Font family choices by writing system.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.font_fantasy
+#   Font family choices by writing system.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.font_fixed
+#   Font family choices by writing system.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.font_math
+#   Font family choices by writing system.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.font_sansserif
+#   Font family choices by writing system.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.font_serif
+#   Font family choices by writing system.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.font_standard
+#   Font family choices by writing system.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.force_browser_signin
+#   Enable force sign in for ChromeGoogle Chrome
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.force_ephemeral_profiles
+#   Ephemeral profile
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.force_foreground_priority_for_all_tabs
+#   Force foreground priority for all tabs
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.force_foreground_priority_for_urls
+#   Force foreground priority for specific URLs
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.force_google_safe_search
+#   Force Google SafeSearch
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.force_permission_policy_unload_default_enabled
+#   Controls whether unload event handlers can be disabled.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.force_safe_search
+#   Force SafeSearch
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.force_you_tube_restrict
+#   Force minimum YouTube Restricted Mode
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.force_you_tube_safety_mode
+#   Force YouTube Safety Mode
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.forced_languages
+#   Configure the content and order of preferred languages
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.gemini_act_on_web_allowed_for_urls
+#   Allow Gemini app integrations to directly act on specified sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.gemini_act_on_web_blocked_for_urls
+#   Block Gemini app integrations to directly act on specified sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.gemini_act_on_web_settings
+#   Allows Gemini app integrations to directly act on web pages
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.gemini_settings
+#   Settings for Gemini integration
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.gemini_spark_settings
+#   Allows Gemini Spark to connect to ChromeGoogle Chrome and use auto browse via Gemini in Chrome
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.gen_ai_default_settings
+#   Set the default policy value for ChromeGoogle Chrome's covered generative AI features
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.gen_ai_local_foundational_model_settings
+#   Settings for GenAI local foundational model
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.geolocation_blocked_for_urls
+#   Block geolocation on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.globally_scope_http_auth_cache_enabled
+#   Enable globally scoped HTTP auth cache
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.google_search_side_panel_enabled
+#   Enable Google Search Side Panel
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.happy_eyeballs_v3_enabled
+#   Use the Happy Eyeballs V3 algorithm
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.hardware_acceleration_mode_enabled
+#   Use graphics acceleration when available
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.headless_mode
+#   Control use of the Headless Mode
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.help_me_write_settings
+#   Settings for Help Me Write
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.hide_web_store_icon
+#   Hide the web store from the New Tab Page and app launcher
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.high_efficiency_mode_enabled
+#   Enable High Efficiency Mode
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.history_clusters_visible
+#   Show a view of Chrome history with groups of pages
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.history_search_settings
+#   Settings for AI-powered History Search
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.homepage_is_new_tab_page
+#   Use New Tab Page as homepage
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.homepage_location
+#   Configure the home page URL
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.hsts_policy_bypass_list
+#   List of names that will bypass the HSTS policy check
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.http_allowlist
+#   HTTP Allowlist
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.http_header_injection
+#   Configure HTTP Header Injection for specific URL patterns
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.https_only_mode
+#   Allow HTTPS-Only Mode to be enabled
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.https_upgrades_enabled
+#   Enable automatic HTTPS upgrades
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.i_pv6_reachability_override_enabled
+#   Enable IPv6 reachability check override
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.idle_detection_allowed_for_urls
+#   Allow idle detection on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.idle_detection_blocked_for_urls
+#   Block idle detection on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.idle_timeout
+#   Delay before running idle actions
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.idle_timeout_actions
+#   Actions to run when the computer is idle
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.images_allowed_for_urls
+#   Allow images on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.images_blocked_for_urls
+#   Block images on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.import_autofill_form_data
+#   Import autofill form data from default browser on first run
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.import_bookmarks
+#   Import bookmarks from default browser on first run
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.import_history
+#   Import browsing history from default browser on first run
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.import_homepage
+#   Import of homepage from default browser on first run
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.import_saved_passwords
+#   Import saved passwords from default browser on first run
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.import_search_engine
+#   Import search engines from default browser on first run
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.incognito_enabled
+#   Enable Incognito mode
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.incognito_mode_availability
+#   Incognito mode availability
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.incognito_mode_url_allowlist
+#   Allow access to a list of URLs in Incognito mode.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.incognito_mode_url_blocklist
+#   Block access to a list of URLs in Incognito mode.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.insecure_content_allowed_for_urls
+#   Allow insecure content on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.insecure_content_blocked_for_urls
+#   Block insecure content on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.insecure_forms_warnings_enabled
+#   Enable warnings for insecure forms
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.intensive_wake_up_throttling_enabled
+#   Control the IntensiveWakeUpThrottling feature.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.intranet_redirect_behavior
+#   Intranet Redirection Behavior
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.isolate_origins
+#   Enable Site Isolation for specified origins
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.java_script_allowed_for_urls
+#   Allow JavaScript on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.java_script_blocked_for_urls
+#   Block JavaScript on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.java_script_jit_allowed_for_sites
+#   Allow JavaScript to use JIT on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.java_script_jit_blocked_for_sites
+#   Block JavaScript from using JIT on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.java_script_optimizer_allowed_for_sites
+#   Allow JavaScript optimization on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.java_script_optimizer_blocked_for_sites
+#   Block JavaScript optimizations on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.javascript_enabled
+#   Enable JavaScript
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.legacy_tech_report_allowlist
+#   Specifies URLs that allow legacy technology report
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.lens_desktop_ntp_search_enabled
+#   Allow Google Lens button to be shown in the search box on the New Tab page if supported.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.lens_overlay_settings
+#   Settings for the Lens Overlay feature
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.lens_region_search_enabled
+#   Allow Google Lens region search menu item to be shown in context menu if supported.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.live_caption_enabled
+#   Enable Live Caption
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.live_translate_enabled
+#   Enable Live Translate
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.local_fonts_allowed_for_urls
+#   Allow Local Fonts permission on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.local_fonts_blocked_for_urls
+#   Block Local Fonts permission on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.local_network_access_allowed_for_urls
+#   Allow sites to make network requests to local devices and local network endpoints.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.local_network_access_blocked_for_urls
+#   Block sites from making network requests to local devices and local network endpoints.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.local_network_access_ip_address_space_overrides
+#   Override IP address space mappings
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.local_network_access_permissions_policy_default_enabled
+#   Allow Local Network Access (LNA) requests in subframes without explicit delegation
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.local_network_access_restrictions_temporary_opt_out
+#   Specifies whether to (temporarily) opt out of Local Network Access restrictions
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.local_network_allowed_for_urls
+#   Allow sites to make network requests to local network endpoints.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.local_network_blocked_for_urls
+#   Block sites from making network requests to local network endpoints.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.lock
+#   Whether selected Chrome settings should be locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.lookalike_warning_allowlist_domains
+#   Suppress lookalike domain warnings on domains
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.loopback_network_allowed_for_urls
+#   Allow sites to make network requests to the local device.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.loopback_network_blocked_for_urls
+#   Block sites from making network requests to the local device.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.managed_accounts_signin_restriction
+#   Add restrictions on managed accounts
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.managed_bookmarks
+#   Managed Bookmarks
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.managed_configuration_per_origin
+#   Sets managed configuration values to websites to specific origins
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.max_connections_per_proxy
+#   Maximal number of concurrent connections per proxy server for non-WebSocket requests
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.max_connections_per_proxy_for_web_socket
+#   Maximal number of concurrent connections per proxy server for WebSocket requests
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.max_invalidation_fetch_delay
+#   Maximum fetch delay after a policy invalidation
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.media_recommendations_enabled
+#   Enable Media Recommendations
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.media_router_cast_allow_all_ips
+#   Allow Google Cast to connect to Cast devices on all IP addresses.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.memory_saver_mode_savings
+#   Change Memory Saver Mode Savings
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.metrics_reporting_enabled
+#   Enable reporting of usage and crash-related data
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.minimum_font_size
+#   Text size in CSS pixels.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.minimum_logical_font_size
+#   Text size in CSS pixels.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.native_messaging_allowlist
+#   Configure native messaging allowlist
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.native_messaging_blocklist
+#   Configure native messaging blocklist
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.native_messaging_user_level_hosts
+#   Allow user-level Native Messaging hosts (installed without admin permissions)
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.network_prediction_options
+#   Enable network prediction
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.new_tab_page_location
+#   Configure the New Tab page URL
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.notifications_allowed_for_urls
+#   Allow notifications on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.notifications_blocked_for_urls
+#   Block notifications on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ntlm_v2_enabled
+#   Enable NTLMv2 authentication.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ntp_cards_visible
+#   Show cards on the New Tab Page
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ntp_custom_background_enabled
+#   Allow users to customize the background on the New Tab page
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ntp_footer_extension_attribution_enabled
+#   Control the visibility of the extension attribution on the New Tab page
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ntp_footer_management_notice_enabled
+#   Control the visibility of the management notice on the New Tab Page for managed browsers
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ntp_outlook_card_visible
+#   Show Outlook Calendar card on the New Tab Page
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ntp_sharepoint_card_visible
+#   Show SharePoint and OneDrive File Card on the New Tab Page
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ntp_shortcuts
+#   Setting shortcuts on the New Tab Page
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.on_bulk_data_entry_enterprise_connector
+#   Configuration policy for the OnBulkDataEntry Chrome Enterprise Connector
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.on_file_attached_enterprise_connector
+#   Configuration policy for the OnFileAttached Chrome Enterprise Connector
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.on_file_downloaded_enterprise_connector
+#   Configuration policy for the OnFileDownloaded Chrome Enterprise Connector
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.on_print_enterprise_connector
+#   Configuration policy for the OnPrint ChromeGoogle Chrome Enterprise Connector
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.on_security_event_enterprise_connector
+#   Configuration policy for the OnSecurityEvent Chrome Enterprise Connector
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.oop_print_drivers_allowed
+#   Out-of-process print drivers allowed
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.origin_agent_cluster_default_enabled
+#   Allows origin-keyed agent clustering by default.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.origin_keyed_processes_enabled
+#   Enable origin-keyed process isolation by default.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.override_security_restrictions_on_insecure_origin
+#   Origins or hostname patterns for which restrictions on insecure origins should not apply
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.partitioned_blob_url_usage
+#   Choose whether Blob URLs are partitioned during fetching and navigations
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.password_leak_detection_enabled
+#   Enable leak detection for entered credentials
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.password_manager_blocklist
+#   Configure the list of domains for which the Password Manager (Save and Fill) will be disabled
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.password_manager_enabled
+#   Enable saving passwords to the password manager
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.password_manager_passkeys_enabled
+#   Enable saving passkeys to the password manager
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.password_protection_change_password_url
+#   Configure the change password URL.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.password_protection_login_urls
+#   Configure the list of enterprise login URLs where password protection service should capture
+#     salted hashes of passwords.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.password_protection_warning_trigger
+#   Password protection warning trigger
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.password_sharing_enabled
+#   Enable sharing user credentials with other users
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.payment_method_query_enabled
+#   Allow websites to query for available payment methods.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.pdf_annotations_enabled
+#   Enable PDF Annotations
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.pdf_local_file_access_allowed_for_domains
+#   Allow local file access to file:// URLs on these sites in the PDF Viewer
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.pdf_use_skia_renderer_enabled
+#   Use Skia renderer for PDF rendering
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.pdf_viewer_out_of_process_iframe_enabled
+#   Use out-of-process iframe PDF Viewer
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.per_host_zoom_levels
+#   Private per-site page zoom overrides.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.personal_shortcut_tiles
+#   Private personal new-tab shortcuts.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.pinned_toolbar_actions
+#   Toolbar action order.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.policy_atomic_groups_enabled
+#   Enables the concept of policy atomic groups
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.policy_dictionary_multiple_source_merge_list
+#   Allow merging dictionary policies from different sources
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.policy_list_multiple_source_merge_list
+#   Allow merging list policies from different sources
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.policy_refresh_rate
+#   Refresh rate for user policy
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.popups_allowed_for_urls
+#   Allow pop-ups on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.popups_blocked_for_urls
+#   Block pop-ups on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.precise_geolocation_allowed_for_urls
+#   Allow precise geolocation on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.prefer_slow_ciphers
+#   Prefer specific encryption cipher algorithms for TLS
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.prefer_slow_kex_algorithms
+#   Prefer specific key exchange algorithms for TLS
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.prefetch_with_service_worker_enabled
+#   Allow SpeculationRules prefetch to ServiceWorker-controlled URLs
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.print_header_footer
+#   Print Headers and Footers
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.print_pdf_as_image_availability
+#   Print PDF as Image Available
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.print_pdf_as_image_default
+#   Print PDF as Image Default
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.print_preview_use_system_default_printer
+#   Use System Default Printer as Default
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.print_rasterize_pdf_dpi
+#   Print Rasterize PDF DPI
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.printer_type_deny_list
+#   Disable printer types on the deny list
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.printing_allowed_background_graphics_modes
+#   Restrict background graphics printing mode
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.printing_background_graphics_default
+#   Default background graphics printing mode
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.printing_enabled
+#   Enable printing
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.printing_paper_size_default.custom_size.height
+#   Default printing page size (custom_size.height).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.printing_paper_size_default.custom_size.width
+#   Default printing page size (custom_size.width).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.printing_paper_size_default.name
+#   Default printing page size (name).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.privacy_sandbox_ad_measurement_enabled
+#   Choose whether the Privacy Sandbox ad measurement setting can be disabled
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.privacy_sandbox_ad_topics_enabled
+#   Choose whether the Privacy Sandbox Ad topics setting can be disabled
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.privacy_sandbox_prompt_enabled
+#   Choose whether the Privacy Sandbox prompt can be shown to your users
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.privacy_sandbox_site_enabled_ads_enabled
+#   Choose whether the Privacy Sandbox Site-suggested ads setting can be disabled
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.profile_picker_on_startup_availability
+#   Profile picker availability on startup
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.profile_reauth_prompt
+#   Prompt users to re-authenticate to the profile
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.profile_separation_data_migration_settings
+#   Profile separation data migration settings
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.profile_separation_domain_exception_list
+#   Enterprise profile separation secondary domain allowlist
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.profile_separation_settings
+#   Enterprise profile separation settings
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.promotional_tabs_enabled
+#   Enable showing full-tab promotional content
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.promotions_enabled
+#   Enable showing promotional content
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.prompt_for_download_location
+#   Ask where to save each file before downloading
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.prompt_on_multiple_matching_certificates
+#   Prompt when multiple certificates match
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.provision_managed_client_certificate_for_browser
+#   Enables the provisioning of client certificates for managed browsers
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.provision_managed_client_certificate_for_user
+#   Enables the provisioning of client certificates for a managed user or profile
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.proxy_bypass_list
+#   Proxy bypass rules
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.proxy_mode
+#   Choose how to specify proxy server settings
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.proxy_override_rules
+#   Proxy override rules
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.proxy_pac_url
+#   URL to a proxy .pac file
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.proxy_server
+#   Address or URL of proxy server
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.proxy_server_mode
+#   Choose how to specify proxy server settings
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.proxy_settings.proxy_bypass_list
+#   Proxy settings (ProxyBypassList).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.proxy_settings.proxy_mode
+#   Proxy settings (ProxyMode).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.proxy_settings.proxy_pac_mandatory
+#   Proxy settings (ProxyPacMandatory).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.proxy_settings.proxy_pac_url
+#   Proxy settings (ProxyPacUrl).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.proxy_settings.proxy_server
+#   Proxy settings (ProxyServer).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.proxy_settings.proxy_server_mode
+#   Proxy settings (ProxyServerMode).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.qr_code_generator_enabled
+#   Enable QR Code Generator
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.quic_allowed
+#   Allow QUIC protocol
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.registered_protocol_handlers
+#   Register protocol handlers
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.relaunch_fast_if_outdated
+#   Relaunch fast if outdated
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.relaunch_notification
+#   Notify a user that a browser relaunch or device restart is recommended or required
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.relaunch_notification_period
+#   Set the time period for update notifications
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.relaunch_window.entries
+#   Set the time interval for relaunch (entries).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_allow_client_pairing
+#   Enable or disable PIN-less authentication for remote access hosts
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_allow_file_transfer
+#   Allow remote access users to transfer files to/from the host
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_allow_gnubby_auth
+#   Allow gnubby authentication for remote access hosts
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_allow_pin_authentication
+#   Allow PIN and pairing authentication methods for remote access hosts
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_allow_relayed_connection
+#   Enable the use of relay servers by the remote access host
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_allow_remote_access_connections
+#   Allow remote access connections to this machine
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_allow_remote_support_connections
+#   Allow remote support connections to this machine
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_allow_url_forwarding
+#   Allow remote access users to open host-side URLs in their local client browser
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_client_domain
+#   Configure the required domain name for remote access clients
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_client_domain_list
+#   Configure the required domain names for remote access clients
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_clipboard_size_bytes
+#   The maximum size, in bytes, that can be transferred between client and host via clipboard
+#     synchronization
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_domain
+#   Configure the required domain name for remote access hosts
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_domain_list
+#   Configure the required domain names for remote access hosts
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_enable_user_interface
+#   Enable connection-related UI on the host desktop when a connection is active
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_firewall_traversal
+#   Enable firewall traversal from remote access host
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_match_username
+#   Require that the name of the local user and the remote access host owner match
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_maximum_session_duration_minutes
+#   Maximum session duration allowed for remote access connections
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_require_curtain
+#   Enable curtaining of remote access hosts
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_access_host_udp_port_range
+#   Restrict the UDP port range used by the remote access host
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.remote_debugging_allowed
+#   Allow remote debugging
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.require_online_revocation_checks_for_local_anchors
+#   Require online OCSP/CRL checks for local trust anchors
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.restore_on_startup
+#   Action on startup
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.restore_on_startup_urls
+#   URLs to open on startup
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.restrict_background_fetch_from_service_worker_enabled
+#   Restrict Background Fetch API when called from a Service Worker
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.restrict_pdf_save_to_google_drive_accounts_to_pattern
+#   Restrict eligible Google accounts for saving PDF files to Google Drive from the ChromeGoogle
+#     Chrome PDF Viewer
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.restrict_signin_to_pattern
+#   Restrict which Google accounts are allowed to be set as browser primary accounts in ChromeGoogle
+#     Chrome
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.restrict_you_tube_cookies_deletion
+#   Restrict YouTube cookies deletion
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.roaming_profile_location
+#   Set the roaming profile directory
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.roaming_profile_support_enabled
+#   Enable the creation of roaming copies for ChromeGoogle Chrome profile data
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.saas_usage_reporting_domain_urls_for_browsers
+#   Specifies a list of SaaS domains that will be reported for managed browser
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.saas_usage_reporting_domain_urls_for_profiles
+#   Specifies a list of SaaS domains that will be reported for managed profile
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.safe_browsing_allowlist_domains
+#   Configure the list of domains on which Safe Browsing will not trigger warnings.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.safe_browsing_deep_scanning_enabled
+#   Allow download deep scanning for Safe Browsing-enabled users
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.safe_browsing_enabled
+#   Enable Safe Browsing
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.safe_browsing_protection_level
+#   Safe Browsing Protection Level
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.safe_browsing_proxied_real_time_checks_allowed
+#   Allow Safe Browsing Proxied Real Time Checks
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.safe_browsing_surveys_enabled
+#   Allow Safe Browsing Surveys
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.safe_sites_filter_behavior
+#   Control SafeSites adult content filtering.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.same_origin_tab_capture_allowed_by_origins
+#   Allow Same Origin Tab capture by these origins
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.sandbox_external_protocol_blocked
+#   Allow Chrome to block navigations toward external protocols in sandboxed iframes
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.saving_browser_history_disabled
+#   Disable saving browser history
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.screen_capture_allowed
+#   Allow or deny screen capture
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.screen_capture_allowed_by_origins
+#   Allow Desktop, Window, and Tab capture by these origins
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.screen_capture_without_gesture_allowed_for_origins
+#   Allow screen capture without prior user gesture
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.scroll_to_text_fragment_enabled
+#   Enable scrolling to text specified in URL fragments
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.search_content_sharing_settings
+#   Enable content sharing with Google AI Mode and Lens integrations
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.search_suggest_enabled
+#   Enable search suggestions
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.security_key_permit_attestation
+#   URLs/domains automatically permitted direct Security Key attestation
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.selected_languages
+#   Preferred language order.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.sensors_allowed_for_urls
+#   Allow access to sensors on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.sensors_blocked_for_urls
+#   Block access to sensors on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.serial_allow_all_ports_for_urls
+#   Automatically grant permission to sites to connect all serial ports.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.serial_allow_usb_devices_for_urls
+#   Automatically grant permission to sites to connect to USB serial devices.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.serial_ask_for_urls
+#   Allow the Serial API on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.serial_blocked_for_urls
+#   Block the Serial API on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.service_worker_auto_preload_enabled
+#   Allow ServiceWorker to dispatch navigation requests without waiting for its startup
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.service_worker_to_control_srcdoc_iframe_enabled
+#   Allow ServiceWorker to control srcdoc iframes
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.shared_array_buffer_unrestricted_access_allowed
+#   Specifies whether SharedArrayBuffers can be used in a non cross-origin-isolated context
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.shared_worker_blob_url_fix_enabled
+#   Make SharedWorker blob URL behavior aligned with the specification
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.shared_worker_extended_lifetime_enabled
+#   Enable extended lifetime for SharedWorkers
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.shopping_list_enabled
+#   Allow the shopping list feature to be enabled
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.show_apps_shortcut_in_bookmark_bar
+#   Show the apps shortcut in the bookmark bar
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.show_cast_icon_in_toolbar
+#   Show the Google Cast toolbar icon
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.show_cast_sessions_started_by_other_devices
+#   Show media controls for Google Cast sessions started by other devices on the local network
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.show_forward_button
+#   Show the forward toolbar button.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.show_full_urls_in_address_bar
+#   Show Full URLs
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.show_fullscreen_toolbar
+#   Show the toolbar in fullscreen.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.show_home_button
+#   Show Home button on toolbar
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.side_search_enabled
+#   Allow showing the most recent default search engine results page in a Browser side panel
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.signed_http_exchange_enabled
+#   Enable Signed HTTP Exchange (SXG) support
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.signin_allowed
+#   Allow sign in to ChromeGoogle Chrome
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.signin_interception_enabled
+#   Enable signin interception
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.silent_printing_enabled
+#   Enable Silent Printing
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.site_per_process
+#   Require Site Isolation for every site
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.site_permission_exceptions
+#   Private per-site permission choices.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.site_search_settings
+#   Site search settings
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.smart_tab_sharing_settings
+#   Smart tab sharing settings
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.spell_check_service_enabled
+#   Enable or disable spell checking web service
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.spellcheck_enabled
+#   Enable spellcheck
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ssl_error_override_allowed
+#   Allow proceeding from the SSL warning page
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.ssl_error_override_allowed_for_origins
+#   Allow proceeding from the SSL warning page on specific origins
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.standardized_browser_zoom_enabled
+#   Enable Standardized Browser Zoom Behavior
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.static_storage_quota_enabled
+#   Control whether storage quota APIs will return static values
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.strict_mimetype_check_for_worker_scripts_enabled
+#   Enable strict MIME type checking for worker scripts
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.suppress_different_origin_subframe_dialogs
+#   Suppress JavaScript Dialogs triggered from different origin subframes
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.suppress_unsupported_os_warning
+#   Suppress the unsupported OS warning
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.sync_disabled
+#   Disable synchronization of data with Google
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.sync_types_list_disabled
+#   List of types that should be excluded from synchronization
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.tab_capture_allowed_by_origins
+#   Allow Tab capture by these origins
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.tab_compare_settings
+#   Tab Compare settings
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.tab_discarding_exceptions
+#   URL pattern Exceptions to tab discarding
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.tab_group_sharing_settings
+#   Tab group sharing settings
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.task_manager_end_process_enabled
+#   Enable ending processes in Task Manager
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.theme_id
+#   Selected theme identifier.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.theme_pack
+#   Private theme pack path.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# chrome.third_party_ai_chat_settings
+#   Settings for 3rd party AI Mode integrations in the address bar and New Tab page search box.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.tls13_early_data_enabled
+#   Enable TLS 1.3 Early Data
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.total_memory_limit_mb
+#   Set limit on megabytes of memory a single Chrome instance can use.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.translate_enabled
+#   Enable Translate
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.translator_api_allowed
+#   Allow Translator API
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.try_on_you_settings
+#   Settings for Try on You.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.unmanaged_device_signals_consent_flow_enabled
+#   Ask for consent from managed users to share device signals on unmanaged devices to gain access
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.unsafely_treat_insecure_origin_as_secure
+#   Origins or hostname patterns for which restrictions on insecure origins should not apply
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.update_on_zero_window_enabled
+#   Controls background automatic relaunch when all browser windows are closed
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.updater_app_update_default
+#   Google Updater per-application update mode.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.updater_download_preference
+#   Google Updater DownloadPreference control.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.updater_last_check_period_minutes
+#   Google Updater LastCheckPeriodMinutes control.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.updater_major_version_rollout_policy
+#   Google Updater MajorVersionRolloutPolicy control.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.updater_minor_version_rollout_policy
+#   Google Updater MinorVersionRolloutPolicy control.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.updater_proxy_mode
+#   Google Updater ProxyMode control.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.updater_proxy_pac_url
+#   Google Updater ProxyPacURL control.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.updater_proxy_server
+#   Google Updater ProxyServer control.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.updater_rollback_to_target_version
+#   Google Updater RollbackToTargetVersion control.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.updater_target_channel
+#   Google Updater TargetChannel control.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.updater_target_version_prefix
+#   Google Updater TargetVersionPrefix control.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.updater_update_default
+#   Google Updater UpdateDefault control.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.updater_updates_suppressed_duration_min
+#   Google Updater UpdatesSuppressedDurationMin control.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.updater_updates_suppressed_start_hour
+#   Google Updater UpdatesSuppressedStartHour control.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.updater_updates_suppressed_start_min
+#   Google Updater UpdatesSuppressedStartMin control.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.url_allowlist
+#   Allow access to a list of URLs
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.url_blocklist
+#   Block access to a list of URLs
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.url_keyed_anonymized_data_collection_enabled
+#   Enable URL-keyed anonymized data collection
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.user_context_aware_access_signals_allowlist
+#   Enable the Chrome Enterprise Device Trust Connector attestation flow for a list of URLs on
+#     Managed Profiles
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.user_data_dir
+#   Set user data directory
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.user_data_snapshot_retention_limit
+#   Limits the number of user data snapshots retained for use in case of emergency rollback.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.user_feedback_allowed
+#   Allow user feedback
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.user_security_authenticated_reporting
+#   Enable cloud reporting of security signals in managed profiles
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.user_security_signals_reporting
+#   Enable cloud reporting of security signals in managed profiles
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.variations_restrict_parameter
+#   Set the restriction on the fetching of the Variations seed
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.video_capture_allowed
+#   Allow or deny video capture
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.video_capture_allowed_urls
+#   URLs that will be granted access to video capture devices without prompt
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.voice_typing_settings
+#   Settings for Talk to type
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.warn_before_quitting_enabled
+#   Show a warning dialog when the user is attempting to quit
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.watermark_style.fill_opacity
+#   Configure Custom Watermark Settings (fill_opacity).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.watermark_style.font_size
+#   Configure Custom Watermark Settings (font_size).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.watermark_style.outline_opacity
+#   Configure Custom Watermark Settings (outline_opacity).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.watermark_style.timestamp_timezone
+#   Configure Custom Watermark Settings (timestamp_timezone).
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_app_install_by_user_enabled
+#   Enable User Web App Install From Browser
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_app_install_force_list
+#   Configure list of force-installed Web Apps
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_app_settings
+#   Web App management settings
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_audio_output_buffering_enabled
+#   Enable adaptive buffering for Web Audio
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_authentication_remote_desktop_allowed_origins
+#   Allowed Origins for Proxied WebAuthn Requests from Remote Desktop Applications.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_authentication_remote_proxied_requests_allowed
+#   Allow Chrome Remote Desktop to execute WebAuthn API requests proxied from a remote host.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_hid_allow_all_devices_for_urls
+#   Automatically grant permission to sites to connect to any HID device.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_hid_allow_devices_for_urls
+#   Automatically grant permission to these sites to connect to HID devices with the given vendor
+#     and product IDs.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_hid_allow_devices_with_hid_usages_for_urls
+#   Automatically grant permission to these sites to connect to HID devices containing top-level
+#     collections with the given HID usage.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_hid_ask_for_urls
+#   Allow the WebHID API on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_hid_blocked_for_urls
+#   Block the WebHID API on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_rtc_diagnostic_log_collection_allowed_for_origins
+#   Enable WebRTC diagnostic log collection for specific origins
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_rtc_event_log_collection_allowed
+#   Allow collection of WebRTC event logs from Google services
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_rtc_ip_handling
+#   WebRTC IP handling
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_rtc_ip_handling_url
+#   WebRTC per URL IP Handling
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_rtc_local_ips_allowed_urls
+#   URLs for which local IPs are exposed in WebRTC ICE candidates
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_rtc_post_quantum_key_agreement
+#   Enable post-quantum key agreement for WebRTC
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_rtc_text_log_collection_allowed
+#   Allow WebRTC text logs collection from Google Services
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_rtc_udp_port_range
+#   Restrict the range of local UDP ports used by WebRTC
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_usb_allow_devices_for_urls
+#   Automatically grant permission to these sites to connect to USB devices with the given vendor
+#     and product IDs.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_usb_ask_for_urls
+#   Allow WebUSB on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.web_usb_blocked_for_urls
+#   Block WebUSB on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.window_capture_allowed_by_origins
+#   Allow Window and Tab capture by these origins
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.window_management_allowed_for_urls
+#   Allow Window Management permission on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.window_management_blocked_for_urls
+#   Block Window Management permission on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.window_placement_allowed_for_urls
+#   Allow Window Placement permission on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.window_placement_blocked_for_urls
+#   Block Window Placement permission on these sites
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.wpad_quick_check_enabled
+#   Enable WPAD optimization
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# chrome.xslt_enabled
+#   Control the availability of the XSLT feature
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
 # Area: dock
 
 # spaces.count
@@ -2378,6 +5411,1779 @@ machine_settings:
 #   Not yet because: No supported command adds or removes Spaces. The Dock owns the Spaces layout
 #     and rewrites it while it runs. Add or remove Spaces in Mission Control.
 #   Note: Monitors.0 is the first display only; a Mac with more displays has more Monitors entries.
+
+# Area: firefox
+
+# firefox.3rdparty.extensions
+#   Supply extension-managed configuration, defined by each extension. Field Extensions.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ai_controls.default.locked
+#   Allow or block individual AI functions, including local models. Field Default.Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ai_controls.default.value
+#   Allow or block individual AI functions, including local models. Field Default.Value.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ai_controls.link_preview_key_points.locked
+#   Allow or block individual AI functions, including local models. Field
+#     LinkPreviewKeyPoints.Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ai_controls.link_preview_key_points.value
+#   Allow or block individual AI functions, including local models. Field
+#     LinkPreviewKeyPoints.Value.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ai_controls.pdf_alt_text.locked
+#   Allow or block individual AI functions, including local models. Field PDFAltText.Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ai_controls.pdf_alt_text.value
+#   Allow or block individual AI functions, including local models. Field PDFAltText.Value.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ai_controls.sidebar_chatbot.locked
+#   Allow or block individual AI functions, including local models. Field SidebarChatbot.Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ai_controls.sidebar_chatbot.value
+#   Allow or block individual AI functions, including local models. Field SidebarChatbot.Value.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ai_controls.smart_tab_groups.locked
+#   Allow or block individual AI functions, including local models. Field SmartTabGroups.Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ai_controls.smart_tab_groups.value
+#   Allow or block individual AI functions, including local models. Field SmartTabGroups.Value.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ai_controls.smart_window.locked
+#   Allow or block individual AI functions, including local models. Field SmartWindow.Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ai_controls.smart_window.value
+#   Allow or block individual AI functions, including local models. Field SmartWindow.Value.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ai_controls.speech_recognition.locked
+#   Allow or block individual AI functions, including local models. Field SpeechRecognition.Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ai_controls.speech_recognition.value
+#   Allow or block individual AI functions, including local models. Field SpeechRecognition.Value.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ai_controls.translations.locked
+#   Allow or block individual AI functions, including local models. Field Translations.Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ai_controls.translations.value
+#   Allow or block individual AI functions, including local models. Field Translations.Value.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.allow_file_selection_dialogs
+#   Allow or prevent file selection dialogs.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.allowed_domains_for_apps
+#   Restrict Google Workspace accounts to named domains.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.app_auto_update
+#   Choose whether Firefox automatically installs updates.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.app_update_pin
+#   Set the highest permitted Firefox update version.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.app_update_url
+#   Choose a custom Firefox update server.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.authentication.allow_non_fqdn.ntlm
+#   Choose sites and modes for integrated authentication. Field AllowNonFQDN.NTLM.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.authentication.allow_non_fqdn.spnego
+#   Choose sites and modes for integrated authentication. Field AllowNonFQDN.SPNEGO.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.authentication.allow_proxies.ntlm
+#   Choose sites and modes for integrated authentication. Field AllowProxies.NTLM.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.authentication.allow_proxies.spnego
+#   Choose sites and modes for integrated authentication. Field AllowProxies.SPNEGO.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.authentication.delegated
+#   Choose sites and modes for integrated authentication. Field Delegated.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.authentication.locked
+#   Choose sites and modes for integrated authentication. Field Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.authentication.ntlm
+#   Choose sites and modes for integrated authentication. Field NTLM.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.authentication.private_browsing
+#   Choose sites and modes for integrated authentication. Field PrivateBrowsing.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.authentication.spnego
+#   Choose sites and modes for integrated authentication. Field SPNEGO.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.auto_launch_protocols_from_origins
+#   Allow named sites to open external protocols without asking.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.autofill_address_enabled
+#   Enable or disable stored address autofill.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.autofill_credit_card_enabled
+#   Enable or disable payment-card autofill.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.block_about_addons
+#   Block the extension manager page.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.block_about_config
+#   Block the advanced preference editor.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.block_about_profiles
+#   Block profile management.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.block_about_support
+#   Block the troubleshooting information page.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.bookmarks
+#   Seed bookmarks in the toolbar or menu.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.browser_data_backup
+#   Control Firefox profile backup and restore.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.browser_data_backup.allow_backup
+#   Control Firefox profile backup and restore. Field AllowBackup.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.browser_data_backup.allow_restore
+#   Control Firefox profile backup and restore. Field AllowRestore.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.captive_portal
+#   Enable or disable network login-page detection.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.certificates.import_enterprise_roots
+#   Trust operating-system roots or install certificates. Field ImportEnterpriseRoots.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.certificates.install
+#   Trust operating-system roots or install certificates. Field Install.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.clear_on_shutdown
+#   Clear selected browsing data when Firefox closes.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.clear_on_shutdown.browsing_history_and_downloads
+#   Clear selected browsing data when Firefox closes. Field BrowsingHistoryAndDownloads.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.clear_on_shutdown.cache
+#   Clear selected browsing data when Firefox closes. Field Cache.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.clear_on_shutdown.cookies_and_storage
+#   Clear selected browsing data when Firefox closes. Field CookiesAndStorage.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.clear_on_shutdown.exceptions
+#   Clear selected browsing data when Firefox closes. Field Exceptions.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.clear_on_shutdown.form_data
+#   Clear selected browsing data when Firefox closes. Field FormData.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.clear_on_shutdown.site_settings
+#   Clear selected browsing data when Firefox closes. Field SiteSettings.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.cnsa2_key_agreement_enabled
+#   Control ML-KEM-1024 post-quantum key agreement.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.containers.default
+#   Create named browsing containers. Field Default.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.agent_name
+#   Send selected data actions to an external content-analysis agent. Field AgentName.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.agent_timeout
+#   Send selected data actions to an external content-analysis agent. Field AgentTimeout.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.allow_url_regex_list
+#   Send selected data actions to an external content-analysis agent. Field AllowUrlRegexList.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.bypass_for_same_tab_operations
+#   Send selected data actions to an external content-analysis agent. Field
+#     BypassForSameTabOperations.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.client_signature
+#   Send selected data actions to an external content-analysis agent. Field ClientSignature.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.default_result
+#   Send selected data actions to an external content-analysis agent. Field DefaultResult.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.deny_url_regex_list
+#   Send selected data actions to an external content-analysis agent. Field DenyUrlRegexList.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.enabled
+#   Send selected data actions to an external content-analysis agent. Field Enabled.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.interception_points.clipboard.enabled
+#   Send selected data actions to an external content-analysis agent. Field
+#     InterceptionPoints.Clipboard.Enabled.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.interception_points.clipboard.plain_text_only
+#   Send selected data actions to an external content-analysis agent. Field
+#     InterceptionPoints.Clipboard.PlainTextOnly.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.interception_points.clipboard_copy.enabled
+#   Send selected data actions to an external content-analysis agent. Field
+#     InterceptionPoints.ClipboardCopy.Enabled.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.interception_points.clipboard_copy.plain_text_only
+#   Send selected data actions to an external content-analysis agent. Field
+#     InterceptionPoints.ClipboardCopy.PlainTextOnly.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.interception_points.download.enabled
+#   Send selected data actions to an external content-analysis agent. Field
+#     InterceptionPoints.Download.Enabled.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.interception_points.drag_and_drop.enabled
+#   Send selected data actions to an external content-analysis agent. Field
+#     InterceptionPoints.DragAndDrop.Enabled.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.interception_points.drag_and_drop.plain_text_only
+#   Send selected data actions to an external content-analysis agent. Field
+#     InterceptionPoints.DragAndDrop.PlainTextOnly.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.interception_points.file_upload.enabled
+#   Send selected data actions to an external content-analysis agent. Field
+#     InterceptionPoints.FileUpload.Enabled.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.interception_points.print.enabled
+#   Send selected data actions to an external content-analysis agent. Field
+#     InterceptionPoints.Print.Enabled.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.is_per_user
+#   Send selected data actions to an external content-analysis agent. Field IsPerUser.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.max_connections_count
+#   Send selected data actions to an external content-analysis agent. Field MaxConnectionsCount.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.pipe_path_name
+#   Send selected data actions to an external content-analysis agent. Field PipePathName.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.show_blocked_result
+#   Send selected data actions to an external content-analysis agent. Field ShowBlockedResult.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.content_analysis.timeout_result
+#   Send selected data actions to an external content-analysis agent. Field TimeoutResult.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.cookies.accept_third_party
+#   Set cookie behavior and site exceptions. Field AcceptThirdParty.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.cookies.allow
+#   Set cookie behavior and site exceptions. Field Allow.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.cookies.allow_session
+#   Set cookie behavior and site exceptions. Field AllowSession.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.cookies.behavior
+#   Set cookie behavior and site exceptions. Field Behavior.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.cookies.behavior_private_browsing
+#   Set cookie behavior and site exceptions. Field BehaviorPrivateBrowsing.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.cookies.block
+#   Set cookie behavior and site exceptions. Field Block.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.cookies.default
+#   Set cookie behavior and site exceptions. Field Default.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.cookies.expire_at_session_end
+#   Set cookie behavior and site exceptions. Field ExpireAtSessionEnd.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.cookies.locked
+#   Set cookie behavior and site exceptions. Field Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.cookies.reject_tracker
+#   Set cookie behavior and site exceptions. Field RejectTracker.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.default_browser_setting_enabled
+#   Allow or prevent changing Firefox into the default browser.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.default_download_directory
+#   Set an editable initial download folder.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.default_serial_guard_setting
+#   Block serial-port access or let sites ask.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_accounts
+#   Disable Firefox account services.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_app_update
+#   Disable Firefox application updates.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_builtin_pdf_viewer
+#   Choose the system PDF handler instead of the built-in viewer.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_developer_tools
+#   Disable developer tools and remote debugging.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_encrypted_client_hello
+#   Disable encrypted TLS client hello.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_feedback_commands
+#   Remove feedback and deceptive-site reporting commands.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_firefox_accounts
+#   Disable Firefox account integration and Sync.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_firefox_screenshots
+#   Disable Firefox screenshot tools.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_firefox_studies
+#   Disable experiments and study recommendations.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_forget_button
+#   Disable the recent-data Forget button.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_form_history
+#   Stop recording form and search-bar entries.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_launch_on_login
+#   Prevent Firefox launching when the user signs in.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_master_password_creation
+#   Prevent creation of a primary password.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_password_reveal
+#   Prevent revealing saved passwords.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_private_browsing
+#   Prevent private windows. Prefer PrivateBrowsingModeAvailability.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_profile_import
+#   Prevent importing another browser profile.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_profile_refresh
+#   Prevent profile refresh and its prompt.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_remote_improvements
+#   Disable remote feature rollouts.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_remote_settings_and_accept_security_consequences
+#   Disable Remote Settings, including security data updates.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_safe_mode
+#   Prevent troubleshooting-mode startup.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_security_bypass.invalid_certificate
+#   Prevent bypassing certificate or Safe Browsing warnings. Field InvalidCertificate.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_security_bypass.safe_browsing
+#   Prevent bypassing certificate or Safe Browsing warnings. Field SafeBrowsing.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_set_desktop_background
+#   Remove the image-to-desktop-background command.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_system_addon_update
+#   Disable system add-on installation and updates.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disable_telemetry
+#   Disable reporting, telemetry archiving, and its viewing page.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_aes_128_gcm_sha256
+#   Disable named TLS encryption suites. Field TLS_AES_128_GCM_SHA256.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_aes_256_gcm_sha384
+#   Disable named TLS encryption suites. Field TLS_AES_256_GCM_SHA384.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_chacha20_poly1305_sha256
+#   Disable named TLS encryption suites. Field TLS_CHACHA20_POLY1305_SHA256.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_dhe_rsa_with_aes_128_cbc_sha
+#   Disable named TLS encryption suites. Field TLS_DHE_RSA_WITH_AES_128_CBC_SHA.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_dhe_rsa_with_aes_256_cbc_sha
+#   Disable named TLS encryption suites. Field TLS_DHE_RSA_WITH_AES_256_CBC_SHA.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_aes_128_cbc_sha
+#   Disable named TLS encryption suites. Field TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_aes_128_gcm_sha256
+#   Disable named TLS encryption suites. Field TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_aes_256_cbc_sha
+#   Disable named TLS encryption suites. Field TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_aes_256_gcm_sha384
+#   Disable named TLS encryption suites. Field TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_chacha20_poly1305_sha256
+#   Disable named TLS encryption suites. Field TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_ecdhe_rsa_with_aes_128_cbc_sha
+#   Disable named TLS encryption suites. Field TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_ecdhe_rsa_with_aes_128_gcm_sha256
+#   Disable named TLS encryption suites. Field TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_ecdhe_rsa_with_aes_256_cbc_sha
+#   Disable named TLS encryption suites. Field TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_ecdhe_rsa_with_aes_256_gcm_sha384
+#   Disable named TLS encryption suites. Field TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_ecdhe_rsa_with_chacha20_poly1305_sha256
+#   Disable named TLS encryption suites. Field TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_rsa_with_3_des_ede_cbc_sha
+#   Disable named TLS encryption suites. Field TLS_RSA_WITH_3DES_EDE_CBC_SHA.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_rsa_with_aes_128_cbc_sha
+#   Disable named TLS encryption suites. Field TLS_RSA_WITH_AES_128_CBC_SHA.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_rsa_with_aes_128_gcm_sha256
+#   Disable named TLS encryption suites. Field TLS_RSA_WITH_AES_128_GCM_SHA256.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_rsa_with_aes_256_cbc_sha
+#   Disable named TLS encryption suites. Field TLS_RSA_WITH_AES_256_CBC_SHA.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.disabled_ciphers.tls_rsa_with_aes_256_gcm_sha384
+#   Disable named TLS encryption suites. Field TLS_RSA_WITH_AES_256_GCM_SHA384.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.display_bookmarks_toolbar
+#   Seed when the bookmarks toolbar appears.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.dns_over_https.enabled
+#   Choose encrypted DNS, its resolver, fallback, and exclusions. Field Enabled.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.dns_over_https.excluded_domains
+#   Choose encrypted DNS, its resolver, fallback, and exclusions. Field ExcludedDomains.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.dns_over_https.fallback
+#   Choose encrypted DNS, its resolver, fallback, and exclusions. Field Fallback.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.dns_over_https.locked
+#   Choose encrypted DNS, its resolver, fallback, and exclusions. Field Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.dns_over_https.provider_url
+#   Choose encrypted DNS, its resolver, fallback, and exclusions. Field ProviderURL.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.dont_check_default_browser
+#   Control Firefox default-browser checks.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.download_directory
+#   Choose and lock the download folder.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.enable_tracking_protection.baseline_exceptions
+#   Configure tracker blocking and compatibility exceptions. Field BaselineExceptions.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.enable_tracking_protection.category
+#   Configure tracker blocking and compatibility exceptions. Field Category.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.enable_tracking_protection.convenience_exceptions
+#   Configure tracker blocking and compatibility exceptions. Field ConvenienceExceptions.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.enable_tracking_protection.cryptomining
+#   Configure tracker blocking and compatibility exceptions. Field Cryptomining.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.enable_tracking_protection.email_tracking
+#   Configure tracker blocking and compatibility exceptions. Field EmailTracking.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.enable_tracking_protection.exceptions
+#   Configure tracker blocking and compatibility exceptions. Field Exceptions.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.enable_tracking_protection.fingerprinting
+#   Configure tracker blocking and compatibility exceptions. Field Fingerprinting.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.enable_tracking_protection.locked
+#   Configure tracker blocking and compatibility exceptions. Field Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.enable_tracking_protection.suspected_fingerprinting
+#   Configure tracker blocking and compatibility exceptions. Field SuspectedFingerprinting.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.enable_tracking_protection.value
+#   Configure tracker blocking and compatibility exceptions. Field Value.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.encrypted_media_extensions.enabled
+#   Control playback of DRM-protected content. Field Enabled.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.encrypted_media_extensions.locked
+#   Control playback of DRM-protected content. Field Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.enterprise_policies_enabled
+#   Enable policy loading from the macOS preference domain.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.exempt_domain_file_type_pairs_from_file_type_download_warnings
+#   Exempt selected file types on named domains from warnings.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.extension_settings
+#   Configure extension installation, updates, permissions, and access.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.extension_update
+#   Control automatic extension updates.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.extensions.install
+#   Install, uninstall, or lock listed extensions. Field Install.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.extensions.locked
+#   Install, uninstall, or lock listed extensions. Field Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.extensions.uninstall
+#   Install, uninstall, or lock listed extensions. Field Uninstall.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_home.highlights
+#   Configure new-tab content, advertising, and widgets. Field Highlights.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_home.locked
+#   Configure new-tab content, advertising, and widgets. Field Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_home.pocket
+#   Configure new-tab content, advertising, and widgets. Field Pocket.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_home.search
+#   Configure new-tab content, advertising, and widgets. Field Search.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_home.snippets
+#   Configure new-tab content, advertising, and widgets. Field Snippets.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_home.sponsored_pocket
+#   Configure new-tab content, advertising, and widgets. Field SponsoredPocket.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_home.sponsored_stories
+#   Configure new-tab content, advertising, and widgets. Field SponsoredStories.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_home.sponsored_top_sites
+#   Configure new-tab content, advertising, and widgets. Field SponsoredTopSites.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_home.stories
+#   Configure new-tab content, advertising, and widgets. Field Stories.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_home.top_sites
+#   Configure new-tab content, advertising, and widgets. Field TopSites.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_home.weather
+#   Configure new-tab content, advertising, and widgets. Field Weather.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_home.widgets.blocked
+#   Configure new-tab content, advertising, and widgets. Field Widgets.Blocked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_home.widgets.enabled
+#   Configure new-tab content, advertising, and widgets. Field Widgets.Enabled.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_suggest.improve_suggest
+#   Configure address-bar web suggestions and sponsored results. Field ImproveSuggest.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_suggest.locked
+#   Configure address-bar web suggestions and sponsored results. Field Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_suggest.online_enabled
+#   Configure address-bar web suggestions and sponsored results. Field OnlineEnabled.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_suggest.sponsored_suggestions
+#   Configure address-bar web suggestions and sponsored results. Field SponsoredSuggestions.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.firefox_suggest.web_suggestions
+#   Configure address-bar web suggestions and sponsored results. Field WebSuggestions.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.generative_ai.chatbot
+#   Older AI switches. AIControls takes precedence. Field Chatbot.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.generative_ai.enabled
+#   Older AI switches. AIControls takes precedence. Field Enabled.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.generative_ai.link_previews
+#   Older AI switches. AIControls takes precedence. Field LinkPreviews.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.generative_ai.locked
+#   Older AI switches. AIControls takes precedence. Field Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.generative_ai.smart_window
+#   Older AI switches. AIControls takes precedence. Field SmartWindow.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.generative_ai.tab_groups
+#   Older AI switches. AIControls takes precedence. Field TabGroups.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.go_to_intranet_site_for_single_word_entry_in_address_bar
+#   Treat single-word address entries as intranet sites.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.handlers.extensions
+#   Choose how protocols and file types open. Field extensions.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.handlers.mime_types
+#   Choose how protocols and file types open. Field mimeTypes.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.handlers.schemes
+#   Choose how protocols and file types open. Field schemes.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.hardware_acceleration
+#   Disable graphics hardware acceleration.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.homepage.additional
+#   Set home pages and startup behavior. Field Additional.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.homepage.locked
+#   Set home pages and startup behavior. Field Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.homepage.new_tab_on_restore
+#   Set home pages and startup behavior. Field NewTabOnRestore.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.homepage.start_page
+#   Set home pages and startup behavior. Field StartPage.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.homepage.url
+#   Set home pages and startup behavior. Field URL.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.http_allowlist
+#   Exclude named origins from HTTPS upgrading.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.https_only_mode
+#   Choose HTTPS-only mode and its enforcement.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.install_addons_permission.allow
+#   Control permission to install extensions from websites. Field Allow.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.install_addons_permission.default
+#   Control permission to install extensions from websites. Field Default.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ip_protection_available
+#   Control availability of Firefox IP protection.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.legacy_same_site_cookie_behavior_enabled
+#   Request legacy SameSite cookie handling.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.legacy_same_site_cookie_behavior_enabled_for_domain_list
+#   Request legacy SameSite handling for named domains.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.local_file_links
+#   Allow specified websites to open local file links.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.local_network_access.block_trackers
+#   Control local-network requests, tracking blocks, and prompting. Field BlockTrackers.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.local_network_access.enable_prompting
+#   Control local-network requests, tracking blocks, and prompting. Field EnablePrompting.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.local_network_access.enabled
+#   Control local-network requests, tracking blocks, and prompting. Field Enabled.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.local_network_access.locked
+#   Control local-network requests, tracking blocks, and prompting. Field Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.local_network_access.skip_domains
+#   Control local-network requests, tracking blocks, and prompting. Field SkipDomains.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.lock
+#   Lock supported Firefox settings when browser application becomes available.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.managed_bookmarks
+#   Publish bookmarks that users cannot edit.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.manual_app_update_only
+#   Allow updates only when the user checks manually.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.microsoft_entra_sso
+#   Use macOS Microsoft Entra single sign-on.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.network_prediction
+#   Control DNS prefetch.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.new_tab_page
+#   Enable or disable the Firefox new-tab page.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.no_default_bookmarks
+#   Prevent creation of built-in bookmarks on a fresh profile.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.offer_to_save_logins
+#   Control password-saving prompts.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.offer_to_save_logins_default
+#   Set an editable default for password-saving prompts.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.override_first_run_page
+#   Choose or suppress the first-run welcome page.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.override_post_update_page
+#   Choose or suppress the page opened after updates.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.password_manager_enabled
+#   Control the password manager UI and password saving.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.password_manager_exceptions
+#   Disable saving logins for named sites.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pd_fjs.enable_permissions
+#   Control PDF rendering and PDF document permission checks. Field EnablePermissions.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pd_fjs.enabled
+#   Control PDF rendering and PDF document permission checks. Field Enabled.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.autoplay.allow
+#   Set browser permission defaults and per-site grants or blocks. Field Autoplay.Allow.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.autoplay.block
+#   Set browser permission defaults and per-site grants or blocks. Field Autoplay.Block.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.autoplay.default
+#   Set browser permission defaults and per-site grants or blocks. Field Autoplay.Default.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.autoplay.locked
+#   Set browser permission defaults and per-site grants or blocks. Field Autoplay.Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.camera.allow
+#   Set browser permission defaults and per-site grants or blocks. Field Camera.Allow.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.camera.block
+#   Set browser permission defaults and per-site grants or blocks. Field Camera.Block.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.camera.block_new_requests
+#   Set browser permission defaults and per-site grants or blocks. Field Camera.BlockNewRequests.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.camera.locked
+#   Set browser permission defaults and per-site grants or blocks. Field Camera.Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.location.allow
+#   Set browser permission defaults and per-site grants or blocks. Field Location.Allow.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.location.block
+#   Set browser permission defaults and per-site grants or blocks. Field Location.Block.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.location.block_new_requests
+#   Set browser permission defaults and per-site grants or blocks. Field Location.BlockNewRequests.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.location.locked
+#   Set browser permission defaults and per-site grants or blocks. Field Location.Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.microphone.allow
+#   Set browser permission defaults and per-site grants or blocks. Field Microphone.Allow.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.microphone.block
+#   Set browser permission defaults and per-site grants or blocks. Field Microphone.Block.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.microphone.block_new_requests
+#   Set browser permission defaults and per-site grants or blocks. Field
+#     Microphone.BlockNewRequests.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.microphone.locked
+#   Set browser permission defaults and per-site grants or blocks. Field Microphone.Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.notifications.allow
+#   Set browser permission defaults and per-site grants or blocks. Field Notifications.Allow.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.notifications.block
+#   Set browser permission defaults and per-site grants or blocks. Field Notifications.Block.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.notifications.block_new_requests
+#   Set browser permission defaults and per-site grants or blocks. Field
+#     Notifications.BlockNewRequests.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.notifications.locked
+#   Set browser permission defaults and per-site grants or blocks. Field Notifications.Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.screen_share.allow
+#   Set browser permission defaults and per-site grants or blocks. Field ScreenShare.Allow.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.screen_share.block
+#   Set browser permission defaults and per-site grants or blocks. Field ScreenShare.Block.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.screen_share.block_new_requests
+#   Set browser permission defaults and per-site grants or blocks. Field
+#     ScreenShare.BlockNewRequests.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.screen_share.locked
+#   Set browser permission defaults and per-site grants or blocks. Field ScreenShare.Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.virtual_reality.allow
+#   Set browser permission defaults and per-site grants or blocks. Field VirtualReality.Allow.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.virtual_reality.block
+#   Set browser permission defaults and per-site grants or blocks. Field VirtualReality.Block.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.virtual_reality.block_new_requests
+#   Set browser permission defaults and per-site grants or blocks. Field
+#     VirtualReality.BlockNewRequests.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.permissions.virtual_reality.locked
+#   Set browser permission defaults and per-site grants or blocks. Field VirtualReality.Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.picture_in_picture.enabled
+#   Control floating video windows. Field Enabled.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.picture_in_picture.locked
+#   Control floating video windows. Field Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.popup_blocking.allow
+#   Control pop-up blocking and site exceptions. Field Allow.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.popup_blocking.default
+#   Control pop-up blocking and site exceptions. Field Default.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.popup_blocking.locked
+#   Control pop-up blocking and site exceptions. Field Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.post_quantum_key_agreement_enabled
+#   Control hybrid post-quantum TLS key agreement.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.browser_download_always_ask_before_handling_new_types
+#   Ask before handling new download types.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.browser_safebrowsing_downloads_enabled
+#   Check downloads for unsafe files.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.browser_safebrowsing_downloads_remote_enabled
+#   Check download reputation with the remote service.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.browser_safebrowsing_malware_enabled
+#   Block websites that distribute malware.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.browser_safebrowsing_phishing_enabled
+#   Block deceptive websites.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.browser_tabs_in_titlebar
+#   Choose whether tabs share the window title bar.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.browser_uidensity
+#   Choose normal, compact, or touch spacing.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.browser_zoom_full
+#   Scale the whole page when zooming.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.browser_zoom_site_specific
+#   Remember a separate zoom level for each site.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.font_minimum_size_x_western
+#   Choose the minimum Western font size.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.font_name_monospace_x_western
+#   Choose the Western fixed-width font.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.font_name_sans_serif_x_western
+#   Choose the Western sans-serif font.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.font_name_serif_x_western
+#   Choose the Western serif font.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.font_size_monospace_x_western
+#   Choose the Western fixed-width font size.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.font_size_variable_x_western
+#   Choose the Western proportional font size.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.general_smooth_scroll
+#   Animate scrolling.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.layout_spellcheck_default
+#   Choose which text fields receive spelling checks.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.media_peerconnection_enabled
+#   Allow WebRTC calls and peer connections.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.media_peerconnection_ice_default_address_only
+#   Limit WebRTC to the default network address.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.media_peerconnection_ice_no_host
+#   Suppress host candidates in WebRTC.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.media_peerconnection_ice_proxy_only_if_behind_proxy
+#   Restrict WebRTC candidates when a proxy is active.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.network_idn_show_punycode
+#   Display international domain names as ASCII.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.network_trr_bootstrap_addr
+#   Use a public address to resolve the encrypted DNS provider.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.privacy_fingerprinting_protection
+#   Enable broader fingerprint protection.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.privacy_fingerprinting_protection_pbmode
+#   Enable fingerprint protection in private windows.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.privacy_globalprivacycontrol_enabled
+#   Send Global Privacy Control.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.privacy_resist_fingerprinting
+#   Reduce browser fingerprint differences.
+#   Scope: account setting
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.security_mixed_content_block_active_content
+#   Block active content loaded over unencrypted connections.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.security_ocsp_enabled
+#   Choose online certificate-status checks.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.security_ocsp_require
+#   Require a successful online certificate-status response.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.pref.spellchecker_dictionary
+#   Choose the spelling dictionary.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.preferences
+#   Set allowed internal preferences with explicit types and status.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.primary_password
+#   Require or prohibit a primary password.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.printing_enabled
+#   Enable or disable printing.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.private_browsing_mode_availability
+#   Allow, disable, or force private windows.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.prompt_for_download_location
+#   Choose whether downloads ask for a destination.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.proxy.auto_config_url
+#   Choose proxy servers, discovery, bypass rules, and proxy DNS. Field AutoConfigURL.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.proxy.auto_login
+#   Choose proxy servers, discovery, bypass rules, and proxy DNS. Field AutoLogin.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.proxy.ftp_proxy
+#   Choose proxy servers, discovery, bypass rules, and proxy DNS. Field FTPProxy.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.proxy.http_proxy
+#   Choose proxy servers, discovery, bypass rules, and proxy DNS. Field HTTPProxy.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.proxy.locked
+#   Choose proxy servers, discovery, bypass rules, and proxy DNS. Field Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.proxy.mode
+#   Choose proxy servers, discovery, bypass rules, and proxy DNS. Field Mode.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.proxy.passthrough
+#   Choose proxy servers, discovery, bypass rules, and proxy DNS. Field Passthrough.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.proxy.socks_proxy
+#   Choose proxy servers, discovery, bypass rules, and proxy DNS. Field SOCKSProxy.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.proxy.socks_version
+#   Choose proxy servers, discovery, bypass rules, and proxy DNS. Field SOCKSVersion.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.proxy.ssl_proxy
+#   Choose proxy servers, discovery, bypass rules, and proxy DNS. Field SSLProxy.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.proxy.use_http_proxy_for_all_protocols
+#   Choose proxy servers, discovery, bypass rules, and proxy DNS. Field UseHTTPProxyForAllProtocols.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.proxy.use_proxy_for_dns
+#   Choose proxy servers, discovery, bypass rules, and proxy DNS. Field UseProxyForDNS.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.relaunch_required.notification_period_hours
+#   Require a restart after updates, with a time and notice period. Field NotificationPeriodHours.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.relaunch_required.restart_time_of_day.hour
+#   Require a restart after updates, with a time and notice period. Field RestartTimeOfDay.Hour.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.relaunch_required.restart_time_of_day.minute
+#   Require a restart after updates, with a time and notice period. Field RestartTimeOfDay.Minute.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.requested_locales
+#   Choose preferred browser interface languages.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.sanitize_on_shutdown
+#   Legacy controls for clearing browsing data on quit.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.sanitize_on_shutdown.cache
+#   Legacy controls for clearing browsing data on quit. Field Cache.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.sanitize_on_shutdown.cookies
+#   Legacy controls for clearing browsing data on quit. Field Cookies.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.sanitize_on_shutdown.downloads
+#   Legacy controls for clearing browsing data on quit. Field Downloads.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.sanitize_on_shutdown.exceptions
+#   Legacy controls for clearing browsing data on quit. Field Exceptions.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.sanitize_on_shutdown.form_data
+#   Legacy controls for clearing browsing data on quit. Field FormData.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.sanitize_on_shutdown.history
+#   Legacy controls for clearing browsing data on quit. Field History.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.sanitize_on_shutdown.locked
+#   Legacy controls for clearing browsing data on quit. Field Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.sanitize_on_shutdown.offline_apps
+#   Legacy controls for clearing browsing data on quit. Field OfflineApps.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.sanitize_on_shutdown.sessions
+#   Legacy controls for clearing browsing data on quit. Field Sessions.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.sanitize_on_shutdown.site_settings
+#   Legacy controls for clearing browsing data on quit. Field SiteSettings.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.search_bar
+#   Seed a separate search box or a unified address bar.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.search_engines.add
+#   Add, hide, or select search engines. Field Add.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.search_engines.default
+#   Add, hide, or select search engines. Field Default.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.search_engines.default_private
+#   Add, hide, or select search engines. Field DefaultPrivate.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.search_engines.prevent_installs
+#   Add, hide, or select search engines. Field PreventInstalls.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.search_engines.remove
+#   Add, hide, or select search engines. Field Remove.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.search_suggest_enabled
+#   Control remote search suggestions.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.security_devices
+#   Add or remove PKCS #11 security modules.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.show_home_button
+#   Control the initial placement of the Home button.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.site_policies
+#   Set per-site JIT, service-worker, HTTPS, or container rules.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.skip_terms_of_use
+#   Skip the Firefox terms-of-use page.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ssl_version_max
+#   Set the highest TLS version Firefox may use.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.ssl_version_min
+#   Set the lowest TLS version Firefox may use.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.start_downloads_in_temp_directory
+#   Start downloads in the temporary folder.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.support_menu.access_key
+#   Add an organization support link to the Help menu. Field AccessKey.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.support_menu.title
+#   Add an organization support link to the Help menu. Field Title.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.support_menu.url
+#   Add an organization support link to the Help menu. Field URL.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.translate_enabled
+#   Control webpage translation and its AI availability.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.use_system_print_dialog
+#   Choose the operating-system print dialog.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.user_messaging.extension_recommendations
+#   Control recommendations, onboarding, and Firefox promotions. Field ExtensionRecommendations.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.user_messaging.feature_recommendations
+#   Control recommendations, onboarding, and Firefox promotions. Field FeatureRecommendations.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.user_messaging.firefox_labs
+#   Control recommendations, onboarding, and Firefox promotions. Field FirefoxLabs.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.user_messaging.locked
+#   Control recommendations, onboarding, and Firefox promotions. Field Locked.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.user_messaging.more_from_mozilla
+#   Control recommendations, onboarding, and Firefox promotions. Field MoreFromMozilla.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.user_messaging.skip_onboarding
+#   Control recommendations, onboarding, and Firefox promotions. Field SkipOnboarding.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.user_messaging.urlbar_interventions
+#   Control recommendations, onboarding, and Firefox promotions. Field UrlbarInterventions.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.user_messaging.whats_new
+#   Control recommendations, onboarding, and Firefox promotions. Field WhatsNew.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.visual_search_enabled
+#   Control visual search from images.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.website_filter.block
+#   Block URL patterns, with explicit exceptions. Field Block.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.website_filter.exceptions
+#   Block URL patterns, with explicit exceptions. Field Exceptions.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
+
+# firefox.xslt_enabled
+#   Control XSLT transformations.
+#   Scope: machine setting, needs admin
+#   Not yet because: Browser application is not available yet.
 
 # Area: input
 

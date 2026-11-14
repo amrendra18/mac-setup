@@ -13,13 +13,20 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-ENTRY_COUNT = 288
+ENTRY_COUNT = 1242
 SCRIPT = ROOT / "scripts/render-template"
 _loader = importlib.machinery.SourceFileLoader("render_template", str(SCRIPT))
 template = importlib.util.module_from_spec(
     importlib.util.spec_from_loader(_loader.name, _loader)
 )
 _loader.exec_module(template)
+_browser_loader = importlib.machinery.SourceFileLoader(
+    "render_browser_map", str(ROOT / "scripts/render-browser-map")
+)
+browser_map = importlib.util.module_from_spec(
+    importlib.util.spec_from_loader(_browser_loader.name, _browser_loader)
+)
+_browser_loader.exec_module(browser_map)
 
 FIELDS = {
     "summary",
@@ -66,6 +73,7 @@ WRITE_TYPES = {"string", "int", "float", "bool", "array", "dict"}
 WRITE_FIELDS = {"domain", "key", "type", "host", "map", "dict_mode"}
 VALUE_FIELDS = {
     "bool": {"type"},
+    "browser": {"type", "schema"},
     "int": {"type", "min", "max"},
     "float": {"type", "min", "max"},
     "text": {"type", "pattern"},
@@ -140,6 +148,8 @@ def _values_problems(values):
             f"values: type {kind} takes {sorted(VALUE_FIELDS[kind])}"
             + (f" and may take {sorted(optional)}" if optional else "")
         ]
+    if kind == "browser":
+        return browser_map.schema_problems(values["schema"])
     if kind == "int" and not (
         type(values["min"]) is int
         and type(values["max"]) is int
@@ -272,7 +282,7 @@ def entry_problems(entry):
     problems = [
         f"missing field {name}" for name in sorted((FIELDS | route_fields) - set(entry))
     ]
-    for name in sorted(set(entry) - FIELDS - route_fields - {"notes"}):
+    for name in sorted(set(entry) - FIELDS - route_fields - {"notes", "browser"}):
         owner = [r for r, names in ROUTE_FIELDS.items() if name in names]
         problems.append(
             f"field {name} is only for route {owner[0]}"
@@ -392,6 +402,10 @@ def entry_problems(entry):
                         for choice in write["map"]
                         if choice not in values
                     ]
+    if "browser" in entry:
+        problems += browser_map.browser_problems(entry)
+    elif kind == "browser":
+        problems.append("browser values need browser metadata")
     if route == "command" and not problems:
         problems += _command_problems(entry["command"], values)
     return problems

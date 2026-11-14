@@ -105,3 +105,4 @@ A read's `type` is the name macOS reports: `string`, `integer`, `float`, `boolea
 | 15 | [Input area](./area-input.md) | `scripts/verify fast --feature area-input` | check run, apply, second run, typed reads of 27 keys for 15 settings, each key restored |
 | 16 | [Privacy area](./area-privacy.md) | `scripts/verify fast --feature area-privacy` | check run, apply, second run, the typed read of 1 advertising key, the key restored |
 | 17 | [Permissions up front](./permissions.md) | `scripts/verify fast --feature permissions` | a check run lists the asks for Full Disk Access and the Desktop and Downloads folders, asks nothing, skips `time.zone` while Full Disk Access is off, and changes no Dock, Finder or time zone value |
+| 18 | [Browser capture](./browser-capture.md) | `scripts/verify fast --feature browser-capture` | two fixture captures, exact safe assignment counts, unchanged sources, private reports, and zero planted private values in retained output |

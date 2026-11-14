@@ -1,0 +1,34 @@
+---
+- name: Prove browser capture using artificial sources
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Capture and check artificial browser files
+      ansible.builtin.command:
+        argv:
+          - /usr/bin/python3
+          - -I
+          - -B
+          - "{{ playbook_dir }}/capture_fixture.py"
+          - --evidence
+          - "{{ playbook_dir }}/../../.local/browser-capture-journey"
+          - --label
+          - "{{ browser_capture_run | default('first') }}"
+      changed_when: false
+      check_mode: false
+      register: browser_capture_proof
+    - name: Read filtered fixture proof
+      ansible.builtin.set_fact:
+        browser_capture_result: "{{ browser_capture_proof.stdout | from_json }}"
+    - name: Show exact safe assignment counts
+      ansible.builtin.debug:
+        msg:
+          - >-
+            browser capture firefox expected={{ browser_capture_result.runs.firefox.expected_assignments }}
+            observed={{ browser_capture_result.runs.firefox.observed_assignments }}
+            leaks={{ browser_capture_result.runs.firefox.leaked_test_values }}
+          - >-
+            browser capture chrome expected={{ browser_capture_result.runs.chrome.expected_assignments }}
+            observed={{ browser_capture_result.runs.chrome.observed_assignments }}
+            leaks={{ browser_capture_result.runs.chrome.leaked_test_values }}
+          - "leak scanner detected deliberate test input={{ browser_capture_result.leak_scanner_positive_control }}"
