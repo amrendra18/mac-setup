@@ -42,7 +42,8 @@ Nothing runs in the background. You start `ansible-playbook` in Terminal. It run
 2. `macos_defaults` writes the machine preferences as root.
 3. `macos_commands` sets the machine settings that need a command tool, such as `pmset` or `systemsetup`.
 4. `macos_apps` installs the listed apps.
-5. `macos_defaults`, `macos_dock_apps`, `macos_wallpaper` and `macos_finder_sidebar` set each other account's settings, running as that account.
+5. `macos_firefox` applies the selected machine-wide Firefox policies.
+6. `macos_defaults`, `macos_dock_apps`, `macos_wallpaper` and `macos_finder_sidebar` set each other account's settings, running as that account.
 
 "Take back permissions, click through and summarize" runs as you without admin rights:
 
@@ -68,6 +69,7 @@ Nothing runs in the background. You start `ansible-playbook` in Terminal. It run
 | 8 | `macos_apps` | Checks and installs apps from the catalog | `macos_app` |
 | 9 | `macos_by_hand` | Opens each click-only System Settings page and waits for you | none |
 | 10 | `macos_permissions` | Tests each permission the run needs, asks for the missing ones at the screen, and takes back Full Disk Access at the end | none. It uses a filter plugin. |
+| 11 | `macos_firefox` | Applies selected Firefox policies and reports unsupported lock forms | `macos_firefox` |
 
 A custom module exists only where no existing module does the job. Each one reads before it writes and supports `--check`.
 
@@ -136,6 +138,7 @@ dock.position:
 | 6 | `apps` | none | Installs apps from the catalog. Values are `catalog_ids`. |
 | 7 | `by_hand` | `link`, an `x-apple.systempreferences:` URL | Opens the System Settings page for a person to click. |
 | 8 | `not_yet` | none | Nothing yet. The profile check refuses the setting. |
+| 9 | `firefox` | `browser`, the shared map metadata | Applies selected machine-wide Firefox policy values. |
 
 ### The permissions table
 
@@ -161,8 +164,8 @@ Three optional fields change a `defaults` write:
 2. `map` turns each value from the profile into the value macOS stores. A value missing from the map leaves that key alone.
 3. `dict_mode` applies to a `dict` type. `replace`, the default, writes the whole dictionary, and `add` merges only the listed keys.
 
-Of the 1242 entries, 218 are set by a run, 40 are on route `by_hand`, and 984 are on route `not_yet`.
-These include 954 browser entries and 30 macOS settings awaiting support.
+Of the 1242 entries, 553 are set by a run, 40 are on route `by_hand`, and 649 are on route `not_yet`.
+The unsupported entries include 603 Chrome rows, 16 Firefox rows, and 30 macOS settings awaiting support.
 The macOS entries cover 26 privacy permissions, text replacements, modifier keys, the number of Spaces, and the password minimum length.
 
 ## How downloads are checked
@@ -286,7 +289,8 @@ Its `--check` form rejects stale output in the fast check.
 The generated module contains reviewed data and a source fingerprint.
 It requires only Python's standard library when loaded.
 `module_utils/browser_settings.py` owns parsing, source checks, filtering, and candidate rendering.
-The standalone command loads those exact utilities. Later Ansible browser modules can import them through `ansible.module_utils`.
+The standalone command and the Firefox module load those exact utilities.
+The profile validator shares their browser value validation.
 `ansible.cfg` declares the shared `module_utils` folder.
 
 Capture reads only approved configuration sources for the selected profile.
@@ -344,9 +348,96 @@ Those counts describe persisted entries and do not establish changes from defaul
 Free text and dynamic structures stay masked. Exact reviewed public endpoints are the only URL exception.
 A report emits no active value for masked, absent, conflicting, unsupported, or unavailable entries.
 
-All browser rows use `route: not_yet`; there is no browser role.
-The two lock controls are machine booleans with proposed default `true`.
+There are 335 Firefox rows on route `firefox`. The other 16 remain `not_yet`.
+Chrome rows remain `not_yet`. Both lock controls are machine booleans with proposed default `true`.
 Every row documents its locked form and its editable form or reason for leaving it unset.
 Capture does not infer either global switch from saved browser state.
-Application, lock transitions, browser enforcement, and bookmarks require later work.
-The fixture journey proves extraction and privacy only.
+The capture fixture journey proves extraction and privacy only.
+The Firefox journey separately checks policy application and browser behavior. Bookmarks import needs separate work.
+
+## Firefox policies
+
+The profile validator checks types and the full selected Firefox set before any setting writes.
+Its `firefox` work dictionary maps setting ids to the exact selected values.
+It does not expand proposed baselines. `firefox.lock` defaults to true in the Firefox module.
+The profile summary counts selected Firefox settings, excluding the lock switch, and asks you to reopen Firefox.
+Role notes describe unsupported lock forms and editable defaults.
+
+`macos_firefox` runs after `macos_apps` in the machine play and inherits its admin rights.
+It merges selected keys into `/Library/Preferences/org.mozilla.firefox.plist` and preserves unrelated keys.
+The role keeps `/Library/Preferences/org.mac-setup.firefox-owned.plist` as its ownership record.
+The record contains setting ids and policy paths, without selected values.
+Before importing policies, the module records the union of previous and new owned paths.
+An interrupted write or read-back can therefore release those paths on a later run.
+An omitted setting preserves its policy. An explicit `unset` releases the setting's owned keys.
+Changing `firefox.lock` to false releases previously owned locked forms before installing editable forms.
+A shared native `Locked` change refuses if it would change an unowned sibling setting.
+An explicit `unset` preserves a shared lock that unrelated siblings still need and reports that limit.
+The policy loader `EnterprisePoliciesEnabled` stays true after the final release so unrelated policies continue working.
+A matching typed policy domain needs no write. A first matching run can still establish the ownership record.
+
+`defaults import` merges top-level keys. The role explicitly deletes obsolete registered policy keys after a successful import.
+It also removes changed flattened keys while preserving unrelated saved fields.
+Registered array fields permit flattened indices from 0 to 50, matching Firefox's parser limit.
+Read-back refusals name affected public setting ids and never include private keys or values.
+If cleanup requires a private flattened field name, the role refuses before importing policies.
+Its recovery ownership record can still update before that refusal.
+
+The shared map supplies nested policy paths, allowed preference keys, and the locked and editable forms.
+Read-back uses the shared reader's `parse_source` function.
+Mapped `Preferences` values use `Value` and the appropriate `Status`.
+Policies with mapped sibling `Locked` controls receive the selected lock state automatically.
+A selected explicit `Locked` value must agree with `firefox.lock`.
+The module rejects conflicting aliases and overlapping parent and child policy selections before writing.
+A setting with only an editable native seed can apply in either mode and reports that it cannot lock.
+A setting without an editable form stays unset in false mode and reports that limit.
+With `firefox.lock: false`, `firefox.homepage.start_page: homepage-locked` compiles to editable `homepage` and reports that conversion.
+Both forms open the homepage. Only `homepage-locked` intrinsically locks the startup choice.
+`firefox.homepage.start_page: none` requires an absent homepage URL or the exact URL `about:blank`.
+The validator refuses another URL because Firefox replaces it with `about:blank`.
+The same rule checks retained policies before a write.
+These rules follow the pinned [Firefox Homepage handler](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_158_0_1_RELEASE/browser/components/enterprisepolicies/Policies.sys.mjs#L2274-L2352).
+A stored policy or its read-back does not prove Firefox accepted it or that a user can change it.
+
+The 16 unsupported Firefox rows have these limits:
+
+1. Seven preferences need profile-file seeds because Firefox rejects their machine policy forms.
+2. Four handlers are absent, removed, or ignored in Firefox 158.
+3. Three extension or search installation entries can download resources and await approval of the download model.
+4. Arbitrary `Preferences` objects bypass the typed map. Only individually mapped preferences can apply.
+5. The role owns `EnterprisePoliciesEnabled`; a profile cannot turn off the loader for unrelated policies.
+
+Every baseline remains proposed. The example profile selects no browser setting.
+Only real-Mac verification can establish Firefox acceptance, lock behavior, and relaunch effects.
+
+The role holds an exclusive lock at `/Library/Preferences/org.mac-setup.firefox-owned.lock` during each apply.
+Another mac-setup Firefox run refuses until the first finishes. Check mode creates no lock file.
+The role checks for external domain changes again before import.
+An administrator writing through another tool does not share this lock, so avoid concurrent policy edits.
+Retained policy aliases join the whole-domain conflict check before any import.
+
+### Firefox policy-source detection
+
+Firefox's native reader checks `EnterprisePoliciesEnabled` through the merged user-defaults view.
+The [Firefox 158 native gate](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_158_0_1_RELEASE/xpcom/base/nsMacPreferencesReader.mm#L62-L77)
+uses `boolForKey` before reading the merged dictionary.
+The [loader calls that gate](https://github.com/mozilla-firefox/firefox/blob/FIREFOX_158_0_1_RELEASE/toolkit/components/enterprisepolicies/EnterprisePoliciesParent.sys.mjs#L911-L920)
+before parsing any platform policies.
+
+The shared reader evaluates the switch across the supplied stores, from lower to higher priority.
+Live capture supplies machine preferences, account preferences, machine managed preferences, then account managed preferences.
+An absent switch does not override another store. A later explicit false disables plist policy observations.
+A true switch enables the known policy roots across those stores.
+Other roots remain app state, including window positions. Their values and names never enter the report.
+The loader switch itself is a control and is excluded from the entry counts.
+
+`policy_entries` counts enabled policy leaves. `unmapped_policy_entries` counts their unmapped leaves.
+`app_state_entries` counts saved domain leaves excluded from policy observations.
+The capture candidate reports these counts separately.
+The role uses the same source classifier for stored-policy read-back and preserves unrelated app-state keys.
+Source snapshots do not prove that a running browser accepted policies or that all preference sources were accessible.
+
+Enablement follows Foundation's conversions, rather than requiring a Boolean plist object.
+[Apple's UserDefaults reference](https://developer.apple.com/documentation/foundation/userdefaults/bool(forkey:))
+documents numeric and string conversion. Nonzero numbers, `YES`, `true`, and `1` enable the source.
+String conversion follows [NSString.boolValue](https://developer.apple.com/documentation/foundation/nsstring/boolvalue).

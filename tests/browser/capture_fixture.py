@@ -148,6 +148,7 @@ def prove(families, evidence, label):
         (policies / "org.mozilla.firefox.plist").write_bytes(
             plistlib.dumps(
                 {
+                    "EnterprisePoliciesEnabled": True,
                     "OfferToSaveLogins": False,
                     "Homepage": {"URL": "https://" + canary + "/private"},
                     "DNSOverHTTPS": {"ProviderURL": "https://dns.quad9.net/dns-query"},

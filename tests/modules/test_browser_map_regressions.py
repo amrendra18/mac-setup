@@ -79,7 +79,12 @@ class BrowserMapRegressionTests(unittest.TestCase):
                         else {"Value": value, "Status": "locked"}
                     )
                     self.policy.write_bytes(
-                        plistlib.dumps({"Preferences": {preference: stored}})
+                        plistlib.dumps(
+                            {
+                                "EnterprisePoliciesEnabled": True,
+                                "Preferences": {preference: stored},
+                            }
+                        )
                     )
                     result = self.capture("firefox", {key: row}, [self.policy])
                     self.assertEqual(set(result["settings"]), {key})

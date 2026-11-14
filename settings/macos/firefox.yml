@@ -1,8 +1,8 @@
 ---
 firefox.lock:
-  summary: Lock supported Firefox settings when browser application becomes available.
+  summary: Lock supported Firefox settings. Defaults to true when Firefox settings are selected.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -11,7 +11,7 @@ firefox.lock:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: lock_control
@@ -42,7 +42,7 @@ firefox.lock:
 firefox.3rdparty.extensions:
   summary: Supply extension-managed configuration, defined by each extension. Field Extensions.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -61,7 +61,7 @@ firefox.3rdparty.extensions:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -100,7 +100,7 @@ firefox.3rdparty.extensions:
 firefox.ai_controls.default.value:
   summary: Allow or block individual AI functions, including local models. Field Default.Value.
   scope: machine
-  route: not_yet
+  route: firefox
   values: [available, blocked]
   macos_default: not measured
   takes_effect: relaunch
@@ -108,7 +108,7 @@ firefox.ai_controls.default.value:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -156,7 +156,7 @@ firefox.ai_controls.default.value:
 firefox.ai_controls.default.locked:
   summary: Allow or block individual AI functions, including local models. Field Default.Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -165,7 +165,7 @@ firefox.ai_controls.default.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -205,7 +205,7 @@ firefox.ai_controls.default.locked:
 firefox.ai_controls.translations.value:
   summary: Allow or block individual AI functions, including local models. Field Translations.Value.
   scope: machine
-  route: not_yet
+  route: firefox
   values: [available, blocked]
   macos_default: not measured
   takes_effect: relaunch
@@ -213,7 +213,7 @@ firefox.ai_controls.translations.value:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -260,7 +260,7 @@ firefox.ai_controls.translations.value:
 firefox.ai_controls.translations.locked:
   summary: Allow or block individual AI functions, including local models. Field Translations.Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -269,7 +269,7 @@ firefox.ai_controls.translations.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -308,7 +308,7 @@ firefox.ai_controls.translations.locked:
 firefox.ai_controls.pdf_alt_text.value:
   summary: Allow or block individual AI functions, including local models. Field PDFAltText.Value.
   scope: machine
-  route: not_yet
+  route: firefox
   values: [available, blocked]
   macos_default: not measured
   takes_effect: relaunch
@@ -316,7 +316,7 @@ firefox.ai_controls.pdf_alt_text.value:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -363,7 +363,7 @@ firefox.ai_controls.pdf_alt_text.value:
 firefox.ai_controls.pdf_alt_text.locked:
   summary: Allow or block individual AI functions, including local models. Field PDFAltText.Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -372,7 +372,7 @@ firefox.ai_controls.pdf_alt_text.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -411,7 +411,7 @@ firefox.ai_controls.pdf_alt_text.locked:
 firefox.ai_controls.smart_tab_groups.value:
   summary: Allow or block individual AI functions, including local models. Field SmartTabGroups.Value.
   scope: machine
-  route: not_yet
+  route: firefox
   values: [available, blocked]
   macos_default: not measured
   takes_effect: relaunch
@@ -419,7 +419,7 @@ firefox.ai_controls.smart_tab_groups.value:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -466,7 +466,7 @@ firefox.ai_controls.smart_tab_groups.value:
 firefox.ai_controls.smart_tab_groups.locked:
   summary: Allow or block individual AI functions, including local models. Field SmartTabGroups.Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -475,7 +475,7 @@ firefox.ai_controls.smart_tab_groups.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -514,7 +514,7 @@ firefox.ai_controls.smart_tab_groups.locked:
 firefox.ai_controls.link_preview_key_points.value:
   summary: Allow or block individual AI functions, including local models. Field LinkPreviewKeyPoints.Value.
   scope: machine
-  route: not_yet
+  route: firefox
   values: [available, blocked]
   macos_default: not measured
   takes_effect: relaunch
@@ -522,7 +522,7 @@ firefox.ai_controls.link_preview_key_points.value:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -569,7 +569,7 @@ firefox.ai_controls.link_preview_key_points.value:
 firefox.ai_controls.link_preview_key_points.locked:
   summary: Allow or block individual AI functions, including local models. Field LinkPreviewKeyPoints.Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -578,7 +578,7 @@ firefox.ai_controls.link_preview_key_points.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -617,7 +617,7 @@ firefox.ai_controls.link_preview_key_points.locked:
 firefox.ai_controls.sidebar_chatbot.value:
   summary: Allow or block individual AI functions, including local models. Field SidebarChatbot.Value.
   scope: machine
-  route: not_yet
+  route: firefox
   values: [available, blocked]
   macos_default: not measured
   takes_effect: relaunch
@@ -625,7 +625,7 @@ firefox.ai_controls.sidebar_chatbot.value:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -672,7 +672,7 @@ firefox.ai_controls.sidebar_chatbot.value:
 firefox.ai_controls.sidebar_chatbot.locked:
   summary: Allow or block individual AI functions, including local models. Field SidebarChatbot.Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -681,7 +681,7 @@ firefox.ai_controls.sidebar_chatbot.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -720,7 +720,7 @@ firefox.ai_controls.sidebar_chatbot.locked:
 firefox.ai_controls.smart_window.value:
   summary: Allow or block individual AI functions, including local models. Field SmartWindow.Value.
   scope: machine
-  route: not_yet
+  route: firefox
   values: [available, blocked]
   macos_default: not measured
   takes_effect: relaunch
@@ -728,7 +728,7 @@ firefox.ai_controls.smart_window.value:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -775,7 +775,7 @@ firefox.ai_controls.smart_window.value:
 firefox.ai_controls.smart_window.locked:
   summary: Allow or block individual AI functions, including local models. Field SmartWindow.Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -784,7 +784,7 @@ firefox.ai_controls.smart_window.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -823,7 +823,7 @@ firefox.ai_controls.smart_window.locked:
 firefox.ai_controls.speech_recognition.value:
   summary: Allow or block individual AI functions, including local models. Field SpeechRecognition.Value.
   scope: machine
-  route: not_yet
+  route: firefox
   values: [available, blocked]
   macos_default: not measured
   takes_effect: relaunch
@@ -831,7 +831,7 @@ firefox.ai_controls.speech_recognition.value:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -878,7 +878,7 @@ firefox.ai_controls.speech_recognition.value:
 firefox.ai_controls.speech_recognition.locked:
   summary: Allow or block individual AI functions, including local models. Field SpeechRecognition.Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -887,7 +887,7 @@ firefox.ai_controls.speech_recognition.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -926,7 +926,7 @@ firefox.ai_controls.speech_recognition.locked:
 firefox.allowed_domains_for_apps:
   summary: Restrict Google Workspace accounts to named domains.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -936,7 +936,7 @@ firefox.allowed_domains_for_apps:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -973,7 +973,7 @@ firefox.allowed_domains_for_apps:
 firefox.allow_file_selection_dialogs:
   summary: Allow or prevent file selection dialogs.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -982,7 +982,7 @@ firefox.allow_file_selection_dialogs:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1025,7 +1025,7 @@ firefox.allow_file_selection_dialogs:
 firefox.app_auto_update:
   summary: Choose whether Firefox automatically installs updates.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -1034,7 +1034,7 @@ firefox.app_auto_update:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1070,7 +1070,7 @@ firefox.app_auto_update:
 firefox.app_update_pin:
   summary: Set the highest permitted Firefox update version.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^(?:10[2-9]|1[1-9][0-9]|[2-9][0-9]{2}|[1-9][0-9]{3,})(?:\.(?:0|[1-9][0-9]*))?\.$
@@ -1080,7 +1080,7 @@ firefox.app_update_pin:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1117,7 +1117,7 @@ firefox.app_update_pin:
 firefox.app_update_url:
   summary: Choose a custom Firefox update server.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -1127,7 +1127,7 @@ firefox.app_update_url:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1172,7 +1172,7 @@ firefox.app_update_url:
 firefox.authentication.spnego:
   summary: Choose sites and modes for integrated authentication. Field SPNEGO.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -1185,7 +1185,7 @@ firefox.authentication.spnego:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1225,7 +1225,7 @@ firefox.authentication.spnego:
 firefox.authentication.delegated:
   summary: Choose sites and modes for integrated authentication. Field Delegated.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -1238,7 +1238,7 @@ firefox.authentication.delegated:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1278,7 +1278,7 @@ firefox.authentication.delegated:
 firefox.authentication.ntlm:
   summary: Choose sites and modes for integrated authentication. Field NTLM.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -1291,7 +1291,7 @@ firefox.authentication.ntlm:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1331,7 +1331,7 @@ firefox.authentication.ntlm:
 firefox.authentication.allow_non_fqdn.spnego:
   summary: Choose sites and modes for integrated authentication. Field AllowNonFQDN.SPNEGO.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -1340,7 +1340,7 @@ firefox.authentication.allow_non_fqdn.spnego:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1386,7 +1386,7 @@ firefox.authentication.allow_non_fqdn.spnego:
 firefox.authentication.allow_non_fqdn.ntlm:
   summary: Choose sites and modes for integrated authentication. Field AllowNonFQDN.NTLM.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -1395,7 +1395,7 @@ firefox.authentication.allow_non_fqdn.ntlm:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1441,7 +1441,7 @@ firefox.authentication.allow_non_fqdn.ntlm:
 firefox.authentication.allow_proxies.spnego:
   summary: Choose sites and modes for integrated authentication. Field AllowProxies.SPNEGO.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -1450,7 +1450,7 @@ firefox.authentication.allow_proxies.spnego:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1496,7 +1496,7 @@ firefox.authentication.allow_proxies.spnego:
 firefox.authentication.allow_proxies.ntlm:
   summary: Choose sites and modes for integrated authentication. Field AllowProxies.NTLM.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -1505,7 +1505,7 @@ firefox.authentication.allow_proxies.ntlm:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1551,7 +1551,7 @@ firefox.authentication.allow_proxies.ntlm:
 firefox.authentication.locked:
   summary: Choose sites and modes for integrated authentication. Field Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -1560,7 +1560,7 @@ firefox.authentication.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1599,7 +1599,7 @@ firefox.authentication.locked:
 firefox.authentication.private_browsing:
   summary: Choose sites and modes for integrated authentication. Field PrivateBrowsing.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -1608,7 +1608,7 @@ firefox.authentication.private_browsing:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1654,7 +1654,7 @@ firefox.authentication.private_browsing:
 firefox.autofill_address_enabled:
   summary: Enable or disable stored address autofill.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -1663,7 +1663,7 @@ firefox.autofill_address_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1710,7 +1710,7 @@ firefox.autofill_address_enabled:
 firefox.autofill_credit_card_enabled:
   summary: Enable or disable payment-card autofill.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -1719,7 +1719,7 @@ firefox.autofill_credit_card_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1769,7 +1769,7 @@ firefox.autofill_credit_card_enabled:
 firefox.auto_launch_protocols_from_origins:
   summary: Allow named sites to open external protocols without asking.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -1791,7 +1791,7 @@ firefox.auto_launch_protocols_from_origins:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1828,7 +1828,7 @@ firefox.auto_launch_protocols_from_origins:
 firefox.block_about_addons:
   summary: Block the extension manager page.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -1837,7 +1837,7 @@ firefox.block_about_addons:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1872,7 +1872,7 @@ firefox.block_about_addons:
 firefox.block_about_config:
   summary: Block the advanced preference editor.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -1881,7 +1881,7 @@ firefox.block_about_config:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1916,7 +1916,7 @@ firefox.block_about_config:
 firefox.block_about_profiles:
   summary: Block profile management.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -1925,7 +1925,7 @@ firefox.block_about_profiles:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -1960,7 +1960,7 @@ firefox.block_about_profiles:
 firefox.block_about_support:
   summary: Block the troubleshooting information page.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -1969,7 +1969,7 @@ firefox.block_about_support:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2004,7 +2004,7 @@ firefox.block_about_support:
 firefox.bookmarks:
   summary: Seed bookmarks in the toolbar or menu.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -2034,7 +2034,7 @@ firefox.bookmarks:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2071,7 +2071,7 @@ firefox.bookmarks:
 firefox.browser_data_backup:
   summary: Control Firefox profile backup and restore.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -2080,7 +2080,7 @@ firefox.browser_data_backup:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2142,7 +2142,7 @@ firefox.browser_data_backup:
 firefox.browser_data_backup.allow_backup:
   summary: Control Firefox profile backup and restore. Field AllowBackup.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -2151,7 +2151,7 @@ firefox.browser_data_backup.allow_backup:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2197,7 +2197,7 @@ firefox.browser_data_backup.allow_backup:
 firefox.browser_data_backup.allow_restore:
   summary: Control Firefox profile backup and restore. Field AllowRestore.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -2206,7 +2206,7 @@ firefox.browser_data_backup.allow_restore:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2252,7 +2252,7 @@ firefox.browser_data_backup.allow_restore:
 firefox.captive_portal:
   summary: Enable or disable network login-page detection.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -2261,7 +2261,7 @@ firefox.captive_portal:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2307,7 +2307,7 @@ firefox.captive_portal:
 firefox.certificates.import_enterprise_roots:
   summary: Trust operating-system roots or install certificates. Field ImportEnterpriseRoots.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -2316,7 +2316,7 @@ firefox.certificates.import_enterprise_roots:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2359,7 +2359,7 @@ firefox.certificates.import_enterprise_roots:
 firefox.certificates.install:
   summary: Trust operating-system roots or install certificates. Field Install.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -2372,7 +2372,7 @@ firefox.certificates.install:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2409,7 +2409,7 @@ firefox.certificates.install:
 firefox.clear_on_shutdown:
   summary: Clear selected browsing data when Firefox closes.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -2418,7 +2418,7 @@ firefox.clear_on_shutdown:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2453,7 +2453,7 @@ firefox.clear_on_shutdown:
 firefox.clear_on_shutdown.browsing_history_and_downloads:
   summary: Clear selected browsing data when Firefox closes. Field BrowsingHistoryAndDownloads.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -2462,7 +2462,7 @@ firefox.clear_on_shutdown.browsing_history_and_downloads:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2505,7 +2505,7 @@ firefox.clear_on_shutdown.browsing_history_and_downloads:
 firefox.clear_on_shutdown.cookies_and_storage:
   summary: Clear selected browsing data when Firefox closes. Field CookiesAndStorage.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -2514,7 +2514,7 @@ firefox.clear_on_shutdown.cookies_and_storage:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2557,7 +2557,7 @@ firefox.clear_on_shutdown.cookies_and_storage:
 firefox.clear_on_shutdown.cache:
   summary: Clear selected browsing data when Firefox closes. Field Cache.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -2566,7 +2566,7 @@ firefox.clear_on_shutdown.cache:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2609,7 +2609,7 @@ firefox.clear_on_shutdown.cache:
 firefox.clear_on_shutdown.form_data:
   summary: Clear selected browsing data when Firefox closes. Field FormData.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -2618,7 +2618,7 @@ firefox.clear_on_shutdown.form_data:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2661,7 +2661,7 @@ firefox.clear_on_shutdown.form_data:
 firefox.clear_on_shutdown.site_settings:
   summary: Clear selected browsing data when Firefox closes. Field SiteSettings.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -2670,7 +2670,7 @@ firefox.clear_on_shutdown.site_settings:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2713,7 +2713,7 @@ firefox.clear_on_shutdown.site_settings:
 firefox.clear_on_shutdown.exceptions:
   summary: Clear selected browsing data when Firefox closes. Field Exceptions.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -2726,7 +2726,7 @@ firefox.clear_on_shutdown.exceptions:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2763,7 +2763,7 @@ firefox.clear_on_shutdown.exceptions:
 firefox.cnsa2_key_agreement_enabled:
   summary: Control ML-KEM-1024 post-quantum key agreement.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -2772,7 +2772,7 @@ firefox.cnsa2_key_agreement_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2815,7 +2815,7 @@ firefox.cnsa2_key_agreement_enabled:
 firefox.containers.default:
   summary: Create named browsing containers. Field Default.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -2861,7 +2861,7 @@ firefox.containers.default:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2898,7 +2898,7 @@ firefox.containers.default:
 firefox.content_analysis.enabled:
   summary: Send selected data actions to an external content-analysis agent. Field Enabled.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -2907,7 +2907,7 @@ firefox.content_analysis.enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -2950,7 +2950,7 @@ firefox.content_analysis.enabled:
 firefox.content_analysis.pipe_path_name:
   summary: Send selected data actions to an external content-analysis agent. Field PipePathName.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -2960,7 +2960,7 @@ firefox.content_analysis.pipe_path_name:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3005,7 +3005,7 @@ firefox.content_analysis.pipe_path_name:
 firefox.content_analysis.agent_timeout:
   summary: Send selected data actions to an external content-analysis agent. Field AgentTimeout.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: int
     min: 0
@@ -3016,7 +3016,7 @@ firefox.content_analysis.agent_timeout:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3059,7 +3059,7 @@ firefox.content_analysis.agent_timeout:
 firefox.content_analysis.allow_url_regex_list:
   summary: Send selected data actions to an external content-analysis agent. Field AllowUrlRegexList.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -3069,7 +3069,7 @@ firefox.content_analysis.allow_url_regex_list:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3114,7 +3114,7 @@ firefox.content_analysis.allow_url_regex_list:
 firefox.content_analysis.deny_url_regex_list:
   summary: Send selected data actions to an external content-analysis agent. Field DenyUrlRegexList.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -3124,7 +3124,7 @@ firefox.content_analysis.deny_url_regex_list:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3169,7 +3169,7 @@ firefox.content_analysis.deny_url_regex_list:
 firefox.content_analysis.agent_name:
   summary: Send selected data actions to an external content-analysis agent. Field AgentName.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -3179,7 +3179,7 @@ firefox.content_analysis.agent_name:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3224,7 +3224,7 @@ firefox.content_analysis.agent_name:
 firefox.content_analysis.client_signature:
   summary: Send selected data actions to an external content-analysis agent. Field ClientSignature.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -3234,7 +3234,7 @@ firefox.content_analysis.client_signature:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3279,7 +3279,7 @@ firefox.content_analysis.client_signature:
 firefox.content_analysis.is_per_user:
   summary: Send selected data actions to an external content-analysis agent. Field IsPerUser.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -3288,7 +3288,7 @@ firefox.content_analysis.is_per_user:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3331,7 +3331,7 @@ firefox.content_analysis.is_per_user:
 firefox.content_analysis.max_connections_count:
   summary: Send selected data actions to an external content-analysis agent. Field MaxConnectionsCount.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: int
     min: 0
@@ -3342,7 +3342,7 @@ firefox.content_analysis.max_connections_count:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3385,7 +3385,7 @@ firefox.content_analysis.max_connections_count:
 firefox.content_analysis.show_blocked_result:
   summary: Send selected data actions to an external content-analysis agent. Field ShowBlockedResult.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -3394,7 +3394,7 @@ firefox.content_analysis.show_blocked_result:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3437,7 +3437,7 @@ firefox.content_analysis.show_blocked_result:
 firefox.content_analysis.default_result:
   summary: Send selected data actions to an external content-analysis agent. Field DefaultResult.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -3449,7 +3449,7 @@ firefox.content_analysis.default_result:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3493,7 +3493,7 @@ firefox.content_analysis.default_result:
 firefox.content_analysis.timeout_result:
   summary: Send selected data actions to an external content-analysis agent. Field TimeoutResult.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -3505,7 +3505,7 @@ firefox.content_analysis.timeout_result:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3549,7 +3549,7 @@ firefox.content_analysis.timeout_result:
 firefox.content_analysis.bypass_for_same_tab_operations:
   summary: Send selected data actions to an external content-analysis agent. Field BypassForSameTabOperations.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -3558,7 +3558,7 @@ firefox.content_analysis.bypass_for_same_tab_operations:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3601,7 +3601,7 @@ firefox.content_analysis.bypass_for_same_tab_operations:
 firefox.content_analysis.interception_points.clipboard.enabled:
   summary: Send selected data actions to an external content-analysis agent. Field InterceptionPoints.Clipboard.Enabled.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -3610,7 +3610,7 @@ firefox.content_analysis.interception_points.clipboard.enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3653,7 +3653,7 @@ firefox.content_analysis.interception_points.clipboard.enabled:
 firefox.content_analysis.interception_points.clipboard.plain_text_only:
   summary: Send selected data actions to an external content-analysis agent. Field InterceptionPoints.Clipboard.PlainTextOnly.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -3662,7 +3662,7 @@ firefox.content_analysis.interception_points.clipboard.plain_text_only:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3716,7 +3716,7 @@ firefox.content_analysis.interception_points.clipboard.plain_text_only:
 firefox.content_analysis.interception_points.clipboard_copy.enabled:
   summary: Send selected data actions to an external content-analysis agent. Field InterceptionPoints.ClipboardCopy.Enabled.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -3725,7 +3725,7 @@ firefox.content_analysis.interception_points.clipboard_copy.enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3769,7 +3769,7 @@ firefox.content_analysis.interception_points.clipboard_copy.enabled:
 firefox.content_analysis.interception_points.clipboard_copy.plain_text_only:
   summary: Send selected data actions to an external content-analysis agent. Field InterceptionPoints.ClipboardCopy.PlainTextOnly.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -3778,7 +3778,7 @@ firefox.content_analysis.interception_points.clipboard_copy.plain_text_only:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3832,7 +3832,7 @@ firefox.content_analysis.interception_points.clipboard_copy.plain_text_only:
 firefox.content_analysis.interception_points.download.enabled:
   summary: Send selected data actions to an external content-analysis agent. Field InterceptionPoints.Download.Enabled.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -3841,7 +3841,7 @@ firefox.content_analysis.interception_points.download.enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3884,7 +3884,7 @@ firefox.content_analysis.interception_points.download.enabled:
 firefox.content_analysis.interception_points.drag_and_drop.enabled:
   summary: Send selected data actions to an external content-analysis agent. Field InterceptionPoints.DragAndDrop.Enabled.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -3893,7 +3893,7 @@ firefox.content_analysis.interception_points.drag_and_drop.enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3936,7 +3936,7 @@ firefox.content_analysis.interception_points.drag_and_drop.enabled:
 firefox.content_analysis.interception_points.drag_and_drop.plain_text_only:
   summary: Send selected data actions to an external content-analysis agent. Field InterceptionPoints.DragAndDrop.PlainTextOnly.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -3945,7 +3945,7 @@ firefox.content_analysis.interception_points.drag_and_drop.plain_text_only:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -3999,7 +3999,7 @@ firefox.content_analysis.interception_points.drag_and_drop.plain_text_only:
 firefox.content_analysis.interception_points.file_upload.enabled:
   summary: Send selected data actions to an external content-analysis agent. Field InterceptionPoints.FileUpload.Enabled.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -4008,7 +4008,7 @@ firefox.content_analysis.interception_points.file_upload.enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4051,7 +4051,7 @@ firefox.content_analysis.interception_points.file_upload.enabled:
 firefox.content_analysis.interception_points.print.enabled:
   summary: Send selected data actions to an external content-analysis agent. Field InterceptionPoints.Print.Enabled.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -4060,7 +4060,7 @@ firefox.content_analysis.interception_points.print.enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4103,7 +4103,7 @@ firefox.content_analysis.interception_points.print.enabled:
 firefox.cookies.allow:
   summary: Set cookie behavior and site exceptions. Field Allow.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -4116,7 +4116,7 @@ firefox.cookies.allow:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4155,7 +4155,7 @@ firefox.cookies.allow:
 firefox.cookies.allow_session:
   summary: Set cookie behavior and site exceptions. Field AllowSession.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -4168,7 +4168,7 @@ firefox.cookies.allow_session:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4207,7 +4207,7 @@ firefox.cookies.allow_session:
 firefox.cookies.block:
   summary: Set cookie behavior and site exceptions. Field Block.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -4220,7 +4220,7 @@ firefox.cookies.block:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4259,7 +4259,7 @@ firefox.cookies.block:
 firefox.cookies.default:
   summary: Set cookie behavior and site exceptions. Field Default.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -4268,7 +4268,7 @@ firefox.cookies.default:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4307,7 +4307,7 @@ firefox.cookies.default:
 firefox.cookies.accept_third_party:
   summary: Set cookie behavior and site exceptions. Field AcceptThirdParty.
   scope: machine
-  route: not_yet
+  route: firefox
   values: [always, never, from-visited]
   macos_default: not measured
   takes_effect: relaunch
@@ -4315,7 +4315,7 @@ firefox.cookies.accept_third_party:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4355,7 +4355,7 @@ firefox.cookies.accept_third_party:
 firefox.cookies.reject_tracker:
   summary: Set cookie behavior and site exceptions. Field RejectTracker.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -4364,7 +4364,7 @@ firefox.cookies.reject_tracker:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4412,7 +4412,7 @@ firefox.cookies.expire_at_session_end:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: No machine policy form exists. Firefox 158 ignores this deprecated field.
   browser:
     family: firefox
     kind: setting
@@ -4448,7 +4448,7 @@ firefox.cookies.expire_at_session_end:
 firefox.cookies.locked:
   summary: Set cookie behavior and site exceptions. Field Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -4457,7 +4457,7 @@ firefox.cookies.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4497,7 +4497,7 @@ firefox.cookies.locked:
 firefox.cookies.behavior:
   summary: Set cookie behavior and site exceptions. Field Behavior.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     - accept
     - reject-foreign
@@ -4512,7 +4512,7 @@ firefox.cookies.behavior:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4559,7 +4559,7 @@ firefox.cookies.behavior:
 firefox.cookies.behavior_private_browsing:
   summary: Set cookie behavior and site exceptions. Field BehaviorPrivateBrowsing.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     - accept
     - reject-foreign
@@ -4574,7 +4574,7 @@ firefox.cookies.behavior_private_browsing:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4621,7 +4621,7 @@ firefox.cookies.behavior_private_browsing:
 firefox.default_browser_setting_enabled:
   summary: Allow or prevent changing Firefox into the default browser.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -4630,7 +4630,7 @@ firefox.default_browser_setting_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4673,7 +4673,7 @@ firefox.default_browser_setting_enabled:
 firefox.default_download_directory:
   summary: Set an editable initial download folder.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -4683,7 +4683,7 @@ firefox.default_download_directory:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4728,7 +4728,7 @@ firefox.default_download_directory:
 firefox.default_serial_guard_setting:
   summary: Block serial-port access or let sites ask.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -4740,7 +4740,7 @@ firefox.default_serial_guard_setting:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4778,7 +4778,7 @@ firefox.default_serial_guard_setting:
 firefox.disable_accounts:
   summary: Disable Firefox account services.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -4787,7 +4787,7 @@ firefox.disable_accounts:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4830,7 +4830,7 @@ firefox.disable_accounts:
 firefox.disable_app_update:
   summary: Disable Firefox application updates.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -4839,7 +4839,7 @@ firefox.disable_app_update:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4875,7 +4875,7 @@ firefox.disable_app_update:
 firefox.disable_builtin_pdf_viewer:
   summary: Choose the system PDF handler instead of the built-in viewer.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -4884,7 +4884,7 @@ firefox.disable_builtin_pdf_viewer:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4921,7 +4921,7 @@ firefox.disable_builtin_pdf_viewer:
 firefox.disabled_ciphers.tls_ecdhe_rsa_with_aes_128_gcm_sha256:
   summary: Disable named TLS encryption suites. Field TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -4930,7 +4930,7 @@ firefox.disabled_ciphers.tls_ecdhe_rsa_with_aes_128_gcm_sha256:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -4973,7 +4973,7 @@ firefox.disabled_ciphers.tls_ecdhe_rsa_with_aes_128_gcm_sha256:
 firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_aes_128_gcm_sha256:
   summary: Disable named TLS encryption suites. Field TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -4982,7 +4982,7 @@ firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_aes_128_gcm_sha256:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5025,7 +5025,7 @@ firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_aes_128_gcm_sha256:
 firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_chacha20_poly1305_sha256:
   summary: Disable named TLS encryption suites. Field TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5034,7 +5034,7 @@ firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_chacha20_poly1305_sha256:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5078,7 +5078,7 @@ firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_chacha20_poly1305_sha256:
 firefox.disabled_ciphers.tls_ecdhe_rsa_with_chacha20_poly1305_sha256:
   summary: Disable named TLS encryption suites. Field TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5087,7 +5087,7 @@ firefox.disabled_ciphers.tls_ecdhe_rsa_with_chacha20_poly1305_sha256:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5131,7 +5131,7 @@ firefox.disabled_ciphers.tls_ecdhe_rsa_with_chacha20_poly1305_sha256:
 firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_aes_256_gcm_sha384:
   summary: Disable named TLS encryption suites. Field TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5140,7 +5140,7 @@ firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_aes_256_gcm_sha384:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5183,7 +5183,7 @@ firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_aes_256_gcm_sha384:
 firefox.disabled_ciphers.tls_ecdhe_rsa_with_aes_256_gcm_sha384:
   summary: Disable named TLS encryption suites. Field TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5192,7 +5192,7 @@ firefox.disabled_ciphers.tls_ecdhe_rsa_with_aes_256_gcm_sha384:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5235,7 +5235,7 @@ firefox.disabled_ciphers.tls_ecdhe_rsa_with_aes_256_gcm_sha384:
 firefox.disabled_ciphers.tls_ecdhe_rsa_with_aes_128_cbc_sha:
   summary: Disable named TLS encryption suites. Field TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5244,7 +5244,7 @@ firefox.disabled_ciphers.tls_ecdhe_rsa_with_aes_128_cbc_sha:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5287,7 +5287,7 @@ firefox.disabled_ciphers.tls_ecdhe_rsa_with_aes_128_cbc_sha:
 firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_aes_128_cbc_sha:
   summary: Disable named TLS encryption suites. Field TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5296,7 +5296,7 @@ firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_aes_128_cbc_sha:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5339,7 +5339,7 @@ firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_aes_128_cbc_sha:
 firefox.disabled_ciphers.tls_ecdhe_rsa_with_aes_256_cbc_sha:
   summary: Disable named TLS encryption suites. Field TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5348,7 +5348,7 @@ firefox.disabled_ciphers.tls_ecdhe_rsa_with_aes_256_cbc_sha:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5391,7 +5391,7 @@ firefox.disabled_ciphers.tls_ecdhe_rsa_with_aes_256_cbc_sha:
 firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_aes_256_cbc_sha:
   summary: Disable named TLS encryption suites. Field TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5400,7 +5400,7 @@ firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_aes_256_cbc_sha:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5443,7 +5443,7 @@ firefox.disabled_ciphers.tls_ecdhe_ecdsa_with_aes_256_cbc_sha:
 firefox.disabled_ciphers.tls_dhe_rsa_with_aes_128_cbc_sha:
   summary: Disable named TLS encryption suites. Field TLS_DHE_RSA_WITH_AES_128_CBC_SHA.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5452,7 +5452,7 @@ firefox.disabled_ciphers.tls_dhe_rsa_with_aes_128_cbc_sha:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5495,7 +5495,7 @@ firefox.disabled_ciphers.tls_dhe_rsa_with_aes_128_cbc_sha:
 firefox.disabled_ciphers.tls_dhe_rsa_with_aes_256_cbc_sha:
   summary: Disable named TLS encryption suites. Field TLS_DHE_RSA_WITH_AES_256_CBC_SHA.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5504,7 +5504,7 @@ firefox.disabled_ciphers.tls_dhe_rsa_with_aes_256_cbc_sha:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5547,7 +5547,7 @@ firefox.disabled_ciphers.tls_dhe_rsa_with_aes_256_cbc_sha:
 firefox.disabled_ciphers.tls_rsa_with_aes_128_gcm_sha256:
   summary: Disable named TLS encryption suites. Field TLS_RSA_WITH_AES_128_GCM_SHA256.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5556,7 +5556,7 @@ firefox.disabled_ciphers.tls_rsa_with_aes_128_gcm_sha256:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5599,7 +5599,7 @@ firefox.disabled_ciphers.tls_rsa_with_aes_128_gcm_sha256:
 firefox.disabled_ciphers.tls_rsa_with_aes_256_gcm_sha384:
   summary: Disable named TLS encryption suites. Field TLS_RSA_WITH_AES_256_GCM_SHA384.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5608,7 +5608,7 @@ firefox.disabled_ciphers.tls_rsa_with_aes_256_gcm_sha384:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5651,7 +5651,7 @@ firefox.disabled_ciphers.tls_rsa_with_aes_256_gcm_sha384:
 firefox.disabled_ciphers.tls_rsa_with_aes_128_cbc_sha:
   summary: Disable named TLS encryption suites. Field TLS_RSA_WITH_AES_128_CBC_SHA.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5660,7 +5660,7 @@ firefox.disabled_ciphers.tls_rsa_with_aes_128_cbc_sha:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5703,7 +5703,7 @@ firefox.disabled_ciphers.tls_rsa_with_aes_128_cbc_sha:
 firefox.disabled_ciphers.tls_rsa_with_aes_256_cbc_sha:
   summary: Disable named TLS encryption suites. Field TLS_RSA_WITH_AES_256_CBC_SHA.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5712,7 +5712,7 @@ firefox.disabled_ciphers.tls_rsa_with_aes_256_cbc_sha:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5755,7 +5755,7 @@ firefox.disabled_ciphers.tls_rsa_with_aes_256_cbc_sha:
 firefox.disabled_ciphers.tls_rsa_with_3_des_ede_cbc_sha:
   summary: Disable named TLS encryption suites. Field TLS_RSA_WITH_3DES_EDE_CBC_SHA.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5764,7 +5764,7 @@ firefox.disabled_ciphers.tls_rsa_with_3_des_ede_cbc_sha:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5807,7 +5807,7 @@ firefox.disabled_ciphers.tls_rsa_with_3_des_ede_cbc_sha:
 firefox.disabled_ciphers.tls_chacha20_poly1305_sha256:
   summary: Disable named TLS encryption suites. Field TLS_CHACHA20_POLY1305_SHA256.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5816,7 +5816,7 @@ firefox.disabled_ciphers.tls_chacha20_poly1305_sha256:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5859,7 +5859,7 @@ firefox.disabled_ciphers.tls_chacha20_poly1305_sha256:
 firefox.disabled_ciphers.tls_aes_128_gcm_sha256:
   summary: Disable named TLS encryption suites. Field TLS_AES_128_GCM_SHA256.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5868,7 +5868,7 @@ firefox.disabled_ciphers.tls_aes_128_gcm_sha256:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5911,7 +5911,7 @@ firefox.disabled_ciphers.tls_aes_128_gcm_sha256:
 firefox.disabled_ciphers.tls_aes_256_gcm_sha384:
   summary: Disable named TLS encryption suites. Field TLS_AES_256_GCM_SHA384.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5920,7 +5920,7 @@ firefox.disabled_ciphers.tls_aes_256_gcm_sha384:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -5963,7 +5963,7 @@ firefox.disabled_ciphers.tls_aes_256_gcm_sha384:
 firefox.disable_developer_tools:
   summary: Disable developer tools and remote debugging.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -5972,7 +5972,7 @@ firefox.disable_developer_tools:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6032,7 +6032,7 @@ firefox.disable_developer_tools:
 firefox.disable_encrypted_client_hello:
   summary: Disable encrypted TLS client hello.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6041,7 +6041,7 @@ firefox.disable_encrypted_client_hello:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6094,7 +6094,7 @@ firefox.disable_encrypted_client_hello:
 firefox.disable_feedback_commands:
   summary: Remove feedback and deceptive-site reporting commands.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6103,7 +6103,7 @@ firefox.disable_feedback_commands:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6139,7 +6139,7 @@ firefox.disable_feedback_commands:
 firefox.disable_firefox_accounts:
   summary: Disable Firefox account integration and Sync.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6148,7 +6148,7 @@ firefox.disable_firefox_accounts:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6192,7 +6192,7 @@ firefox.disable_firefox_accounts:
 firefox.disable_firefox_screenshots:
   summary: Disable Firefox screenshot tools.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6201,7 +6201,7 @@ firefox.disable_firefox_screenshots:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6246,7 +6246,7 @@ firefox.disable_firefox_screenshots:
 firefox.disable_firefox_studies:
   summary: Disable experiments and study recommendations.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6255,7 +6255,7 @@ firefox.disable_firefox_studies:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6291,7 +6291,7 @@ firefox.disable_firefox_studies:
 firefox.disable_forget_button:
   summary: Disable the recent-data Forget button.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6300,7 +6300,7 @@ firefox.disable_forget_button:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6343,7 +6343,7 @@ firefox.disable_forget_button:
 firefox.disable_form_history:
   summary: Stop recording form and search-bar entries.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6352,7 +6352,7 @@ firefox.disable_form_history:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6397,7 +6397,7 @@ firefox.disable_form_history:
 firefox.disable_launch_on_login:
   summary: Prevent Firefox launching when the user signs in.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6406,7 +6406,7 @@ firefox.disable_launch_on_login:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6441,7 +6441,7 @@ firefox.disable_launch_on_login:
 firefox.disable_master_password_creation:
   summary: Prevent creation of a primary password.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6450,7 +6450,7 @@ firefox.disable_master_password_creation:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6485,7 +6485,7 @@ firefox.disable_master_password_creation:
 firefox.disable_password_reveal:
   summary: Prevent revealing saved passwords.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6494,7 +6494,7 @@ firefox.disable_password_reveal:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6529,7 +6529,7 @@ firefox.disable_password_reveal:
 firefox.disable_private_browsing:
   summary: Prevent private windows. Prefer PrivateBrowsingModeAvailability.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6538,7 +6538,7 @@ firefox.disable_private_browsing:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6573,7 +6573,7 @@ firefox.disable_private_browsing:
 firefox.disable_profile_import:
   summary: Prevent importing another browser profile.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6582,7 +6582,7 @@ firefox.disable_profile_import:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6626,7 +6626,7 @@ firefox.disable_profile_import:
 firefox.disable_profile_refresh:
   summary: Prevent profile refresh and its prompt.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6635,7 +6635,7 @@ firefox.disable_profile_refresh:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6678,7 +6678,7 @@ firefox.disable_profile_refresh:
 firefox.disable_remote_improvements:
   summary: Disable remote feature rollouts.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6687,7 +6687,7 @@ firefox.disable_remote_improvements:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6723,7 +6723,7 @@ firefox.disable_remote_improvements:
 firefox.disable_remote_settings_and_accept_security_consequences:
   summary: Disable Remote Settings, including security data updates.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6732,7 +6732,7 @@ firefox.disable_remote_settings_and_accept_security_consequences:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6768,7 +6768,7 @@ firefox.disable_remote_settings_and_accept_security_consequences:
 firefox.disable_safe_mode:
   summary: Prevent troubleshooting-mode startup.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6777,7 +6777,7 @@ firefox.disable_safe_mode:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6812,7 +6812,7 @@ firefox.disable_safe_mode:
 firefox.disable_security_bypass.invalid_certificate:
   summary: Prevent bypassing certificate or Safe Browsing warnings. Field InvalidCertificate.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6821,7 +6821,7 @@ firefox.disable_security_bypass.invalid_certificate:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6864,7 +6864,7 @@ firefox.disable_security_bypass.invalid_certificate:
 firefox.disable_security_bypass.safe_browsing:
   summary: Prevent bypassing certificate or Safe Browsing warnings. Field SafeBrowsing.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6873,7 +6873,7 @@ firefox.disable_security_bypass.safe_browsing:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6916,7 +6916,7 @@ firefox.disable_security_bypass.safe_browsing:
 firefox.disable_set_desktop_background:
   summary: Remove the image-to-desktop-background command.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6925,7 +6925,7 @@ firefox.disable_set_desktop_background:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -6961,7 +6961,7 @@ firefox.disable_set_desktop_background:
 firefox.disable_system_addon_update:
   summary: Disable system add-on installation and updates.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -6970,7 +6970,7 @@ firefox.disable_system_addon_update:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7006,7 +7006,7 @@ firefox.disable_system_addon_update:
 firefox.disable_telemetry:
   summary: Disable reporting, telemetry archiving, and its viewing page.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -7015,7 +7015,7 @@ firefox.disable_telemetry:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7085,7 +7085,7 @@ firefox.disable_telemetry:
 firefox.display_bookmarks_toolbar:
   summary: Seed when the bookmarks toolbar appears.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -7103,7 +7103,7 @@ firefox.display_bookmarks_toolbar:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7151,7 +7151,7 @@ firefox.display_bookmarks_toolbar:
 firefox.dns_over_https.enabled:
   summary: Choose encrypted DNS, its resolver, fallback, and exclusions. Field Enabled.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -7160,7 +7160,7 @@ firefox.dns_over_https.enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7199,7 +7199,7 @@ firefox.dns_over_https.enabled:
 firefox.dns_over_https.provider_url:
   summary: Choose encrypted DNS, its resolver, fallback, and exclusions. Field ProviderURL.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -7213,7 +7213,7 @@ firefox.dns_over_https.provider_url:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7261,7 +7261,7 @@ firefox.dns_over_https.provider_url:
 firefox.dns_over_https.excluded_domains:
   summary: Choose encrypted DNS, its resolver, fallback, and exclusions. Field ExcludedDomains.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -7274,7 +7274,7 @@ firefox.dns_over_https.excluded_domains:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7314,7 +7314,7 @@ firefox.dns_over_https.excluded_domains:
 firefox.dns_over_https.fallback:
   summary: Choose encrypted DNS, its resolver, fallback, and exclusions. Field Fallback.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -7323,7 +7323,7 @@ firefox.dns_over_https.fallback:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7362,7 +7362,7 @@ firefox.dns_over_https.fallback:
 firefox.dns_over_https.locked:
   summary: Choose encrypted DNS, its resolver, fallback, and exclusions. Field Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -7371,7 +7371,7 @@ firefox.dns_over_https.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7411,7 +7411,7 @@ firefox.dns_over_https.locked:
 firefox.dont_check_default_browser:
   summary: Control Firefox default-browser checks.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -7420,7 +7420,7 @@ firefox.dont_check_default_browser:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7464,7 +7464,7 @@ firefox.dont_check_default_browser:
 firefox.download_directory:
   summary: Choose and lock the download folder.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -7474,7 +7474,7 @@ firefox.download_directory:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7522,7 +7522,7 @@ firefox.download_directory:
 firefox.enable_tracking_protection.value:
   summary: Configure tracker blocking and compatibility exceptions. Field Value.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -7531,7 +7531,7 @@ firefox.enable_tracking_protection.value:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7587,7 +7587,7 @@ firefox.enable_tracking_protection.value:
 firefox.enable_tracking_protection.locked:
   summary: Configure tracker blocking and compatibility exceptions. Field Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -7596,7 +7596,7 @@ firefox.enable_tracking_protection.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7637,7 +7637,7 @@ firefox.enable_tracking_protection.locked:
 firefox.enable_tracking_protection.cryptomining:
   summary: Configure tracker blocking and compatibility exceptions. Field Cryptomining.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -7646,7 +7646,7 @@ firefox.enable_tracking_protection.cryptomining:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7694,7 +7694,7 @@ firefox.enable_tracking_protection.cryptomining:
 firefox.enable_tracking_protection.fingerprinting:
   summary: Configure tracker blocking and compatibility exceptions. Field Fingerprinting.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -7703,7 +7703,7 @@ firefox.enable_tracking_protection.fingerprinting:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7751,7 +7751,7 @@ firefox.enable_tracking_protection.fingerprinting:
 firefox.enable_tracking_protection.email_tracking:
   summary: Configure tracker blocking and compatibility exceptions. Field EmailTracking.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -7760,7 +7760,7 @@ firefox.enable_tracking_protection.email_tracking:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7816,7 +7816,7 @@ firefox.enable_tracking_protection.email_tracking:
 firefox.enable_tracking_protection.suspected_fingerprinting:
   summary: Configure tracker blocking and compatibility exceptions. Field SuspectedFingerprinting.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -7825,7 +7825,7 @@ firefox.enable_tracking_protection.suspected_fingerprinting:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7881,7 +7881,7 @@ firefox.enable_tracking_protection.suspected_fingerprinting:
 firefox.enable_tracking_protection.exceptions:
   summary: Configure tracker blocking and compatibility exceptions. Field Exceptions.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -7894,7 +7894,7 @@ firefox.enable_tracking_protection.exceptions:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7933,7 +7933,7 @@ firefox.enable_tracking_protection.exceptions:
 firefox.enable_tracking_protection.category:
   summary: Configure tracker blocking and compatibility exceptions. Field Category.
   scope: machine
-  route: not_yet
+  route: firefox
   values: [standard, strict]
   macos_default: not measured
   takes_effect: relaunch
@@ -7941,7 +7941,7 @@ firefox.enable_tracking_protection.category:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -7988,7 +7988,7 @@ firefox.enable_tracking_protection.category:
 firefox.enable_tracking_protection.baseline_exceptions:
   summary: Configure tracker blocking and compatibility exceptions. Field BaselineExceptions.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -7997,7 +7997,7 @@ firefox.enable_tracking_protection.baseline_exceptions:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -8045,7 +8045,7 @@ firefox.enable_tracking_protection.baseline_exceptions:
 firefox.enable_tracking_protection.convenience_exceptions:
   summary: Configure tracker blocking and compatibility exceptions. Field ConvenienceExceptions.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -8054,7 +8054,7 @@ firefox.enable_tracking_protection.convenience_exceptions:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -8102,7 +8102,7 @@ firefox.enable_tracking_protection.convenience_exceptions:
 firefox.encrypted_media_extensions.enabled:
   summary: Control playback of DRM-protected content. Field Enabled.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -8111,7 +8111,7 @@ firefox.encrypted_media_extensions.enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -8157,7 +8157,7 @@ firefox.encrypted_media_extensions.enabled:
 firefox.encrypted_media_extensions.locked:
   summary: Control playback of DRM-protected content. Field Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -8166,7 +8166,7 @@ firefox.encrypted_media_extensions.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -8205,7 +8205,7 @@ firefox.encrypted_media_extensions.locked:
 firefox.exempt_domain_file_type_pairs_from_file_type_download_warnings:
   summary: Exempt selected file types on named domains from warnings.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -8226,7 +8226,7 @@ firefox.exempt_domain_file_type_pairs_from_file_type_download_warnings:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -8276,7 +8276,7 @@ firefox.extensions.install:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: Extension installation can download packages. The extension download model needs approval first.
   browser:
     family: firefox
     kind: setting
@@ -8315,7 +8315,7 @@ firefox.extensions.install:
 firefox.extensions.uninstall:
   summary: Install, uninstall, or lock listed extensions. Field Uninstall.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -8328,7 +8328,7 @@ firefox.extensions.uninstall:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -8367,7 +8367,7 @@ firefox.extensions.uninstall:
 firefox.extensions.locked:
   summary: Install, uninstall, or lock listed extensions. Field Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -8380,7 +8380,7 @@ firefox.extensions.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -8510,7 +8510,7 @@ firefox.extension_settings:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: Extension rules can download packages. The extension download model needs approval first.
   browser:
     family: firefox
     kind: setting
@@ -8551,7 +8551,7 @@ firefox.extension_settings:
 firefox.extension_update:
   summary: Control automatic extension updates.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -8560,7 +8560,7 @@ firefox.extension_update:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -8607,7 +8607,7 @@ firefox.extension_update:
 firefox.firefox_home.search:
   summary: Configure new-tab content, advertising, and widgets. Field Search.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -8616,7 +8616,7 @@ firefox.firefox_home.search:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -8663,7 +8663,7 @@ firefox.firefox_home.search:
 firefox.firefox_home.weather:
   summary: Configure new-tab content, advertising, and widgets. Field Weather.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -8672,7 +8672,7 @@ firefox.firefox_home.weather:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -8727,7 +8727,7 @@ firefox.firefox_home.weather:
 firefox.firefox_home.top_sites:
   summary: Configure new-tab content, advertising, and widgets. Field TopSites.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -8736,7 +8736,7 @@ firefox.firefox_home.top_sites:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -8783,7 +8783,7 @@ firefox.firefox_home.top_sites:
 firefox.firefox_home.sponsored_top_sites:
   summary: Configure new-tab content, advertising, and widgets. Field SponsoredTopSites.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -8792,7 +8792,7 @@ firefox.firefox_home.sponsored_top_sites:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -8839,7 +8839,7 @@ firefox.firefox_home.sponsored_top_sites:
 firefox.firefox_home.highlights:
   summary: Configure new-tab content, advertising, and widgets. Field Highlights.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -8848,7 +8848,7 @@ firefox.firefox_home.highlights:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -8895,7 +8895,7 @@ firefox.firefox_home.highlights:
 firefox.firefox_home.pocket:
   summary: Configure new-tab content, advertising, and widgets. Field Pocket.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -8904,7 +8904,7 @@ firefox.firefox_home.pocket:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -8951,7 +8951,7 @@ firefox.firefox_home.pocket:
 firefox.firefox_home.stories:
   summary: Configure new-tab content, advertising, and widgets. Field Stories.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -8960,7 +8960,7 @@ firefox.firefox_home.stories:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9007,7 +9007,7 @@ firefox.firefox_home.stories:
 firefox.firefox_home.sponsored_pocket:
   summary: Configure new-tab content, advertising, and widgets. Field SponsoredPocket.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -9016,7 +9016,7 @@ firefox.firefox_home.sponsored_pocket:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9063,7 +9063,7 @@ firefox.firefox_home.sponsored_pocket:
 firefox.firefox_home.sponsored_stories:
   summary: Configure new-tab content, advertising, and widgets. Field SponsoredStories.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -9072,7 +9072,7 @@ firefox.firefox_home.sponsored_stories:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9128,7 +9128,7 @@ firefox.firefox_home.snippets:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: No machine policy form exists. The Firefox 158 handler has no Snippets branch.
   browser:
     family: firefox
     kind: setting
@@ -9165,7 +9165,7 @@ firefox.firefox_home.snippets:
 firefox.firefox_home.widgets.enabled:
   summary: Configure new-tab content, advertising, and widgets. Field Widgets.Enabled.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -9174,7 +9174,7 @@ firefox.firefox_home.widgets.enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9221,7 +9221,7 @@ firefox.firefox_home.widgets.enabled:
 firefox.firefox_home.widgets.blocked:
   summary: Configure new-tab content, advertising, and widgets. Field Widgets.Blocked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -9234,7 +9234,7 @@ firefox.firefox_home.widgets.blocked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9271,7 +9271,7 @@ firefox.firefox_home.widgets.blocked:
 firefox.firefox_home.locked:
   summary: Configure new-tab content, advertising, and widgets. Field Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -9280,7 +9280,7 @@ firefox.firefox_home.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9320,7 +9320,7 @@ firefox.firefox_home.locked:
 firefox.firefox_suggest.web_suggestions:
   summary: Configure address-bar web suggestions and sponsored results. Field WebSuggestions.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -9329,7 +9329,7 @@ firefox.firefox_suggest.web_suggestions:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9376,7 +9376,7 @@ firefox.firefox_suggest.web_suggestions:
 firefox.firefox_suggest.sponsored_suggestions:
   summary: Configure address-bar web suggestions and sponsored results. Field SponsoredSuggestions.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -9385,7 +9385,7 @@ firefox.firefox_suggest.sponsored_suggestions:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9432,7 +9432,7 @@ firefox.firefox_suggest.sponsored_suggestions:
 firefox.firefox_suggest.improve_suggest:
   summary: Configure address-bar web suggestions and sponsored results. Field ImproveSuggest.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -9441,7 +9441,7 @@ firefox.firefox_suggest.improve_suggest:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9488,7 +9488,7 @@ firefox.firefox_suggest.improve_suggest:
 firefox.firefox_suggest.online_enabled:
   summary: Configure address-bar web suggestions and sponsored results. Field OnlineEnabled.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -9497,7 +9497,7 @@ firefox.firefox_suggest.online_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9543,7 +9543,7 @@ firefox.firefox_suggest.online_enabled:
 firefox.firefox_suggest.locked:
   summary: Configure address-bar web suggestions and sponsored results. Field Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -9552,7 +9552,7 @@ firefox.firefox_suggest.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9592,7 +9592,7 @@ firefox.firefox_suggest.locked:
 firefox.generative_ai.chatbot:
   summary: Older AI switches. AIControls takes precedence. Field Chatbot.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -9601,7 +9601,7 @@ firefox.generative_ai.chatbot:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9655,7 +9655,7 @@ firefox.generative_ai.chatbot:
 firefox.generative_ai.smart_window:
   summary: Older AI switches. AIControls takes precedence. Field SmartWindow.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -9664,7 +9664,7 @@ firefox.generative_ai.smart_window:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9710,7 +9710,7 @@ firefox.generative_ai.smart_window:
 firefox.generative_ai.link_previews:
   summary: Older AI switches. AIControls takes precedence. Field LinkPreviews.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -9719,7 +9719,7 @@ firefox.generative_ai.link_previews:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9765,7 +9765,7 @@ firefox.generative_ai.link_previews:
 firefox.generative_ai.tab_groups:
   summary: Older AI switches. AIControls takes precedence. Field TabGroups.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -9774,7 +9774,7 @@ firefox.generative_ai.tab_groups:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9820,7 +9820,7 @@ firefox.generative_ai.tab_groups:
 firefox.generative_ai.enabled:
   summary: Older AI switches. AIControls takes precedence. Field Enabled.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -9829,7 +9829,7 @@ firefox.generative_ai.enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9867,7 +9867,7 @@ firefox.generative_ai.enabled:
 firefox.generative_ai.locked:
   summary: Older AI switches. AIControls takes precedence. Field Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -9876,7 +9876,7 @@ firefox.generative_ai.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9915,7 +9915,7 @@ firefox.generative_ai.locked:
 firefox.go_to_intranet_site_for_single_word_entry_in_address_bar:
   summary: Treat single-word address entries as intranet sites.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -9924,7 +9924,7 @@ firefox.go_to_intranet_site_for_single_word_entry_in_address_bar:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -9970,7 +9970,7 @@ firefox.go_to_intranet_site_for_single_word_entry_in_address_bar:
 firefox.handlers.mime_types:
   summary: Choose how protocols and file types open. Field mimeTypes.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -10002,7 +10002,7 @@ firefox.handlers.mime_types:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10039,7 +10039,7 @@ firefox.handlers.mime_types:
 firefox.handlers.extensions:
   summary: Choose how protocols and file types open. Field extensions.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -10071,7 +10071,7 @@ firefox.handlers.extensions:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10108,7 +10108,7 @@ firefox.handlers.extensions:
 firefox.handlers.schemes:
   summary: Choose how protocols and file types open. Field schemes.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -10140,7 +10140,7 @@ firefox.handlers.schemes:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10177,7 +10177,7 @@ firefox.handlers.schemes:
 firefox.hardware_acceleration:
   summary: Disable graphics hardware acceleration.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -10186,7 +10186,7 @@ firefox.hardware_acceleration:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10230,7 +10230,7 @@ firefox.hardware_acceleration:
 firefox.homepage.url:
   summary: Set home pages and startup behavior. Field URL.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -10240,7 +10240,7 @@ firefox.homepage.url:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10288,7 +10288,7 @@ firefox.homepage.url:
 firefox.homepage.locked:
   summary: Set home pages and startup behavior. Field Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -10297,7 +10297,7 @@ firefox.homepage.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10337,7 +10337,7 @@ firefox.homepage.locked:
 firefox.homepage.additional:
   summary: Set home pages and startup behavior. Field Additional.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -10350,7 +10350,7 @@ firefox.homepage.additional:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10390,7 +10390,7 @@ firefox.homepage.additional:
 firefox.homepage.start_page:
   summary: Set home pages and startup behavior. Field StartPage.
   scope: machine
-  route: not_yet
+  route: firefox
   values: [none, homepage, previous-session, homepage-locked]
   macos_default: not measured
   takes_effect: relaunch
@@ -10398,7 +10398,7 @@ firefox.homepage.start_page:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10438,7 +10438,7 @@ firefox.homepage.start_page:
 firefox.homepage.new_tab_on_restore:
   summary: Set home pages and startup behavior. Field NewTabOnRestore.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -10447,7 +10447,7 @@ firefox.homepage.new_tab_on_restore:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10493,7 +10493,7 @@ firefox.homepage.new_tab_on_restore:
 firefox.http_allowlist:
   summary: Exclude named origins from HTTPS upgrading.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -10506,7 +10506,7 @@ firefox.http_allowlist:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10543,7 +10543,7 @@ firefox.http_allowlist:
 firefox.https_only_mode:
   summary: Choose HTTPS-only mode and its enforcement.
   scope: machine
-  route: not_yet
+  route: firefox
   values: [allowed, disallowed, enabled, force_enabled]
   macos_default: not measured
   takes_effect: relaunch
@@ -10551,7 +10551,7 @@ firefox.https_only_mode:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10590,7 +10590,7 @@ firefox.https_only_mode:
 firefox.install_addons_permission.allow:
   summary: Control permission to install extensions from websites. Field Allow.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -10603,7 +10603,7 @@ firefox.install_addons_permission.allow:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10640,7 +10640,7 @@ firefox.install_addons_permission.allow:
 firefox.install_addons_permission.default:
   summary: Control permission to install extensions from websites. Field Default.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -10649,7 +10649,7 @@ firefox.install_addons_permission.default:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10692,7 +10692,7 @@ firefox.install_addons_permission.default:
 firefox.ip_protection_available:
   summary: Control availability of Firefox IP protection.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -10701,7 +10701,7 @@ firefox.ip_protection_available:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10747,7 +10747,7 @@ firefox.ip_protection_available:
 firefox.legacy_same_site_cookie_behavior_enabled:
   summary: Request legacy SameSite cookie handling.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -10756,7 +10756,7 @@ firefox.legacy_same_site_cookie_behavior_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10800,7 +10800,7 @@ firefox.legacy_same_site_cookie_behavior_enabled:
 firefox.legacy_same_site_cookie_behavior_enabled_for_domain_list:
   summary: Request legacy SameSite handling for named domains.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -10813,7 +10813,7 @@ firefox.legacy_same_site_cookie_behavior_enabled_for_domain_list:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10852,7 +10852,7 @@ firefox.legacy_same_site_cookie_behavior_enabled_for_domain_list:
 firefox.local_file_links:
   summary: Allow specified websites to open local file links.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -10865,7 +10865,7 @@ firefox.local_file_links:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10902,7 +10902,7 @@ firefox.local_file_links:
 firefox.local_network_access.enabled:
   summary: Control local-network requests, tracking blocks, and prompting. Field Enabled.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -10911,7 +10911,7 @@ firefox.local_network_access.enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -10957,7 +10957,7 @@ firefox.local_network_access.enabled:
 firefox.local_network_access.block_trackers:
   summary: Control local-network requests, tracking blocks, and prompting. Field BlockTrackers.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -10966,7 +10966,7 @@ firefox.local_network_access.block_trackers:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11012,7 +11012,7 @@ firefox.local_network_access.block_trackers:
 firefox.local_network_access.enable_prompting:
   summary: Control local-network requests, tracking blocks, and prompting. Field EnablePrompting.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -11021,7 +11021,7 @@ firefox.local_network_access.enable_prompting:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11067,7 +11067,7 @@ firefox.local_network_access.enable_prompting:
 firefox.local_network_access.skip_domains:
   summary: Control local-network requests, tracking blocks, and prompting. Field SkipDomains.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -11080,7 +11080,7 @@ firefox.local_network_access.skip_domains:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11120,7 +11120,7 @@ firefox.local_network_access.skip_domains:
 firefox.local_network_access.locked:
   summary: Control local-network requests, tracking blocks, and prompting. Field Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -11129,7 +11129,7 @@ firefox.local_network_access.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11169,7 +11169,7 @@ firefox.local_network_access.locked:
 firefox.managed_bookmarks:
   summary: Publish bookmarks that users cannot edit.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -11216,7 +11216,7 @@ firefox.managed_bookmarks:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11254,7 +11254,7 @@ firefox.managed_bookmarks:
 firefox.manual_app_update_only:
   summary: Allow updates only when the user checks manually.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -11263,7 +11263,7 @@ firefox.manual_app_update_only:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11298,7 +11298,7 @@ firefox.manual_app_update_only:
 firefox.microsoft_entra_sso:
   summary: Use macOS Microsoft Entra single sign-on.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -11307,7 +11307,7 @@ firefox.microsoft_entra_sso:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11353,7 +11353,7 @@ firefox.microsoft_entra_sso:
 firefox.network_prediction:
   summary: Control DNS prefetch.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -11362,7 +11362,7 @@ firefox.network_prediction:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11415,7 +11415,7 @@ firefox.network_prediction:
 firefox.new_tab_page:
   summary: Enable or disable the Firefox new-tab page.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -11424,7 +11424,7 @@ firefox.new_tab_page:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11471,7 +11471,7 @@ firefox.new_tab_page:
 firefox.no_default_bookmarks:
   summary: Prevent creation of built-in bookmarks on a fresh profile.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -11480,7 +11480,7 @@ firefox.no_default_bookmarks:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11515,7 +11515,7 @@ firefox.no_default_bookmarks:
 firefox.offer_to_save_logins:
   summary: Control password-saving prompts.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -11524,7 +11524,7 @@ firefox.offer_to_save_logins:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11578,7 +11578,7 @@ firefox.offer_to_save_logins:
 firefox.offer_to_save_logins_default:
   summary: Set an editable default for password-saving prompts.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -11587,7 +11587,7 @@ firefox.offer_to_save_logins_default:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11630,7 +11630,7 @@ firefox.offer_to_save_logins_default:
 firefox.override_first_run_page:
   summary: Choose or suppress the first-run welcome page.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -11640,7 +11640,7 @@ firefox.override_first_run_page:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11686,7 +11686,7 @@ firefox.override_first_run_page:
 firefox.override_post_update_page:
   summary: Choose or suppress the page opened after updates.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -11700,7 +11700,7 @@ firefox.override_post_update_page:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11746,7 +11746,7 @@ firefox.override_post_update_page:
 firefox.password_manager_enabled:
   summary: Control the password manager UI and password saving.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -11755,7 +11755,7 @@ firefox.password_manager_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11793,7 +11793,7 @@ firefox.password_manager_enabled:
 firefox.password_manager_exceptions:
   summary: Disable saving logins for named sites.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -11806,7 +11806,7 @@ firefox.password_manager_exceptions:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11843,7 +11843,7 @@ firefox.password_manager_exceptions:
 firefox.pd_fjs.enabled:
   summary: Control PDF rendering and PDF document permission checks. Field Enabled.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -11852,7 +11852,7 @@ firefox.pd_fjs.enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11896,7 +11896,7 @@ firefox.pd_fjs.enabled:
 firefox.pd_fjs.enable_permissions:
   summary: Control PDF rendering and PDF document permission checks. Field EnablePermissions.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -11905,7 +11905,7 @@ firefox.pd_fjs.enable_permissions:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -11951,7 +11951,7 @@ firefox.pd_fjs.enable_permissions:
 firefox.permissions.camera.allow:
   summary: Set browser permission defaults and per-site grants or blocks. Field Camera.Allow.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -11964,7 +11964,7 @@ firefox.permissions.camera.allow:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12003,7 +12003,7 @@ firefox.permissions.camera.allow:
 firefox.permissions.camera.block:
   summary: Set browser permission defaults and per-site grants or blocks. Field Camera.Block.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -12016,7 +12016,7 @@ firefox.permissions.camera.block:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12055,7 +12055,7 @@ firefox.permissions.camera.block:
 firefox.permissions.camera.block_new_requests:
   summary: Set browser permission defaults and per-site grants or blocks. Field Camera.BlockNewRequests.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -12064,7 +12064,7 @@ firefox.permissions.camera.block_new_requests:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12103,7 +12103,7 @@ firefox.permissions.camera.block_new_requests:
 firefox.permissions.camera.locked:
   summary: Set browser permission defaults and per-site grants or blocks. Field Camera.Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -12112,7 +12112,7 @@ firefox.permissions.camera.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12152,7 +12152,7 @@ firefox.permissions.camera.locked:
 firefox.permissions.microphone.allow:
   summary: Set browser permission defaults and per-site grants or blocks. Field Microphone.Allow.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -12165,7 +12165,7 @@ firefox.permissions.microphone.allow:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12204,7 +12204,7 @@ firefox.permissions.microphone.allow:
 firefox.permissions.microphone.block:
   summary: Set browser permission defaults and per-site grants or blocks. Field Microphone.Block.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -12217,7 +12217,7 @@ firefox.permissions.microphone.block:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12256,7 +12256,7 @@ firefox.permissions.microphone.block:
 firefox.permissions.microphone.block_new_requests:
   summary: Set browser permission defaults and per-site grants or blocks. Field Microphone.BlockNewRequests.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -12265,7 +12265,7 @@ firefox.permissions.microphone.block_new_requests:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12304,7 +12304,7 @@ firefox.permissions.microphone.block_new_requests:
 firefox.permissions.microphone.locked:
   summary: Set browser permission defaults and per-site grants or blocks. Field Microphone.Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -12313,7 +12313,7 @@ firefox.permissions.microphone.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12353,7 +12353,7 @@ firefox.permissions.microphone.locked:
 firefox.permissions.autoplay.default:
   summary: Set browser permission defaults and per-site grants or blocks. Field Autoplay.Default.
   scope: machine
-  route: not_yet
+  route: firefox
   values: [allow-audio-video, block-audio, block-audio-video]
   macos_default: not measured
   takes_effect: relaunch
@@ -12361,7 +12361,7 @@ firefox.permissions.autoplay.default:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12401,7 +12401,7 @@ firefox.permissions.autoplay.default:
 firefox.permissions.autoplay.allow:
   summary: Set browser permission defaults and per-site grants or blocks. Field Autoplay.Allow.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -12414,7 +12414,7 @@ firefox.permissions.autoplay.allow:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12453,7 +12453,7 @@ firefox.permissions.autoplay.allow:
 firefox.permissions.autoplay.block:
   summary: Set browser permission defaults and per-site grants or blocks. Field Autoplay.Block.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -12466,7 +12466,7 @@ firefox.permissions.autoplay.block:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12505,7 +12505,7 @@ firefox.permissions.autoplay.block:
 firefox.permissions.autoplay.locked:
   summary: Set browser permission defaults and per-site grants or blocks. Field Autoplay.Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -12514,7 +12514,7 @@ firefox.permissions.autoplay.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12554,7 +12554,7 @@ firefox.permissions.autoplay.locked:
 firefox.permissions.location.allow:
   summary: Set browser permission defaults and per-site grants or blocks. Field Location.Allow.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -12567,7 +12567,7 @@ firefox.permissions.location.allow:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12606,7 +12606,7 @@ firefox.permissions.location.allow:
 firefox.permissions.location.block:
   summary: Set browser permission defaults and per-site grants or blocks. Field Location.Block.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -12619,7 +12619,7 @@ firefox.permissions.location.block:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12658,7 +12658,7 @@ firefox.permissions.location.block:
 firefox.permissions.location.block_new_requests:
   summary: Set browser permission defaults and per-site grants or blocks. Field Location.BlockNewRequests.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -12667,7 +12667,7 @@ firefox.permissions.location.block_new_requests:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12706,7 +12706,7 @@ firefox.permissions.location.block_new_requests:
 firefox.permissions.location.locked:
   summary: Set browser permission defaults and per-site grants or blocks. Field Location.Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -12715,7 +12715,7 @@ firefox.permissions.location.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12755,7 +12755,7 @@ firefox.permissions.location.locked:
 firefox.permissions.notifications.allow:
   summary: Set browser permission defaults and per-site grants or blocks. Field Notifications.Allow.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -12768,7 +12768,7 @@ firefox.permissions.notifications.allow:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12807,7 +12807,7 @@ firefox.permissions.notifications.allow:
 firefox.permissions.notifications.block:
   summary: Set browser permission defaults and per-site grants or blocks. Field Notifications.Block.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -12820,7 +12820,7 @@ firefox.permissions.notifications.block:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12859,7 +12859,7 @@ firefox.permissions.notifications.block:
 firefox.permissions.notifications.block_new_requests:
   summary: Set browser permission defaults and per-site grants or blocks. Field Notifications.BlockNewRequests.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -12868,7 +12868,7 @@ firefox.permissions.notifications.block_new_requests:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12907,7 +12907,7 @@ firefox.permissions.notifications.block_new_requests:
 firefox.permissions.notifications.locked:
   summary: Set browser permission defaults and per-site grants or blocks. Field Notifications.Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -12916,7 +12916,7 @@ firefox.permissions.notifications.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -12956,7 +12956,7 @@ firefox.permissions.notifications.locked:
 firefox.permissions.virtual_reality.allow:
   summary: Set browser permission defaults and per-site grants or blocks. Field VirtualReality.Allow.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -12969,7 +12969,7 @@ firefox.permissions.virtual_reality.allow:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13008,7 +13008,7 @@ firefox.permissions.virtual_reality.allow:
 firefox.permissions.virtual_reality.block:
   summary: Set browser permission defaults and per-site grants or blocks. Field VirtualReality.Block.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -13021,7 +13021,7 @@ firefox.permissions.virtual_reality.block:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13060,7 +13060,7 @@ firefox.permissions.virtual_reality.block:
 firefox.permissions.virtual_reality.block_new_requests:
   summary: Set browser permission defaults and per-site grants or blocks. Field VirtualReality.BlockNewRequests.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -13069,7 +13069,7 @@ firefox.permissions.virtual_reality.block_new_requests:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13108,7 +13108,7 @@ firefox.permissions.virtual_reality.block_new_requests:
 firefox.permissions.virtual_reality.locked:
   summary: Set browser permission defaults and per-site grants or blocks. Field VirtualReality.Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -13117,7 +13117,7 @@ firefox.permissions.virtual_reality.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13157,7 +13157,7 @@ firefox.permissions.virtual_reality.locked:
 firefox.permissions.screen_share.allow:
   summary: Set browser permission defaults and per-site grants or blocks. Field ScreenShare.Allow.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -13170,7 +13170,7 @@ firefox.permissions.screen_share.allow:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13209,7 +13209,7 @@ firefox.permissions.screen_share.allow:
 firefox.permissions.screen_share.block:
   summary: Set browser permission defaults and per-site grants or blocks. Field ScreenShare.Block.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -13222,7 +13222,7 @@ firefox.permissions.screen_share.block:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13261,7 +13261,7 @@ firefox.permissions.screen_share.block:
 firefox.permissions.screen_share.block_new_requests:
   summary: Set browser permission defaults and per-site grants or blocks. Field ScreenShare.BlockNewRequests.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -13270,7 +13270,7 @@ firefox.permissions.screen_share.block_new_requests:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13309,7 +13309,7 @@ firefox.permissions.screen_share.block_new_requests:
 firefox.permissions.screen_share.locked:
   summary: Set browser permission defaults and per-site grants or blocks. Field ScreenShare.Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -13318,7 +13318,7 @@ firefox.permissions.screen_share.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13358,7 +13358,7 @@ firefox.permissions.screen_share.locked:
 firefox.picture_in_picture.enabled:
   summary: Control floating video windows. Field Enabled.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -13367,7 +13367,7 @@ firefox.picture_in_picture.enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13413,7 +13413,7 @@ firefox.picture_in_picture.enabled:
 firefox.picture_in_picture.locked:
   summary: Control floating video windows. Field Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -13422,7 +13422,7 @@ firefox.picture_in_picture.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13461,7 +13461,7 @@ firefox.picture_in_picture.locked:
 firefox.popup_blocking.allow:
   summary: Control pop-up blocking and site exceptions. Field Allow.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -13474,7 +13474,7 @@ firefox.popup_blocking.allow:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13511,7 +13511,7 @@ firefox.popup_blocking.allow:
 firefox.popup_blocking.default:
   summary: Control pop-up blocking and site exceptions. Field Default.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -13520,7 +13520,7 @@ firefox.popup_blocking.default:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13574,7 +13574,7 @@ firefox.popup_blocking.default:
 firefox.popup_blocking.locked:
   summary: Control pop-up blocking and site exceptions. Field Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -13583,7 +13583,7 @@ firefox.popup_blocking.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13622,7 +13622,7 @@ firefox.popup_blocking.locked:
 firefox.post_quantum_key_agreement_enabled:
   summary: Control hybrid post-quantum TLS key agreement.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -13631,7 +13631,7 @@ firefox.post_quantum_key_agreement_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13724,7 +13724,7 @@ firefox.preferences:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: Arbitrary Preferences objects bypass the typed setting map. Use a named Firefox preference setting.
   browser:
     family: firefox
     kind: setting
@@ -13764,7 +13764,7 @@ firefox.preferences:
 firefox.primary_password:
   summary: Require or prohibit a primary password.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -13773,7 +13773,7 @@ firefox.primary_password:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13808,7 +13808,7 @@ firefox.primary_password:
 firefox.printing_enabled:
   summary: Enable or disable printing.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -13817,7 +13817,7 @@ firefox.printing_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13863,7 +13863,7 @@ firefox.printing_enabled:
 firefox.private_browsing_mode_availability:
   summary: Allow, disable, or force private windows.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -13875,7 +13875,7 @@ firefox.private_browsing_mode_availability:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13911,7 +13911,7 @@ firefox.private_browsing_mode_availability:
 firefox.prompt_for_download_location:
   summary: Choose whether downloads ask for a destination.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -13920,7 +13920,7 @@ firefox.prompt_for_download_location:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -13964,7 +13964,7 @@ firefox.prompt_for_download_location:
 firefox.proxy.mode:
   summary: Choose proxy servers, discovery, bypass rules, and proxy DNS. Field Mode.
   scope: machine
-  route: not_yet
+  route: firefox
   values: [none, system, manual, autoDetect, autoConfig]
   macos_default: not measured
   takes_effect: relaunch
@@ -13972,7 +13972,7 @@ firefox.proxy.mode:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14011,7 +14011,7 @@ firefox.proxy.mode:
 firefox.proxy.locked:
   summary: Choose proxy servers, discovery, bypass rules, and proxy DNS. Field Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -14020,7 +14020,7 @@ firefox.proxy.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14059,7 +14059,7 @@ firefox.proxy.locked:
 firefox.proxy.auto_config_url:
   summary: Choose proxy servers, discovery, bypass rules, and proxy DNS. Field AutoConfigURL.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -14073,7 +14073,7 @@ firefox.proxy.auto_config_url:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14131,7 +14131,7 @@ firefox.proxy.ftp_proxy:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: No machine policy form exists. Firefox 158 reports that FTP proxy support was removed.
   browser:
     family: firefox
     kind: setting
@@ -14167,7 +14167,7 @@ firefox.proxy.ftp_proxy:
 firefox.proxy.http_proxy:
   summary: Choose proxy servers, discovery, bypass rules, and proxy DNS. Field HTTPProxy.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -14177,7 +14177,7 @@ firefox.proxy.http_proxy:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14217,7 +14217,7 @@ firefox.proxy.http_proxy:
 firefox.proxy.ssl_proxy:
   summary: Choose proxy servers, discovery, bypass rules, and proxy DNS. Field SSLProxy.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -14227,7 +14227,7 @@ firefox.proxy.ssl_proxy:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14267,7 +14267,7 @@ firefox.proxy.ssl_proxy:
 firefox.proxy.socks_proxy:
   summary: Choose proxy servers, discovery, bypass rules, and proxy DNS. Field SOCKSProxy.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -14277,7 +14277,7 @@ firefox.proxy.socks_proxy:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14317,7 +14317,7 @@ firefox.proxy.socks_proxy:
 firefox.proxy.socks_version:
   summary: Choose proxy servers, discovery, bypass rules, and proxy DNS. Field SOCKSVersion.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -14329,7 +14329,7 @@ firefox.proxy.socks_version:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14376,7 +14376,7 @@ firefox.proxy.socks_version:
 firefox.proxy.use_http_proxy_for_all_protocols:
   summary: Choose proxy servers, discovery, bypass rules, and proxy DNS. Field UseHTTPProxyForAllProtocols.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -14385,7 +14385,7 @@ firefox.proxy.use_http_proxy_for_all_protocols:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14431,7 +14431,7 @@ firefox.proxy.use_http_proxy_for_all_protocols:
 firefox.proxy.passthrough:
   summary: Choose proxy servers, discovery, bypass rules, and proxy DNS. Field Passthrough.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -14441,7 +14441,7 @@ firefox.proxy.passthrough:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14489,7 +14489,7 @@ firefox.proxy.passthrough:
 firefox.proxy.use_proxy_for_dns:
   summary: Choose proxy servers, discovery, bypass rules, and proxy DNS. Field UseProxyForDNS.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -14498,7 +14498,7 @@ firefox.proxy.use_proxy_for_dns:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14552,7 +14552,7 @@ firefox.proxy.use_proxy_for_dns:
 firefox.proxy.auto_login:
   summary: Choose proxy servers, discovery, bypass rules, and proxy DNS. Field AutoLogin.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -14561,7 +14561,7 @@ firefox.proxy.auto_login:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14607,7 +14607,7 @@ firefox.proxy.auto_login:
 firefox.relaunch_required.notification_period_hours:
   summary: Require a restart after updates, with a time and notice period. Field NotificationPeriodHours.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: int
     min: 0
@@ -14618,7 +14618,7 @@ firefox.relaunch_required.notification_period_hours:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14655,7 +14655,7 @@ firefox.relaunch_required.notification_period_hours:
 firefox.relaunch_required.restart_time_of_day.hour:
   summary: Require a restart after updates, with a time and notice period. Field RestartTimeOfDay.Hour.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: int
     min: 0
@@ -14666,7 +14666,7 @@ firefox.relaunch_required.restart_time_of_day.hour:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14703,7 +14703,7 @@ firefox.relaunch_required.restart_time_of_day.hour:
 firefox.relaunch_required.restart_time_of_day.minute:
   summary: Require a restart after updates, with a time and notice period. Field RestartTimeOfDay.Minute.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: int
     min: 0
@@ -14714,7 +14714,7 @@ firefox.relaunch_required.restart_time_of_day.minute:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14751,7 +14751,7 @@ firefox.relaunch_required.restart_time_of_day.minute:
 firefox.requested_locales:
   summary: Choose preferred browser interface languages.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -14766,7 +14766,7 @@ firefox.requested_locales:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14807,7 +14807,7 @@ firefox.requested_locales:
 firefox.sanitize_on_shutdown:
   summary: Legacy controls for clearing browsing data on quit.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -14816,7 +14816,7 @@ firefox.sanitize_on_shutdown:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14854,7 +14854,7 @@ firefox.sanitize_on_shutdown:
 firefox.sanitize_on_shutdown.cache:
   summary: Legacy controls for clearing browsing data on quit. Field Cache.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -14863,7 +14863,7 @@ firefox.sanitize_on_shutdown.cache:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14910,7 +14910,7 @@ firefox.sanitize_on_shutdown.cache:
 firefox.sanitize_on_shutdown.cookies:
   summary: Legacy controls for clearing browsing data on quit. Field Cookies.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -14919,7 +14919,7 @@ firefox.sanitize_on_shutdown.cookies:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -14966,7 +14966,7 @@ firefox.sanitize_on_shutdown.cookies:
 firefox.sanitize_on_shutdown.downloads:
   summary: Legacy controls for clearing browsing data on quit. Field Downloads.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -14975,7 +14975,7 @@ firefox.sanitize_on_shutdown.downloads:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -15022,7 +15022,7 @@ firefox.sanitize_on_shutdown.downloads:
 firefox.sanitize_on_shutdown.form_data:
   summary: Legacy controls for clearing browsing data on quit. Field FormData.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -15031,7 +15031,7 @@ firefox.sanitize_on_shutdown.form_data:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -15078,7 +15078,7 @@ firefox.sanitize_on_shutdown.form_data:
 firefox.sanitize_on_shutdown.history:
   summary: Legacy controls for clearing browsing data on quit. Field History.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -15087,7 +15087,7 @@ firefox.sanitize_on_shutdown.history:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -15134,7 +15134,7 @@ firefox.sanitize_on_shutdown.history:
 firefox.sanitize_on_shutdown.sessions:
   summary: Legacy controls for clearing browsing data on quit. Field Sessions.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -15143,7 +15143,7 @@ firefox.sanitize_on_shutdown.sessions:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -15190,7 +15190,7 @@ firefox.sanitize_on_shutdown.sessions:
 firefox.sanitize_on_shutdown.site_settings:
   summary: Legacy controls for clearing browsing data on quit. Field SiteSettings.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -15199,7 +15199,7 @@ firefox.sanitize_on_shutdown.site_settings:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -15246,7 +15246,7 @@ firefox.sanitize_on_shutdown.site_settings:
 firefox.sanitize_on_shutdown.offline_apps:
   summary: Legacy controls for clearing browsing data on quit. Field OfflineApps.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -15255,7 +15255,7 @@ firefox.sanitize_on_shutdown.offline_apps:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -15302,7 +15302,7 @@ firefox.sanitize_on_shutdown.offline_apps:
 firefox.sanitize_on_shutdown.locked:
   summary: Legacy controls for clearing browsing data on quit. Field Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -15311,7 +15311,7 @@ firefox.sanitize_on_shutdown.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -15352,7 +15352,7 @@ firefox.sanitize_on_shutdown.locked:
 firefox.sanitize_on_shutdown.exceptions:
   summary: Legacy controls for clearing browsing data on quit. Field Exceptions.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -15365,7 +15365,7 @@ firefox.sanitize_on_shutdown.exceptions:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -15403,7 +15403,7 @@ firefox.sanitize_on_shutdown.exceptions:
 firefox.search_bar:
   summary: Seed a separate search box or a unified address bar.
   scope: machine
-  route: not_yet
+  route: firefox
   values: [unified, separate]
   macos_default: not measured
   takes_effect: relaunch
@@ -15411,7 +15411,7 @@ firefox.search_bar:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -15485,7 +15485,7 @@ firefox.search_engines.add:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: Search engine installation can download resources. The download model needs approval first.
   browser:
     family: firefox
     kind: setting
@@ -15525,7 +15525,7 @@ firefox.search_engines.add:
 firefox.search_engines.default:
   summary: Add, hide, or select search engines. Field Default.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -15535,7 +15535,7 @@ firefox.search_engines.default:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -15583,7 +15583,7 @@ firefox.search_engines.default:
 firefox.search_engines.default_private:
   summary: Add, hide, or select search engines. Field DefaultPrivate.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -15593,7 +15593,7 @@ firefox.search_engines.default_private:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -15640,7 +15640,7 @@ firefox.search_engines.default_private:
 firefox.search_engines.prevent_installs:
   summary: Add, hide, or select search engines. Field PreventInstalls.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -15649,7 +15649,7 @@ firefox.search_engines.prevent_installs:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -15688,7 +15688,7 @@ firefox.search_engines.prevent_installs:
 firefox.search_engines.remove:
   summary: Add, hide, or select search engines. Field Remove.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -15701,7 +15701,7 @@ firefox.search_engines.remove:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -15749,7 +15749,7 @@ firefox.search_engines.remove:
 firefox.search_suggest_enabled:
   summary: Control remote search suggestions.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -15758,7 +15758,7 @@ firefox.search_suggest_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -15794,7 +15794,7 @@ firefox.search_suggest_enabled:
 firefox.security_devices:
   summary: 'Add or remove PKCS #11 security modules.'
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -15816,7 +15816,7 @@ firefox.security_devices:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -15853,7 +15853,7 @@ firefox.security_devices:
 firefox.show_home_button:
   summary: Control the initial placement of the Home button.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -15862,7 +15862,7 @@ firefox.show_home_button:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -15897,7 +15897,7 @@ firefox.show_home_button:
 firefox.site_policies:
   summary: Set per-site JIT, service-worker, HTTPS, or container rules.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -15941,7 +15941,7 @@ firefox.site_policies:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -15978,7 +15978,7 @@ firefox.site_policies:
 firefox.skip_terms_of_use:
   summary: Skip the Firefox terms-of-use page.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -15987,7 +15987,7 @@ firefox.skip_terms_of_use:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16022,7 +16022,7 @@ firefox.skip_terms_of_use:
 firefox.ssl_version_max:
   summary: Set the highest TLS version Firefox may use.
   scope: machine
-  route: not_yet
+  route: firefox
   values: [tls1, tls1.1, tls1.2, tls1.3]
   macos_default: not measured
   takes_effect: relaunch
@@ -16030,7 +16030,7 @@ firefox.ssl_version_max:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16066,7 +16066,7 @@ firefox.ssl_version_max:
 firefox.ssl_version_min:
   summary: Set the lowest TLS version Firefox may use.
   scope: machine
-  route: not_yet
+  route: firefox
   values: [tls1, tls1.1, tls1.2, tls1.3]
   macos_default: not measured
   takes_effect: relaunch
@@ -16074,7 +16074,7 @@ firefox.ssl_version_min:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16110,7 +16110,7 @@ firefox.ssl_version_min:
 firefox.start_downloads_in_temp_directory:
   summary: Start downloads in the temporary folder.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -16119,7 +16119,7 @@ firefox.start_downloads_in_temp_directory:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16168,7 +16168,7 @@ firefox.start_downloads_in_temp_directory:
 firefox.support_menu.title:
   summary: Add an organization support link to the Help menu. Field Title.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -16178,7 +16178,7 @@ firefox.support_menu.title:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16215,7 +16215,7 @@ firefox.support_menu.title:
 firefox.support_menu.url:
   summary: Add an organization support link to the Help menu. Field URL.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -16225,7 +16225,7 @@ firefox.support_menu.url:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16262,7 +16262,7 @@ firefox.support_menu.url:
 firefox.support_menu.access_key:
   summary: Add an organization support link to the Help menu. Field AccessKey.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -16272,7 +16272,7 @@ firefox.support_menu.access_key:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16309,7 +16309,7 @@ firefox.support_menu.access_key:
 firefox.translate_enabled:
   summary: Control webpage translation and its AI availability.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -16318,7 +16318,7 @@ firefox.translate_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16373,7 +16373,7 @@ firefox.user_messaging.whats_new:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: No machine policy form exists. The Firefox 158 handler has no WhatsNew branch.
   browser:
     family: firefox
     kind: setting
@@ -16409,7 +16409,7 @@ firefox.user_messaging.whats_new:
 firefox.user_messaging.extension_recommendations:
   summary: Control recommendations, onboarding, and Firefox promotions. Field ExtensionRecommendations.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -16418,7 +16418,7 @@ firefox.user_messaging.extension_recommendations:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16465,7 +16465,7 @@ firefox.user_messaging.extension_recommendations:
 firefox.user_messaging.feature_recommendations:
   summary: Control recommendations, onboarding, and Firefox promotions. Field FeatureRecommendations.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -16474,7 +16474,7 @@ firefox.user_messaging.feature_recommendations:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16523,7 +16523,7 @@ firefox.user_messaging.feature_recommendations:
 firefox.user_messaging.urlbar_interventions:
   summary: Control recommendations, onboarding, and Firefox promotions. Field UrlbarInterventions.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -16532,7 +16532,7 @@ firefox.user_messaging.urlbar_interventions:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16568,7 +16568,7 @@ firefox.user_messaging.urlbar_interventions:
 firefox.user_messaging.skip_onboarding:
   summary: Control recommendations, onboarding, and Firefox promotions. Field SkipOnboarding.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -16577,7 +16577,7 @@ firefox.user_messaging.skip_onboarding:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16624,7 +16624,7 @@ firefox.user_messaging.skip_onboarding:
 firefox.user_messaging.more_from_mozilla:
   summary: Control recommendations, onboarding, and Firefox promotions. Field MoreFromMozilla.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -16633,7 +16633,7 @@ firefox.user_messaging.more_from_mozilla:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16680,7 +16680,7 @@ firefox.user_messaging.more_from_mozilla:
 firefox.user_messaging.firefox_labs:
   summary: Control recommendations, onboarding, and Firefox promotions. Field FirefoxLabs.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -16689,7 +16689,7 @@ firefox.user_messaging.firefox_labs:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16725,7 +16725,7 @@ firefox.user_messaging.firefox_labs:
 firefox.user_messaging.locked:
   summary: Control recommendations, onboarding, and Firefox promotions. Field Locked.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -16734,7 +16734,7 @@ firefox.user_messaging.locked:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16774,7 +16774,7 @@ firefox.user_messaging.locked:
 firefox.use_system_print_dialog:
   summary: Choose the operating-system print dialog.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -16783,7 +16783,7 @@ firefox.use_system_print_dialog:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16829,7 +16829,7 @@ firefox.use_system_print_dialog:
 firefox.visual_search_enabled:
   summary: Control visual search from images.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -16838,7 +16838,7 @@ firefox.visual_search_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16884,7 +16884,7 @@ firefox.visual_search_enabled:
 firefox.website_filter.block:
   summary: Block URL patterns, with explicit exceptions. Field Block.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -16897,7 +16897,7 @@ firefox.website_filter.block:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16934,7 +16934,7 @@ firefox.website_filter.block:
 firefox.website_filter.exceptions:
   summary: Block URL patterns, with explicit exceptions. Field Exceptions.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -16947,7 +16947,7 @@ firefox.website_filter.exceptions:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -16984,7 +16984,7 @@ firefox.website_filter.exceptions:
 firefox.xslt_enabled:
   summary: Control XSLT transformations.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -16993,7 +16993,7 @@ firefox.xslt_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -17048,7 +17048,7 @@ firefox.enterprise_policies_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: The Firefox role owns this policy loader switch and always keeps it enabled.
   browser:
     family: firefox
     kind: setting
@@ -17085,7 +17085,7 @@ firefox.enterprise_policies_enabled:
 firefox.pref.privacy_globalprivacycontrol_enabled:
   summary: Send Global Privacy Control.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -17094,7 +17094,7 @@ firefox.pref.privacy_globalprivacycontrol_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -17146,7 +17146,7 @@ firefox.pref.privacy_globalprivacycontrol_enabled:
 firefox.pref.browser_safebrowsing_phishing_enabled:
   summary: Block deceptive websites.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -17155,7 +17155,7 @@ firefox.pref.browser_safebrowsing_phishing_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -17207,7 +17207,7 @@ firefox.pref.browser_safebrowsing_phishing_enabled:
 firefox.pref.browser_safebrowsing_malware_enabled:
   summary: Block websites that distribute malware.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -17216,7 +17216,7 @@ firefox.pref.browser_safebrowsing_malware_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -17268,7 +17268,7 @@ firefox.pref.browser_safebrowsing_malware_enabled:
 firefox.pref.browser_safebrowsing_downloads_enabled:
   summary: Check downloads for unsafe files.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -17277,7 +17277,7 @@ firefox.pref.browser_safebrowsing_downloads_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -17329,7 +17329,7 @@ firefox.pref.browser_safebrowsing_downloads_enabled:
 firefox.pref.browser_safebrowsing_downloads_remote_enabled:
   summary: Check download reputation with the remote service.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -17338,7 +17338,7 @@ firefox.pref.browser_safebrowsing_downloads_remote_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -17408,7 +17408,7 @@ firefox.pref.privacy_resist_fingerprinting:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: No machine policy form exists. Firefox 158 Preferences rejects this key. A profile seed cannot lock it.
   browser:
     family: firefox
     kind: setting
@@ -17447,7 +17447,7 @@ firefox.pref.privacy_resist_fingerprinting:
 firefox.pref.privacy_fingerprinting_protection:
   summary: Enable broader fingerprint protection.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -17456,7 +17456,7 @@ firefox.pref.privacy_fingerprinting_protection:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -17507,7 +17507,7 @@ firefox.pref.privacy_fingerprinting_protection:
 firefox.pref.privacy_fingerprinting_protection_pbmode:
   summary: Enable fingerprint protection in private windows.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -17516,7 +17516,7 @@ firefox.pref.privacy_fingerprinting_protection_pbmode:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -17567,7 +17567,7 @@ firefox.pref.privacy_fingerprinting_protection_pbmode:
 firefox.pref.network_trr_bootstrap_addr:
   summary: Use a public address to resolve the encrypted DNS provider.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -17577,7 +17577,7 @@ firefox.pref.network_trr_bootstrap_addr:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -17629,7 +17629,7 @@ firefox.pref.network_trr_bootstrap_addr:
 firefox.pref.media_peerconnection_enabled:
   summary: Allow WebRTC calls and peer connections.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -17638,7 +17638,7 @@ firefox.pref.media_peerconnection_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -17689,7 +17689,7 @@ firefox.pref.media_peerconnection_enabled:
 firefox.pref.media_peerconnection_ice_default_address_only:
   summary: Limit WebRTC to the default network address.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -17698,7 +17698,7 @@ firefox.pref.media_peerconnection_ice_default_address_only:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -17758,7 +17758,7 @@ firefox.pref.media_peerconnection_ice_default_address_only:
 firefox.pref.media_peerconnection_ice_no_host:
   summary: Suppress host candidates in WebRTC.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -17767,7 +17767,7 @@ firefox.pref.media_peerconnection_ice_no_host:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -17818,7 +17818,7 @@ firefox.pref.media_peerconnection_ice_no_host:
 firefox.pref.media_peerconnection_ice_proxy_only_if_behind_proxy:
   summary: Restrict WebRTC candidates when a proxy is active.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -17827,7 +17827,7 @@ firefox.pref.media_peerconnection_ice_proxy_only_if_behind_proxy:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -17889,7 +17889,7 @@ firefox.pref.media_peerconnection_ice_proxy_only_if_behind_proxy:
 firefox.pref.network_idn_show_punycode:
   summary: Display international domain names as ASCII.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -17898,7 +17898,7 @@ firefox.pref.network_idn_show_punycode:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -17949,7 +17949,7 @@ firefox.pref.network_idn_show_punycode:
 firefox.pref.security_mixed_content_block_active_content:
   summary: Block active content loaded over unencrypted connections.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -17958,7 +17958,7 @@ firefox.pref.security_mixed_content_block_active_content:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -18018,7 +18018,7 @@ firefox.pref.security_mixed_content_block_active_content:
 firefox.pref.security_ocsp_enabled:
   summary: Choose online certificate-status checks.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -18030,7 +18030,7 @@ firefox.pref.security_ocsp_enabled:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -18082,7 +18082,7 @@ firefox.pref.security_ocsp_enabled:
 firefox.pref.security_ocsp_require:
   summary: Require a successful online certificate-status response.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -18091,7 +18091,7 @@ firefox.pref.security_ocsp_require:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -18142,7 +18142,7 @@ firefox.pref.security_ocsp_require:
 firefox.pref.browser_uidensity:
   summary: Choose normal, compact, or touch spacing.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -18154,7 +18154,7 @@ firefox.pref.browser_uidensity:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -18206,7 +18206,7 @@ firefox.pref.browser_uidensity:
 firefox.pref.browser_tabs_in_titlebar:
   summary: Choose whether tabs share the window title bar.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -18218,7 +18218,7 @@ firefox.pref.browser_tabs_in_titlebar:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -18280,7 +18280,7 @@ firefox.pref.font_name_serif_x_western:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: No machine policy form exists. Firefox 158 Preferences rejects this key. A profile seed cannot lock it.
   browser:
     family: firefox
     kind: setting
@@ -18331,7 +18331,7 @@ firefox.pref.font_name_sans_serif_x_western:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: No machine policy form exists. Firefox 158 Preferences rejects this key. A profile seed cannot lock it.
   browser:
     family: firefox
     kind: setting
@@ -18382,7 +18382,7 @@ firefox.pref.font_name_monospace_x_western:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: No machine policy form exists. Firefox 158 Preferences rejects this key. A profile seed cannot lock it.
   browser:
     family: firefox
     kind: setting
@@ -18434,7 +18434,7 @@ firefox.pref.font_size_variable_x_western:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: No machine policy form exists. Firefox 158 Preferences rejects this key. A profile seed cannot lock it.
   browser:
     family: firefox
     kind: setting
@@ -18484,7 +18484,7 @@ firefox.pref.font_size_monospace_x_western:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: No machine policy form exists. Firefox 158 Preferences rejects this key. A profile seed cannot lock it.
   browser:
     family: firefox
     kind: setting
@@ -18534,7 +18534,7 @@ firefox.pref.font_minimum_size_x_western:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: No machine policy form exists. Firefox 158 Preferences rejects this key. A profile seed cannot lock it.
   browser:
     family: firefox
     kind: setting
@@ -18573,7 +18573,7 @@ firefox.pref.font_minimum_size_x_western:
 firefox.pref.layout_spellcheck_default:
   summary: Choose which text fields receive spelling checks.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: browser
     schema:
@@ -18585,7 +18585,7 @@ firefox.pref.layout_spellcheck_default:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -18637,7 +18637,7 @@ firefox.pref.layout_spellcheck_default:
 firefox.pref.spellchecker_dictionary:
   summary: Choose the spelling dictionary.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: text
     pattern: ^[\s\S]*$
@@ -18647,7 +18647,7 @@ firefox.pref.spellchecker_dictionary:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -18700,7 +18700,7 @@ firefox.pref.spellchecker_dictionary:
 firefox.pref.general_smooth_scroll:
   summary: Animate scrolling.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -18709,7 +18709,7 @@ firefox.pref.general_smooth_scroll:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -18760,7 +18760,7 @@ firefox.pref.general_smooth_scroll:
 firefox.pref.browser_zoom_full:
   summary: Scale the whole page when zooming.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -18769,7 +18769,7 @@ firefox.pref.browser_zoom_full:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -18820,7 +18820,7 @@ firefox.pref.browser_zoom_full:
 firefox.pref.browser_zoom_site_specific:
   summary: Remember a separate zoom level for each site.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -18829,7 +18829,7 @@ firefox.pref.browser_zoom_site_specific:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting
@@ -18880,7 +18880,7 @@ firefox.pref.browser_zoom_site_specific:
 firefox.pref.browser_download_always_ask_before_handling_new_types:
   summary: Ask before handling new download types.
   scope: machine
-  route: not_yet
+  route: firefox
   values:
     type: bool
   macos_default: not measured
@@ -18889,7 +18889,7 @@ firefox.pref.browser_download_always_ask_before_handling_new_types:
   lockout_risk: false
   where: Firefox > Settings
   proven_on: {}
-  not_yet_reason: Browser application is not available yet.
+  not_yet_reason: ""
   browser:
     family: firefox
     kind: setting

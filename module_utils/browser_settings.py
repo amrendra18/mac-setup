@@ -191,9 +191,12 @@ def _merge_policy_values(left, right):
     return _POLICY_CONFLICT
 
 
-def _normalize_firefox_policy(value):
+def _normalize_firefox_policy(value, policy_roots=None):
     result = {}
     for key, item in value.items():
+        if policy_roots is not None and key.split("__", 1)[0] not in policy_roots:
+            result[key] = item
+            continue
         branch = item
         parts = key.split("__")
         for index in range(len(parts) - 1, -1, -1):
@@ -225,7 +228,7 @@ def parse_source(source, payload):
     try:
         if source in ("firefox_prefs", "firefox_user"):
             return parse_firefox_prefs(payload.decode("utf-8-sig"))
-        if source in ("firefox_policy", "chrome_policy"):
+        if source in ("firefox_policy", "firefox_domain", "chrome_policy"):
             value = plistlib.loads(payload)
         else:
             value = json.loads(
@@ -680,6 +683,43 @@ def _terminals(value, prefix=()):
         yield prefix
 
 
+def _defaults_bool(value):
+    if type(value) in (bool, int, float):
+        return value != 0
+    return (
+        isinstance(value, str)
+        and re.match(
+            r"[\t \u00a0\u1680\u2000-\u200b\u202f\u205f\u3000]*(?:[YyTt]|[+-]?0*[1-9])",
+            value,
+        )
+        is not None
+    )
+
+
+def firefox_policy_sources(documents, policy_roots):
+    enabled = False
+    for document in documents:
+        if "EnterprisePoliciesEnabled" in document:
+            enabled = _defaults_bool(document["EnterprisePoliciesEnabled"])
+    policies, app_state_entries = [], 0
+    for document in documents:
+        selected = {}
+        for key, value in document.items():
+            if key == "EnterprisePoliciesEnabled":
+                continue
+            if enabled and key.split("__", 1)[0] in policy_roots:
+                selected[key] = value
+            else:
+                app_state_entries += sum(1 for _ in _terminals({key: value}))
+        if selected:
+            policies.append(_normalize_firefox_policy(selected))
+    return {
+        "enabled": enabled,
+        "policies": policies,
+        "app_state_entries": app_state_entries,
+    }
+
+
 def _supported(entry, version):
     if version == "unavailable":
         return False
@@ -744,7 +784,22 @@ def read_browser(
     for path in policy_paths:
         payload = sources.load(path)
         if payload is not None:
-            stores[policy_kind].append(parse_source(policy_kind, payload))
+            stores[policy_kind].append(
+                parse_source(
+                    "firefox_domain" if family == "firefox" else policy_kind, payload
+                )
+            )
+    app_state_entries = 0
+    if family == "firefox":
+        policy_roots = {
+            descriptor["path"][0]
+            for row in rows.values()
+            for descriptor in row["browser"]["read"]
+            if descriptor["source"] == "firefox_policy"
+        }
+        policy_sources = firefox_policy_sources(stores[policy_kind], policy_roots)
+        stores[policy_kind] = policy_sources["policies"]
+        app_state_entries = policy_sources["app_state_entries"]
     settings = {}
     known = {source: set() for source in SOURCE_STATES}
     for setting_id, row in sorted(rows.items()):
@@ -881,6 +936,10 @@ def read_browser(
     counts.update(
         unmapped_persisted_entries=len(unknown_persisted),
         unmapped_policy_entries=unknown_policy,
+        policy_entries=sum(
+            1 for document in stores[policy_kind] for _ in _terminals(document)
+        ),
+        app_state_entries=app_state_entries,
     )
     return {
         "browser": family,
@@ -909,7 +968,7 @@ def leaked_test_values(canaries, texts):
 def candidate_yaml(results):
     lines = [
         "---",
-        "# Review candidate. Browser application is not available yet.",
+        "# Review candidate. The profile check refuses unsupported settings.",
         "# Saved configuration does not prove effective browser enforcement.",
         "# Review locally before sharing. Keep this file outside public repositories.",
     ]
@@ -940,6 +999,13 @@ def candidate_yaml(results):
         lines.append(
             "# Unmapped persisted entries count saved names or terminal entries, not changes from defaults."
         )
+        if family == "firefox":
+            lines.append(
+                "# firefox policy entries: "
+                + str(result["counts"].get("policy_entries", 0))
+                + "; app-state entries: "
+                + str(result["counts"].get("app_state_entries", 0))
+            )
     for section, scope in (
         ("machine_settings", "machine"),
         ("default_settings", "user"),

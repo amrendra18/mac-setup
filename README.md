@@ -33,7 +33,7 @@ The example makes these main changes. Review both settings files before applying
 8. The example creates no extra account and installs no app.
    At the end, it opens Location Services and asks you to turn it off yourself.
 
-mac-setup knows 1242 macOS settings. A run sets 218 of them, 40 need your click, and 984 it cannot set yet.
+mac-setup knows 1242 macOS settings. A run sets 553 of them, 40 need your click, and 649 it cannot set yet.
 66 settings are proven on macOS 27.2.1.
 A test applied each proven setting on a real Mac and read it back.
 The other settings have unit tests, without real-Mac proof.
@@ -245,6 +245,42 @@ An app already at the catalog's version or newer stays as it is.
 An upgrade replaces the old copy. Quit a running app before upgrading it.
 Previews run the same checks and install nothing.
 
+## Apply Firefox settings
+
+Put Firefox settings under `machine_settings` in your private profile.
+They apply to every account after Firefox opens again.
+Quit Firefox in every account before applying a change. mac-setup refuses to close Firefox for you.
+
+For example, this sets a homepage that you can change later:
+
+```yaml
+machine_settings:
+  firefox.lock: false
+  firefox.homepage.url: https://example.invalid/
+```
+
+The same preview and apply commands from Quick start apply these settings after app installation.
+Only listed values apply. No proposed hardening baseline activates automatically.
+If you omit `firefox.lock`, it defaults to `true`.
+True locks each supported form. A setting with only an editable form stays editable and the summary says so.
+False applies editable forms where available. Unsupported editable forms stay unset and the summary names them.
+In false mode, `firefox.homepage.start_page: homepage-locked` uses editable `homepage` and reports the conversion.
+The startup choice `none` accepts only an absent homepage URL or `about:blank`.
+Existing Firefox choices can override editable defaults. A retained editable policy can reapply when Firefox starts.
+
+Use `unset` to release a named setting, for example `firefox.homepage.url: unset`.
+Omitting a setting preserves its previous policy. `firefox.lock` accepts only `true` or `false`.
+Changing the lock switch to false releases previously owned locked forms before applying editable forms.
+Unrelated policies remain in place. mac-setup refuses a lock change that would alter an unrelated setting.
+The policy loader stays enabled after the final release.
+External management can still impose locks.
+
+mac-setup stores policies in `/Library/Preferences/org.mozilla.firefox.plist`.
+It does not change Firefox.app or browser profile files.
+The example profile enables no Firefox settings.
+The [settings template](inventory/example/TEMPLATE.yml) lists supported values and reasons for unsupported settings.
+The [Firefox internals](docs/how-it-works.md#firefox-policies) describe ownership and validation.
+
 ## Capture browser settings without Ansible
 
 Capture reads saved Firefox or Chrome settings and writes a private review file.
@@ -303,7 +339,8 @@ An old regular Chrome lock cannot identify its browser owner, so running Chrome 
 No process arguments, account names, lock targets, or process ids appear in output.
 
 The report uses `machine_settings` and `default_settings`, the same sections as your private profile.
-Browser application is not available yet. The profile check refuses these settings until browser support arrives.
+Review the candidate before copying values into your profile.
+Supported Firefox settings can apply now. Chrome settings and unsupported Firefox settings remain refused.
 Proposed hardening values remain proposals. Capture never adds them as observed values.
 The `firefox.lock` and `chrome.lock` recommendations default to `true`, each commented until you choose it.
 

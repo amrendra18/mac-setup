@@ -155,8 +155,8 @@ def main():
                 if args.policy_root
                 else [
                     Path("/Library/Preferences"),
-                    Path("/Library/Managed Preferences"),
                     home / "Library/Preferences",
+                    Path("/Library/Managed Preferences"),
                     home / "Library/Managed Preferences",
                 ]
             )

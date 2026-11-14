@@ -1,8 +1,23 @@
+import importlib.util
 import posixpath
 import re
 from collections import Counter
+from pathlib import Path
 
 import yaml
+
+_browser_spec = importlib.util.spec_from_file_location(
+    "profile_browser_settings",
+    Path(__file__).resolve().parents[3] / "module_utils/browser_settings.py",
+)
+_browser = importlib.util.module_from_spec(_browser_spec)
+_browser_spec.loader.exec_module(_browser)
+_firefox_spec = importlib.util.spec_from_file_location(
+    "profile_firefox_policies",
+    Path(__file__).resolve().parents[3] / "module_utils/firefox_policies.py",
+)
+_firefox = importlib.util.module_from_spec(_firefox_spec)
+_firefox_spec.loader.exec_module(_firefox)
 
 UNSET = "unset"
 ACCOUNT_NAME = re.compile(r"[a-z_][a-z0-9_.-]*")
@@ -18,6 +33,7 @@ PROFILE_KEYS = [
 ]
 RUN_SWITCHES = {
     "by_hand_open",
+    "firefox_journey_stage",
     "macos_apps_downloads",
     "macos_apps_applications",
     "permissions_ls",
@@ -147,6 +163,10 @@ def _hotkey_entry(choice):
 
 
 VALUE_KINDS = {
+    "browser": (
+        lambda spec, value: _browser.value_allowed(spec, value),
+        lambda spec: "a value matching the browser setting's schema",
+    ),
     "bool": (
         lambda spec, value: isinstance(value, bool),
         lambda spec: "true or false",
@@ -299,7 +319,13 @@ def _setting_problems(prefix, settings, scope, reference, allow_lockout_risk, ca
             problems.append(
                 f"{subject}: mac-setup cannot set this yet, {entry['not_yet_reason']}"
             )
-        elif value == UNSET and entry["route"] != "defaults":
+        elif (
+            value == UNSET
+            and entry["route"] == "firefox"
+            and setting_id == "firefox.lock"
+        ):
+            problems.append(f"{subject}: must be true or false")
+        elif value == UNSET and entry["route"] not in ("defaults", "firefox"):
             problems.append(
                 f"{subject}: unset works only for settings stored with defaults, "
                 f"use {describe(entry['values'])}"
@@ -315,8 +341,14 @@ def _setting_problems(prefix, settings, scope, reference, allow_lockout_risk, ca
                 for choice in entry["values"]
             )
             problems.append(
-                f"{subject}: {value!r} is not allowed, "
-                f"use {describe(entry['values'])}" + (" (quote them)" if quote else "")
+                f"{subject}: "
+                + (
+                    "value is not allowed, "
+                    if entry["route"] == "firefox"
+                    else f"{value!r} is not allowed, "
+                )
+                + f"use {describe(entry['values'])}"
+                + (" (quote them)" if quote else "")
             )
         elif entry["values"] == {"type": "catalog_ids"} and (
             app_problems := _app_id_problems(value, catalog)
@@ -446,6 +478,17 @@ def profile_problems(profile, files, catalog=()):
         problems.append("accounts: must be a list of accounts")
     if not problems:
         machine = _section(profile, "machine_settings", {})
+        try:
+            _firefox.plan_policies(
+                _routed(machine, reference, "firefox"),
+                {
+                    key: row
+                    for key, row in reference.items()
+                    if key.startswith("firefox.")
+                },
+            )
+        except _firefox.FirefoxError as error:
+            problems.append(f"machine_settings, firefox: {error}")
         problems += _conflict_problems("", defaults, set(defaults), reference)
         problems += _conflict_problems(
             "machine_settings, ", machine, set(machine), reference
@@ -658,6 +701,7 @@ def profile_work(profile, files, running_account, permission_table):
         "own": own,
         "others": others,
         "machine_writes": _writes(machine, reference),
+        "firefox": _routed(machine, reference, "firefox"),
         "commands": _commands(machine, reference, permission_table),
         "apps": [
             app_id
@@ -677,6 +721,9 @@ def profile_work(profile, files, running_account, permission_table):
             for account in accounts
         ],
         "counts": {
+            "firefox": len(
+                set(_routed(machine, reference, "firefox")) - {"firefox.lock"}
+            ),
             "after_logout": list(own_timing.values()).count("logout")
             + sum(len(_written(other)) for other in others),
             "timing_not_measured": list(own_timing.values()).count("not measured"),
@@ -709,6 +756,7 @@ def profile_summary(
     permission_notes=(),
     stopped="",
     walked=False,
+    firefox_notes=(),
 ):
     refused = (
         ([f"the run stopped early at {stopped}"] if stopped else [])
@@ -724,6 +772,7 @@ def profile_summary(
     )
     notes = (
         list(permission_notes)
+        + list(firefox_notes)
         + [
             f"account {item['name']} does not exist yet, so this check run skipped its settings"
             for item in account_results
@@ -741,6 +790,8 @@ def profile_summary(
         ]
     )
     after_logout = counts["after_logout"]
+    if counts.get("firefox", 0):
+        notes.append(f"open Firefox again to apply {_settings(counts['firefox'])}")
     click_here = 0 if walked else counts["click_here"]
     if after_logout:
         notes.append(f"log out and back in to see {_settings(after_logout)}")

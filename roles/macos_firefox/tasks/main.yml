@@ -1,0 +1,22 @@
+---
+- name: Apply the selected Firefox machine policies
+  when: macos_firefox_settings | length > 0
+  block:
+    - name: Merge Firefox machine policies
+      macos_firefox:
+        settings: "{{ macos_firefox_settings }}"
+      register: macos_firefox_result
+      no_log: true
+
+    - name: Record Firefox policy notes
+      ansible.builtin.set_fact:
+        macos_firefox_notes: >-
+          {{ macos_firefox_result.notes
+          + (macos_firefox_result.omitted | map(attribute='id')
+          | map('regex_replace', '$', ': no editable policy form; left unset') | list) }}
+  rescue:
+    - name: Record the Firefox refusal
+      ansible.builtin.include_tasks: "{{ role_path }}/../macos_defaults/tasks/refused.yml"
+      vars:
+        macos_defaults_refused_account: machine
+        macos_defaults_refused_id: firefox

@@ -115,6 +115,12 @@
             macos_apps_items: "{{ profile_apps }}"
             macos_apps_virustotal_api_key: "{{ virustotal_api_key | default('') }}"
 
+        - name: Set the selected Firefox policies
+          ansible.builtin.include_role:
+            name: macos_firefox
+          vars:
+            macos_firefox_settings: "{{ profile_firefox }}"
+
         - name: Write each other account's settings as that account
           ansible.builtin.include_role:
             name: macos_defaults

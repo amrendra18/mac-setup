@@ -248,7 +248,9 @@ class BrowserReaderTests(unittest.TestCase):
         results = []
         for fmt in (plistlib.FMT_XML, plistlib.FMT_BINARY):
             (self.policies / "org.mozilla.firefox.plist").write_bytes(
-                plistlib.dumps({"Safe": True}, fmt=fmt)
+                plistlib.dumps(
+                    {"EnterprisePoliciesEnabled": True, "Safe": True}, fmt=fmt
+                )
             )
             results.append(self.capture(rows)["settings"])
         self.assertEqual(results[0], results[1])
@@ -338,7 +340,12 @@ class BrowserReaderTests(unittest.TestCase):
             with self.subTest(value=value):
                 (self.policies / "org.mozilla.firefox.plist").write_bytes(
                     plistlib.dumps(
-                        {"Preferences": {"privacy.globalprivacycontrol.enabled": value}}
+                        {
+                            "EnterprisePoliciesEnabled": True,
+                            "Preferences": {
+                                "privacy.globalprivacycontrol.enabled": value
+                            },
+                        }
                     )
                 )
                 result = self.capture(rows)
@@ -403,7 +410,9 @@ class BrowserReaderTests(unittest.TestCase):
         ):
             with self.subTest(document=document):
                 policy = self.policies / "org.mozilla.firefox.plist"
-                policy.write_bytes(plistlib.dumps(document))
+                policy.write_bytes(
+                    plistlib.dumps(dict(document, EnterprisePoliciesEnabled=True))
+                )
                 result = self.capture(entries)
                 self.assertEqual(result["settings"][key]["state"], "captured")
                 self.assertIs(result["settings"][key]["value"], True)
@@ -435,7 +444,9 @@ class BrowserReaderTests(unittest.TestCase):
         normalized = reader.parse_source("firefox_policy", plistlib.dumps(document))
         self.assertEqual(normalized, {"Cookies": {"Allow": [private_url]}})
         policy = self.policies / "org.mozilla.firefox.plist"
-        policy.write_bytes(plistlib.dumps(document))
+        policy.write_bytes(
+            plistlib.dumps(dict(document, EnterprisePoliciesEnabled=True))
+        )
         result = self.capture(self.browser_map())
         self.assertEqual(result["settings"]["firefox.cookies.allow"]["state"], "masked")
         self.assertNotIn(private_url, json.dumps(result))
@@ -452,7 +463,9 @@ class BrowserReaderTests(unittest.TestCase):
         for nested in ({"Enabled": False}, False):
             document = {"DNSOverHTTPS": nested, "DNSOverHTTPS__Enabled": True}
             policy = self.policies / "org.mozilla.firefox.plist"
-            policy.write_bytes(plistlib.dumps(document))
+            policy.write_bytes(
+                plistlib.dumps(dict(document, EnterprisePoliciesEnabled=True))
+            )
             result = self.capture(entries)
             self.assertEqual(result["settings"][key]["state"], "unverified")
             self.assertNotIn("value", result["settings"][key])
@@ -588,7 +601,13 @@ class BrowserReaderTests(unittest.TestCase):
                     )
                 elif source.endswith("policy"):
                     path = self.policies / filename
-                    path.write_bytes(plistlib.dumps(payload))
+                    path.write_bytes(
+                        plistlib.dumps(
+                            dict(payload, EnterprisePoliciesEnabled=True)
+                            if source == "firefox_policy"
+                            else payload
+                        )
+                    )
                 else:
                     path = (
                         self.root if source == "chrome_local_state" else self.profile

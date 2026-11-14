@@ -90,9 +90,10 @@ class BrowserCommandTests(unittest.TestCase):
             with self.subTest(payload_key=payload_key):
                 self.output = self.root / ("review-" + str(index) + ".yml")
                 policy = {
+                    "EnterprisePoliciesEnabled": True,
                     "3rdparty": {
                         "Extensions": {extension_id: {payload_key: private_value}}
-                    }
+                    },
                 }
                 (self.policies / "org.mozilla.firefox.plist").write_bytes(
                     plistlib.dumps(policy)

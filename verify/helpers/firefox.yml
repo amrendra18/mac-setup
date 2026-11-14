@@ -1,0 +1,41 @@
+---
+- name: Snapshot the Firefox policy before this run
+  hosts: macs
+  gather_facts: false
+  tasks:
+    - name: Save the policy fingerprint without changing Firefox
+      ansible.builtin.command:
+        argv:
+          - /usr/bin/python3
+          - -I
+          - -B
+          - "{{ playbook_dir }}/firefox.py"
+          - before
+          - --stage
+          - "{{ firefox_journey_stage }}"
+      changed_when: false
+      check_mode: false
+
+- name: Apply the real site playbook
+  ansible.builtin.import_playbook: ../../playbooks/site.yml
+
+- name: Read stored policies and prove disposable Firefox behavior
+  hosts: macs
+  gather_facts: false
+  tasks:
+    - name: Check the exact Firefox journey result
+      ansible.builtin.command:
+        argv:
+          - /usr/bin/python3
+          - -I
+          - -B
+          - "{{ playbook_dir }}/firefox.py"
+          - after
+          - --stage
+          - "{{ firefox_journey_stage }}"
+      changed_when: false
+      check_mode: false
+      register: firefox_journey_proof
+    - name: Show the Firefox proof counts
+      ansible.builtin.debug:
+        msg: "{{ firefox_journey_proof.stdout }}"

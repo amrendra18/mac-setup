@@ -293,13 +293,14 @@ def browser_problems(entry):
     if family not in FAMILIES or kind not in ("setting", "lock_control"):
         return ["browser family or kind is not supported"]
     if (
-        entry.get("route") != "not_yet"
+        entry.get("route")
+        not in ({"not_yet", "firefox"} if family == "firefox" else {"not_yet"})
         or entry.get("needs") != []
-        or entry.get("proven_on") != {}
+        or (entry.get("route") == "not_yet" and entry.get("proven_on") != {})
         or entry.get("takes_effect") != "relaunch"
     ):
         problems.append(
-            "browser rows need not_yet, no permissions or proof, and relaunch"
+            "browser rows need a supported family route, no permissions, and relaunch; unsupported rows cannot claim proof"
         )
     reads = browser["read"]
     if not isinstance(reads, list):

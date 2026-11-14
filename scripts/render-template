@@ -25,7 +25,15 @@ profile = importlib.util.module_from_spec(_rules)
 _rules.loader.exec_module(profile)
 SETTINGS = Path("settings/macos")
 TEMPLATE = Path("inventory/example/TEMPLATE.yml")
-SETTABLE = ("defaults", "command", "dock_apps", "wallpaper", "finder_sidebar", "apps")
+SETTABLE = (
+    "defaults",
+    "command",
+    "dock_apps",
+    "wallpaper",
+    "finder_sidebar",
+    "apps",
+    "firefox",
+)
 TAKES_EFFECT = {
     "live": "at once",
     "dock": "when the Dock restarts",
@@ -104,6 +112,8 @@ def example(values, default):
         return values["min"]
     if kind == "list":
         return values["choices"][: values.get("min", 0)]
+    if kind == "browser":
+        return "unset"
     return {
         "bool": False,
         "text": "unset",
@@ -184,12 +194,27 @@ def _wrap(prefix, text):
 
 def _entry(prefix, setting_id, entry):
     if entry["route"] in SETTABLE:
-        head = f"{prefix}{setting_id}: {_flow(example(entry['values'], entry['macos_default']))}"
+        value = (
+            True
+            if setting_id == "firefox.lock"
+            else example(entry["values"], entry["macos_default"])
+        )
+        head = f"{prefix}{setting_id}: {_flow(value)}"
     else:
         head = f"{prefix}{setting_id}"
     lines = [head, *_wrap(prefix + "  ", entry["summary"])]
     for label, value in _facts(entry):
         lines += _wrap(prefix + "  ", f"{label}: {value}")
+    if entry["route"] == "firefox":
+        lines += _wrap(
+            prefix + "  ",
+            "Note: A selected value applies to every account. "
+            + (
+                "This switch accepts true or false only. The default is true."
+                if setting_id == "firefox.lock"
+                else "Use unset to release this setting. firefox.lock defaults to true."
+            ),
+        )
     if entry.get("notes"):
         lines += _wrap(prefix + "  ", f"Note: {entry['notes']}")
     return lines

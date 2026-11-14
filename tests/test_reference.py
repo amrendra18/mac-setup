@@ -49,6 +49,7 @@ ROUTES = (
     "wallpaper",
     "finder_sidebar",
     "apps",
+    "firefox",
     "by_hand",
     "not_yet",
 )
@@ -1331,6 +1332,51 @@ class Inventory(unittest.TestCase):
             run = ansible_inventory(folder)
         self.assertNotEqual(run.returncode, 0)
         self.assertIn("duplicate mapping key 'dock.position'", run.stderr)
+
+
+class FirefoxRoute(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.rows = yaml.safe_load((ROOT / "settings/macos/firefox.yml").read_text())
+
+    def test_route_requires_machine_firefox_metadata(self):
+        original = self.rows["firefox.disable_telemetry"]
+        self.assertEqual(entry_problems(original), [])
+        for fields in ({"scope": "user"}, {"browser": None}):
+            with self.subTest(fields=fields):
+                self.assertTrue(entry_problems({**original, **fields}))
+
+    def test_applied_firefox_rows_can_record_real_mac_proof(self):
+        row = {
+            **self.rows["firefox.disable_telemetry"],
+            "proven_on": {"27.2.1": "2026-11-13"},
+        }
+        self.assertEqual(browser_map.browser_problems(row), [])
+
+    def test_supported_rows_render_as_machine_profile_lines(self):
+        text = template.render(ROOT / "settings/macos")
+        machine = text.split("machine_settings:\n", 1)[1].split(
+            "# Click-only settings.", 1
+        )[0]
+        self.assertIn("  # firefox.lock: true\n", machine)
+        self.assertIn("  # firefox.permissions.camera.allow: unset\n", machine)
+        self.assertIn("  # firefox.disable_telemetry: false\n", machine)
+        self.assertNotIn("  # firefox.extension_settings:", machine)
+
+    def test_supported_route_only_has_policy_writer_forms(self):
+        for setting_id, row in self.rows.items():
+            if row["route"] != "firefox":
+                continue
+            with self.subTest(setting_id=setting_id):
+                self.assertEqual(row["scope"], "machine")
+                self.assertEqual(row["browser"]["baseline"]["status"], "proposed")
+                self.assertTrue(
+                    setting_id == "firefox.lock"
+                    or any(
+                        row["browser"][mode].get("source") == "firefox_policy"
+                        for mode in ("locked", "unlocked")
+                    )
+                )
 
 
 if __name__ == "__main__":

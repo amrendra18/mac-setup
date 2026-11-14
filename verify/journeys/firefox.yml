@@ -1,0 +1,62 @@
+summary: Firefox policies preserve unrelated keys, honor locks, clear artificial history, and restore the original machine plist.
+level: fast
+playbook: verify/helpers/firefox.yml
+setup:
+  - /usr/bin/python3 -I -B verify/helpers/firefox.py setup
+cleanup:
+  - /usr/bin/python3 -I -B verify/helpers/firefox.py restore
+profile:
+  machine_settings:
+    firefox.lock: true
+    firefox.homepage.url: https://example.invalid/managed
+    firefox.homepage.locked: true
+    firefox.sanitize_on_shutdown.history: true
+    firefox.sanitize_on_shutdown.locked: true
+    firefox.disable_profile_import: true
+    firefox.pref.privacy_globalprivacycontrol_enabled: true
+runs:
+  - name: preview
+    args: [--check, -e, firefox_journey_stage=preview]
+    exit: 0
+    recap: {failed: 0}
+    output:
+      - pattern: 'firefox\s+preview\s+keys_written=0\s+bytes_unchanged=true\s+metadata_unchanged=true\b'
+        count: 1
+  - name: apply
+    args: [-e, firefox_journey_stage=apply]
+    exit: 0
+    recap: {failed: 0}
+    output:
+      - pattern: >-
+          (?x)firefox\s+apply\s+\{
+          [^{}]*"artificial_history_after_quit":\s*0(?=\s*[,}])
+          [^{}]*"artificial_history_before_quit":\s*1(?=\s*[,}])
+          [^{}]*"policy_errors":\s*0(?=\s*[,}])[^{}]*\}
+        count: 1
+  - name: again
+    args: [-e, firefox_journey_stage=again]
+    exit: 0
+    recap: {changed: 0, failed: 0}
+    output:
+      - pattern: 'firefox\s+again\s+\{[^{}]*"policy_errors":\s*0(?=\s*[,}])[^{}]*\}'
+        count: 1
+  - name: unlock
+    args: [-e, firefox_journey_stage=unlock]
+    exit: 0
+    recap: {failed: 0}
+    profile:
+      machine_settings:
+        firefox.lock: false
+        firefox.homepage.url: https://example.invalid/managed
+        firefox.homepage.locked: false
+        firefox.sanitize_on_shutdown.history: true
+        firefox.sanitize_on_shutdown.locked: false
+        firefox.disable_profile_import: true
+        firefox.pref.privacy_globalprivacycontrol_enabled: true
+    output:
+      - pattern: >-
+          (?x)firefox\s+unlock\s+\{
+          [^{}]*"owned_locked_paths":\s*0(?=\s*[,}])
+          [^{}]*"policy_errors":\s*0(?=\s*[,}])
+          [^{}]*"user_override_reported":\s*true(?=\s*[,}])[^{}]*\}
+        count: 1

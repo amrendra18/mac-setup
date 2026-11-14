@@ -62,6 +62,7 @@ def counts(**fields):
         "click_here": 0,
         "click_elsewhere": 0,
         "own_session": 0,
+        "firefox": 0,
         **fields,
     }
 
@@ -1417,6 +1418,124 @@ class RemainingStores(unittest.TestCase):
             with self.subTest(setting_id):
                 parse = FILES["systemui.yml"][setting_id]["command"]["parse"]
                 self.assertEqual(re.search(parse, read, re.M).group("value"), expected)
+
+
+class FirefoxProfile(unittest.TestCase):
+    def test_nonblank_homepage_and_no_start_conflict_hides_private_url(self):
+        selected = {
+            "firefox.homepage.url": "https://example.invalid/PRIVATE-HOMEPAGE",
+            "firefox.homepage.start_page": "none",
+        }
+        problems = profile_problems({"machine_settings": selected}, FILES)
+        self.assertEqual(len(problems), 1)
+        self.assertIn("firefox.homepage.url", problems[0])
+        self.assertIn("firefox.homepage.start_page", problems[0])
+        self.assertNotIn("PRIVATE-HOMEPAGE", problems[0])
+
+    def test_blank_or_unset_homepage_agrees_with_no_start(self):
+        for selected in (
+            {
+                "firefox.homepage.url": "about:blank",
+                "firefox.homepage.start_page": "none",
+            },
+            {"firefox.homepage.url": "unset", "firefox.homepage.start_page": "none"},
+            {
+                "firefox.homepage.url": "https://example.invalid/",
+                "firefox.homepage.start_page": "unset",
+            },
+            {"firefox.lock": False, "firefox.homepage.start_page": "homepage-locked"},
+        ):
+            with self.subTest(selected=selected):
+                self.assertEqual(
+                    profile_problems({"machine_settings": selected}, FILES), []
+                )
+
+    def test_selected_values_reach_firefox_without_baseline_expansion(self):
+        selected = {
+            "firefox.disable_telemetry": True,
+            "firefox.homepage.url": "https://example.invalid/",
+            "firefox.enable_tracking_protection.value": "unset",
+            "firefox.lock": False,
+        }
+        profile = {"machine_settings": selected}
+        self.assertEqual(profile_problems(profile, FILES), [])
+        work = profile_work(profile, FILES, "runner", TABLE)
+        self.assertEqual(work["firefox"], selected)
+        self.assertEqual(work["counts"]["firefox"], 3)
+        self.assertEqual(work["machine_writes"], [])
+        empty = profile_work({}, FILES, "runner", TABLE)
+        self.assertEqual(empty["firefox"], {})
+        self.assertEqual(empty["counts"]["firefox"], 0)
+
+    def test_lock_is_boolean_and_other_firefox_values_accept_unset(self):
+        for value in (True, False):
+            with self.subTest(value=value):
+                self.assertEqual(
+                    profile_problems(
+                        {"machine_settings": {"firefox.lock": value}}, FILES
+                    ),
+                    [],
+                )
+        for value in ("unset", 1, "true", None):
+            with self.subTest(value=value):
+                self.assertTrue(
+                    profile_problems(
+                        {"machine_settings": {"firefox.lock": value}}, FILES
+                    )
+                )
+        self.assertEqual(
+            profile_problems(
+                {"machine_settings": {"firefox.permissions.camera.allow": "unset"}},
+                FILES,
+            ),
+            [],
+        )
+
+    def test_browser_schema_checks_types_without_echoing_private_values(self):
+        selected = {"firefox.permissions.camera.allow": ["https://example.invalid/"]}
+        self.assertEqual(profile_problems({"machine_settings": selected}, FILES), [])
+        private = "private-test-marker"
+        bad = {"machine_settings": {"firefox.permissions.camera.allow": [private, 4]}}
+        problems = profile_problems(bad, FILES)
+        self.assertEqual(len(problems), 1)
+        self.assertNotIn(private, "\n".join(problems))
+
+    def test_unsupported_routes_still_refuse_profiles(self):
+        for setting_id in (
+            "firefox.preferences",
+            "firefox.enterprise_policies_enabled",
+            "firefox.extension_settings",
+            "firefox.extensions.install",
+            "firefox.search_engines.add",
+            "firefox.pref.privacy_resist_fingerprinting",
+        ):
+            with self.subTest(setting_id=setting_id):
+                self.assertTrue(
+                    profile_problems({"machine_settings": {setting_id: "unset"}}, FILES)
+                )
+
+    def test_summary_counts_settings_and_shows_role_notes(self):
+        result = profile_summary(
+            counts(firefox=2),
+            [],
+            [],
+            [],
+            firefox_notes=["An editable seed can keep a user override."],
+        )
+        self.assertIn("open Firefox again to apply 2 settings", result["notes"])
+        self.assertIn("An editable seed can keep a user override.", result["notes"])
+
+    def test_full_firefox_selection_is_validated_before_work(self):
+        for selected in (
+            {
+                "firefox.browser_data_backup": True,
+                "firefox.browser_data_backup.allow_backup": False,
+            },
+            {"firefox.enable_tracking_protection.locked": False},
+        ):
+            with self.subTest(selected=selected):
+                problems = profile_problems({"machine_settings": selected}, FILES)
+                self.assertTrue(problems)
 
 
 if __name__ == "__main__":

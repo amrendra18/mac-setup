@@ -45,6 +45,7 @@
     profile_machine_writes: "{{ profile_work.machine_writes }}"
     profile_commands: "{{ profile_work.commands }}"
     profile_apps: "{{ profile_work.apps }}"
+    profile_firefox: "{{ profile_work.firefox }}"
     profile_by_hand: "{{ profile_work.by_hand }}"
     profile_permissions: "{{ profile_work.permissions }}"
     profile_accounts: "{{ profile_work.accounts }}"
